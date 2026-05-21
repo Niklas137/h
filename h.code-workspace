@@ -1,0 +1,294 @@
+import streamlit as st
+from docx import Document
+import pandas as pd
+import json
+
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from io import BytesIO
+
+st.set_page_config(page_title="Dokumentenprüfer", layout="wide")
+
+st.title("Lokaler Dokumentenprüfer")
+
+# =========================
+# FILE READ
+# =========================
+
+def read_docx(file):
+    doc = Document(file)
+
+    structured_text = []
+    current_heading = "Unbekannt"
+
+    for para in doc.paragraphs:
+        text = para.text.strip()
+
+        if not text:
+            continue
+
+        if para.style.name.startswith("Heading"):
+            current_heading = text
+
+        structured_text.append({
+            "text": text,
+            "heading": current_heading
+        })
+
+    return structured_text
+
+# =========================
+# LOADERS
+# =========================
+
+def load_checklist():
+    with open("pruefkatalog.json", "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def load_normlogik_82079():
+    with open("normlogik_82079.json", "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def load_ce_logik():
+    with open("ce_logik.json", "r", encoding="utf-8") as f:
+        return json.load(f)
+
+# =========================
+# BASIS CHECK
+# =========================
+
+def check_document(structured_text):
+    findings = []
+    checklist = load_checklist()
+
+    full_text = " ".join([item["text"] for item in structured_text]).lower()
+
+    for rule in checklist:
+        if not any(keyword in full_text for keyword in rule["keywords"]):
+            findings.append({
+                "ID": rule["id"],
+                "Normlogik": "Basisprüfung",
+                "Bereich": rule["bereich"],
+                "Pflicht": "-",
+                "Fehlerklasse": rule["fehlerklasse"],
+                "Bewertung": "Nicht gefunden",
+                "Fundstelle": "Nicht vorhanden",
+                "Empfehlung": rule["empfehlung"],
+                "Gewichtung": rule["gewichtung"],
+                "Zeitaufwand_min": rule["gewichtung"] * 12
+            })
+
+    # Lesbarkeit
+    for item in structured_text:
+        sentence = item["text"]
+
+        if len(sentence.split()) > 25:
+            findings.append({
+                "ID": "TXT-001",
+                "Normlogik": "Basisprüfung",
+                "Bereich": "Lesbarkeit",
+                "Pflicht": "-",
+                "Fehlerklasse": "Mittel",
+                "Bewertung": "Satz zu lang",
+                "Fundstelle": item["heading"],
+                "Empfehlung": sentence[:150],
+                "Gewichtung": 2,
+                "Zeitaufwand_min": 15
+            })
+
+    return findings
+
+# =========================
+# 82079 CHECK
+# =========================
+
+def check_normlogik_82079(structured_text):
+    findings = []
+    rules = load_normlogik_82079()
+
+    full_text = " ".join([item["text"] for item in structured_text]).lower()
+
+    for rule in rules:
+        if not any(keyword in full_text for keyword in rule["keywords"]):
+            findings.append({
+                "ID": rule["id"],
+                "Normlogik": "DIN 82079-1",
+                "Bereich": rule["bereich"],
+                "Pflicht": "Ja" if rule["pflicht"] else "Produktabhängig",
+                "Fehlerklasse": rule["fehlerklasse"],
+                "Bewertung": "Nicht ausreichend nachweisbar",
+                "Fundstelle": "Nicht gefunden",
+                "Empfehlung": rule["empfehlung"],
+                "Gewichtung": rule["gewichtung"],
+                "Zeitaufwand_min": rule["gewichtung"] * 15
+            })
+
+    return findings
+
+# =========================
+# CE CHECK
+# =========================
+
+def check_ce_logik(structured_text):
+    findings = []
+    rules = load_ce_logik()
+
+    full_text = " ".join([item["text"] for item in structured_text]).lower()
+
+    for rule in rules:
+        if not any(keyword in full_text for keyword in rule["keywords"]):
+            findings.append({
+                "ID": rule["id"],
+                "Normlogik": "CE / EU-Konformität",
+                "Bereich": rule["bereich"],
+                "Pflicht": "Ja",
+                "Fehlerklasse": rule["fehlerklasse"],
+                "Bewertung": "Nicht ausreichend nachweisbar",
+                "Fundstelle": "Nicht gefunden",
+                "Empfehlung": rule["empfehlung"],
+                "Gewichtung": rule["gewichtung"],
+                "Zeitaufwand_min": rule["gewichtung"] * 18,
+                "Priorität": "Hoch" if rule["fehlerklasse"] == "Kritisch" else "Mittel"
+            })
+
+    return findings
+
+# =========================
+# AMPEL + FAZIT
+# =========================
+
+def get_ampel(score):
+    if score >= 80:
+        return "GRÜN", "Dokument grundsätzlich verwendbar."
+    elif score >= 60:
+        return "GELB", "Dokument überarbeitungsbedürftig."
+    else:
+        return "ROT", "Dokument kritisch / nicht abgabereif."
+
+def generate_fazit(findings, score):
+    kritisch = [f for f in findings if f.get("Fehlerklasse") == "Kritisch"]
+    schwer = [f for f in findings if f.get("Fehlerklasse") == "Schwer"]
+    ce_fehler = [f for f in findings if f.get("Normlogik") == "CE / EU-Konformität"]
+
+    text = []
+
+    if score < 60:
+        text.append("Das Dokument ist in der vorliegenden Form fachlich nicht abgabereif.")
+    elif score < 80:
+        text.append("Das Dokument weist relevante Mängel auf und ist überarbeitungsbedürftig.")
+    else:
+        text.append("Das Dokument ist grundsätzlich verwendbar, weist jedoch Optimierungspotenzial auf.")
+
+    if kritisch:
+        text.append(f"Es wurden {len(kritisch)} kritische Abweichungen festgestellt.")
+
+    if schwer:
+        text.append(f"Zusätzlich wurden {len(schwer)} schwerwiegende Defizite identifiziert.")
+
+    if ce_fehler:
+        text.append(f"Im Bereich CE wurden {len(ce_fehler)} Nachweislücken festgestellt.")
+
+    return " ".join(text)
+
+# =========================
+# TODO LIST
+# =========================
+
+def generate_todo_list(findings):
+    todos = []
+
+    for f in findings:
+        if f.get("Normlogik") == "CE / EU-Konformität":
+            todos.append({
+                "Bereich": f["Bereich"],
+                "Maßnahme": f["Empfehlung"],
+                "Priorität": f.get("Priorität", "Mittel"),
+                "Aufwand (h)": round(f.get("Zeitaufwand_min", 0) / 60, 1)
+            })
+
+    return sorted(todos, key=lambda x: x["Priorität"] == "Mittel")
+
+# =========================
+# PDF
+# =========================
+
+def create_pdf_report(findings, score, total_hours, fazit, ampel, todos):
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+    story = []
+
+    story.append(Paragraph("Prüfbericht", styles["Title"]))
+    story.append(Spacer(1, 12))
+
+    story.append(Paragraph(f"Bewertung: {score} %", styles["Heading2"]))
+    story.append(Paragraph(f"Ampel: {ampel}", styles["Heading2"]))
+    story.append(Paragraph(f"Aufwand: {total_hours} h", styles["Heading2"]))
+    story.append(Spacer(1, 12))
+
+    story.append(Paragraph("Fachliches Fazit", styles["Heading2"]))
+    story.append(Paragraph(fazit, styles["Normal"]))
+    story.append(Spacer(1, 20))
+
+    story.append(Paragraph("CE-To-Do-Liste", styles["Heading2"]))
+
+    todo_data = [["Bereich", "Maßnahme", "Priorität", "Aufwand (h)"]]
+    for t in todos:
+        todo_data.append([t["Bereich"], t["Maßnahme"], t["Priorität"], str(t["Aufwand (h)"])])
+
+    table = Table(todo_data)
+    table.setStyle(TableStyle([
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+    ]))
+
+    story.append(table)
+
+    doc.build(story)
+    buffer.seek(0)
+
+    return buffer
+
+# =========================
+# UI
+# =========================
+
+uploaded_file = st.file_uploader("Word-Dokument hochladen", type=["docx"])
+
+if uploaded_file:
+    structured_text = read_docx(uploaded_file)
+
+    findings = []
+    findings.extend(check_document(structured_text))
+    findings.extend(check_normlogik_82079(structured_text))
+    findings.extend(check_ce_logik(structured_text))
+
+    df = pd.DataFrame(findings)
+    st.dataframe(df)
+
+    deduction = sum(f.get("Gewichtung", 0) for f in findings)
+    score = max(0, round(100 - deduction))
+
+    total_minutes = sum(f.get("Zeitaufwand_min", 0) for f in findings)
+    total_hours = round(total_minutes / 60, 1)
+
+    ampel, ampel_text = get_ampel(score)
+
+    st.metric("Score", f"{score}%")
+    st.metric("Aufwand", f"{total_hours} h")
+
+    fazit = generate_fazit(findings, score)
+    st.write(fazit)
+
+    todos = generate_todo_list(findings)
+    st.dataframe(pd.DataFrame(todos))
+
+    pdf = create_pdf_report(findings, score, total_hours, fazit, ampel, todos)
+
+    st.download_button(
+		label="PDF-Bericht herunterladen",
+		data=pdf,
+		file_name="pruefbericht.pdf",
+		mime="application/pdf"
+	)

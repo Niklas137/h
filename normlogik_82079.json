@@ -1,0 +1,74 @@
+[
+  {
+    "id": "DIN-001",
+    "keywords": ["zielgruppe", "benutzer", "nutzer", "endnutzer"],
+    "bereich": "Zielgruppe",
+    "pflicht": true,
+    "fehlerklasse": "Schwer",
+    "empfehlung": "Die Zielgruppe/Benutzer müssen deutlich definiert werden",
+    "gewichtung": 3
+  },
+  {
+    "id": "DIN-002",
+    "keywords": ["inhaltsverzeichnis", "gliederung"],
+    "bereich": "Gliederung",
+    "pflicht": true,
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Logische Gliederung und Inhaltsverzeichnis erforderlich",
+    "gewichtung": 2
+  },
+  {
+    "id": "DIN-003",
+    "keywords": ["warnung", "achtung", "vorsicht", "sicherheit", "gefahr"],
+    "bereich": "Sicherheit",
+    "pflicht": true,
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "Alle Sicherheitsinformationen müssen deutlich gekennzeichnet sein",
+    "gewichtung": 5
+  },
+  {
+    "id": "DIN-004",
+    "keywords": ["symbole", "piktogramme", "zeichen"],
+    "bereich": "Symbole",
+    "pflicht": false,
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Verwendete Symbole und Piktogramme müssen erläutert werden",
+    "gewichtung": 2
+  },
+  {
+    "id": "DIN-005",
+    "keywords": ["abbildung", "abbildungen", "bilder", "grafik", "grafiken"],
+    "bereich": "Illustrationen",
+    "pflicht": true,
+    "fehlerklasse": "Schwer",
+    "empfehlung": "Aussagekräftige Illustrationen und Abbildungen sind notwendig",
+    "gewichtung": 3
+  },
+  {
+    "id": "DIN-006",
+    "keywords": ["sprache", "deutsch", "verständlich", "klar"],
+    "bereich": "Sprache",
+    "pflicht": true,
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Die Sprache muss klar und zielgruppengerecht sein",
+    "gewichtung": 3
+  },
+  {
+    "id": "DIN-007",
+    "keywords": ["schrift", "schriftgröße", "lesbarkeit"],
+    "bereich": "Formatierung",
+    "pflicht": false,
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Angemessene Schriftgröße und Formatierung für Lesbarkeit",
+    "gewichtung": 2
+  },
+  {
+    "id": "DIN-008",
+    "keywords": ["papierformat", "din a4", "a4"],
+    "bereich": "Format",
+    "pflicht": false,
+    "fehlerklasse": "Gering",
+    "empfehlung": "Standardisiertes Papierformat empfohlen",
+    "gewichtung": 1
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "CHK-001",
+    "keywords": ["inhaltsverzeichnis", "table of contents"],
+    "bereich": "Struktur",
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Ein vollständiges Inhaltsverzeichnis ist erforderlich",
+    "gewichtung": 3
+  },
+  {
+    "id": "CHK-002",
+    "keywords": ["sicherheitshinweise", "sicherheit", "warnung", "vorsicht"],
+    "bereich": "Sicherheit",
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "Sicherheitshinweise müssen prominent dargestellt werden",
+    "gewichtung": 5
+  },
+  {
+    "id": "CHK-003",
+    "keywords": ["montage", "installation", "aufbau"],
+    "bereich": "Montage",
+    "fehlerklasse": "Schwer",
+    "empfehlung": "Montage-/Installationsanleitung mit Schritt-für-Schritt-Anweisung",
+    "gewichtung": 4
+  },
+  {
+    "id": "CHK-004",
+    "keywords": ["wartung", "reinigung", "pflege"],
+    "bereich": "Wartung",
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Wartungs- und Reinigungsanleitung erforderlich",
+    "gewichtung": 3
+  },
+  {
+    "id": "CHK-005",
+    "keywords": ["fehlerbehandlung", "troubleshooting", "problem", "störung"],
+    "bereich": "Fehlerbehandlung",
+    "fehlerklasse": "Schwer",
+    "empfehlung": "Troubleshooting-Guide für häufige Probleme",
+    "gewichtung": 3
+  },
+  {
+    "id": "CHK-006",
+    "keywords": ["technische daten", "spezifikation", "specs"],
+    "bereich": "Technische Daten",
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Technische Daten und Spezifikationen müssen vollständig sein",
+    "gewichtung": 2
+  },
+  {
+    "id": "CHK-007",
+    "keywords": ["kontakt", "support", "kundenservice", "servicestelle"],
+    "bereich": "Kontakt",
+    "fehlerklasse": "Schwer",
+    "empfehlung": "Kontaktinformationen für Service und Support angeben",
+    "gewichtung": 2
+  },
+  {
+    "id": "CHK-008",
+    "keywords": ["garantie", "gewährleistung"],
+    "bereich": "Garantie",
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Garantie- und Gewährleistungsbedingungen klar darstellen",
+    "gewichtung": 2
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "CE-001",
+    "keywords": ["ce-kennzeichnung", "ce-mark", "ce-markierung"],
+    "bereich": "CE-Kennzeichnung",
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "CE-Kennzeichnung muss deutlich sichtbar und erläutert sein",
+    "gewichtung": 5
+  },
+  {
+    "id": "CE-002",
+    "keywords": ["konformität", "konform", "eu-richtlinie", "richtlinie"],
+    "bereich": "Konformitätserklärung",
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "Konformitätserklärung muss vollständig vorhanden sein",
+    "gewichtung": 5
+  },
+  {
+    "id": "CE-003",
+    "keywords": ["hersteller", "herstellerangaben"],
+    "bereich": "Herstellerangaben",
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "Vollständige Herstellerangaben (Name, Adresse) sind erforderlich",
+    "gewichtung": 4
+  },
+  {
+    "id": "CE-004",
+    "keywords": ["notifizierte stelle", "benannte stelle", "notified body"],
+    "bereich": "Notifizierte Stelle",
+    "fehlerklasse": "Schwer",
+    "empfehlung": "Identifikation der notifizierten Stelle muss vorhanden sein",
+    "gewichtung": 3
+  },
+  {
+    "id": "CE-005",
+    "keywords": ["gefahren", "risiken", "risikobewertung"],
+    "bereich": "Gefahren & Risiken",
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "Identifizierte Gefahren und Risiken müssen dokumentiert sein",
+    "gewichtung": 4
+  },
+  {
+    "id": "CE-006",
+    "keywords": ["persönliche schutzausrüstung", "psa", "schutzausrüstung"],
+    "bereich": "PSA",
+    "fehlerklasse": "Schwer",
+    "empfehlung": "Erforderliche PSA muss klar angegeben werden",
+    "gewichtung": 3
+  },
+  {
+    "id": "CE-007",
+    "keywords": ["entsorgung", "recycling", "rückgabe"],
+    "bereich": "Entsorgung",
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Korrekte Entsorgungs- und Recyclingvorgaben sind erforderlich",
+    "gewichtung": 2
+  },
+  {
+    "id": "CE-008",
+    "keywords": ["maschinenrichtlinie", "elektromagnetische verträglichkeit", "emv"],
+    "bereich": "Richtlinien-Konformität",
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "Compliance mit anwendbaren EU-Richtlinien nachweisen",
+    "gewichtung": 4
+  }
+]
