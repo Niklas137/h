@@ -27,7 +27,8 @@ Alle Parameter stehen fest. Nicht nachfragen – die einzige Ausnahme ist der Ge
    (ist heute Samstag, dann heute). Fällt der Samstag auf einen Feiertag (Tabelle im README),
    wird der Freitag davor zum Einkaufstag. Sonntag nie – Penny ist geschlossen.
 2. **Wochennummer:** letzte Nummer in `verlauf.md` + 1. Existiert schon eine Datei für den
-   Einkaufstag: anzeigen und fragen, ob sie so bleibt, angepasst oder neu erstellt wird.
+   Einkaufstag: den vorhandenen Plan unverändert ausgeben (wie Schritt 9) und darauf hinweisen,
+   dass „Wocheneinkauf neu" ihn neu erstellt. Nicht nachfragen, der Lauf ist meist unbeaufsichtigt.
 3. **Modus prüfen:** Nennt der Nutzer eine Reise (Geschäftsreise, Dienstreise, unterwegs,
    Hotel), gilt der Abschnitt *Geschäftsreise-Modus*. Nennt er Kassenbon-Preise oder eine
    Kassenbon-Summe, gilt *Kassenbon-Abgleich*. Sonst normale Woche.
@@ -55,6 +56,16 @@ Alle Parameter stehen fest. Nicht nachfragen – die einzige Ausnahme ist der Ge
 9. **Ausgabe im Chat:** vollständiger Plan im Ausgabeformat unten (nicht nur der Dateiname).
 10. **Commit:** `Wocheneinkauf Woche NN (JJJJ-MM-TT)`. Pushen, wenn die Session auf einem
     Remote-Branch (`claude/…`) läuft oder der Nutzer es wünscht.
+
+## Unbeaufsichtigter Lauf (Routine)
+
+Die Freitags-Routine läuft ohne Menschen. Deshalb: keine Rückfragen, keine Optionen anbieten,
+keine Bestätigung abwarten. Unklarheiten durch eine Annahme lösen und die Annahme im Plan
+nennen. Rückfragen gibt es nur im Geschäftsreise-Modus, und nur wenn der Nutzer die Reise
+selbst in dieser Session genannt hat. Schlägt ein Schritt fehl (Datei fehlt, Push abgelehnt),
+den Plan trotzdem im Chat ausgeben und den Fehler am Ende klar benennen. Falls ein Werkzeug
+für Push-Benachrichtigungen verfügbar ist, nach der Ausgabe eine kurze Nachricht mit
+Einkaufstag, Gerichten und Summe senden.
 
 ## Ernährungsregeln (hart)
 
