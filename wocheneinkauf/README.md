@@ -6,13 +6,13 @@ Skill `.claude/skills/wocheneinkauf/SKILL.md`, die Daten in diesem Ordner.
 
 ## So läuft eine Woche
 
-1. Freitag 9:30 Uhr: Erinnerung (Einrichtung siehe unten).
-2. Im Chat schreiben: `Wocheneinkauf`. Zusätze sind möglich, z. B.
-   `Wocheneinkauf, Geschäftsreise Di–Do` oder `Wocheneinkauf, diesmal ohne Fisch`.
-3. Claude liest Verlauf, Preise und Gerichtepool, erstellt die Liste für den Samstag,
-   speichert sie unter `wochen/`, prüft sie mit `summe.py` und committet.
-4. Samstag: Einkauf bei Penny (Frisches). Montag: Vorrats-Tour (Schweres und Trockenes).
-5. Optional nach dem Einkauf: `Kassenbon: 57,80 €` oder einzelne Preise melden. Claude
+1. Freitag 9:30 Uhr: Die Routine erstellt den Plan für den Samstag automatisch, speichert ihn
+   unter `wochen/`, committet nach `main` und schickt eine Push-Nachricht (Aufbau siehe unten).
+2. Bei Bedarf in der Session „Wocheneinkauf Niklas (Routine)" antworten, z. B.
+   `Geschäftsreise Di–Do` oder `anderes Fischgericht`. Von Hand geht es jederzeit mit
+   `Wocheneinkauf` in einer Claude-Code-Session mit diesem Repo.
+3. Samstag: Einkauf bei Penny (Frisches). Montag: Vorrats-Tour (Schweres und Trockenes).
+4. Optional nach dem Einkauf: `Kassenbon: 57,80 €` oder einzelne Preise melden. Claude
    korrigiert `preise.md` und trägt die Ist-Summe im Verlauf ein.
 
 ## Feste Parameter
@@ -72,27 +72,28 @@ Prüfung von Hand:
 python3 wocheneinkauf/summe.py wocheneinkauf/wochen/2026-09-26-woche-02.md
 ```
 
-## Erinnerung freitags 9:30 Uhr einrichten
+## Freitags-Routine (automatisch)
 
-**Variante A – Routine in Claude Code** (claude.ai/code → Routines, Repo `niklas137/h`):
-Prompt `Wocheneinkauf`, Zeitplan freitags 9:30 Uhr Berlin. Als UTC-Cron:
+Aufbau der Automatisierung, Stand 19.09.2026:
 
-| Zeitraum | Cron (UTC) |
-|---|---|
-| Sommerzeit (bis 25.10.2026, ab 28.03.2027) | `30 7 * * 5` |
-| Winterzeit (26.10.2026 – 27.03.2027) | `30 8 * * 5` |
+- **Session „Wocheneinkauf Niklas (Routine)"** in Claude Code: dauerhafte Session mit dem Repo
+  auf `main`, pusht direkt nach `main`. Sie ist das Gedächtnis der Routine. Rückmeldungen
+  (Geschäftsreise, Änderungswünsche, Kassenbon) gehören in diese Session.
+- **Routine „Wocheneinkauf Niklas (Fr 9:30)"**: schickt jeden Freitag um 9:30 Uhr Berlin das
+  Wort „Wocheneinkauf" mit den Laufanweisungen in diese Session. Cron in UTC: `30 7 * * 5`
+  (Sommerzeit) bzw. `30 8 * * 5` (Winterzeit, 26.10.2026 bis 27.03.2027). Die Umstellung am
+  26.10.2026 ist als Erinnerung hinterlegt; bleibt sie aus, den Cron von Hand ändern.
+- **Benachrichtigung**: Die Session sendet nach dem Lauf eine Push-Nachricht mit Einkaufstag,
+  Gerichten und Summe. Der vollständige Plan steht im Chat der Session und in `wochen/`.
+- **Voraussetzung**: Der Skill muss auf `main` liegen, also PR #1 gemerged sein. Solange nicht,
+  meldet der Lauf nur „PR #1 noch nicht gemerged" und erstellt keinen Plan.
 
-Die Routine erstellt die Liste dann ohne Zutun; Reise oder Wünsche danach einfach als
-Nachricht nachschieben (`Geschäftsreise Mi–Fr`, `anderes Fischgericht`).
+Warum keine frische Session pro Lauf: Über die API angelegte Routinen starten ohne
+Repository-Quelle. Eine dauerhafte Session bringt Repo, Branch und Push-Rechte mit.
 
-Status: Die Routine „Wocheneinkauf Niklas (Fr 9:30)" ist seit 18.09.2026 aktiv (Cron `30 7 * * 5`,
-Push- und E-Mail-Benachrichtigung). Die Umstellung auf den Winterzeit-Cron am 26.10.2026 ist als
-Erinnerung in der Claude-Code-Session hinterlegt; bleibt sie aus, den Cron von Hand ändern.
-Die Routine pusht die Wochen-Dateien direkt nach `main`, sobald PR #1 gemerged ist; vorher
-arbeitet sie auf dem PR-Branch.
-
-**Variante B – Handy-Erinnerung** „Wocheneinkauf in Claude Code starten", freitags 9:30 Uhr.
-Dann bleibt der Nutzer im Loop und kann eine Reise gleich mit angeben.
+Testlauf am 19.09.2026 auf dem PR-Branch: Woche 3 unbeaufsichtigt erzeugt, geprüft und als
+Commit 2568f64 gepusht, Push-Benachrichtigung angefordert, keine Rückfragen, keine verweigerten
+Berechtigungen.
 
 ## Feiertage Brandenburg (Penny geschlossen)
 
