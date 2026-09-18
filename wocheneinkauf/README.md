@@ -121,14 +121,10 @@ schließen die Märkte meist um 14 Uhr.
 | So 31.10.2027 | Reformationstag | keine |
 | Sa 25.12.2027 | 1. Weihnachtstag | Einkauf Fr 24.12. bis 14 Uhr |
 
-## Referenz Woche 1 (Sa 19.09.2026)
+## Woche 1 (Sa 19.09.2026)
 
-Vor der Automatisierung im Chat geplant, ohne Preise. Datei: `wochen/2026-09-19-woche-01.md`.
+Ursprünglich im Chat ohne Preise geplant, am Sa 19.09.2026 mit „Wocheneinkauf neu" durch einen
+vollständigen Plan ersetzt. Datei: `wochen/2026-09-19-woche-01.md`, Summe 58,73 €.
 
-Hähnchenbrust 1 kg, Hack 500 g, Lachs TK 400 g, Kartoffeln 2,5 kg, Zwiebeln, Karotten, Paprika,
-Zucchini, Tomaten, Brokkoli TK, Kohl, Knoblauch, 2 Avocados, Äpfel, Bananen, Beeren TK, Eier 10,
-Quark, Joghurt, Milch, Käse, Sahne 200 ml, Haferflocken, Naturreis, Vollkornnudeln, Linsen,
-Vollkornbrot, Olivenöl, passierte Tomaten.
-
-Gerichte: Hähnchen-Brokkoli-Pfanne, Ofenlachs mit Kartoffeln, Linsen-Hack-Topf.
-Frühstück: Overnight Oats.
+Gerichte: Ofen-Hähnchen mit Rosmarinkartoffeln und grünen Bohnen, Gefüllte Paprika mit Hack und
+Reis, Lachs-Spinat-Nudeln. Frühstück: Quark-Bowl mit Haferflocken, Apfel und Zimt.

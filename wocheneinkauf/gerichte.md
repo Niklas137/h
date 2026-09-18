@@ -9,20 +9,20 @@ um neue Gerichte erweitern. Sperre: 4 Wochen für Gerichte, 3 Wochen für Frühs
 
 | Nr | Gericht | Protein | Hauptzutaten | Beilage | Hinweis | Zuletzt |
 |---|---|---|---|---|---|---|
-| 1 | Hähnchen-Brokkoli-Pfanne | Hähnchenbrust | Brokkoli (TK), Zwiebel, Knoblauch, Paprika | Naturreis | | W1 |
-| 2 | Ofenlachs mit Kartoffeln und Gemüse | Lachs (TK) | Kartoffeln, Zucchini, Tomaten, Zitrone | – | | W1 |
-| 3 | Linsen-Hack-Topf | Hackfleisch | Linsen, Karotten, Zwiebel, passierte Tomaten | Vollkornbrot | Hülsenfrucht | W1 |
+| 1 | Hähnchen-Brokkoli-Pfanne | Hähnchenbrust | Brokkoli (TK), Zwiebel, Knoblauch, Paprika | Naturreis | | – |
+| 2 | Ofenlachs mit Kartoffeln und Gemüse | Lachs (TK) | Kartoffeln, Zucchini, Tomaten, Zitrone | – | | – |
+| 3 | Linsen-Hack-Topf | Hackfleisch | Linsen, Karotten, Zwiebel, passierte Tomaten | Vollkornbrot | Hülsenfrucht | – |
 | 4 | Puten-Paprika-Geschnetzeltes | Putenbrust | Paprika, Zwiebel, Schmand, Tomatenmark | Naturreis | | W2 |
 | 5 | Seelachs in Tomaten-Zucchini-Sugo | Seelachs (TK) | passierte Tomaten, Zucchini, Zwiebel, Feta | Vollkornnudeln | | W2 |
 | 6 | Hackbällchen mit Ofengemüse und Joghurt-Dip | Rinderhack | Süßkartoffel, Karotten, Zwiebel, Joghurt; Haferflocken als Bindung | – | | W2 |
 | 7 | Hähnchen-Curry mit Blumenkohl und Kichererbsen | Hähnchenbrust | Kokosmilch, Blumenkohl, Kichererbsen, Curry, Ingwer | Naturreis | Hülsenfrucht | – |
-| 8 | Gefüllte Paprika mit Hack und Reis | Hackfleisch | Paprika, Naturreis, Zwiebel, passierte Tomaten | – | | – |
+| 8 | Gefüllte Paprika mit Hack und Reis | Hackfleisch | Paprika, Naturreis, Zwiebel, passierte Tomaten | – | | W1 |
 | 9 | Kabeljau-Blech mit Süßkartoffel und Lauch | Kabeljau (TK) | Süßkartoffel, Lauch, Zitrone, Olivenöl | – | | – |
 | 10 | Gyros-Pfanne mit Zaziki und Bulgur | Schweinelachs oder Pute | Zwiebel, Paprika, Gurke, Joghurt, Knoblauch | Bulgur, Salat | Gyros-Gewürz selbst mischen (Salz) | – |
 | 11 | Chili con Carne | Rinderhack | Kidneybohnen, Paprika, gehackte Tomaten, Kreuzkümmel | Naturreis | Hülsenfrucht | – |
 | 12 | Kartoffel-Hähnchen-Auflauf mit Spinat | Hähnchenbrust | Kartoffeln, Blattspinat (TK), Milch, Frischkäse, Käse | – | Milch statt Sahne | – |
-| 13 | Ofen-Hähnchen mit Rosmarinkartoffeln und grünen Bohnen | Hähnchenbrust oder Keule | Kartoffeln, grüne Bohnen (TK), Rosmarin, Knoblauch | – | Haut abziehen | – |
-| 14 | Lachs-Spinat-Nudeln | Lachs (TK) | Blattspinat (TK), Zwiebel, Frischkäse, Zitrone | Vollkornnudeln | | – |
+| 13 | Ofen-Hähnchen mit Rosmarinkartoffeln und grünen Bohnen | Hähnchenbrust oder Keule | Kartoffeln, grüne Bohnen (TK), Rosmarin, Knoblauch | – | Haut abziehen | W1 |
+| 14 | Lachs-Spinat-Nudeln | Lachs (TK) | Blattspinat (TK), Zwiebel, Frischkäse, Zitrone | Vollkornnudeln | | W1 |
 | 15 | Schweinefilet mit Spitzkohl und Kartoffelpüree | Schweinefilet | Spitzkohl, Zwiebel, Kümmel, Kartoffeln, Milch | – | Püree mit Milch, wenig Butter | W3 |
 | 16 | Süßkartoffel-Hack-Auflauf | Rinderhack | Süßkartoffel, Karotten, Erbsen (TK), Tomatenmark | – | „Shepherd's Pie light" | – |
 | 17 | Fischfrikadellen mit Kartoffelsalat | Seelachs (TK) | Haferflocken, Ei, Zwiebel, Kartoffeln, Gurke, Joghurt-Dressing | – | | – |
@@ -42,9 +42,9 @@ um neue Gerichte erweitern. Sperre: 4 Wochen für Gerichte, 3 Wochen für Frühs
 
 | Nr | Frühstück | Zutaten | Zuletzt |
 |---|---|---|---|
-| F1 | Overnight Oats mit Beeren | Haferflocken, Milch oder Joghurt, Beeren (TK), Leinsamen | W1 |
+| F1 | Overnight Oats mit Beeren | Haferflocken, Milch oder Joghurt, Beeren (TK), Leinsamen | – |
 | F2 | Rührei mit Tomaten auf Vollkornbrot | Eier, Tomaten, Schnittlauch oder Petersilie, Vollkornbrot | W2 |
-| F3 | Quark-Bowl mit Haferflocken, Apfel und Zimt | Magerquark, Haferflocken, Apfel, Zimt, Walnüsse | – |
+| F3 | Quark-Bowl mit Haferflocken, Apfel und Zimt | Magerquark, Haferflocken, Apfel, Zimt, Walnüsse | W1 |
 | F4 | Warmer Porridge mit Banane und Walnüssen | Haferflocken, Milch, Banane, Walnüsse, Zimt | W3 |
 | F5 | Vollkornbrot mit Hüttenkäse, Gurke und Ei | Hüttenkäse, Gurke, gekochtes Ei, Vollkornbrot | – |
 | F6 | Skyr mit Beeren und Haferflocken | Skyr, Beeren (TK), Haferflocken | – |
