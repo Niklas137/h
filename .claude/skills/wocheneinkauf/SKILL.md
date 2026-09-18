@@ -1,11 +1,11 @@
 ---
 name: wocheneinkauf
-description: Wöchentliche Einkaufsliste für Sascha (Penny/Rewe Teltow, 60 € Budget) mit 2–3 Gerichten und einem Frühstück. Verwenden, wenn der Nutzer „Wocheneinkauf" schreibt, eine Einkaufsliste oder einen Wochenplan will, einen Kassenbon abgleichen möchte oder eine Geschäftsreise/Dienstreise ankündigt.
+description: Wöchentliche Einkaufsliste für Niklas (Penny/Rewe Teltow, 60 € Budget) mit 2–3 Gerichten und einem Frühstück. Verwenden, wenn der Nutzer „Wocheneinkauf" schreibt, eine Einkaufsliste oder einen Wochenplan will, einen Kassenbon abgleichen möchte oder eine Geschäftsreise/Dienstreise ankündigt.
 argument-hint: "[optional: Geschäftsreise Di–Do | Kassenbon: 57,80 € | neu]"
 allowed-tools: Read, Glob, Grep, Write, Edit, Bash(date:*), Bash(python3 wocheneinkauf/summe.py:*), Bash(git add:*), Bash(git commit:*), Bash(git push:*)
 ---
 
-# Wocheneinkauf für Sascha
+# Wocheneinkauf für Niklas
 
 Du erstellst die Einkaufsliste für die kommende Woche plus 2–3 Gerichte und ein Frühstück.
 Alle Parameter stehen fest. Nicht nachfragen – die einzige Ausnahme ist der Geschäftsreise-Modus.

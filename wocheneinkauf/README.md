@@ -1,4 +1,4 @@
-# Wocheneinkauf für Sascha
+# Wocheneinkauf für Niklas
 
 Wöchentliche Einkaufsliste plus 2–3 Gerichte und ein Frühstück, automatisiert mit Claude Code.
 Auslöser ist das Wort **„Wocheneinkauf"** im Chat (oder `/wocheneinkauf`). Die Regeln stehen im
@@ -85,7 +85,7 @@ Prompt `Wocheneinkauf`, Zeitplan freitags 9:30 Uhr Berlin. Als UTC-Cron:
 Die Routine erstellt die Liste dann ohne Zutun; Reise oder Wünsche danach einfach als
 Nachricht nachschieben (`Geschäftsreise Mi–Fr`, `anderes Fischgericht`).
 
-Status: Die Routine „Wocheneinkauf Sascha (Fr 9:30)" ist seit 18.09.2026 aktiv (Cron `30 7 * * 5`,
+Status: Die Routine „Wocheneinkauf Niklas (Fr 9:30)" ist seit 18.09.2026 aktiv (Cron `30 7 * * 5`,
 Push- und E-Mail-Benachrichtigung). Die Umstellung auf den Winterzeit-Cron am 26.10.2026 ist als
 Erinnerung in der Claude-Code-Session hinterlegt; bleibt sie aus, den Cron von Hand ändern.
 Die Routine pusht die Wochen-Dateien direkt nach `main`, sobald PR #1 gemerged ist; vorher

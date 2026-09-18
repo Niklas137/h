@@ -1,6 +1,6 @@
 # Hinweise für Claude Code
 
-## Wocheneinkauf (Sascha)
+## Wocheneinkauf (Niklas)
 
 Schreibt der Nutzer „Wocheneinkauf" (auch mit Zusatz wie „Geschäftsreise" oder „Kassenbon"),
 den Skill `.claude/skills/wocheneinkauf/SKILL.md` ausführen. Daten, Preise, Gerichtepool und
