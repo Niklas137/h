@@ -7,6 +7,7 @@ Ist-Summe (leer, solange nichts gemeldet wurde). Wochennummern laufen fortlaufen
 |---|---|---|---|---|---|---|
 | 1 | Sa 19.09.2026 | Hähnchen-Brokkoli-Pfanne · Ofenlachs mit Kartoffeln · Linsen-Hack-Topf | Overnight Oats | – | | Referenz aus dem Chat, ohne Preise |
 | 2 | Sa 26.09.2026 | Puten-Paprika-Geschnetzeltes · Seelachs in Tomaten-Zucchini-Sugo · Hackbällchen mit Ofengemüse | Rührei mit Tomaten auf Vollkornbrot | 57,95 € | | Testlauf vom 18.09.; Woche 3 am Fr 02.10. einkaufen (Sa Feiertag) |
+| 3 | Fr 02.10.2026 | Kürbis-Hähnchen-Blech · Schweinefilet mit Spitzkohl und Kartoffelpüree · Seelachs-Curry mit Erbsen | Warmer Porridge mit Banane und Walnüssen | 58,28 € | | Testlauf der Routine am 19.09.2026; Einkauf Fr statt Sa (03.10. Feiertag), Zeitraum 8 Tage bis Fr 09.10. |
 
 ## Proteine der letzten Wochen
 
@@ -16,24 +17,27 @@ Pro Woche drei verschiedene Proteine; Hülsenfrüchte höchstens einmal.
 |---|---|---|---|---|
 | 1 | Hähnchenbrust 1 kg | Lachs TK 400 g | Hackfleisch 500 g | Linsen |
 | 2 | Putenbrust 600 g | Seelachs TK 500 g | Rinderhack 500 g | – |
+| 3 | Hähnchenbrust 1 kg | Seelachs TK 500 g | Schweinefilet 500 g | – |
 
-## Vorrat (geschätzt, Stand nach dem Einkauf Woche 2)
+## Vorrat (geschätzt, Stand nach dem Einkauf Woche 3)
 
 Schätzung, nicht gezählt. Claude schreibt die Tabelle jede Woche fort; der Nutzer korrigiert
 bei Bedarf im Chat („Reis ist alle").
 
 | Artikel | Rest | Hinweis |
 |---|---|---|
-| Naturreis | ca. 400 g | reicht für 1 Gericht |
+| Naturreis | ca. 100 g | im Curry W3 verbraucht, in W4 nachkaufen |
 | Vollkornnudeln | ca. 400 g | 200 g aus W1, 200 g aus W2 |
-| Haferflocken | ca. 300 g | |
+| Haferflocken | ca. 100 g | 500 g aus W3 gehen in den Porridge |
 | Linsen | ca. 200 g | |
-| Olivenöl | ca. 350 ml | |
-| Knoblauch | 2 Knollen | |
-| Kartoffeln | – | Rest aus W1 im Ofengemüse W2 verbraucht |
-| Erbsen TK | ca. 400 g | |
-| Beeren TK | ca. 200 g | |
-| Walnüsse | ca. 100 g | |
+| Olivenöl | ca. 300 ml | |
+| Knoblauch | 1 Knolle | |
+| Kartoffeln | ca. 300 g | Rest aus W3 (2,5 kg) |
+| Erbsen TK | – | im Curry W3 verbraucht |
+| Beeren TK | ca. 100 g | für den Quark, in W4 nachkaufen |
+| Walnüsse | ca. 80 g | 200 g aus W3 gehen in den Porridge |
 | Tomatenmark | ca. 150 g | |
 | Passierte Tomaten | – | |
-| Gewürze | Pfeffer, Paprika, Kreuzkümmel, Oregano, Zimt | Annahme, nicht geprüft |
+| Kokosmilch | – | im Curry W3 verbraucht |
+| Butter | ca. 200 g | aus W3 |
+| Gewürze | Pfeffer, Paprika, Kreuzkümmel, Oregano, Zimt, Curry, Kümmel | Annahme, nicht geprüft; Curry und Kümmel aus W3 |

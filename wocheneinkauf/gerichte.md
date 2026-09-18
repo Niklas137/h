@@ -23,7 +23,7 @@ um neue Gerichte erweitern. Sperre: 4 Wochen für Gerichte, 3 Wochen für Frühs
 | 12 | Kartoffel-Hähnchen-Auflauf mit Spinat | Hähnchenbrust | Kartoffeln, Blattspinat (TK), Milch, Frischkäse, Käse | – | Milch statt Sahne | – |
 | 13 | Ofen-Hähnchen mit Rosmarinkartoffeln und grünen Bohnen | Hähnchenbrust oder Keule | Kartoffeln, grüne Bohnen (TK), Rosmarin, Knoblauch | – | Haut abziehen | – |
 | 14 | Lachs-Spinat-Nudeln | Lachs (TK) | Blattspinat (TK), Zwiebel, Frischkäse, Zitrone | Vollkornnudeln | | – |
-| 15 | Schweinefilet mit Spitzkohl und Kartoffelpüree | Schweinefilet | Spitzkohl, Zwiebel, Kümmel, Kartoffeln, Milch | – | Püree mit Milch, wenig Butter | – |
+| 15 | Schweinefilet mit Spitzkohl und Kartoffelpüree | Schweinefilet | Spitzkohl, Zwiebel, Kümmel, Kartoffeln, Milch | – | Püree mit Milch, wenig Butter | W3 |
 | 16 | Süßkartoffel-Hack-Auflauf | Rinderhack | Süßkartoffel, Karotten, Erbsen (TK), Tomatenmark | – | „Shepherd's Pie light" | – |
 | 17 | Fischfrikadellen mit Kartoffelsalat | Seelachs (TK) | Haferflocken, Ei, Zwiebel, Kartoffeln, Gurke, Joghurt-Dressing | – | | – |
 | 18 | Puten-Gemüse-Wok | Putenbrust | Paprika, Karotten, Lauch, Ingwer, Knoblauch, wenig Sojasoße | Vollkornnudeln oder Naturreis | Sojasoße sparsam | – |
@@ -31,9 +31,9 @@ um neue Gerichte erweitern. Sperre: 4 Wochen für Gerichte, 3 Wochen für Frühs
 | 20 | Kabeljau in Senf-Dill-Joghurt-Soße | Kabeljau (TK) | Joghurt, Senf, Dill, Zitrone, Brokkoli | Kartoffeln | | – |
 | 21 | Zucchini-Hack-Pfanne mit Bulgur | Hackfleisch | Zucchini, Tomaten, Zwiebel, Feta | Bulgur | | – |
 | 22 | Hähnchen-Fajita-Pfanne | Hähnchenbrust | Paprika, Zwiebel, Zitrone, Paprikapulver, Kreuzkümmel | Vollkorn-Wraps, Salat | | – |
-| 23 | Kürbis-Hähnchen-Blech | Hähnchenbrust | Hokkaido, Kartoffeln, Zwiebel, Rosmarin | – | Saison Sep–Nov | – |
+| 23 | Kürbis-Hähnchen-Blech | Hähnchenbrust | Hokkaido, Kartoffeln, Zwiebel, Rosmarin | – | Saison Sep–Nov | W3 |
 | 24 | Rinderhack-Kohl-Pfanne | Rinderhack | Weißkohl, Zwiebel, Kümmel, Tomatenmark | Kartoffeln | Saison Okt–Feb | – |
-| 25 | Seelachs-Curry mit Erbsen | Seelachs (TK) | Kokosmilch, Erbsen (TK), Karotten, Curry, Ingwer | Naturreis | | – |
+| 25 | Seelachs-Curry mit Erbsen | Seelachs (TK) | Kokosmilch, Erbsen (TK), Karotten, Curry, Ingwer | Naturreis | | W3 |
 | 26 | Putenschnitzel natur mit Ofengemüse | Putenschnitzel | Karotten, Zucchini, Paprika, Zwiebel | Kartoffeln | ohne Panade | – |
 | 27 | Rosenkohl-Kartoffel-Pfanne mit Schweinefilet | Schweinefilet | Rosenkohl, Kartoffeln, Zwiebel, Senf | – | Saison Okt–Feb | – |
 | 28 | Lachs-Kartoffel-Auflauf mit Lauch | Lachs (TK) | Kartoffeln, Lauch, Milch, Frischkäse, Dill | – | | – |
@@ -45,7 +45,7 @@ um neue Gerichte erweitern. Sperre: 4 Wochen für Gerichte, 3 Wochen für Frühs
 | F1 | Overnight Oats mit Beeren | Haferflocken, Milch oder Joghurt, Beeren (TK), Leinsamen | W1 |
 | F2 | Rührei mit Tomaten auf Vollkornbrot | Eier, Tomaten, Schnittlauch oder Petersilie, Vollkornbrot | W2 |
 | F3 | Quark-Bowl mit Haferflocken, Apfel und Zimt | Magerquark, Haferflocken, Apfel, Zimt, Walnüsse | – |
-| F4 | Warmer Porridge mit Banane und Walnüssen | Haferflocken, Milch, Banane, Walnüsse, Zimt | – |
+| F4 | Warmer Porridge mit Banane und Walnüssen | Haferflocken, Milch, Banane, Walnüsse, Zimt | W3 |
 | F5 | Vollkornbrot mit Hüttenkäse, Gurke und Ei | Hüttenkäse, Gurke, gekochtes Ei, Vollkornbrot | – |
 | F6 | Skyr mit Beeren und Haferflocken | Skyr, Beeren (TK), Haferflocken | – |
 | F7 | Haferflocken-Pfannkuchen mit Quark | Haferflocken, Eier, Banane, Quark, Zimt | – |
