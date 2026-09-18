@@ -29,6 +29,9 @@ Alle Parameter stehen fest. Nicht nachfragen – die einzige Ausnahme ist der Ge
 2. **Wochennummer:** letzte Nummer in `verlauf.md` + 1. Existiert schon eine Datei für den
    Einkaufstag: den vorhandenen Plan unverändert ausgeben (wie Schritt 9) und darauf hinweisen,
    dass „Wocheneinkauf neu" ihn neu erstellt. Nicht nachfragen, der Lauf ist meist unbeaufsichtigt.
+   Das gilt auch, wenn die Datei keine Preise hat (Referenzwoche 1) oder `summe.py` sie nicht
+   prüfen kann: nichts umbauen, nichts committen, Schritte 4 bis 8 überspringen. Nur das Wort
+   „neu" im Auftrag erzeugt einen neuen Plan.
 3. **Modus prüfen:** Nennt der Nutzer eine Reise (Geschäftsreise, Dienstreise, unterwegs,
    Hotel), gilt der Abschnitt *Geschäftsreise-Modus*. Nennt er Kassenbon-Preise oder eine
    Kassenbon-Summe, gilt *Kassenbon-Abgleich*. Sonst normale Woche.
@@ -47,7 +50,7 @@ Alle Parameter stehen fest. Nicht nachfragen – die einzige Ausnahme ist der Ge
 6. **Wochen-Datei schreiben:** `wocheneinkauf/wochen/JJJJ-MM-TT-woche-NN.md` nach der Vorlage
    unten. Jede Artikelzeile: `- [ ] Artikel Menge – 0,00 €`, optional danach `(Mo)` für die
    Montags-Tour.
-7. **Prüfen:** `python3 wocheneinkauf/summe.py wocheneinkauf/wochen/<datei>`. Die Summen in der
+7. **Prüfen (nur neue Dateien):** `python3 wocheneinkauf/summe.py wocheneinkauf/wochen/<datei>`. Die Summen in der
    Datei müssen mit der Ausgabe übereinstimmen, es darf keine Regel-Warnung geben. Sonst Datei
    korrigieren und erneut prüfen.
 8. **Verlauf pflegen:** Zeile in `verlauf.md` ergänzen (Woche, Datum, Gerichte, Frühstück,
