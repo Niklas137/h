@@ -87,13 +87,18 @@ Aufbau der Automatisierung, Stand 19.09.2026:
   Gerichten und Summe. Der vollständige Plan steht im Chat der Session und in `wochen/`.
 - **Voraussetzung**: Der Skill muss auf `main` liegen, also PR #1 gemerged sein. Solange nicht,
   meldet der Lauf nur „PR #1 noch nicht gemerged" und erstellt keinen Plan.
+- **Von Hand starten**: In der Session „Wocheneinkauf Niklas (Routine)" einfach `Wocheneinkauf`
+  schreiben. Nicht „Jetzt ausführen" der Routine benutzen: Ein erzwungener Lauf startet eine
+  neue Session ohne Repository (am 19.09.2026 so beobachtet). Termin-Läufe kommen dagegen
+  zuverlässig in der Routine-Session an.
 
 Warum keine frische Session pro Lauf: Über die API angelegte Routinen starten ohne
 Repository-Quelle. Eine dauerhafte Session bringt Repo, Branch und Push-Rechte mit.
 
-Testlauf am 19.09.2026 auf dem PR-Branch: Woche 3 unbeaufsichtigt erzeugt, geprüft und als
+Testläufe am 19.09.2026: (1) Auf dem PR-Branch Woche 3 unbeaufsichtigt erzeugt, geprüft und als
 Commit 2568f64 gepusht, Push-Benachrichtigung angefordert, keine Rückfragen, keine verweigerten
-Berechtigungen.
+Berechtigungen. (2) Ein Termin-Lauf in die Routine-Session auf `main`: Repo ausgecheckt, Skill
+noch nicht vorhanden erkannt, Push-Nachricht gesendet, sauber beendet.
 
 ## Feiertage Brandenburg (Penny geschlossen)
 
