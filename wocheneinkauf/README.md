@@ -92,10 +92,8 @@ Aufbau der Automatisierung, Stand 19.09.2026:
   neue Session ohne Repository (am 19.09.2026 so beobachtet). Termin-Läufe kommen dagegen
   zuverlässig in der Routine-Session an.
 
-Pause während der Geschäftsreise 22.09. bis 02.10.2026: Die Routine ist bis zum 02.10. abgeschaltet,
-damit sie am 25.09. keinen Plan für die entfallene Woche 2 ausgibt. Am Fr 02.10. um 9:15 Uhr erstellt
-ein Einzeltermin mit „Wocheneinkauf neu" die Woche 3 für den Rückreisetag neu; danach wird die
-Routine wieder eingeschaltet, nächster regulärer Lauf Fr 09.10.
+Test des Geschäftsreise-Modus am 19.09.2026: Reise 22.09. bis 02.10. durchgespielt, danach als Test
+zurückgesetzt. Die Routine läuft regulär weiter, nächster Lauf Fr 25.09. für Woche 2.
 
 Warum keine frische Session pro Lauf: Über die API angelegte Routinen starten ohne
 Repository-Quelle. Eine dauerhafte Session bringt Repo, Branch und Push-Rechte mit.
