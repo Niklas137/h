@@ -9,8 +9,7 @@
 const fs = require('fs');
 let playwright;
 try { playwright = require('playwright'); }
-catch (e) { playwright = require(process.env.SEO_AUDIT_NODE_MODULES || '/opt/node22/lib/node_modules') + '/playwright'; }
-if (typeof playwright === 'string') playwright = require(playwright);
+catch (e) { playwright = require((process.env.SEO_AUDIT_NODE_MODULES || '/opt/node22/lib/node_modules') + '/playwright'); }
 (async () => {
   const [,, url, outHtml, outPng] = process.argv;
   if (!url || !outHtml) { console.error('Aufruf: fetch_rendered.js <url> <ausgabe.html> [screenshot.png]'); process.exit(2); }
