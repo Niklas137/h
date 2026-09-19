@@ -10,3 +10,9 @@ Verlauf liegen unter `wocheneinkauf/`. Budget 60 € pro Woche ist fest, nicht n
 
 `app.py` ist eine Streamlit-App (lokaler Dokumentenprüfer, Regeln in `normlogik_82079.json`).
 Sie hat nichts mit dem Wocheneinkauf zu tun.
+
+## SEO-Audit (FSH-Documentation)
+
+Schreibt der Nutzer „SEO-Audit" (auch mit Lauf-Kennung wie „freitag-0730"), den Skill
+`.claude/skills/seo-audit/SKILL.md` ausführen. Berichte, PDFs, Verlauf und Werkzeuge liegen
+unter `seo-audit/`. Die Website ist aus der Umgebung meist nicht abrufbar; dann nur Suchindex.
