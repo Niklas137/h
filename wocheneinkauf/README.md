@@ -126,12 +126,10 @@ schließen die Märkte meist um 14 Uhr.
 | So 31.10.2027 | Reformationstag | keine |
 | Sa 25.12.2027 | 1. Weihnachtstag | Einkauf Fr 24.12. bis 14 Uhr |
 
-## Woche 1 (Sa 19.09.2026, Reise)
+## Woche 1 (Sa 19.09.2026)
 
 Ursprünglich im Chat ohne Preise geplant, am Sa 19.09.2026 mit „Wocheneinkauf neu" durch einen
-vollständigen Plan (58,73 €) ersetzt und am selben Tag wegen der Geschäftsreise Di 22.09. – Fr 02.10.
-auf 3 Tage zu Hause umgebaut. Datei: `wochen/2026-09-19-woche-01.md`, Summe 25,56 € bei anteiligem
-Budget 26 €. Woche 2 entfällt, Woche 3 wird am Fr 02.10. neu erstellt.
+vollständigen Plan ersetzt. Datei: `wochen/2026-09-19-woche-01.md`, Summe 58,73 €.
 
-Gerichte: Ofen-Hähnchen mit Rosmarinkartoffeln und grünen Bohnen, Seelachs in Senf-Joghurt-Soße.
-Frühstück: Joghurt-Bowl mit Haferflocken, Apfel und Zimt; auf der Reise Haferflocken-Becher.
+Gerichte: Ofen-Hähnchen mit Rosmarinkartoffeln und grünen Bohnen, Gefüllte Paprika mit Hack und
+Reis, Lachs-Spinat-Nudeln. Frühstück: Quark-Bowl mit Haferflocken, Apfel und Zimt.
