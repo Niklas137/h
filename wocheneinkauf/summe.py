@@ -9,6 +9,8 @@ Liest alle Artikelzeilen der Form
 unterhalb von "### Kategorie"-Überschriften, summiert pro Kategorie und gesamt,
 schätzt den Rewe-Preis (+10 %), vergleicht mit der in der Datei genannten
 Gesamtsumme und warnt bei Zutaten, die gegen die Ernährungsregeln verstoßen.
+Steht in der Kopfzeile "Budget: 26 €" und "Tage zu Hause: 3" (Geschäftsreise),
+gelten das anteilige Budget und die Tage zu Hause für die Fleischmenge.
 Nur Standardbibliothek. Exit-Code 1 bei Verstoß oder Budgetüberschreitung.
 """
 from __future__ import annotations
@@ -31,6 +33,9 @@ GEWICHT = re.compile(
     r"(?:(?P<anzahl>\d+)\s*[x×]\s*)?(?P<zahl>\d+(?:,\d+)?)\s*(?P<einheit>kg|g)\b"
 )
 GESAMT = re.compile(r"Gesamt.*?(?P<preis>\d{1,3},\d{2})\s*€")
+# Kopfzeile der Wochen-Datei: "Budget: 26 €" und "Tage zu Hause: 3" (Geschäftsreise-Modus).
+KOPF_BUDGET = re.compile(r"Budget:\s*(?P<wert>\d{1,3}(?:,\d{2})?)\s*€")
+KOPF_TAGE = re.compile(r"Tage zu Hause:\s*(?P<tage>\d{1,2})\b")
 
 # Darf in der ganzen Datei nicht vorkommen (Liste und Rezepte).
 # Teilstring-Suche in der ganzen Datei, damit auch Zusammensetzungen wie "Hähnchenleber"
@@ -84,6 +89,20 @@ def main(pfad: str) -> int:
     text = Path(pfad).read_text(encoding="utf-8")
     zeilen = text.splitlines()
 
+    # Budget und Tage aus der Kopfzeile; Standard 60 € und 7 Tage. Bei einem anteiligen
+    # Budget (Geschäftsreise) werden Ziel- und Warnschwelle im selben Verhältnis verkleinert.
+    budget = BUDGET
+    m = KOPF_BUDGET.search(text)
+    if m:
+        budget = float(m.group("wert").replace(",", "."))
+    faktor = budget / BUDGET
+    ziel_min = round(ZIEL_MIN * faktor, 2)
+    warn_min = round(WARN_MIN * faktor, 2)
+    tage = 7
+    m = KOPF_TAGE.search(text)
+    if m:
+        tage = int(m.group("tage"))
+
     kategorien: dict[str, list[tuple[str, float, str]]] = {}
     aktuell = "(ohne Kategorie)"
     for zeile in zeilen:
@@ -132,19 +151,21 @@ def main(pfad: str) -> int:
 
     print(f"{'Gesamt (Penny)':<{breite}}{sum(len(a) for a in kategorien.values()):>8}{euro(gesamt):>12}")
     print(f"{'Rewe-Schätzung (+10 %)':<{breite}}{'':>8}{euro(gesamt * (1 + REWE_AUFSCHLAG)):>12}")
-    print(f"{'Budget':<{breite}}{'':>8}{euro(BUDGET):>12}")
-    print(f"{'Puffer':<{breite}}{'':>8}{euro(BUDGET - gesamt):>12}")
+    budget_text = "Budget" if budget == BUDGET else f"Budget (anteilig, {tage} Tage zu Hause)"
+    print(f"{budget_text:<{breite}}{'':>8}{euro(budget):>12}")
+    print(f"{'Puffer':<{breite}}{'':>8}{euro(budget - gesamt):>12}")
 
     if montag:
         print(f"\nMontags-Tour: {len(montag)} Artikel, {euro(sum(p for _, p in montag))}")
     if fleisch_g:
+        pro_tag_2 = fleisch_g / (2 * tage)
         print(
-            f"Fleisch & Fisch: {fleisch_g:.0f} g → 2 Personen {fleisch_g / 14:.0f} g/Tag, "
-            f"1 Person {fleisch_g / 7:.0f} g/Tag (Ziel {FLEISCH_ZIEL[0]}–{FLEISCH_ZIEL[1]} g)"
+            f"Fleisch & Fisch: {fleisch_g:.0f} g auf {tage} Tage → 2 Personen {pro_tag_2:.0f} g/Tag, "
+            f"1 Person {fleisch_g / tage:.0f} g/Tag (Ziel {FLEISCH_ZIEL[0]}–{FLEISCH_ZIEL[1]} g)"
         )
-        if fleisch_g / 14 < FLEISCH_ZIEL[0] * 0.8:
+        if pro_tag_2 < FLEISCH_ZIEL[0] * 0.8:
             hinweise.append("Fleisch/Fisch für 2 Personen unter 80 g/Tag")
-        if fleisch_g / 14 > FLEISCH_ZIEL[1]:
+        if pro_tag_2 > FLEISCH_ZIEL[1]:
             hinweise.append("Fleisch/Fisch für 2 Personen über 150 g/Tag")
 
     # Gesamtsumme in der Datei mit der Rechnung vergleichen.
@@ -156,12 +177,12 @@ def main(pfad: str) -> int:
     else:
         hinweise.append("Keine Gesamtsumme ('Gesamt … €') in der Datei gefunden")
 
-    if gesamt > BUDGET:
-        probleme.append(f"Über Budget: {euro(gesamt)} > {euro(BUDGET)}")
-    elif gesamt < WARN_MIN:
-        probleme.append(f"Deutlich unter Ziel: {euro(gesamt)} < {euro(WARN_MIN)}")
-    elif gesamt < ZIEL_MIN:
-        hinweise.append(f"Unter Zielbereich: {euro(gesamt)} < {euro(ZIEL_MIN)} (Vorrat auffüllen?)")
+    if gesamt > budget:
+        probleme.append(f"Über Budget: {euro(gesamt)} > {euro(budget)}")
+    elif gesamt < warn_min:
+        probleme.append(f"Deutlich unter Ziel: {euro(gesamt)} < {euro(warn_min)}")
+    elif gesamt < ziel_min:
+        hinweise.append(f"Unter Zielbereich: {euro(gesamt)} < {euro(ziel_min)} (Vorrat auffüllen?)")
 
     text_lc = text.lower()
     for gruppe, woerter in VERBOTEN.items():

@@ -150,7 +150,11 @@ Nach der Antwort: Budget anteilig (60 € × Tage zu Hause / 7, aufgerundet auf 
 höchstens 2 Gerichte, nichts Verderbliches für die Reisetage kaufen, Reise-Snacks einplanen
 (Äpfel, Walnüsse, Vollkorn-Knäcke). Ohne Hotelfrühstück: Haferflocken-Becher plus Nüsse;
 mit Kühlschrank: Quark und Joghurt; mit Mikrowelle: Porridge. Woche im Verlauf als
-„Woche NN (Reise)" eintragen.
+„Woche NN (Reise)" eintragen. In der Kopfzeile der Wochen-Datei `Budget: NN €` (anteilig) und
+`Tage zu Hause: N` angeben: `summe.py` prüft dann gegen das anteilige Budget und rechnet die
+Fleischmenge auf die Tage zu Hause um. Fällt ein ganzer Einkaufstag in die Reise, entfällt die
+Woche („Woche NN (Reise)", kein Einkauf); ein vorhandener Entwurf bleibt als Vorlage liegen.
+Fehlt eine Antwort auf die Rückfragen, mit einer Annahme weitermachen und sie im Plan nennen.
 
 ## Kassenbon-Abgleich
 
