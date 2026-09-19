@@ -5,7 +5,7 @@ Ist-Summe (leer, solange nichts gemeldet wurde). Wochennummern laufen fortlaufen
 
 | Woche | Einkauf | Gerichte | Frühstück | Plan (Penny) | Kassenbon | Notizen |
 |---|---|---|---|---|---|---|
-| 1 | Sa 19.09.2026 | Ofen-Hähnchen mit Rosmarinkartoffeln und grünen Bohnen · Gefüllte Paprika mit Hack und Reis · Lachs-Spinat-Nudeln | Quark-Bowl mit Haferflocken, Apfel und Zimt | 58,73 € | | Neu erstellt am Sa 19.09. („Wocheneinkauf neu"), ersetzt die Chat-Referenz ohne Preise |
+| 1 | Mo 21.09.2026 | Ofen-Hähnchen mit Rosmarinkartoffeln und grünen Bohnen · Gefüllte Paprika mit Hack und Reis · Lachs-Spinat-Nudeln | Quark-Bowl mit Haferflocken, Apfel und Zimt | 58,11 € | | Neu erstellt am Sa 19.09. („Wocheneinkauf neu"); Einkauf auf Wunsch am Mo 21.09. in einem Gang, Zeitraum 5 Tage bis Fr 25.09. |
 | 2 | Sa 26.09.2026 | Puten-Paprika-Geschnetzeltes · Seelachs in Tomaten-Zucchini-Sugo · Hackbällchen mit Ofengemüse | Rührei mit Tomaten auf Vollkornbrot | 57,95 € | | Testlauf vom 18.09.; Woche 3 am Fr 02.10. einkaufen (Sa Feiertag) |
 | 3 | Fr 02.10.2026 | Kürbis-Hähnchen-Blech · Schweinefilet mit Spitzkohl und Kartoffelpüree · Seelachs-Curry mit Erbsen | Warmer Porridge mit Banane und Walnüssen | 58,28 € | | Testlauf der Routine am 19.09.2026; Einkauf Fr statt Sa (03.10. Feiertag), Zeitraum 8 Tage bis Fr 09.10. |
 
@@ -15,7 +15,7 @@ Pro Woche drei verschiedene Proteine; Hülsenfrüchte höchstens einmal.
 
 | Woche | Geflügel | Fisch | Hack / Schwein | Hülsenfrüchte |
 |---|---|---|---|---|
-| 1 | Hähnchenbrust 1 kg | Lachs TK 400 g | Hackfleisch 500 g | – |
+| 1 | Hähnchenbrust 600 g | Lachs TK 400 g | Hackfleisch 500 g | – |
 | 2 | Putenbrust 600 g | Seelachs TK 500 g | Rinderhack 500 g | – |
 | 3 | Hähnchenbrust 1 kg | Seelachs TK 500 g | Schweinefilet 500 g | – |
 
@@ -33,7 +33,7 @@ bei Bedarf im Chat („Reis ist alle").
 | Olivenöl | ca. 300 ml | |
 | Knoblauch | 1 Knolle | |
 | Kartoffeln | ca. 300 g | Rest aus W3 (2,5 kg) |
-| Grüne Bohnen TK | – | 750 g aus W1, je Ofen-Hähnchen-Durchgang die Hälfte |
+| Grüne Bohnen TK | ca. 375 g | halbe Packung aus W1 (750 g) |
 | Blattspinat TK | ca. 300 g | Rest aus W1 (800 g) |
 | Erbsen TK | – | im Curry W3 verbraucht |
 | Beeren TK | ca. 100 g | für den Quark, in W4 nachkaufen |
