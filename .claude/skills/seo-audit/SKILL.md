@@ -2,7 +2,7 @@
 name: seo-audit
 description: SEO-Audit der Website von FSH-Documentation (fsh-documentation.com und .de). Prüft Erreichbarkeit, Technik, On-Page, Sichtbarkeit im Suchindex, Marke und lokale Einträge, vergleicht mit dem letzten Lauf und erzeugt Bericht-JSON, beide PDFs und den Verlauf unter seo-audit/. Verwenden, wenn der Nutzer „SEO-Audit" schreibt, die Freitags-Routine feuert oder ein SEO-Status, Sichtbarkeitsbericht oder eine Prüfung der Website gewünscht ist.
 argument-hint: "[optional: freitag-0730 | freitag-1600 | manuell]"
-allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, ToolSearch, PushNotification, Bash(date:*), Bash(mkdir:*), Bash(ls:*), Bash(curl:*), Bash(python3 seo-audit/tools/onpage_check.py:*), Bash(python3 seo-audit/tools/render_report.py:*), Bash(git pull:*), Bash(git add:*), Bash(git commit:*), Bash(git push:*)
+allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, ToolSearch, PushNotification, Bash(date:*), Bash(mkdir:*), Bash(ls:*), Bash(curl:*), Bash(python3 seo-audit/tools/onpage_check.py:*), Bash(bash seo-audit/tools/browser_setup.sh:*), Bash(node seo-audit/tools/fetch_rendered.js:*), Bash(python3 seo-audit/tools/render_report.py:*), Bash(git pull:*), Bash(git add:*), Bash(git commit:*), Bash(git push:*)
 ---
 
 # SEO-Audit für FSH-Documentation
@@ -15,6 +15,8 @@ wird mit dem vorherigen verglichen. Alle Parameter stehen fest. Nicht nachfragen
 
 - Website: `https://fsh-documentation.com/` (Startseite laut Suchindex). Zweitdomain
   `fsh-documentation.de` (E-Mail-Domain der Firma, Stand 19.09.2026 ohne indexierte Inhalte).
+- Plattform (Stand 19.09.2026): Canva-Website, Einseiter, Inhalt entsteht erst per JavaScript (Roh-HTML ohne
+  Text), kein eigener Head-Code, keine robots.txt. fsh-documentation.de zeigt eine STRATO-Platzhalterseite.
 - Firma: FSH-Documentation UG (haftungsbeschränkt), Bäckerstraße 2 D, 14513 Teltow. Technische
   Dokumentation, CE-/UKCA-Konformität, Risikobeurteilung, Normenmanagement, ST4.
 - Zielmarkt: Deutschland, regional Teltow, Potsdam, Berlin, Brandenburg.
@@ -34,6 +36,8 @@ wird mit dem vorherigen verglichen. Alle Parameter stehen fest. Nicht nachfragen
 | `seo-audit/berichte/` | eine JSON pro Lauf; die alphabetisch letzte ist der Vergleichsstand |
 | `seo-audit/tools/render_report.py` | prüft die JSON (`--check`) und erzeugt beide PDFs; Feldliste im Kopf der Datei |
 | `seo-audit/tools/onpage_check.py` | liest eine gespeicherte HTML-Seite und gibt die On-Page-Merkmale als JSON aus |
+| `seo-audit/tools/browser_setup.sh` | einmal je Container: Proxy-Zertifikat für Chromium einrichten |
+| `seo-audit/tools/fetch_rendered.js` | lädt eine Seite im Browser und speichert den gerenderten DOM, Ladezeiten und Screenshot |
 
 ## Ablauf
 
@@ -50,9 +54,13 @@ wird mit dem vorherigen verglichen. Alle Parameter stehen fest. Nicht nachfragen
 4. **Technik** (nur bei Erreichbarkeit): robots.txt, sitemap.xml, Weiterleitungen http→https,
    www und Zweitdomain, Antwortzeit, 404-Verhalten, Stichprobe der Sitemap-URLs.
 5. **On-Page** (nur bei Erreichbarkeit): Startseite und bis zu zehn Unterseiten speichern und
-   mit `onpage_check.py` auswerten. Bewerten: Title mit Marke, Leistung und Ort; Meta-Description;
-   genau eine H1; Alt-Texte; Canonical; JSON-LD (Organization/LocalBusiness); Links zu Impressum
-   und Datenschutz.
+   mit `onpage_check.py` auswerten. Meldet es null Wörter oder keine Überschriften, baut die Seite
+   ihren Inhalt per JavaScript: dann `bash seo-audit/tools/browser_setup.sh` (einmal je Container)
+   und `node seo-audit/tools/fetch_rendered.js <url> /tmp/seo/home-rendered.html /tmp/seo/home.png`,
+   anschließend `onpage_check.py` auf die gerenderte Datei anwenden und die Ladezeiten aus der
+   JSON-Ausgabe übernehmen (Laborwert, so kennzeichnen). Bewerten: Title mit Marke, Leistung und
+   Ort; Meta-Description; genau eine H1; Alt-Texte; Canonical; JSON-LD (Organization/LocalBusiness);
+   interne Links; Links zu Impressum und Datenschutz.
 6. **Suchindex:** die festen Abfragen des Prüfkatalogs mit WebSearch ausführen (fehlt das
    Werkzeug, per ToolSearch `select:WebSearch` laden). Je Abfrage festhalten: erscheint eine URL
    von fsh-documentation.com oder .de, welche, mit welchem Titel und Snippet, welche Wettbewerber
@@ -108,6 +116,9 @@ curl -sS -L -m 25 -A "$UA" -o /tmp/seo/robots.txt -w "robots %{http_code}\n" htt
 curl -sS -L -m 25 -A "$UA" -o /tmp/seo/sitemap.xml -w "sitemap %{http_code}\n" https://fsh-documentation.com/sitemap.xml
 curl -sS -L -m 25 -A "$UA" -o /dev/null -w "404-Test %{http_code}\n" https://fsh-documentation.com/gibt-es-nicht-4711
 ```
+
+Der Proxy der Umgebung lässt kein unverschlüsseltes http zu (`403` in Millisekunden): die Weiterleitung
+http→https als „nicht prüfbar“ eintragen, nicht als Fehler.
 
 Bewertung: `301` von http auf https und zwischen www und non-www in eine Richtung; Zweitdomain per
 `301` auf die Hauptdomain; robots.txt vorhanden und ohne `Disallow: /`; Sitemap vorhanden, URLs

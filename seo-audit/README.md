@@ -33,6 +33,8 @@ Die Regeln stehen im Skill `.claude/skills/seo-audit/SKILL.md`, die Daten in die
 | `SEO-Audit-FSH-Documentation-Kurzfassung.pdf` | aktuelle Kurzfassung (A4 quer, eine Seite) |
 | `tools/render_report.py` | JSON prüfen (`--check`) und PDFs erzeugen |
 | `tools/onpage_check.py` | On-Page-Merkmale einer gespeicherten HTML-Seite als JSON |
+| `tools/fetch_rendered.js` | gerenderter DOM, Ladezeiten und Screenshot einer Seite (Chromium über Playwright) |
+| `tools/browser_setup.sh` | einmal je Container: Proxy-Zertifikat der Claude-Umgebung für Chromium einrichten |
 | `tools/fonts/` | IBM Plex (SIL Open Font License), damit die PDFs ohne Internet gleich aussehen |
 
 PDFs von Hand erzeugen (braucht Node mit Playwright und Chromium, wie in der Claude-Code-Umgebung):
@@ -60,10 +62,11 @@ Aufbau, Stand 19.09.2026, nach dem Muster der Wocheneinkauf-Routine:
   und Änderungen. Der vollständige Bericht liegt in `berichte/` und als PDF in diesem Ordner.
 - **Voraussetzung**: Skill und Werkzeuge müssen auf `main` liegen, also PR #2 gemerged sein.
   Solange nicht, meldet der Lauf nur „PR #2 noch nicht gemerged" und erstellt nichts.
-- **Grenze der Umgebung**: Die Netzwerkfreigabe der Claude-Umgebung sperrt den direkten Abruf der
-  Website (Stand 19.09.2026). Bis die Domain freigegeben ist, prüft die Routine nur über den
-  Suchindex; Technik und On-Page bleiben im Bericht als „offen" markiert. Sobald die Domain in der
-  Umgebung erlaubt ist, laufen diese Prüfungen im nächsten Lauf automatisch mit.
+- **Netzwerk**: Die Umgebung „Default" steht seit dem 19.09.2026 auf vollem Netzwerkzugriff, die
+  Website ist damit direkt abrufbar und Technik- und On-Page-Prüfung laufen mit. Fällt die Freigabe
+  weg, prüft die Routine nur über den Suchindex und markiert Technik und On-Page als „offen".
+  Für das Browser-Rendering muss je Container einmal `tools/browser_setup.sh` laufen (macht der
+  Skill selbst); es importiert das Zertifikat des Umgebungs-Proxys in den Chromium-Speicher.
 - **Von Hand starten**: In der Session „SEO-Audit FSH (Routine)" einfach `SEO-Audit` schreiben.
   Nicht „Jetzt ausführen" der Routine benutzen (erzwungene Läufe starten ohne Repository).
 
@@ -74,3 +77,11 @@ Firmennamen. Sechs Befunde: Domain-Split .com/.de (B1), Seitentitel ohne Marke, 
 (B2), nur die Startseite auffindbar (B3), keine Sichtbarkeit für Kernbegriffe (B4), Marke „FSH"
 mehrdeutig (B5), lokale Einträge vorhanden, Google-Profil unklar (B6). Technik und On-Page konnten
 nicht geprüft werden (Seitenabruf gesperrt). Datei: `berichte/2026-09-19-manuell.json`.
+
+## Stand 19.09.2026, zweiter Lauf (Vollprüfung)
+
+Nach der Netzwerkfreigabe wurden Technik und On-Page nachgeholt. Die Seite ist eine Canva-Website:
+Einseiter, Inhalt per JavaScript, rund 3.000 Wörter, aber keine Überschriften, keine Alt-Texte,
+kein Canonical, keine strukturierten Daten, Sitemap mit einer URL, keine robots.txt, 3,5 MB und
+4,8 s Ladezeit im Labor. fsh-documentation.de zeigt eine STRATO-Platzhalterseite. Elf Befunde
+(fünf hoch, fünf mittel, einer niedrig). Datei: `berichte/2026-09-19-manuell-2.json`.

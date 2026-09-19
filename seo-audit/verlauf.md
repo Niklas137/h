@@ -7,3 +7,4 @@ nach Priorität hoch/mittel/niedrig. „Änderungen" nennt die Abweichungen zum 
 | Datum | Lauf | Erreichbar | Index | Kernbegriffe | Befunde | Änderungen | Datei |
 |---|---|---|---|---|---|---|---|
 | 19.09.2026 | manuell | gesperrt | 1 (Startseite .com) | 0 von 10 | 4/2/0 | Erstaufnahme | `berichte/2026-09-19-manuell.json` |
+| 19.09.2026 03:59 | manuell (2) | ja | 1 (Startseite .com) | 0 von 10 | 5/5/1 | Vollprüfung nach Netzwerkfreigabe: Technik und On-Page erstmals geprüft; .de = STRATO-Platzhalter; neu B7–B11 (Überschriften, Alt-Texte, Canonical/JSON-LD, Ladezeit, robots.txt) | `berichte/2026-09-19-manuell-2.json` |
