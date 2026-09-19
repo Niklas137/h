@@ -1,0 +1,101 @@
+{
+  "domain": "fsh-documentation.com",
+  "firma": "FSH-Documentation UG (haftungsbeschränkt), Teltow",
+  "stand": "2026-09-19",
+  "lauf": "manuell",
+  "art": "Teilprüfung",
+  "untertitel": "Suchindex-Analyse für FSH-Documentation UG (haftungsbeschränkt), Teltow. Sichtbarkeit, Marke und lokale Einträge sind geprüft. Technik und On-Page stehen aus, weil die Website aus der Prüfumgebung nicht abrufbar war.",
+  "ergebnis_kurz": "Nur über den Firmennamen auffindbar",
+  "zusammenfassung": [
+    "FSH-Documentation ist im Suchindex nur über die Startseite von fsh-documentation.com auffindbar, und zwar nur bei einer Suche nach dem Firmennamen. Für die Kernbegriffe des Angebots (technische Dokumentation, Betriebsanleitungen, CE-Konformität) erscheint die Seite weder regional für Teltow und Berlin/Brandenburg noch überregional unter den Treffern. Dort ranken Wettbewerber mit eigenen Leistungsseiten.",
+    "Die größten Hebel liegen in der Grundstruktur, nicht in Feinheiten: eine eindeutige Hauptdomain (.de oder .com), ein Seitentitel mit Marke und Leistung, eigene Unterseiten je Leistung und ein gepflegtes Google-Unternehmensprofil. Die technische Prüfung (robots.txt, Sitemap, Ladezeit, Meta-Angaben) ist nachzuholen, sobald die Website für die Prüfung erreichbar ist."
+  ],
+  "veraenderungen": [],
+  "pruefstatus": [
+    {"bereich": "Indexierung", "status": "geprueft", "ergebnis": "Nur die Startseite ist im Index sichtbar, keine Unterseiten."},
+    {"bereich": "Kernbegriffe", "status": "geprueft", "ergebnis": "Keine Treffer für „Technische Dokumentation Teltow“ und für Leistungsbegriffe; Wettbewerber ranken."},
+    {"bereich": "Marke", "status": "geprueft", "ergebnis": "„FSH“ wird von FHIR Shorthand und anderen Trägern des Kürzels dominiert."},
+    {"bereich": "Domains", "status": "geprueft", "ergebnis": "Website auf .com, E-Mail auf .de; die .de-Domain hat keine indexierten Inhalte."},
+    {"bereich": "Lokale Signale", "status": "teilweise", "ergebnis": "Firmeneinträge vorhanden und konsistent; Google-Unternehmensprofil nicht prüfbar."},
+    {"bereich": "Technik & On-Page", "status": "offen", "ergebnis": "Seitenabruf gesperrt; nur der Seitentitel der Startseite liegt über den Suchindex vor."}
+  ],
+  "pruefumfang": [
+    "Geprüft wurden Suchindex-Abfragen (Domain-Abfragen für .com und .de, Firmenname, exakter Seitentitel, regionale und überregionale Kernbegriffe) sowie öffentliche Firmeneinträge (Handelsregister-Auszug bei openregister.de, Creditreform, freelance.de, Branchenbuch Teltow).",
+    "Nicht möglich war der direkte Abruf von fsh-documentation.com und fsh-documentation.de einschließlich robots.txt und sitemap.xml: Die Netzwerkfreigabe der Prüfumgebung lässt keine externen Seitenaufrufe zu. Aussagen zum Seiteninhalt stammen deshalb aus Suchergebnis-Snippets und sind als solche gekennzeichnet."
+  ],
+  "befunde": [
+    {
+      "id": "B1", "titel": "Zwei Domains, eine Website", "prioritaet": "hoch",
+      "beleg": "Die Website läuft unter fsh-documentation.com, die E-Mail-Adressen nutzen fsh-documentation.de. Für fsh-documentation.de liefert der Suchindex keine einzige Seite. Wer die Domain aus einer E-Mail-Signatur eintippt, landet womöglich im Leeren; liefern beide Domains Inhalte aus, konkurrieren sie als Duplikate.",
+      "empfehlung": "Eine Hauptdomain festlegen (für den deutschen Markt bietet sich .de an), die andere dauerhaft per 301 weiterleiten, inklusive www-Variante und http zu https. Beide Domains in der Google Search Console als Property anlegen.",
+      "kurz": "Website auf .com, E-Mail auf .de; die .de-Domain hat keine indexierten Inhalte. Hauptdomain festlegen und per 301 weiterleiten."
+    },
+    {
+      "id": "B2", "titel": "Seitentitel ohne Marke, Ort und Leistung", "prioritaet": "hoch",
+      "beleg": "Der Titel der Startseite lautet laut Suchindex „Technische Dokumentation auf Premium-Niveau“. Er nennt weder FSH-Documentation noch Teltow noch konkrete Leistungen. Bei der Suche nach genau diesem Titel steht die Seite zwischen allgemeinen Ratgebern zur technischen Dokumentation.",
+      "empfehlung": "Titel nach dem Muster „Leistung | Marke, Ort“, zum Beispiel „Technische Dokumentation & CE | FSH-Documentation Teltow“ (56 Zeichen). Meta-Description mit den Kernleistungen (Betriebsanleitungen, CE-/UKCA-Konformität, Risikobeurteilung) und den Branchen Maschinenbau, Wehrtechnik und Medizintechnik.",
+      "kurz": "„Technische Dokumentation auf Premium-Niveau“ nennt weder FSH-Documentation noch CE, Anleitungen oder Teltow."
+    },
+    {
+      "id": "B3", "titel": "Nur die Startseite ist auffindbar", "prioritaet": "hoch",
+      "beleg": "In allen Abfragen erscheint ausschließlich fsh-documentation.com/. Unterseiten zu Leistungen, Branchen, Referenzen oder Kontakt tauchen nicht auf: Entweder ist die Website ein Einseiter, oder die Unterseiten sind nicht indexiert.",
+      "empfehlung": "Je Kernleistung eine eigene Seite mit eigenem Titel und H1: Betriebs- und Montageanleitungen, CE-/UKCA-Konformität, Risikobeurteilung (HAZOP), Normenmanagement, ST4-Redaktionssystem, Medizinprodukte (MDR/IVDR). XML-Sitemap erzeugen und in der Search Console einreichen.",
+      "kurz": "Keine Unterseiten im Index; für Leistungs- und Regionalbegriffe keine Treffer, Wettbewerber ranken mit Leistungsseiten."
+    },
+    {
+      "id": "B4", "titel": "Keine Sichtbarkeit für Kernbegriffe", "prioritaet": "hoch",
+      "beleg": "Für „Technische Dokumentation Teltow“ erscheinen Bauaufsicht, Berufsschule und Branchenbuch, nicht FSH-Documentation. Für Leistungsbegriffe wie „Technische Redaktion CE-Konformität Betriebsanleitung Dienstleister Berlin Brandenburg“ ranken mt-redaktion.de, ce-koordination.de, unique-doc.de, wiessneth.de und kerntecdoc.com, alle mit eigenen Leistungsseiten.",
+      "empfehlung": "Das Muster der Wettbewerber übernehmen: pro Leistung eine Seite mit Nutzen, Normbezug (Maschinenverordnung (EU) 2023/1230, IEC/IEEE 82079-1) und Ablauf. Dazu ein Regionalabschnitt für Berlin, Brandenburg und Potsdam."
+    },
+    {
+      "id": "B5", "titel": "Marke „FSH“ ist mehrdeutig", "prioritaet": "mittel",
+      "beleg": "Suchen nach „FSH documentation“ liefern fast nur FHIR Shorthand (HL7-Standard im Gesundheitswesen), FSH School, FSH Welding Canada und den Wikipedia-Artikel zum Hormon FSH. Eindeutig ist die Firma nur mit dem vollen Namen „FSH-Documentation“.",
+      "empfehlung": "Überall den vollen Namen mit dem Zusatz „Technische Dokumentation“ führen (Titel, Profile, Signaturen). Organization-Schema (JSON-LD) mit sameAs-Verweisen auf Handelsregister-Auszug, freelance.de-Profil und LinkedIn, damit Suchmaschinen die Firma eindeutig zuordnen.",
+      "kurz": "Suchen nach „FSH documentation“ landen bei FHIR Shorthand; eindeutig ist nur der volle Name „FSH-Documentation“."
+    },
+    {
+      "id": "B6", "titel": "Lokale Einträge vorhanden, Google-Profil unklar", "prioritaet": "mittel",
+      "beleg": "openregister.de, Creditreform, freelance.de und branchen-info.net (Teltow) nennen die Adresse übereinstimmend; die Schreibweise wechselt zwischen „Bäckerstraße 2 D“ und „Bäckerstrasse 2d“. Ein Google-Unternehmensprofil war in den Ergebnissen nicht sichtbar und konnte nicht geprüft werden.",
+      "empfehlung": "Google-Unternehmensprofil anlegen oder beanspruchen, NAP-Daten (Name, Adresse, Telefon) in einer Schreibweise auf Website, Profilen und Impressum pflegen, LocalBusiness- oder ProfessionalService-Schema ergänzen. Referenzen und eine Seite zum Geschäftsführer mit Qualifikationen belegen die im Snippet genannten 15 Jahre Erfahrung."
+    }
+  ],
+  "massnahmen": [
+    {"nr": 1, "text": "Hauptdomain festlegen, 301-Weiterleitungen (Zweitdomain, www, http) einrichten, Search Console für beide Domains", "prioritaet": "hoch", "aufwand": "gering"},
+    {"nr": 2, "text": "Seitentitel und Meta-Description der Startseite neu fassen", "prioritaet": "hoch", "aufwand": "gering"},
+    {"nr": 3, "text": "robots.txt und XML-Sitemap prüfen oder anlegen, Sitemap einreichen", "prioritaet": "hoch", "aufwand": "gering"},
+    {"nr": 4, "text": "Sechs Leistungsseiten mit eigenem Titel, H1, Normbezug und Ablauf", "prioritaet": "hoch", "aufwand": "mittel"},
+    {"nr": 5, "text": "Google-Unternehmensprofil anlegen oder beanspruchen, NAP-Daten vereinheitlichen", "prioritaet": "mittel", "aufwand": "gering"},
+    {"nr": 6, "text": "Organization- und LocalBusiness-Schema (JSON-LD) mit sameAs-Verweisen", "prioritaet": "mittel", "aufwand": "gering"},
+    {"nr": 7, "text": "Referenzen, Branchenabschnitte und Seite zum Geschäftsführer ergänzen", "prioritaet": "mittel", "aufwand": "mittel"},
+    {"nr": 8, "text": "Technik- und On-Page-Prüfung nachholen (Abschnitt Offene Prüfpunkte)", "prioritaet": "hoch", "aufwand": "gering"}
+  ],
+  "offene_pruefpunkte": [
+    {"gruppe": "Technik", "punkte": ["robots.txt und XML-Sitemap", "HTTPS-Erzwingung, www-Weiterleitung", "Canonical-Tags", "Ladezeit und Core Web Vitals", "Mobile Darstellung", "404-Seite, tote Links"]},
+    {"gruppe": "On-Page", "punkte": ["Title und Meta-Description je Seite", "H1- bis H3-Struktur", "Alt-Texte der Bilder", "Interne Verlinkung", "Strukturierte Daten (JSON-LD)", "hreflang bei Sprachversionen"]},
+    {"gruppe": "Rechtliches", "punkte": ["Impressum nach § 5 DDG", "Datenschutzerklärung (DSGVO)", "Cookie-Einwilligung nach § 25 TDDDG", "Pflichtseiten von jeder Seite erreichbar"]}
+  ],
+  "dafuer_noetig": [
+    "Die Domain in der Netzwerkfreigabe der Claude-Umgebung erlauben; die Prüfung läuft dann automatisch.",
+    "HTML-Quelltext der Startseite sowie robots.txt und sitemap.xml in die Sitzung einfügen.",
+    "Export aus der Google Search Console (Berichte „Seiten“ und „Leistung“)."
+  ],
+  "quellen_hinweis": "Websuche, Stand 19. September 2026. Kein direkter Seitenabruf.",
+  "quellen": [
+    {"text": "fsh-documentation.com", "url": "https://fsh-documentation.com/", "beschreibung": "Startseite, Titel und Snippet"},
+    {"text": "openregister.de", "url": "https://openregister.de/company/DE-HRB-G1312-37959", "beschreibung": "Handelsregister-Auszug FSH-Documentation UG (haftungsbeschränkt)"},
+    {"text": "firmeneintrag.creditreform.de", "url": "https://firmeneintrag.creditreform.de/14513/2013147869/FSH_DOCUMENTATION_UG_HAFTUNGSBESCHRAENKT", "beschreibung": "Firmeneintrag"},
+    {"text": "freelance.de", "url": "https://www.freelance.de/Freelancer/269905-Geschaeftsfuehrer-FSH-Documentation", "beschreibung": "Profil „Geschäftsführer: FSH-Documentation aus Teltow“"},
+    {"text": "teltow.branchen-info.net", "url": "https://teltow.branchen-info.net/information-dokumentation-4748-1.php", "beschreibung": "Branchenbuch „Information-Dokumentation Teltow“"},
+    {"text": "Kernbegriff-Treffer: mt-redaktion.de, ce-koordination.de, unique-doc.de, wiessneth.de, kerntecdoc.com, winklergmbh.de, dogrel.com, adt-zielke.com"},
+    {"text": "Namenskollision: build.fhir.org (FHIR Shorthand), fshschool.org, fsh-welding.ca, en.wikipedia.org/wiki/FSH"}
+  ],
+  "kurzfassung": {
+    "untertitel": "fsh-documentation.com · Suchindex-Analyse; Technik und On-Page noch offen",
+    "befunde": ["B1", "B2", "B3", "B5"],
+    "naechste_schritte": [
+      {"titel": "Hauptdomain und 301-Weiterleitungen", "text": ".de oder .com festlegen, Search Console für beide anlegen"},
+      {"titel": "Titel und Meta-Description neu fassen", "text": "„Technische Dokumentation & CE | FSH-Documentation Teltow“"},
+      {"titel": "Leistungsseiten und Sitemap", "text": "Sechs Seiten je Kernleistung, XML-Sitemap einreichen"}
+    ]
+  }
+}
