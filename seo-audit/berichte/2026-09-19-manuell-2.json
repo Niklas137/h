@@ -1,0 +1,305 @@
+{
+  "domain": "fsh-documentation.com",
+  "firma": "FSH-Documentation UG (haftungsbeschränkt), Teltow",
+  "stand": "2026-09-19",
+  "uhrzeit": "03:59",
+  "lauf": "manuell",
+  "art": "Vollprüfung",
+  "untertitel": "Vollprüfung für FSH-Documentation UG (haftungsbeschränkt), Teltow: Technik, On-Page, Suchindex, Marke und lokale Einträge. Zweiter Lauf am selben Tag, nachdem die Website aus der Prüfumgebung erreichbar wurde.",
+  "ergebnis_kurz": "Guter Inhalt, für Suchmaschinen kaum lesbar",
+  "zusammenfassung": [
+    "Die Website ist technisch sauber erreichbar (HTTPS mit HSTS, www-Weiterleitung, korrekte 404-Seite, Cloudflare), aber als Canva-Website gebaut: ein Einseiter, dessen Inhalt erst per JavaScript entsteht. Das Roh-HTML enthält keinen Text, die fertige Seite rund 3.000 Wörter, jedoch ohne eine einzige Überschrift, ohne Alt-Texte für die 19 Bilder, ohne Canonical, ohne strukturierte Daten und ohne echte interne Links. Die Sitemap kennt genau eine URL, eine robots.txt gibt es nicht.",
+    "Die Zweitdomain fsh-documentation.de, die in allen E-Mail-Adressen steht, zeigt eine STRATO-Platzhalterseite („Domain reserved“), statt auf die Website weiterzuleiten. Die Suchindex-Befunde vom ersten Lauf bleiben bestehen: Nur die Startseite ist auffindbar, und nur über den Firmennamen; bei allen zehn Kernbegriff-Abfragen erscheint kein eigener Treffer.",
+    "Die Inhalte selbst sind stark: Leistungen mit Normbezug, drei Fallstudien mit Ergebnissen, Prozess, Team und Medizinprodukte-Kompetenz. Die Hebel liegen deshalb in Struktur und Technik: .de weiterleiten, Titel und Description schärfen, Alt-Texte setzen, Überschriften und Unterseiten je Leistung. Überschriften, strukturierte Daten und Ladezeit lassen sich innerhalb von Canva nur begrenzt beeinflussen; ob dafür ein Plattformwechsel lohnt, ist eine Entscheidung des Betreibers."
+  ],
+  "veraenderungen": [
+    "Website seit dem 19.09.2026 aus der Prüfumgebung erreichbar (Netzwerkfreigabe). Technik und On-Page erstmals geprüft, Prüfumfang von Teilprüfung auf Vollprüfung erweitert.",
+    "B1 verschärft: fsh-documentation.de leitet nicht weiter, sondern zeigt eine STRATO-Platzhalterseite.",
+    "B3 bestätigt: Die Sitemap enthält genau eine URL (Stand 17.01.2024), alle Unterseiten-Pfade liefern 404, im DOM gibt es keine internen Links.",
+    "Neu: B7 keine Überschriften, B8 Alt-Texte fehlen, B9 kein Canonical und keine strukturierten Daten, B10 Seitengewicht und Ladezeit, B11 robots.txt fehlt.",
+    "B6 verbessert: Fallstudien, Team und Werdegang stehen auf der Seite; die Empfehlung beschränkt sich auf Google-Unternehmensprofil und NAP-Daten.",
+    "In Ordnung: Meta-Description vorhanden (145 Zeichen), Open Graph gesetzt, HSTS aktiv, www-Weiterleitung per 301, 404-Seite korrekt, x-robots-tag erlaubt die Indexierung."
+  ],
+  "pruefstatus": [
+    {
+      "bereich": "Indexierung",
+      "status": "geprueft",
+      "ergebnis": "Nur die Startseite im Index; die Sitemap bestätigt, dass es nur diese eine URL gibt."
+    },
+    {
+      "bereich": "Kernbegriffe",
+      "status": "geprueft",
+      "ergebnis": "Kein eigener Treffer bei allen zehn Abfragen; Wettbewerber mit Leistungsseiten ranken."
+    },
+    {
+      "bereich": "Marke",
+      "status": "geprueft",
+      "ergebnis": "„FSH“ bleibt mehrdeutig; der volle Name „FSH-Documentation“ findet die Seite."
+    },
+    {
+      "bereich": "Domains",
+      "status": "geprueft",
+      "ergebnis": "www leitet per 301 auf die Hauptdomain; .de zeigt einen STRATO-Platzhalter statt einer Weiterleitung."
+    },
+    {
+      "bereich": "Lokale Signale",
+      "status": "teilweise",
+      "ergebnis": "Firmeneinträge konsistent; Google-Unternehmensprofil nicht prüfbar."
+    },
+    {
+      "bereich": "Technik",
+      "status": "geprueft",
+      "ergebnis": "HTTPS, HSTS und 404 korrekt; robots.txt fehlt; Sitemap mit einer URL; 3,5 MB, vollständig geladen nach 4,8 s."
+    },
+    {
+      "bereich": "On-Page",
+      "status": "geprueft",
+      "ergebnis": "Title und Description vorhanden, aber ohne Marke und Ort; keine H1, 19 Bilder ohne Alt-Text, kein Canonical, kein JSON-LD."
+    }
+  ],
+  "pruefumfang": [
+    "Technik: Erreichbarkeit aller Domain-Varianten, Weiterleitungen, robots.txt, sitemap.xml, 404-Verhalten, Antwort-Header und Ladeverhalten im Browser (Chromium aus einem Rechenzentrum, ohne Cache). On-Page: Roh-HTML und gerenderter DOM der Startseite mit den Werkzeugen des Repos. Suchindex: die zehn festen Abfragen und die Firmeneinträge; die Ergebnisse des ersten Laufs vom selben Tag wurden übernommen und um drei Abfragen ergänzt.",
+    "Nicht prüfbar: die Weiterleitung von http auf https (der Proxy der Prüfumgebung lässt kein unverschlüsseltes HTTP zu), Core Web Vitals aus Felddaten, das Google-Unternehmensprofil und Daten der Search Console. Ladezeiten sind Laborwerte aus einem Rechenzentrum und nur als Größenordnung zu lesen."
+  ],
+  "befunde": [
+    {
+      "id": "B1",
+      "titel": "Zweitdomain .de zeigt eine Platzhalterseite",
+      "prioritaet": "hoch",
+      "entwicklung": "unverändert",
+      "beleg": "https://fsh-documentation.de/ und https://www.fsh-documentation.de/ antworten mit 200 und liefern eine STRATO-Platzhalterseite mit dem Titel „STRATO - Domain reserved“. Eine Weiterleitung auf fsh-documentation.com gibt es nicht. Die E-Mail-Adressen der Firma laufen auf dieser Domain; wer sie aus einer Signatur oder einem Angebot eintippt, landet auf dem Platzhalter.",
+      "empfehlung": "Bei STRATO eine dauerhafte Weiterleitung (301) von fsh-documentation.de und www.fsh-documentation.de auf https://fsh-documentation.com/ einrichten. Alternativ .de zur Hauptdomain machen (bei Canva als Domain verbinden) und .com weiterleiten; in jedem Fall nur eine Domain mit Inhalt. Beide Domains in der Google Search Console anlegen.",
+      "kurz": "Die E-Mail-Domain .de zeigt „STRATO - Domain reserved“ statt auf die Website weiterzuleiten. 301-Weiterleitung einrichten."
+    },
+    {
+      "id": "B2",
+      "titel": "Seitentitel ohne Marke, Ort und Leistung",
+      "prioritaet": "hoch",
+      "entwicklung": "unverändert",
+      "beleg": "Title bestätigt: „Technische Dokumentation auf Premium-Niveau“ (43 Zeichen). Meta-Description: „Hochwertige präzise Technische Dokumentation: Wir liefern verständliche Anleitungen, Bedienungsanleitungen und Dokumentationen für Ihre Produkte.“ (145 Zeichen). Beide nennen weder FSH-Documentation noch Teltow, die Description keine der Kernleistungen CE, Risikobeurteilung oder MDR.",
+      "empfehlung": "In den Canva-Seiteneinstellungen den Title „Technische Dokumentation & CE | FSH-Documentation Teltow“ und eine Description mit Betriebsanleitungen, CE-/UKCA-Konformität, Risikobeurteilung, Medizinprodukte (MDR) und der Region Berlin/Brandenburg setzen (70–160 Zeichen).",
+      "kurz": "Title und Description sind gesetzt, nennen aber weder FSH-Documentation noch Teltow noch CE oder MDR."
+    },
+    {
+      "id": "B3",
+      "titel": "Ein Einseiter: nur eine URL, keine Unterseiten",
+      "prioritaet": "hoch",
+      "entwicklung": "unverändert",
+      "beleg": "sitemap.xml enthält genau eine URL (https://fsh-documentation.com/, lastmod 17.01.2024). Alle geprüften Pfade wie /leistungen, /kontakt oder /impressum antworten mit 404. Die Navigation (Start, Über uns, Leistungen, Kontakt & Projektstart, Recht & Datenschutz, CV) scrollt innerhalb der Seite; im DOM gibt es keine internen Links, nur je zwei mailto- und tel-Links.",
+      "empfehlung": "Je Kernleistung eine eigene Seite mit eigener URL, eigenem Title und eigener Überschrift: Betriebs- und Montageanleitungen, CE-/UKCA-Konformität, Risikobeurteilung (HAZOP), Medizinprodukte (MDR/IVDR), Redaktionssysteme (ST4), Dokumentenprüfung. Canva erlaubt mehrseitige Websites; Überschriften und strukturierte Daten siehe B7 und B9.",
+      "kurz": "Sitemap mit genau einer URL, alle Unterseiten-Pfade 404, keine internen Links. Eine Seite je Kernleistung anlegen."
+    },
+    {
+      "id": "B4",
+      "titel": "Keine Sichtbarkeit für Kernbegriffe",
+      "prioritaet": "hoch",
+      "entwicklung": "unverändert",
+      "beleg": "Bei allen zehn festen Abfragen (unter anderem „Technische Dokumentation Teltow“, „Technische Dokumentation Potsdam Berlin Dienstleister“, „Betriebsanleitung erstellen lassen Maschinenbau CE“) erscheint kein eigener Treffer. Es ranken koenig-td.de (Berlin), technikdoc.de (Potsdam), mt-redaktion.de, ce-koordination.de, handbuch-experten.de, dogrel.com und kerntecdoc.com, alle mit eigenen Leistungsseiten. Nur Abfragen mit dem Firmennamen finden die Startseite.",
+      "empfehlung": "Folge von B3 und B7: Ohne eigene Seiten und Überschriften je Leistung gibt es für Suchmaschinen keine Zuordnung zu diesen Begriffen. Pro Leistung eine Seite mit Nutzen, Normbezug (Maschinenverordnung (EU) 2023/1230, IEC/IEEE 82079-1, EN ISO 20607) und Ablauf, dazu ein Regionalabschnitt für Berlin, Brandenburg und Potsdam."
+    },
+    {
+      "id": "B5",
+      "titel": "Marke „FSH“ ist mehrdeutig",
+      "prioritaet": "mittel",
+      "entwicklung": "unverändert",
+      "beleg": "Suchen nach „FSH documentation“ liefern fast nur FHIR Shorthand (HL7-Standard im Gesundheitswesen), FSH School, FSH Welding Canada und den Wikipedia-Artikel zum Hormon FSH. Die Abfrage „FSH-Documentation Teltow“ liefert Creditreform, openregister.de, freelance.de und an vierter Stelle die Website. Eindeutig ist die Firma nur mit dem vollen Namen.",
+      "empfehlung": "Überall den vollen Namen mit dem Zusatz „Technische Dokumentation“ führen (Titel, Profile, Signaturen). Organization-Schema (JSON-LD) mit sameAs-Verweisen auf Handelsregister-Auszug, freelance.de-Profil und LinkedIn, damit Suchmaschinen die Firma eindeutig zuordnen (Umsetzbarkeit siehe B9).",
+      "kurz": "Suchen nach „FSH documentation“ landen bei FHIR Shorthand; eindeutig ist nur der volle Name „FSH-Documentation“."
+    },
+    {
+      "id": "B6",
+      "titel": "Lokale Einträge konsistent, Google-Profil unklar",
+      "prioritaet": "mittel",
+      "entwicklung": "verbessert",
+      "beleg": "Handelsregister (Amtsgericht Potsdam, HRB 37959 P), Creditreform, freelance.de und Branchenbuch Teltow nennen die Adresse übereinstimmend (Schreibweise „2 D“ und „2d“). Auf der Website stehen Adresse, Telefon und E-Mail, dazu drei Fallstudien mit Ergebnissen sowie ein Abschnitt zu Team und Werdegang; die im ersten Lauf angemahnten Belege sind also vorhanden. Ein Google-Unternehmensprofil war in keiner Abfrage sichtbar.",
+      "empfehlung": "Google-Unternehmensprofil anlegen oder beanspruchen, NAP-Daten (Name, Adresse, Telefon) in einer Schreibweise, Leistungen und Link zur Website eintragen. Den Adressblock auf der Website als Text belassen, nicht als Bild."
+    },
+    {
+      "id": "B7",
+      "titel": "Keine Überschriften im gesamten Dokument",
+      "prioritaet": "hoch",
+      "entwicklung": "neu",
+      "beleg": "Der gerenderte DOM der Startseite enthält rund 3.000 Wörter, aber keine h1-, h2- oder h3-Elemente. Überschriften wie „Leistungen“, „Referenzen / Fallstudien“ oder „Warum FSH-Documentation“ sind nur visuell hervorgehoben, technisch gewöhnlicher Text. Suchmaschinen und Screenreader erhalten keine Gliederung; das Hauptthema der Seite ist nicht ausgezeichnet.",
+      "empfehlung": "In Canva jedem Überschriften-Text die Rolle Überschrift zuweisen, sofern die Vorlage das anbietet: die Hauptzeile „Technische Dokumentation auf Premium-Niveau“ als H1, Abschnittsüberschriften als H2. Ist das in der Vorlage nicht möglich, ist das ein Argument für einen Plattformwechsel (siehe B10).",
+      "kurz": "3.000 Wörter Inhalt, aber kein einziges h1-, h2- oder h3-Element im gerenderten DOM."
+    },
+    {
+      "id": "B8",
+      "titel": "Alle 19 Bilder ohne Alt-Text",
+      "prioritaet": "mittel",
+      "entwicklung": "neu",
+      "beleg": "19 img-Elemente im gerenderten DOM, keines mit alt-Attribut, darunter das Logo und das Porträtfoto des Geschäftsführers.",
+      "empfehlung": "In Canva für jedes Bild einen Alternativtext setzen: Logo „FSH-Documentation, Technische Dokumentation, Teltow“, Porträt „Sascha Falk Heinzmann, Geschäftsführer“, Icons kurz beschreiben oder als dekorativ markieren. Bildersuche und Barrierefreiheit profitieren gleichzeitig."
+    },
+    {
+      "id": "B9",
+      "titel": "Kein Canonical, keine strukturierten Daten",
+      "prioritaet": "mittel",
+      "entwicklung": "neu",
+      "beleg": "Weder link rel=canonical noch JSON-LD (Organization, LocalBusiness, ProfessionalService) im Roh-HTML oder im DOM. Open-Graph-Title und -Description sind vorhanden; hreflang gibt es nicht, weil nur eine deutsche Fassung existiert.",
+      "empfehlung": "Canonical auf https://fsh-documentation.com/ setzen und ein Organization- oder ProfessionalService-Schema mit Name, Adresse, Telefon, Logo und sameAs einbinden. Canva-Websites erlauben keinen eigenen Head-Code; die Umsetzung braucht entweder ein entsprechendes Canva-Feature oder einen Plattformwechsel (B10)."
+    },
+    {
+      "id": "B10",
+      "titel": "Seitengewicht und Ladezeit",
+      "prioritaet": "mittel",
+      "entwicklung": "neu",
+      "beleg": "Die Startseite lädt 58 Ressourcen mit 3,5 MB; das HTML allein hat 742 KB (83 KB komprimiert), weil der komplette Seiteninhalt als JavaScript-Datenblock eingebettet ist. Im Chromium-Test aus dem Rechenzentrum: DOM fertig nach 2,6 s, Seite vollständig nach 4,8 s. Auf Mobilgeräten ist mit deutlich längeren Zeiten zu rechnen. Ohne JavaScript bleibt die Seite leer.",
+      "empfehlung": "Kurzfristig Bilder verkleinern und komprimieren, unnötige Elemente entfernen. Grundsätzlich: Canva rendert die gesamte Seite im Browser und bietet keine Kontrolle über Überschriften, Canonical, strukturierte Daten und robots.txt. Für dauerhafte Sichtbarkeit einen Wechsel auf ein System mit serverseitigem HTML prüfen (zum Beispiel WordPress oder ein statischer Generator); die vorhandenen Inhalte lassen sich vollständig übernehmen."
+    },
+    {
+      "id": "B11",
+      "titel": "robots.txt fehlt, Sitemap veraltet",
+      "prioritaet": "niedrig",
+      "entwicklung": "neu",
+      "beleg": "https://fsh-documentation.com/robots.txt antwortet mit 404 (HTML-Fehlerseite). Die Sitemap ist erreichbar, führt aber nur die Startseite mit lastmod 17.01.2024. Der Header x-robots-tag: all erlaubt die Indexierung.",
+      "empfehlung": "Kein Sperrgrund. Sitemap in der Search Console einreichen und nach dem Anlegen von Unterseiten prüfen, ob Canva sie automatisch ergänzt. Eine robots.txt mit Sitemap-Verweis ist bei Canva nicht konfigurierbar; nach einem Plattformwechsel anlegen."
+    }
+  ],
+  "massnahmen": [
+    {
+      "nr": 1,
+      "text": "fsh-documentation.de und www.fsh-documentation.de bei STRATO per 301 auf https://fsh-documentation.com/ weiterleiten; beide Domains in der Search Console anlegen",
+      "prioritaet": "hoch",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 2,
+      "text": "Title und Meta-Description mit Marke, Ort und Kernleistungen setzen (Canva-Seiteneinstellungen)",
+      "prioritaet": "hoch",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 3,
+      "text": "Überschriften-Rollen in Canva prüfen und setzen: eine H1, Abschnitte als H2",
+      "prioritaet": "hoch",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 4,
+      "text": "Alt-Texte für alle 19 Bilder eintragen",
+      "prioritaet": "mittel",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 5,
+      "text": "Sechs Unterseiten je Kernleistung anlegen, Sitemap in der Search Console einreichen",
+      "prioritaet": "hoch",
+      "aufwand": "mittel"
+    },
+    {
+      "nr": 6,
+      "text": "Google-Unternehmensprofil anlegen oder beanspruchen, NAP-Daten vereinheitlichen",
+      "prioritaet": "mittel",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 7,
+      "text": "Bilder komprimieren, Seitengewicht senken",
+      "prioritaet": "mittel",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 8,
+      "text": "Plattformwechsel prüfen: serverseitiges HTML, Überschriften, Canonical, JSON-LD, robots.txt, Ladezeit",
+      "prioritaet": "mittel",
+      "aufwand": "hoch"
+    },
+    {
+      "nr": 9,
+      "text": "Search-Console-Zugang bereitstellen, damit die Routine Index- und Leistungsdaten auswertet",
+      "prioritaet": "niedrig",
+      "aufwand": "gering"
+    }
+  ],
+  "offene_pruefpunkte": [
+    {
+      "gruppe": "Technik",
+      "punkte": [
+        "Weiterleitung http → https (Proxy der Umgebung lässt kein http zu)",
+        "Core Web Vitals aus Felddaten (Search Console, CrUX)"
+      ]
+    },
+    {
+      "gruppe": "Extern",
+      "punkte": [
+        "Google-Unternehmensprofil vorhanden?",
+        "Search Console: indexierte Seiten und Suchanfragen"
+      ]
+    },
+    {
+      "gruppe": "Rechtliches",
+      "punkte": [
+        "Inhalt von Impressum und Datenschutzerklärung (Abschnitt „Recht & Datenschutz“) nicht juristisch geprüft",
+        "Cookie-Einwilligung nicht geprüft"
+      ]
+    }
+  ],
+  "dafuer_noetig": [
+    "Zugang zur Google Search Console (Property fsh-documentation.com) für Index- und Leistungsdaten.",
+    "Angabe, ob ein Google-Unternehmensprofil existiert und wer es verwaltet.",
+    "Rechtstexte durch den Betreiber oder einen Rechtsbeistand prüfen lassen."
+  ],
+  "quellen_hinweis": "Direkter Abruf am 19. September 2026 nach Netzwerkfreigabe der Prüfumgebung, Chromium-Rendering, Websuche.",
+  "quellen": [
+    {
+      "text": "fsh-documentation.com",
+      "url": "https://fsh-documentation.com/",
+      "beschreibung": "Roh-HTML, gerenderter DOM, Antwort-Header, sitemap.xml, robots.txt (404)"
+    },
+    {
+      "text": "fsh-documentation.de",
+      "url": "https://fsh-documentation.de/",
+      "beschreibung": "STRATO-Platzhalterseite „Domain reserved“"
+    },
+    {
+      "text": "openregister.de",
+      "url": "https://openregister.de/company/DE-HRB-G1312-37959",
+      "beschreibung": "Handelsregister-Auszug FSH-Documentation UG (haftungsbeschränkt)"
+    },
+    {
+      "text": "firmeneintrag.creditreform.de",
+      "url": "https://firmeneintrag.creditreform.de/14513/2013147869/FSH_DOCUMENTATION_UG_HAFTUNGSBESCHRAENKT",
+      "beschreibung": "Firmeneintrag"
+    },
+    {
+      "text": "freelance.de",
+      "url": "https://www.freelance.de/Freelancer/269905-Geschaeftsfuehrer-FSH-Documentation",
+      "beschreibung": "Profil „Geschäftsführer: FSH-Documentation aus Teltow“"
+    },
+    {
+      "text": "teltow.branchen-info.net",
+      "url": "https://teltow.branchen-info.net/information-dokumentation-4748-1.php",
+      "beschreibung": "Branchenbuch „Information-Dokumentation Teltow“"
+    },
+    {
+      "text": "Kernbegriff-Treffer: koenig-td.de, technikdoc.de, d-und-a.de, mt-redaktion.de, ce-koordination.de, handbuch-experten.de, unique-doc.de, wiessneth.de, kerntecdoc.com, dogrel.com"
+    },
+    {
+      "text": "Namenskollision: build.fhir.org (FHIR Shorthand), fshschool.org, fsh-welding.ca, en.wikipedia.org/wiki/FSH"
+    }
+  ],
+  "kurzfassung": {
+    "untertitel": "fsh-documentation.com · Vollprüfung nach Netzwerkfreigabe: Technik, On-Page, Suchindex",
+    "befunde": [
+      "B1",
+      "B7",
+      "B3",
+      "B2"
+    ],
+    "naechste_schritte": [
+      {
+        "titel": ".de weiterleiten",
+        "text": "301 bei STRATO auf fsh-documentation.com, beide Domains in der Search Console anlegen"
+      },
+      {
+        "titel": "Title, Description, Alt-Texte",
+        "text": "Marke, Ort und Leistungen nennen; 19 Bilder beschriften"
+      },
+      {
+        "titel": "Überschriften und Unterseiten",
+        "text": "H1/H2 in Canva setzen, eine Seite je Leistung; Plattformwechsel prüfen"
+      }
+    ]
+  }
+}
