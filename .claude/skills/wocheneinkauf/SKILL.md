@@ -72,7 +72,7 @@ Einkaufstag, Gerichten und Summe senden.
 
 ## Ernährungsregeln (hart)
 
-- Nie: Pilze, Innereien, Gorgonzola, Sardinen, Hering, Sardellen/Anchovis, Matjes.
+- Nie: Pilze, Innereien, Gorgonzola, Sardinen, Hering, Sardellen/Anchovis, Matjes, Hüttenkäse.
 - Jeden Tag Fleisch oder Fisch, ca. 100–150 g pro Person und Tag → pro Gerichtsportion
   100–150 g, eine Portion pro Person und Tag. Bei 1 Person: Hälfte einfrieren.
 - Purinarm: keine Innereien, wenig Wurst (Salami, Schinken, Speck nur ausnahmsweise),

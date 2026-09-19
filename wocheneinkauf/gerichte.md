@@ -46,7 +46,7 @@ um neue Gerichte erweitern. Sperre: 4 Wochen für Gerichte, 3 Wochen für Frühs
 | F2 | Rührei mit Tomaten auf Vollkornbrot | Eier, Tomaten, Schnittlauch oder Petersilie, Vollkornbrot | W2 |
 | F3 | Quark-Bowl mit Haferflocken, Apfel und Zimt | Magerquark, Haferflocken, Apfel, Zimt, Walnüsse | W1 |
 | F4 | Warmer Porridge mit Banane und Walnüssen | Haferflocken, Milch, Banane, Walnüsse, Zimt | W3 |
-| F5 | Vollkornbrot mit Hüttenkäse, Gurke und Ei | Hüttenkäse, Gurke, gekochtes Ei, Vollkornbrot | – |
+| F5 | Vollkornbrot mit Frischkäse, Gurke und Ei | Frischkäse, Gurke, gekochtes Ei, Vollkornbrot | – |
 | F6 | Skyr mit Beeren und Haferflocken | Skyr, Beeren (TK), Haferflocken | – |
 | F7 | Haferflocken-Pfannkuchen mit Quark | Haferflocken, Eier, Banane, Quark, Zimt | – |
 

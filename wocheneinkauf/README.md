@@ -29,7 +29,7 @@ Skill `.claude/skills/wocheneinkauf/SKILL.md`, die Daten in diesem Ordner.
 
 ## Ernährungsregeln
 
-- Nicht: Pilze, Innereien, Gorgonzola
+- Nicht: Pilze, Innereien, Gorgonzola, Hüttenkäse
 - Immer mit Fleisch oder Fisch, ca. 100–150 g pro Tag
 - Purinarm: keine Innereien, Sardinen, Hering; wenig Wurst
 - Vollkorn statt Weißmehl, wenig Zucker, salzarm

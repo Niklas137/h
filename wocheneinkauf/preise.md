@@ -70,7 +70,7 @@ Nicht kaufen: Sardinen, Hering, Matjes, Sardellen (Purin), Innereien, Wurst nur 
 | Speisequark 20 % | 500 g | 1,19 € | | 09/2026 |
 | Naturjoghurt 3,5 % | 500 g | 0,99 € | ungesüßt | 09/2026 |
 | Skyr natur | 450 g | 1,49 € | | 09/2026 |
-| Hüttenkäse | 200 g | 0,99 € | | 09/2026 |
+| Hüttenkäse | 200 g | 0,99 € | nicht kaufen, mag Niklas nicht (19.09.2026) | 09/2026 |
 | Feta | 200 g | 1,49 € | | 09/2026 |
 | Gouda in Scheiben | 200 g | 1,79 € | 400 g: 2,99 € | 09/2026 |
 | Mozzarella | 125 g | 0,89 € | | 09/2026 |
