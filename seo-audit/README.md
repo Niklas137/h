@@ -29,12 +29,14 @@ Die Regeln stehen im Skill `.claude/skills/seo-audit/SKILL.md`, die Daten in die
 | `README.md` | diese Übersicht, Aufbau der Routine |
 | `verlauf.md` | eine Zeile pro Lauf |
 | `berichte/JJJJ-MM-TT-<lauf>.json` | Bericht-Daten je Lauf; die letzte ist der Vergleichsstand |
+| `massnahmen/JJJJ-MM-TT-phase-2.md` und `.pdf` | Maßnahmenpaket: Befundprüfung, Benchmark, Zielbegriffe, Seitenplan, Alt-Texte, Rechtsbefunde, 30-Tage-Plan |
 | `SEO-Audit-FSH-Documentation.pdf` | aktueller Bericht (A4, mehrseitig) |
 | `SEO-Audit-FSH-Documentation-Kurzfassung.pdf` | aktuelle Kurzfassung (A4 quer, eine Seite) |
 | `tools/render_report.py` | JSON prüfen (`--check`) und PDFs erzeugen |
 | `tools/onpage_check.py` | On-Page-Merkmale einer gespeicherten HTML-Seite als JSON |
 | `tools/fetch_rendered.js` | gerenderter DOM, Ladezeiten und Screenshot einer Seite (Chromium über Playwright) |
 | `tools/browser_setup.sh` | einmal je Container: Proxy-Zertifikat der Claude-Umgebung für Chromium einrichten |
+| `tools/md_to_pdf.py` | setzt eine Markdown-Datei (zum Beispiel ein Maßnahmenpaket) als A4-PDF im Berichtsstil |
 | `tools/fonts/` | IBM Plex (SIL Open Font License), damit die PDFs ohne Internet gleich aussehen |
 
 PDFs von Hand erzeugen (braucht Node mit Playwright und Chromium, wie in der Claude-Code-Umgebung):
@@ -85,3 +87,13 @@ Einseiter, Inhalt per JavaScript, rund 3.000 Wörter, aber keine Überschriften,
 kein Canonical, keine strukturierten Daten, Sitemap mit einer URL, keine robots.txt, 3,5 MB und
 4,8 s Ladezeit im Labor. fsh-documentation.de zeigt eine STRATO-Platzhalterseite. Elf Befunde
 (fünf hoch, fünf mittel, einer niedrig). Datei: `berichte/2026-09-19-manuell-2.json`.
+
+## Stand 21.09.2026, Phase 2 (Maßnahmenpaket)
+
+Ein Multi-Agent-Lauf hat jeden der elf Befunde von einem unabhängigen Skeptiker prüfen lassen
+(Beleg, Relevanz, Umsetzbarkeit in Canva und STRATO), sieben Wettbewerber analysiert, acht
+Abfragefamilien untersucht, die Rechtstexte zweifach geprüft und Alt-Texte für alle 19
+Bildvorkommen geschrieben. Ergebnis: alle Befunde bestätigt, drei Prioritäten gesenkt (B2, B7, B8),
+neue Verteilung 3 hoch / 6 mittel / 2 niedrig. Daraus entstand ein Seitenplan mit acht Seiten
+(Title, H1, Description, Zielbegriffe, Gliederung, interne Links) und ein 30-Tage-Plan.
+Datei: `massnahmen/2026-09-21-phase-2.md` und `.pdf`.
