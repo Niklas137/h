@@ -35,6 +35,7 @@ Die Regeln stehen im Skill `.claude/skills/seo-audit/SKILL.md`, die Daten in die
 | `tools/onpage_check.py` | On-Page-Merkmale einer gespeicherten HTML-Seite als JSON |
 | `tools/fetch_rendered.js` | gerenderter DOM, Ladezeiten und Screenshot einer Seite (Chromium über Playwright) |
 | `tools/browser_setup.sh` | einmal je Container: Proxy-Zertifikat der Claude-Umgebung für Chromium einrichten |
+| `tools/md_to_pdf.py` | setzt eine Markdown-Datei (zum Beispiel ein Maßnahmenpaket) als A4-PDF im Berichtsstil |
 | `tools/fonts/` | IBM Plex (SIL Open Font License), damit die PDFs ohne Internet gleich aussehen |
 
 PDFs von Hand erzeugen (braucht Node mit Playwright und Chromium, wie in der Claude-Code-Umgebung):
