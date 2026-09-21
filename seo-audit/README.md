@@ -83,10 +83,13 @@ nicht geprüft werden (Seitenabruf gesperrt). Datei: `berichte/2026-09-19-manuel
 ## Stand 19.09.2026, zweiter Lauf (Vollprüfung)
 
 Nach der Netzwerkfreigabe wurden Technik und On-Page nachgeholt. Die Seite ist eine Canva-Website:
-Einseiter, Inhalt per JavaScript, rund 3.000 Wörter, aber keine Überschriften, keine Alt-Texte,
-kein Canonical, keine strukturierten Daten, Sitemap mit einer URL, keine robots.txt, 3,5 MB und
-4,8 s Ladezeit im Labor. fsh-documentation.de zeigt eine STRATO-Platzhalterseite. Elf Befunde
-(fünf hoch, fünf mittel, einer niedrig). Datei: `berichte/2026-09-19-manuell-2.json`.
+Einseiter, Inhalt per JavaScript, 3.123 Wörter, aber keine Überschriften, keine Alt-Texte,
+kein Canonical, keine strukturierten Daten, Sitemap mit einer URL, keine robots.txt, 3,1 MB und
+3,8 bis 4,1 s Ladezeit im Labor (Desktop, vollständig geladen; Nachmessung in drei Läufen am
+21.09.2026, der Erstwert 3,5 MB / 4,8 s vom 19.09. war nicht reproduzierbar).
+fsh-documentation.de zeigt eine STRATO-Platzhalterseite. Elf Befunde (fünf hoch, fünf mittel,
+einer niedrig; nach der Prüfung in Phase 2: drei hoch, sechs mittel, zwei niedrig).
+Datei: `berichte/2026-09-19-manuell-2.json`.
 
 ## Stand 21.09.2026, Phase 2 (Maßnahmenpaket)
 
@@ -94,6 +97,9 @@ Ein Multi-Agent-Lauf hat jeden der elf Befunde von einem unabhängigen Skeptiker
 (Beleg, Relevanz, Umsetzbarkeit in Canva und STRATO), sieben Wettbewerber analysiert, acht
 Abfragefamilien untersucht, die Rechtstexte zweifach geprüft und Alt-Texte für alle 19
 Bildvorkommen geschrieben. Ergebnis: alle Befunde bestätigt, drei Prioritäten gesenkt (B2, B7, B8),
-neue Verteilung 3 hoch / 6 mittel / 2 niedrig. Daraus entstand ein Seitenplan mit acht Seiten
+neue Verteilung 3 hoch / 6 mittel / 2 niedrig. Das Dokument wurde anschließend in zwei Runden von je
+drei unabhängigen Kritikern (Faktentreue, Vollständigkeit, Konsistenz) gegengelesen; 74 der 84
+Beanstandungen wurden eingearbeitet, drei als unbegründet zurückgewiesen. Daraus entstand ein
+Seitenplan mit acht Seiten
 (Title, H1, Description, Zielbegriffe, Gliederung, interne Links) und ein 30-Tage-Plan.
 Datei: `massnahmen/2026-09-21-phase-2.md` und `.pdf`.
