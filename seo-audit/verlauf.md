@@ -8,3 +8,4 @@ nach Priorität hoch/mittel/niedrig. „Änderungen" nennt die Abweichungen zum 
 |---|---|---|---|---|---|---|---|
 | 19.09.2026 | manuell | gesperrt | 1 (Startseite .com) | 0 von 10 | 4/2/0 | Erstaufnahme | `berichte/2026-09-19-manuell.json` |
 | 19.09.2026 03:59 | manuell (2) | ja | 1 (Startseite .com) | 0 von 10 | 5/5/1 | Vollprüfung nach Netzwerkfreigabe: Technik und On-Page erstmals geprüft; .de = STRATO-Platzhalter; neu B7–B11 (Überschriften, Alt-Texte, Canonical/JSON-LD, Ladezeit, robots.txt) | `berichte/2026-09-19-manuell-2.json` |
+| 21.09.2026 12:42 | manuell | ja | 1 (Startseite .com) | 0 von 4 Kernbegriffe (3 von 10 Abfragen: Domain, Name+Teltow, Titel) | 5/5/1 | keine Änderung gegenüber 19.09. (03:59); http→https erstmals geprüft (301); Titel-Abfrage zeigt Startseite auf Position 5; LinkedIn-Profil des Geschäftsführers sichtbar | `berichte/2026-09-21-manuell.json` |

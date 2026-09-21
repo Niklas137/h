@@ -29,7 +29,7 @@ Skill `.claude/skills/wocheneinkauf/SKILL.md`, die Daten in diesem Ordner.
 
 ## Ernährungsregeln
 
-- Nicht: Pilze, Innereien, Gorgonzola
+- Nicht: Pilze, Innereien, Gorgonzola, Hüttenkäse
 - Immer mit Fleisch oder Fisch, ca. 100–150 g pro Tag
 - Purinarm: keine Innereien, Sardinen, Hering; wenig Wurst
 - Vollkorn statt Weißmehl, wenig Zucker, salzarm
@@ -127,7 +127,8 @@ schließen die Märkte meist um 14 Uhr.
 ## Woche 1 (Sa 19.09.2026)
 
 Ursprünglich im Chat ohne Preise geplant, am Sa 19.09.2026 mit „Wocheneinkauf neu" durch einen
-vollständigen Plan ersetzt. Datei: `wochen/2026-09-19-woche-01.md`, Summe 58,73 €.
+vollständigen Plan ersetzt. Datei: `wochen/2026-09-19-woche-01.md`, Summe 58,11 €. Einkauf auf
+Wunsch am Mo 21.09. in einem Gang, Zeitraum bis Fr 25.09.
 
 Gerichte: Ofen-Hähnchen mit Rosmarinkartoffeln und grünen Bohnen, Gefüllte Paprika mit Hack und
 Reis, Lachs-Spinat-Nudeln. Frühstück: Quark-Bowl mit Haferflocken, Apfel und Zimt.
