@@ -3,17 +3,16 @@
   "typ": "leistung",
   "menue": "CE-/UKCA-Konformität",
   "kurz": "Technische Unterlagen und Konformitätsnachweise nach Maschinenrichtlinie, Maschinenverordnung und MDR; projektabhängig EMV, LVD und PED.",
-  "title": "CE-/UKCA-Konformität Dokumentation | FSH-Documentation",
+  "title": "Dokumentation für CE-/UKCA-Konformität | FSH-Documentation",
   "description": "Technische Dokumentation für CE- und UKCA-Konformität: Maschinenrichtlinie, Maschinenverordnung (EU) 2023/1230, MDR, EMV/LVD/PED. FSH-Documentation, Teltow.",
   "schema": {"name": "Technische Dokumentation für CE- und UKCA-Konformität", "serviceType": "Technische Unterlagen und Konformitätsnachweise nach Maschinenrichtlinie, Maschinenverordnung, MDR, EMV, LVD und PED"},
-  "kicker": "Leistung · CE- und UKCA-Konformität",
-  "h1": "CE-/UKCA-Konformität: Technische Dokumentation nach MRL/MVO, MDR, EMV/LVD/PED",
-  "einleitung": "Wir erstellen die technischen Unterlagen, mit denen Sie die Konformität Ihrer Maschine oder Ihres Produkts nachweisen: vollständig, nachvollziehbar und so aufbereitet, dass Auditoren und Marktaufsicht sie ohne Rückfragen prüfen können. FSH-Documentation aus Teltow, für Hersteller deutschlandweit.",
+  "kicker": "Leistung · CE-/UKCA-Konformität",
+  "h1": "CE-/UKCA-Konformität: Technische Dokumentation nach Maschinenrichtlinie, Maschinenverordnung, MDR und EMV/LVD/PED",
+  "einleitung": "Wir erstellen die technischen Unterlagen, mit denen Sie die Konformität Ihrer Maschine oder Ihres Produkts nachweisen: vollständig, nachvollziehbar und so aufbereitet, dass Auditoren und Marktaufsicht sie mit möglichst wenigen Rückfragen prüfen können. FSH-Documentation aus Teltow, für Hersteller deutschlandweit.",
   "seitenkarte": {
     "kicker": "Aus der Praxis",
     "absaetze": [
-      "<strong>Projekteinsatz Ukraine (2024–2025):</strong> mehrere Dokumentationsprojekte geleitet, CMS-Strukturen vor Ort aufgebaut und CE-Dokumentation trotz komplexer Rahmenbedingungen erfolgreich umgesetzt.",
-      "<strong>Energieversorger (DE):</strong> Betriebsanleitungen und Nachweise für den Anlagenumbau auditfähig übergeben."
+      "<strong>Projekteinsatz Ukraine (2024–2025):</strong> mehrere Dokumentationsprojekte geleitet, Strukturen für das Redaktionssystem vor Ort aufgebaut und CE-Dokumentation trotz komplexer Rahmenbedingungen erfolgreich umgesetzt."
     ]
   },
   "abschnitte": [
@@ -24,9 +23,9 @@
       "h2": "Leistung",
       "text": "Wir bauen Ihre Konformitätsdokumentation auf oder bringen sie auf den aktuellen Rechtsstand, für Maschinen, Anlagen und Medizinprodukte.",
       "karten": [
-        {"h3": "Maschinenrichtlinie und Maschinenverordnung", "text": "Technische Unterlagen nach Maschinenrichtlinie 2006/42/EG (Anhang VII) und Maschinenverordnung (EU) 2023/1230: Risikobeurteilung, Betriebsanleitung, Konstruktionsunterlagen, angewandte Normen, Konformitätserklärung."},
+        {"h3": "Maschinenrichtlinie und Maschinenverordnung", "text": "Technische Unterlagen nach Maschinenrichtlinie 2006/42/EG (Anhang VII) und Maschinenverordnung (EU) 2023/1230 (Anhang IV): Risikobeurteilung, Betriebsanleitung, Einordnung Ihrer Konstruktionsunterlagen, Verzeichnis der angewandten Normen, Entwurf der Konformitätserklärung."},
         {"h3": "Medizinprodukte (MDR)", "text": "Technische Dokumentation nach Anhang II und III der MDR, abgestimmt mit Risikomanagement und Gebrauchsanweisung.", "link": "/medizinprodukte-mdr-ivdr/", "linktext": "Zur MDR-Dokumentation"},
-        {"h3": "EMV, Niederspannung, Druckgeräte", "text": "Projektabhängig ergänzen wir die Unterlagen für die EMV-Richtlinie 2014/30/EU, die Niederspannungsrichtlinie 2014/35/EU und die Druckgeräterichtlinie 2014/68/EU."},
+        {"h3": "EMV, Niederspannung, Druckgeräte", "text": "Projektabhängig ergänzen wir die Unterlagen für die EMV-Richtlinie 2014/30/EU, die Niederspannungsrichtlinie 2014/35/EU (LVD) und die Druckgeräterichtlinie 2014/68/EU (PED)."},
         {"h3": "UKCA", "text": "Kennzeichnung für den britischen Markt: gleiche Struktur, eigene Rechtsgrundlage, eigene Erklärung."}
       ]
     },
@@ -35,8 +34,8 @@
       "art": "text",
       "h2": "Rechtsrahmen: Maschinenrichtlinie 2006/42/EG und Maschinenverordnung (EU) 2023/1230",
       "inhalt": [
-        "Bis zum 19. Januar 2027 gilt die Maschinenrichtlinie 2006/42/EG, in Deutschland umgesetzt durch das Produktsicherheitsgesetz und die 9. ProdSV. Ab dem 20. Januar 2027 gilt die Maschinenverordnung (EU) 2023/1230 unmittelbar in allen Mitgliedstaaten, ohne nationale Umsetzung.",
-        "Die grundlegenden Sicherheits- und Gesundheitsschutzanforderungen bleiben in der Struktur ähnlich; neu sind unter anderem Anforderungen an Cybersicherheit, an sich selbst entwickelnde Software (KI) und die Möglichkeit digitaler Betriebsanleitungen. Was das für die Betriebsanleitung heißt, lesen Sie auf der Seite Betriebsanleitungen.",
+        "Bis zum 19. Januar 2027 gilt die Maschinenrichtlinie 2006/42/EG, in Deutschland umgesetzt durch das Produktsicherheitsgesetz und die 9. ProdSV. Ab dem 20. Januar 2027 gilt die Maschinenverordnung (EU) 2023/1230 unmittelbar in allen Mitgliedstaaten; ein nationales Umsetzungsgesetz ist nicht nötig. In Deutschland ergänzt das Maschinenverordnung-Durchführungsgesetz (MaschinenDG) die Verordnung, unter anderem mit Deutsch als Sprache der Betriebsanleitung und der Konformitätserklärung.",
+        "Die grundlegenden Sicherheits- und Gesundheitsschutzanforderungen bleiben in der Struktur ähnlich; neu sind unter anderem Anforderungen an Cybersicherheit, an sich selbst entwickelnde Software (KI) und die Möglichkeit digitaler Betriebsanleitungen. Was das für die Betriebsanleitung heißt, lesen Sie auf der Seite „Betriebsanleitungen“.",
         {"links": [{"text": "Betriebsanleitung und Maschinenverordnung", "ziel": "/betriebsanleitungen/#maschinenverordnung"}]}
       ]
     },
@@ -47,11 +46,11 @@
       "text": "Die technischen Unterlagen belegen, dass Ihr Produkt die grundlegenden Anforderungen erfüllt. Typischer Inhalt:",
       "karten": [
         {"h3": "Risikobeurteilung", "text": "Nach ISO 12100: Gefährdungen, Risikoeinschätzung, Maßnahmen, Restrisiken, mit Bezug auf die angewandten Normen.", "link": "/risikobeurteilung/", "linktext": "Zur Risikobeurteilung"},
-        {"h3": "Betriebsanleitung", "text": "Nach DIN EN IEC/IEEE 82079-1 und EN ISO 20607, in der Amtssprache des Verwenderlandes.", "link": "/betriebsanleitungen/", "linktext": "Zu den Betriebsanleitungen"},
+        {"h3": "Betriebsanleitung", "text": "Nach DIN EN IEC/IEEE 82079-1 und EN ISO 20607, in der Sprache des Verwenderlandes, in Deutschland Deutsch.", "link": "/betriebsanleitungen/", "linktext": "Zu den Betriebsanleitungen"},
         {"h3": "Konstruktions- und Fertigungsunterlagen", "text": "Gesamtzeichnungen, Schaltpläne, Berechnungen und Prüfberichte, soweit für die Konformitätsbewertung nötig."},
         {"h3": "Normen- und Rechtsverzeichnis", "text": "Liste der angewandten harmonisierten Normen und weiterer technischer Spezifikationen."},
         {"h3": "Konformitäts- oder Einbauerklärung", "text": "EU-Konformitätserklärung für vollständige Maschinen; Einbauerklärung und Montageanleitung für unvollständige Maschinen."},
-        {"h3": "Nachweismappe, audit-ready", "text": "Master Document List, Versionierung, Freigabe- und Abnahmeprotokolle: alles auffindbar, wenn die Marktaufsicht fragt."}
+        {"h3": "Auditfähige Nachweismappe", "text": "Master Document List, Versionierung, Freigabe- und Abnahmeprotokolle: alles auffindbar, wenn die Marktaufsicht fragt."}
       ]
     },
     {
@@ -59,8 +58,8 @@
       "art": "text",
       "h2": "UKCA: Kennzeichnung für Großbritannien",
       "inhalt": [
-        "UKCA (UK Conformity Assessed) ist die britische Kennzeichnung für Produkte, die in England, Schottland und Wales in Verkehr gebracht werden; in Nordirland gilt weiterhin die CE-Kennzeichnung. Die technischen Anforderungen entsprechen weitgehend den EU-Regeln, Rechtsgrundlage, Erklärung und Kennzeichnung sind aber eigenständig.",
-        "Die britische Regierung erkennt die CE-Kennzeichnung für viele Produktbereiche, darunter Maschinen, weiterhin an. Ob Sie UKCA brauchen, hängt von Produkt, Zielmarkt und der zum Lieferzeitpunkt geltenden Regelung ab. Wir bereiten die Unterlagen so auf, dass beide Kennzeichnungen aus derselben Dokumentation bedient werden."
+        "UKCA (UK Conformity Assessed) ist die britische Kennzeichnung für Produkte, die in England, Schottland und Wales in Verkehr gebracht werden; in Nordirland gilt weiterhin die CE-Kennzeichnung. Die technischen Anforderungen entsprechen weitgehend den EU-Regeln; Rechtsgrundlage, Erklärung und Kennzeichnung sind aber eigenständig.",
+        "Die britische Regierung erkennt die CE-Kennzeichnung für viele Produktbereiche, darunter Maschinen, weiterhin an. Ob Sie UKCA brauchen, hängt von Produkt, Zielmarkt und der zum Lieferzeitpunkt geltenden Regelung ab. Für Medizinprodukte gelten in Großbritannien eigene, befristete Übergangsregeln (CE-Anerkennung je nach Rechtsakt bis 2028 bzw. 2030); außerdem ist eine Registrierung bei der MHRA erforderlich. Wir bereiten die Unterlagen so auf, dass beide Kennzeichnungen aus derselben Dokumentation bedient werden."
       ]
     },
     {
@@ -95,7 +94,7 @@
   ],
   "kontakt": {
     "h2": "CE-Dokumentation anfragen",
-    "text": "Erstreaktion binnen 24 h. Im Kick-off (30 Min.) klären wir Produkt, Rechtsrahmen, Zielmärkte und Sprachen.",
+    "text": "Erstreaktion binnen 24 h an Werktagen. Im Kick-off (30 Minuten) klären wir Produkt, Rechtsrahmen, Zielmärkte und Sprachen.",
     "betreff": "Anfrage CE-/UKCA-Konformität"
   }
 }

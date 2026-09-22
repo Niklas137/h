@@ -2,18 +2,17 @@
   "pfad": "/betriebsanleitungen/",
   "typ": "leistung",
   "menue": "Betriebsanleitungen",
-  "kurz": "Betriebs-, Montage- und Serviceanleitungen nach DIN EN IEC/IEEE 82079-1 und EN ISO 20607, inklusive Ersatzteilkataloge und Online-Hilfen.",
+  "kurz": "Betriebs-, Montage- und Serviceanleitungen nach DIN EN IEC/IEEE 82079-1 und EN ISO 20607, inklusive Ersatzteilkatalogen und Online-Hilfen.",
   "title": "Betriebsanleitung erstellen lassen | FSH-Documentation",
-  "description": "Betriebs-, Montage- und Serviceanleitungen inkl. Ersatzteilkataloge nach IEC/IEEE 82079-1 und EN ISO 20607, mehrsprachig DE/EN/UKR/RU. Aus Teltow bei Berlin.",
+  "description": "Betriebs-, Montage- und Serviceanleitungen mit Ersatzteilkatalogen nach IEC/IEEE 82079-1 und EN ISO 20607, mehrsprachig DE/EN/UKR/RU. Aus Teltow bei Berlin.",
   "schema": {"name": "Betriebs-, Montage- und Serviceanleitungen", "serviceType": "Erstellung technischer Anleitungen nach DIN EN IEC/IEEE 82079-1 und EN ISO 20607"},
   "kicker": "Leistung · Betriebsanleitungen",
   "h1": "Betriebs-, Montage- und Serviceanleitungen nach DIN EN IEC/IEEE 82079-1 und EN ISO 20607",
   "einleitung": "Normgerechte Betriebs-, Montage- und Serviceanleitungen für Maschinen und Anlagen aus Teltow bei Berlin: verständlich für Betreiber und Instandhalter, belastbar im Audit, termintreu geliefert. Auf Wunsch mehrsprachig in Deutsch, Englisch, Ukrainisch und Russisch.",
-  "cta": {"primaer": {"text": "Anleitung anfragen", "ziel": "#kontakt"}, "sekundaer": {"text": "Alle Leistungen", "ziel": "/#leistungen"}},
   "seitenkarte": {
     "kicker": "Aus der Praxis",
     "absaetze": [
-      "<strong>Energieversorger (DE):</strong> 10.000+ Dokumente gesichtet, Betriebsanleitungen an den neuen Anlagenstand angepasst und normkonform überarbeitet.",
+      "<strong>Energieversorger (DE):</strong> 10.000+ Dokumente gesichtet und ins DMS überführt, Betriebsanleitungen an den neuen Anlagenstand angepasst und normkonform überarbeitet.",
       "<strong>Ergebnis:</strong> auditfähige Übergabe, reibungslose Abnahme und Inbetriebnahme."
     ]
   },
@@ -37,8 +36,8 @@
       "art": "text",
       "h2": "Montageanleitungen für unvollständige Maschinen",
       "inhalt": [
-        "Für unvollständige Maschinen verlangt das Maschinenrecht statt der Betriebsanleitung eine Montageanleitung (Anhang VI der Maschinenrichtlinie 2006/42/EG, Anhang XI der Maschinenverordnung (EU) 2023/1230). Sie beschreibt, wie die unvollständige Maschine sicher in die Gesamtmaschine eingebaut wird, und gehört zusammen mit der Einbauerklärung zum Lieferumfang.",
-        "Wir erstellen Montageanleitungen so, dass der Hersteller der Gesamtmaschine sie ohne Rückfragen in seine Dokumentation übernehmen kann: Schnittstellen, Einbaubedingungen, Restrisiken und Prüfungen nach dem Einbau.",
+        "Für unvollständige Maschinen verlangt das Maschinenrecht statt der Betriebsanleitung eine Montageanleitung, geregelt in Anhang VI der Maschinenrichtlinie 2006/42/EG und Anhang XI der Maschinenverordnung (EU) 2023/1230. Sie beschreibt, wie die unvollständige Maschine sicher in die Gesamtmaschine eingebaut wird, und gehört zusammen mit der Einbauerklärung zum Lieferumfang.",
+        "Wir erstellen Montageanleitungen so, dass der Hersteller der Gesamtmaschine sie mit möglichst wenigen Rückfragen in seine Dokumentation übernehmen kann: Schnittstellen, Einbaubedingungen, Restrisiken und Prüfungen nach dem Einbau.",
         {"links": [{"text": "Zur CE-/UKCA-Konformität", "ziel": "/ce-ukca-konformitaet/"}]}
       ]
     },
@@ -47,12 +46,12 @@
       "art": "band",
       "h2": "Normen und Rechtsbezug",
       "punkte": [
-        {"titel": "DIN EN IEC/IEEE 82079-1", "text": "Erstellung von Nutzungsinformationen: Struktur, Inhalt und Darstellung von Anleitungen, unabhängig vom Produkt."},
-        {"titel": "EN ISO 20607", "text": "Sicherheit von Maschinen, Betriebsanleitung: allgemeine Gestaltungsgrundsätze, ergänzend zu ISO 12100."},
+        {"titel": "DIN EN IEC/IEEE 82079-1", "text": "Erstellung von Nutzungsinformationen – Struktur, Inhalt und Darstellung von Anleitungen, unabhängig vom Produkt."},
+        {"titel": "EN ISO 20607", "text": "Sicherheit von Maschinen – Betriebsanleitung – Allgemeine Gestaltungsgrundsätze; ergänzt ISO 12100."},
         {"titel": "Maschinenrichtlinie 2006/42/EG und Maschinenverordnung (EU) 2023/1230", "text": "Anforderungen an Betriebsanleitung und technische Unterlagen für die CE-Kennzeichnung."},
         {"titel": "ISO 12100", "text": "Risikobeurteilung als Grundlage der Sicherheitshinweise."}
       ],
-      "hinweis": "Weitere Regelwerke je Projekt: VGB-S-831, Druckgeräterichtlinie (PED), BetrSichV, TRGS 555, jeweils in der bei Angebotsabgabe gültigen Fassung."
+      "hinweis": "Weitere Regelwerke je Projekt: VGB-S-831, Druckgeräterichtlinie (PED), BetrSichV, TRGS 555, jeweils in der bei Angebotsabgabe bekannten Fassung (AGB § 2)."
     },
     {
       "id": "maschinenverordnung",
@@ -61,12 +60,12 @@
       "inhalt": [
         "Ab dem 20. Januar 2027 gilt die Maschinenverordnung (EU) 2023/1230 und löst die Maschinenrichtlinie 2006/42/EG ab. Für die Betriebsanleitung ändert sich vor allem die Form: Die Verordnung erlaubt digitale Betriebsanleitungen, wenn der Hersteller bestimmte Bedingungen einhält.",
         {"liste": [
-          "Auf der Maschine, der Verpackung oder in einem Begleitdokument ist anzugeben, wo die digitale Anleitung zu finden ist.",
-          "Die Anleitung muss sich herunterladen, speichern und ausdrucken lassen und online verfügbar bleiben: für die erwartete Lebensdauer der Maschine, mindestens zehn Jahre nach dem Inverkehrbringen.",
+          "Auf der Maschine oder, falls das nicht möglich ist, auf der Verpackung oder in einem Begleitdokument ist anzugeben, wie auf die digitale Anleitung zugegriffen werden kann.",
+          "Die Anleitung muss sich herunterladen, speichern und ausdrucken lassen und online verfügbar bleiben, und zwar für die erwartete Lebensdauer der Maschine, mindestens aber zehn Jahre nach dem Inverkehrbringen.",
           "Auf Verlangen beim Kauf ist eine Papierfassung innerhalb eines Monats kostenlos zu liefern.",
-          "Für Maschinen, die für nicht professionelle Nutzer bestimmt sind oder vorhersehbar von ihnen verwendet werden, müssen die sicherheitsrelevanten Informationen weiterhin in Papierform beiliegen."
+          "Für Maschinen, die für nicht professionelle Nutzer bestimmt sind oder vorhersehbar von ihnen verwendet werden, sind die für sichere Inbetriebnahme und Verwendung wesentlichen Sicherheitsinformationen in Papierform bereitzustellen."
         ]},
-        "Wir bereiten Ihre Anleitungen so auf, dass sie beide Wege erfüllen: als druckfähiges PDF und als digitale Fassung mit stabiler Struktur, aus einer Quelle."
+        "Wir bereiten Ihre Anleitungen so auf, dass sie beide Wege abdecken: als druckfähiges PDF und als digitale Fassung mit stabiler Struktur, aus einer Quelle."
       ]
     },
     {
@@ -81,7 +80,7 @@
       "h2": "Mehrsprachig: Deutsch, Englisch, Ukrainisch, Russisch",
       "inhalt": [
         "Wir schreiben Anleitungen übersetzungsgerecht: kurze Sätze, eindeutige Terminologie, modulare Struktur. Das senkt Übersetzungskosten und hält alle Sprachfassungen auf demselben Stand.",
-        "Kernteam plus erprobtes Expertennetzwerk für Deutsch, Englisch, Ukrainisch und Russisch. In der Ukraine haben wir mehrere Dokumentationsprojekte geleitet und CE-Dokumentation vor Ort umgesetzt.",
+        "Wir arbeiten mit einem Kernteam und einem erprobten Expertennetzwerk für Deutsch, Englisch, Ukrainisch und Russisch. In der Ukraine haben wir mehrere Dokumentationsprojekte geleitet und CE-Dokumentation vor Ort umgesetzt.",
         {"links": [{"text": "Redaktionssysteme und mehrsprachige Workflows", "ziel": "/redaktionssysteme-st4/"}]}
       ]
     },
@@ -90,7 +89,7 @@
       "art": "referenzen",
       "h2": "Referenzen",
       "referenzen": [
-        {"h3": "Energieversorger (DE)", "leistung": "10.000+ Dokumente gesichtet, ins DMS überführt, Betriebsanleitungen normkonform überarbeitet.", "ergebnis": "Auditfähig übergeben, reibungslose Abnahme und Inbetriebnahme."},
+        {"h3": "Energieversorger (DE)", "leistung": "10.000+ Dokumente gesichtet, ins DMS überführt, Betriebsanleitungen normkonform überarbeitet.", "ergebnis": "auditfähig übergeben, reibungslose Abnahme und Inbetriebnahme."},
         {"h3": "Industrie (DE)", "leistung": "ISO/IEC-konforme Betriebs- und Wartungsanleitungen für Netzwerkinfrastruktur.", "ergebnis": "Klarere Verantwortlichkeiten, weniger Störungen."}
       ],
       "hinweis": "Projektbezogene Referenzen stellen wir auf Anfrage bereit."
@@ -100,12 +99,12 @@
       "art": "fragen",
       "h2": "Häufige Fragen",
       "fragen": [
-        {"frage": "Wie lange dauert eine Betriebsanleitung?", "antwort": "Das hängt von Maschinentyp, Umfang und Datenlage ab. Nach dem Kick-off erhalten Sie eine Gliederung und ein Musterkapitel zur Freigabe, danach arbeiten wir mit festen Milestones. Den Zeitplan legen wir im Angebot fest."},
-        {"frage": "Was brauchen wir von Ihnen?", "antwort": "Vorhandene Unterlagen und Daten, zum Beispiel R&amp;I-Schemata, HAZOP, Stücklisten, Zeichnungen und Lieferantendokumente, sowie einen fachlich bevollmächtigten Projektleiter für zeitnahe Entscheidungen."},
+        {"frage": "Wie lange dauert die Erstellung einer Betriebsanleitung?", "antwort": "Das hängt von Maschinentyp, Umfang und Datenlage ab. Nach dem Kick-off erhalten Sie eine Gliederung und ein Musterkapitel zur Freigabe, danach arbeiten wir mit festen Meilensteinen. Den Zeitplan legen wir im Angebot fest."},
+        {"frage": "Was brauchen Sie von uns?", "antwort": "Vorhandene Unterlagen und Daten, zum Beispiel R&amp;I-Schemata, HAZOP, Stücklisten, Zeichnungen und Lieferantendokumente, sowie einen fachlich bevollmächtigten Projektleiter für zeitnahe Entscheidungen."},
         {"frage": "Arbeiten Sie in unserem Redaktionssystem?", "antwort": "Ja, zum Beispiel in SCHEMA ST4. Alternativ liefern wir Quelldateien und PDF, optional mit Übernahme in Ihr Dokumentenmanagementsystem."},
-        {"frage": "Was kostet eine Betriebsanleitung?", "antwort": "Wir rechnen nach Festpreis, Einheitspreisen oder Zeitaufwand ab, wie im Angebot vereinbart. Preise verstehen sich netto zuzüglich Umsatzsteuer. Nach der Abnahme sind 30 Tage Nachbesserung und Feinschliff inklusive."},
-        {"frage": "In welchen Sprachen liefern Sie?", "antwort": "Deutsch, Englisch, Ukrainisch und Russisch, terminologiesicher. Die Betriebsanleitung muss in der Amtssprache des Landes vorliegen, in dem die Maschine in Verkehr gebracht oder in Betrieb genommen wird."},
-        {"frage": "Papier oder digital?", "antwort": "Beides aus einer Quelle: druckfähiges PDF und digitale Fassung. Was die Maschinenverordnung ab 2027 dafür verlangt, steht oben im Abschnitt zur Maschinenverordnung."}
+        {"frage": "Was kostet eine Betriebsanleitung?", "antwort": "Wir rechnen nach Festpreis, Einheitspreisen oder Zeitaufwand ab, wie im Angebot vereinbart. Preise verstehen sich netto zuzüglich Umsatzsteuer. Nach der Abnahme sind 30 Tage Nachbesserung und Feinschliff im vereinbarten Umfang inklusive (AGB § 7)."},
+        {"frage": "In welchen Sprachen liefern Sie?", "antwort": "Deutsch, Englisch, Ukrainisch und Russisch, terminologiesicher. Die Betriebsanleitung muss in der Amtssprache des Landes vorliegen, in dem die Maschine in Verkehr gebracht oder in Betrieb genommen wird; ab dem 20. Januar 2027 in der vom jeweiligen Mitgliedstaat festgelegten, für die Nutzer leicht verständlichen Sprache, in Deutschland Deutsch (§ 2 MaschinenDG)."},
+        {"frage": "Papier oder digital?", "antwort": "Beides aus einer Quelle: druckfähiges PDF und digitale Fassung. Was die Maschinenverordnung ab 2027 dafür verlangt, steht auf dieser Seite im Abschnitt „Betriebsanleitung und Maschinenverordnung (EU) 2023/1230“."}
       ]
     },
     {
@@ -116,7 +115,7 @@
   ],
   "kontakt": {
     "h2": "Betriebsanleitung anfragen",
-    "text": "Erstreaktion binnen 24 h, Kick-off in 30 Minuten. Auf Wunsch prüfen wir zuerst Ihre bestehende Anleitung.",
+    "text": "Erstreaktion binnen 24 h an Werktagen, Kick-off von 30 Minuten. Auf Wunsch prüfen wir zuerst Ihre bestehende Anleitung.",
     "betreff": "Anfrage Betriebsanleitung"
   }
 }

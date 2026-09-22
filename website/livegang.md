@@ -16,7 +16,7 @@ sich jeder Schritt zurücknehmen lässt.
 | Serverstandort | USA (GitHub, Inc.; Datenschutz-Variante `github`) | Deutschland (Variante `strato`) | weltweit (Variante `cloudflare`) |
 | Testadresse vorher | `https://niklas137.github.io/h/` | über die .de-Domain | `*.pages.dev` |
 
-Empfehlung: **GitHub Pages**. Die Website liegt schon im Repo, der Workflow `.github/workflows/website.yml`
+Entschieden am 22.09.2026: **GitHub Pages** (Weg A, Abschnitt 3). Die Website liegt schon im Repo, der Workflow `.github/workflows/website.yml`
 baut und prüft sie bei jedem Push und veröffentlicht sie, sobald eine Repository-Variable gesetzt ist.
 Die .com-Domain bleibt bei Canva registriert; nur drei DNS-Einträge ändern sich. Wer einen deutschen
 Serverstandort will, nimmt STRATO (Abschnitt 4); das setzt aber den Umzug der .com zu STRATO voraus,
@@ -24,9 +24,9 @@ weil STRATO-Webspace keine fremd verwalteten Domains aufschaltet.
 
 Vor dem Start festlegen und in `website/inhalt/site.json` eintragen:
 
-- `hosting`: `github`, `strato` oder `cloudflare` (steuert die Datenschutzerklärung, Abschnitte 2 und 5).
-- Offene Punkte aus `website/README.md`: Kundennamen auf der Startseite, Seite Redaktionssysteme ST4,
-  Titel der Regionalseite, Bildnachweise. Rechtstexte prüfen lassen (keine Rechtsberatung).
+- `hosting`: steht auf `github` (steuert die Datenschutzerklärung, Abschnitte 2 und 5).
+- Entschieden am 22.09.2026: keine Kundennamen auf der Startseite, Seite Redaktionssysteme ST4 bleibt,
+  kurzer Titel der Regionalseite. Offen: Bildnachweise; Rechtstexte prüfen lassen (keine Rechtsberatung).
 - Danach `python3 website/build.py --pruefen` laufen lassen und das Ergebnis committen.
 
 ## 2. Was vor der DNS-Umstellung zu sichern ist
@@ -45,6 +45,12 @@ Vor dem Start festlegen und in `website/inhalt/site.json` eintragen:
 
 ### 3.1 Testadresse einrichten (die alte Seite bleibt online)
 
+0. Vorab beim GitHub-Support (support.github.com) schriftlich bestätigen lassen, dass eine statische
+   Unternehmens-Informationsseite mit Kontaktdaten, ohne Shop und ohne Formular, auf GitHub Pages
+   zulässig ist, und die Antwort ablegen. Hintergrund: Die Pages-Bedingungen verbieten, damit ein
+   „online business“ zu betreiben; eine Informationsseite ist nach dem Wortlaut nicht klar erfasst
+   (Rechtsprüfung vom 22.09.2026). Fällt die Antwort negativ aus: Weg C (Cloudflare Pages) nehmen,
+   Texte und Bau liegen bereit.
 1. Im Repo `Niklas137/h` → **Settings** → **Pages** → unter „Build and deployment" bei **Source**
    „GitHub Actions" wählen.
 2. **Settings** → **Secrets and variables** → **Actions** → Reiter **Variables** → **New repository variable**:

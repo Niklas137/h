@@ -58,10 +58,10 @@ python3 seo-audit/tools/onpage_check.py website/dist/index.html --url https://fs
 |---|---|---|
 | `/` | `start.json` | FSH-Documentation – Technische Dokumentation Teltow (51) |
 | `/betriebsanleitungen/` | `betriebsanleitungen.json` | Betriebsanleitung erstellen lassen \| FSH-Documentation (54) |
-| `/ce-ukca-konformitaet/` | `ce-ukca-konformitaet.json` | CE-/UKCA-Konformität Dokumentation \| FSH-Documentation (54) |
+| `/ce-ukca-konformitaet/` | `ce-ukca-konformitaet.json` | Dokumentation für CE-/UKCA-Konformität \| FSH-Documentation (58) |
 | `/risikobeurteilung/` | `risikobeurteilung.json` | Risikobeurteilung erstellen lassen \| FSH-Documentation (54) |
-| `/medizinprodukte-mdr-ivdr/` | `medizinprodukte-mdr-ivdr.json` | MDR/IVDR Technische Dokumentation \| FSH-Documentation (53) |
-| `/redaktionssysteme-st4/` | `redaktionssysteme-st4.json` | SCHEMA ST4 Einführung & Modularisierung \| FSH-Documentation (59) |
+| `/medizinprodukte-mdr-ivdr/` | `medizinprodukte-mdr-ivdr.json` | Technische Dokumentation MDR/IVDR \| FSH-Documentation (53) |
+| `/redaktionssysteme-st4/` | `redaktionssysteme-st4.json` | SCHEMA ST4: Einführung, Modularisierung \| FSH-Documentation (59) |
 | `/dokumentencheck/` | `dokumentencheck.json` | Dokumentencheck: Anleitung prüfen lassen \| FSH-Documentation (60) |
 | `/technische-dokumentation-berlin-brandenburg/` | `technische-dokumentation-berlin-brandenburg.json` | Technische Dokumentation Berlin-Brandenburg \| FSH Teltow (56) |
 | `/impressum/`, `/datenschutz/`, `/agb/` | `impressum.json`, `datenschutz.json`, `agb.json` | Impressum \| FSH-Documentation usw. |
@@ -97,12 +97,13 @@ Die Website ist hosterneutral. Drei Wege, alle ohne Änderung an den Dateien:
 1. **STRATO-Webspace** (die .de-Domain und die E-Mail liegen schon dort): Inhalt von `dist/` per SFTP in
    das Webverzeichnis laden, `fsh-documentation.com` im STRATO-Kundenmenü auf dieses Verzeichnis
    zeigen lassen, „SSL erzwingen“ einschalten. Die mitgelieferte `.htaccess` setzt UTF-8, 404-Seite und
-   Cache-Header. Datenschutzerklärung: Variante `strato` (Standard).
+   Cache-Header. Datenschutzerklärung: Variante `strato`.
 2. **Cloudflare Pages**: Repo verbinden, Build-Befehl `python3 website/build.py`, Ausgabeordner
    `website/dist`; oder `dist/` direkt hochladen. Domain in Cloudflare umziehen oder per CNAME
    anbinden. `site.json` auf `"hosting": "cloudflare"` stellen und neu bauen.
-3. **GitHub Pages**: `dist/` per Workflow veröffentlichen (Actions → „Deploy static content“) und die
-   Domain als Custom Domain eintragen. `"hosting": "github"` setzen und neu bauen.
+3. **GitHub Pages** (gewählt): der Workflow `.github/workflows/website.yml` veröffentlicht `dist/`, sobald
+   die Repository-Variable `WEBSITE_HOSTING` auf `github` steht; Domain als Custom Domain eintragen.
+   `"hosting": "github"` ist in `site.json` gesetzt. Schritte in `livegang.md`, Abschnitt 3.
 
 Reihenfolge beim Umzug: Website hochladen und unter einer Testadresse prüfen → DNS der .com auf den
 neuen Hoster → HTTPS prüfen → in der Search Console Sitemap `https://fsh-documentation.com/sitemap.xml`
@@ -118,21 +119,53 @@ Alle Punkte stehen auch als `_hinweise` in der jeweiligen JSON-Datei.
   gestrichen, AGB § 7 ohne Platzhalter („im Angebot festgelegter Umfang“, alternativ Stundenzahl
   eintragen), AGB § 16 gekürzt, Logfile-Liste, LDA-URL, Bearbeiterhinweise entfernt. „Stand“-Daten
   beim Veröffentlichen setzen.
-- **Hosting** (`site.json` → `hosting`): Standard `strato`; die Datenschutzerklärung nennt dann STRATO
-  als Auftragsverarbeiter ohne Drittlandtransfer. Bei Cloudflare oder GitHub Pages die Variante
-  umstellen; Auftragsverarbeitungsvertrag ablegen und die tatsächliche Log-Speicherdauer eintragen.
+- **Hosting** (`site.json` → `hosting`): entschieden am 22.09.2026: `github` (GitHub Pages); die
+  Datenschutzerklärung beschreibt GitHub als Hosting-Anbieter, der Zugriffsdaten in eigener
+  Verantwortung protokolliert (Drittlandtransfer USA, DPF). Zwei Punkte aus der Rechtsprüfung vom
+  22.09.2026 vor dem Livegang klären: (1) Die GitHub-Pages-Bedingungen verbieten, damit ein „online
+  business“ zu betreiben; eine reine Unternehmens-Informationsseite ohne Shop und Formular ist nach dem
+  Wortlaut nicht klar erfasst, GitHub hat das nie bestätigt. Beim GitHub-Support schriftlich bestätigen
+  lassen und ablegen, sonst Variante `cloudflare` oder `strato` (Texte und Bau liegen bereit).
+  (2) Ob das GitHub Data Protection Agreement für ein kostenloses Konto gilt, ist offen.
+  Bei einem Wechsel des Hosters die Variante umstellen und neu bauen.
 - **Hauptdomain**: `basis_url` ist `https://fsh-documentation.com` (Empfehlung aus Phase 2: .com
   bleibt, .de leitet um). Bei Wechsel auf die .de nur `basis_url` ändern und neu bauen.
 - **Bildrechte**: Porträt und Zahnräder-Stockfoto stammen von der heutigen Seite; Lizenz und
   Einwilligung nicht belegt. Urheber im Impressum nennen, falls die Lizenz das verlangt.
-- **Kundennamen** auf der Startseite (Zeile „Ausgewählte Kundenprojekte“ in `start.json`): wie auf der
-  heutigen Seite im CV-Abschnitt; streichen, falls nur anonymisierte Referenzen gewünscht sind.
-- **Seite Redaktionssysteme ST4**: laut Phase 2 nur mit nachweisbarer ST4-Praxis oder
-  Quanos-Partnerstatus als eigene Seite; sonst entfernen (siehe „Seite entfernen“).
-- **Regionalseite**: Title-Variante mit „FSH Teltow“ (56 Zeichen) statt vollem Markennamen (63);
-  Zusage „auf Wunsch auch persönlich vor Ort“; Link auf das Google-Unternehmensprofil, sobald es existiert.
-- **Dokumentencheck**: Ergebnisform der Prüfung ist beschrieben (Befunde nach Priorität mit Fundstelle,
-  Normbezug, Empfehlung); anpassen, falls anders gewünscht. Das interne Prüfwerkzeug wird nicht genannt.
+- **Korrekturrunde vom 22.09.2026** (vier Prüfer: Fakten, Konsistenz, Sprache, Recht und Normen;
+  117 Befunde, davon 155 Einzeländerungen eingearbeitet). Vom Betreiber zu bestätigen oder bewusst
+  zurückzunehmen:
+  - „Abnahmegarantie“ von der alten Seite ist in den AGB nicht definiert (Garantie hat Rechtsfolgen,
+    § 276 BGB, DL-InfoV); jetzt „Abnahme nach vereinbarten Freigabekriterien und 30 Tage
+    Service-Window inklusive (AGB § 6 und § 7)“. Alternativ die Garantie in den AGB definieren lassen.
+  - „Auditfest ab der ersten Lieferung“ (alte Seite) heißt jetzt „Auditfähig ab der ersten Lieferung“,
+    weil „auditfest“ das Bestehen von Audits verspricht.
+  - „Erstreaktion binnen 24 h“ trägt jetzt den Zusatz „an Werktagen“, passend zu AGB § 7a.
+  - Zusagen „per Video“ und „vor Ort“ auf der Regionalseite sind gestrichen (nicht belegt); nur nach
+    Freigabe wieder aufnehmen. Ebenso gestrichen: „Kunden in Berlin, Potsdam und Brandenburg“
+    (regionale Kunden sind nicht belegt, Phase 2, Abschnitt 4.8).
+  - Referenz „Technologieunternehmen (AT)“: Die alte Seite nennt „rund 40 % schnellere
+    Inhaltserstellung“ als Ergebnis, der Werdegang dasselbe Mandat als Vorbereitung mit „Ziel: >40 %“.
+    Bestätigen, ob die 40 % gemessen wurden; sonst als Ziel formulieren.
+  - Das verlinkte freelance.de-Profil nennt „Englisch (Grundkenntnisse)“, die Website liefert Englisch
+    über das Expertennetzwerk; Profil angleichen oder Rollen auf der Website benennen.
+  - Dokumentencheck: Ergebnisform ist allgemein beschrieben („Befunde nach Priorität mit
+    Empfehlungen, Umfang und Form im Angebot“); konkretisieren, sobald festgelegt.
+  - Einzugsgebiet in den strukturierten Daten (`site.json` → `einzugsgebiet`: Teltow, Potsdam, Berlin,
+    Brandenburg, Deutschland) und „deutschlandweit“ in den Einleitungen sind plausibel, aber nicht
+    aus der alten Seite belegt (Phase 2, Abschnitt 7e).
+  - AGB: sprachliche Änderungen (§ 7 Überschrift, „Service-Window“, § 7 Abs. 1 Satzbau, § 10 „dessen“,
+    § 18 Überschrift) und Prüfhinweise stehen in `agb.json` unter `_hinweise`; Datenschutz-Hinweise in
+    `datenschutz.json`. Alles vom Rechtsprüfer bestätigen lassen (keine Rechtsberatung).
+- **Kundennamen**: entschieden am 22.09.2026: keine Kundennamen; die Startseite nennt Projekte nur
+  anonymisiert (Zeile „Aus dem Werdegang außerdem“ in `start.json`).
+- **Seite Redaktionssysteme ST4**: entschieden am 22.09.2026: bleibt als eigene Seite.
+- **Regionalseite**: entschieden am 22.09.2026: kurzer Title mit „FSH Teltow“ (56 Zeichen). Offen bleiben
+  die Zusage „auf Wunsch auch persönlich vor Ort“ und der Link auf das Google-Unternehmensprofil,
+  sobald es existiert.
+- **Dokumentencheck**: Ergebnisform der Prüfung ist allgemein beschrieben (Befunde nach Priorität mit
+  konkreten Empfehlungen; Umfang, Form und Termin im Angebot); konkretisieren, sobald festgelegt. Das
+  interne Prüfwerkzeug wird nicht genannt.
 - **Profile**: JSON-LD `sameAs` und Fußzeile enthalten nur das geprüfte freelance.de-Profil. Das
   LinkedIn-Profil steht in `site.json` unter `_same_as_unbestaetigt` und wird erst nach Bestätigung in
   `same_as` übernommen.

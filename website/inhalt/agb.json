@@ -2,7 +2,10 @@
   "_hinweise": [
     "Keine Rechtsberatung. Vor Veröffentlichung prüfen lassen.",
     "Änderungen gegenüber dem Stand 13.08.2025 (Phase 2, Abschnitt 6): Bearbeiterhinweis im Kopf entfernt; § 2 Normbezeichnung „DIN ISO 82079-1“ → „DIN EN IEC/IEEE 82079-1“; § 7 Platzhalter „[X] Stunden“ → „im Angebot festgelegter Umfang“ (alternativ Stundenzahl eintragen); § 16 auf den VSBG-Satz gekürzt, Satz zur eingestellten EU-OS-Plattform gestrichen; Anschrift und Telefon in der NAP-Schreibweise.",
-    "„Stand“ beim Veröffentlichen auf das Datum der freigegebenen Fassung setzen."
+    "„Stand“ beim Veröffentlichen auf das Datum der freigegebenen Fassung setzen.",
+    "Sprachliche Änderungen aus der Korrekturrunde vom 22.09.2026, inhaltlich neutral, vom Rechtsprüfer bestätigen lassen: § 7 Überschrift und Schreibweise „Service-Window“ (auch § 7a), § 7 Abs. 1 „behebt … und setzt … um“ statt Zeugma, § 10 Abs. 3 „dessen“ statt „deren“, § 18 Überschrift ohne „Rangfolge“ (Rangfolge steht in § 3 Abs. 3).",
+    "Rechtsprüfung 22.09.2026 zu § 7 Abs. 1 lit. b: Ohne Umfangsangabe im Angebot läuft die Klausel leer (§ 305c Abs. 2 BGB); Vorschlag „…, andernfalls bis zu insgesamt [Stundenzahl] Stunden“ mit einer vom Betreiber festzulegenden Zahl.",
+    "Zur Prüfung vorgemerkt, nicht geändert: § 1 Abs. 1 nennt „Betriebs- und Bedienungsanleitungen, Risikoanalysen“, die Website „Betriebs-, Montage- und Serviceanleitungen, Risikobeurteilungen, Dokumentencheck“; § 4 Abs. 1 „RB Stücklisten“ aus dem Alttext wurde als „Risikobeurteilungen, Stücklisten“ gelesen."
   ],
   "pfad": "/agb/",
   "typ": "recht",
@@ -87,21 +90,21 @@
     },
     {
       "art": "text",
-      "h2": "§ 7 30-Tage-Nachbesserungs- und Optimierungsfenster („Service Window“)",
+      "h2": "§ 7 Nachbesserungs- und Optimierungsfenster von 30 Tagen („Service-Window“)",
       "inhalt": [
         {"nummern": [
-          "Zusätzlich zu den gesetzlichen Mängelrechten (§ 8) räumt der Anbieter ab dem Tag der Abnahme ein 30-tägiges kostenfreies Nachbesserungs- und Optimierungsfenster ein. In diesem Zeitraum behebt der Anbieter a) Mängel (Abweichungen von den freigegebenen Spezifikationen) kostenfrei und b) kleine Optimierungswünsche des Kunden (rein redaktionelle Anpassungen, Formatierungen, Glossarangleichungen) bis zu dem im Angebot festgelegten Umfang einmalig und ohne Mehrkosten.",
-          "Vom Service Window nicht erfasst sind neue oder geänderte Anforderungen (Inhalte, Normen, Funktionsumfang), Daten- oder Systemänderungen beim Kunden sowie Änderungswünsche mit erheblichem Aufwand; solche Anpassungen erfolgen ausschließlich über § 5 (Change Request) und sind vergütungspflichtig.",
-          "Das Service Window lässt gesetzliche Ansprüche unberührt und verlängert keine gesetzlichen oder vertraglichen Verjährungsfristen."
+          "Zusätzlich zu den gesetzlichen Mängelrechten (§ 8) räumt der Anbieter ab dem Tag der Abnahme ein 30-tägiges kostenfreies Nachbesserungs- und Optimierungsfenster ein. In diesem Zeitraum behebt der Anbieter a) Mängel (Abweichungen von den freigegebenen Spezifikationen) kostenfrei und setzt b) kleine Optimierungswünsche des Kunden (rein redaktionelle Anpassungen, Formatierungen, Glossarangleichungen) bis zu dem im Angebot festgelegten Umfang einmalig und ohne Mehrkosten um.",
+          "Vom Service-Window nicht erfasst sind neue oder geänderte Anforderungen (Inhalte, Normen, Funktionsumfang), Daten- oder Systemänderungen beim Kunden sowie Änderungswünsche mit erheblichem Aufwand; solche Anpassungen erfolgen ausschließlich über § 5 (Change Request) und sind vergütungspflichtig.",
+          "Das Service-Window lässt gesetzliche Ansprüche unberührt und verlängert keine gesetzlichen oder vertraglichen Verjährungsfristen."
         ]}
       ]
     },
     {
       "art": "text",
-      "h2": "§ 7a Service Level, Reaktionszeiten im 30-Tage-Window",
+      "h2": "§ 7a Service-Level und Reaktionszeiten im Service-Window",
       "inhalt": [
         {"nummern": [
-          "Der Anbieter reagiert auf Anfragen des Kunden, die das Service Window nach § 7 betreffen, innerhalb von 24 Stunden nach Eingang der Anfrage beim Anbieter („Erstreaktion“). Die Erstreaktion umfasst die Eingangsbestätigung und, soweit möglich, eine erste Einschätzung sowie die Zuordnung einer Priorität.",
+          "Der Anbieter reagiert auf Anfragen des Kunden, die das Service-Window nach § 7 betreffen, innerhalb von 24 Stunden nach Eingang der Anfrage beim Anbieter („Erstreaktion“). Die Erstreaktion umfasst die Eingangsbestätigung und, soweit möglich, eine erste Einschätzung sowie die Zuordnung einer Priorität.",
           "Messpunkt ist der Eingang der Anfrage über die im Vertrag bezeichneten Supportkanäle (insbesondere die in diesen AGB genannte E-Mail-Adresse). Reaktionszeiten gelten an Werktagen (Montag bis Freitag) am Sitz des Anbieters; gesetzliche Feiertage am Sitz des Anbieters sind ausgenommen.",
           "Die Reaktionszeit ist keine Zusage einer Behebungs- oder Lösungszeit. Lösungszeiten richten sich nach der Komplexität und werden mit dem Kunden abgestimmt.",
           "Ein Verstoß gegen die Reaktionszeit begründet keine Vertragsstrafe und keine automatischen Minderungsrechte; gesetzliche Ansprüche (zum Beispiel bei Verzug oder Mängeln) bleiben unberührt."
@@ -137,7 +140,7 @@
         {"nummern": [
           "Der Anbieter räumt dem Kunden an den Arbeitsergebnissen (Texte, Grafiken, Layouts, Templates) nach vollständiger Zahlung ein einfaches, zeitlich und räumlich unbeschränktes Nutzungsrecht für den vertraglich vorgesehenen Zweck ein. Weitergehende Nutzungen (zum Beispiel Übertragung an Dritte außerhalb des Konzerns, produktfremde Verwendungen) bedürfen einer gesonderten Vereinbarung.",
           "Urhebervermerke und Markenhinweise des Anbieters dürfen nicht entfernt werden.",
-          "Setzt der Anbieter Open-Source- oder Drittmaterial ein, gelten deren Lizenzbedingungen vorrangig; der Anbieter weist diese vor Abnahme aus.",
+          "Setzt der Anbieter Open-Source- oder Drittmaterial ein, gelten dessen Lizenzbedingungen vorrangig; der Anbieter weist diese vor Abnahme aus.",
           "Der Kunde stellt sicher, dass beigestellte Inhalte frei von Rechten Dritter sind, und stellt den Anbieter von entsprechenden Ansprüchen frei."
         ]}
       ]
@@ -208,7 +211,7 @@
     },
     {
       "art": "text",
-      "h2": "§ 18 Textform, Teilunwirksamkeit, Rangfolge",
+      "h2": "§ 18 Textform, Teilunwirksamkeit",
       "inhalt": [
         {"nummern": [
           "Änderungen und Ergänzungen dieses Vertrags bedürfen der Textform (zum Beispiel E-Mail). Dies gilt auch für die Änderung dieses Textformerfordernisses.",

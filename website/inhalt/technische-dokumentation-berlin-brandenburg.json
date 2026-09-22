@@ -1,7 +1,7 @@
 {
   "_hinweise": [
-    "Title: 56-Zeichen-Variante mit „FSH Teltow“; Alternative mit vollem Markennamen hat 63 Zeichen (Phase 2, Abschnitt 4.8, Entscheidung offen).",
-    "„auf Wunsch auch persönlich vor Ort“ ist eine Zusage des Betreibers; streichen, falls nicht gewollt.",
+    "Title: entschieden am 22.09.2026: kurze Variante mit „FSH Teltow“ (56 Zeichen).",
+    "Zusagen wie „vor Ort“ oder „per Video“ stehen nicht auf der alten Seite und wurden in der Korrekturrunde entfernt; nur nach ausdrücklicher Freigabe des Betreibers wieder aufnehmen.",
     "Link auf das Google-Unternehmensprofil ergänzen, sobald es existiert (Phase 2, Abschnitt 7d)."
   ],
   "pfad": "/technische-dokumentation-berlin-brandenburg/",
@@ -13,13 +13,13 @@
   "schema": {"name": "Technische Dokumentation für Berlin und Brandenburg", "serviceType": "Technische Dokumentation, CE-Konformität und Risikobeurteilung für Unternehmen in Berlin und Brandenburg", "areaServed": ["Teltow", "Potsdam", "Berlin", "Brandenburg"]},
   "kicker": "Region · Teltow, Potsdam, Berlin, Brandenburg",
   "h1": "Technische Dokumentation für Berlin und Brandenburg – aus Teltow",
-  "einleitung": "FSH-Documentation sitzt in Teltow, direkt an der Stadtgrenze zu Berlin und wenige Kilometer von Potsdam. Unternehmen in Berlin und Brandenburg erhalten Betriebsanleitungen, CE-Konformität, Risikobeurteilungen und MDR-Dokumentation von einem technischen Redakteur aus der Region, deutschlandweit und mehrsprachig.",
+  "einleitung": "FSH-Documentation sitzt in Teltow, direkt an der Stadtgrenze zu Berlin und rund 15 Kilometer von Potsdam entfernt. Unternehmen in Berlin und Brandenburg erhalten Betriebsanleitungen, CE-Dokumentation, Risikobeurteilungen und MDR-Dokumentation von einem Technischen Redakteur aus der Region, mehrsprachig in Deutsch, Englisch, Ukrainisch und Russisch.",
   "cta": {"primaer": {"text": "Direkt anrufen", "ziel": "tel"}, "sekundaer": {"text": "Jetzt anfragen", "ziel": "#kontakt"}},
   "seitenkarte": {
     "kicker": "Standort",
     "absaetze": [
       "<strong>FSH-Documentation UG (haftungsbeschränkt)</strong><br>Bäckerstraße 2 D<br>14513 Teltow<br>Deutschland",
-      "Registersitz: Amtsgericht Potsdam, HRB 37959 P"
+      "Handelsregister: Amtsgericht Potsdam, HRB 37959 P"
     ]
   },
   "abschnitte": [
@@ -28,7 +28,7 @@
       "art": "text",
       "h2": "Standort Teltow",
       "inhalt": [
-        "Teltow liegt im Landkreis Potsdam-Mittelmark, südlich von Berlin. Von hier aus betreuen wir Kunden in Berlin, Potsdam und ganz Brandenburg, auf Wunsch auch persönlich vor Ort, und darüber hinaus Projekte in ganz Deutschland, in Österreich und in der Ukraine."
+        "Teltow liegt im Landkreis Potsdam-Mittelmark, südlich von Berlin. Von hier aus sind Berlin, Potsdam und ganz Brandenburg schnell erreichbar; unsere Projekte liegen in ganz Deutschland, in Österreich und in der Ukraine."
       ]
     },
     {
@@ -43,8 +43,8 @@
       "art": "karten",
       "h2": "Zusammenarbeit",
       "karten": [
-        {"h3": "Kick-off in 30 Minuten", "text": "Ziel, Normen, Zielgruppe und Sprache klären, per Video oder vor Ort in Berlin und Brandenburg."},
-        {"h3": "Erstreaktion binnen 24 h", "text": "Auf Anfragen antworten wir innerhalb von 24 Stunden mit einer ersten Einschätzung."},
+        {"h3": "Kick-off (30 Minuten)", "text": "Ziel, Normen, Zielgruppe und Sprache klären, damit das Projekt vom ersten Tag an in die richtige Richtung läuft."},
+        {"h3": "Erstreaktion binnen 24 h", "text": "Auf Anfragen reagieren wir an Werktagen binnen 24 h mit einer Eingangsbestätigung und, soweit möglich, einer ersten Einschätzung."},
         {"h3": "30-Tage-Service-Window", "text": "Nach der Abnahme 30 Tage kostenfreie Nachbesserung und Feinschliff, Details in AGB und Angebot."}
       ]
     },
@@ -54,15 +54,15 @@
       "h2": "Referenzen",
       "text": "Anonymisierte Fallstudien aus Energie, Technologie und Industrie. Projektbezogene Referenzen stellen wir auf Anfrage bereit.",
       "referenzen": [
-        {"h3": "Energieversorger (DE)", "leistung": "10.000+ Dokumente gesichtet, ins DMS überführt, Betriebsanleitungen normkonform überarbeitet.", "ergebnis": "Auditfähig übergeben, reibungslose Abnahme und Inbetriebnahme."},
-        {"h3": "Technologieunternehmen (AT)", "leistung": "ST4-Einführung mit DE/EN-Workflow.", "ergebnis": "Rund 40 % schnellere Inhaltserstellung, Übersetzungskosten spürbar gesenkt."},
+        {"h3": "Energieversorger (DE)", "leistung": "10.000+ Dokumente gesichtet, ins DMS überführt, Betriebsanleitungen normkonform überarbeitet.", "ergebnis": "auditfähig übergeben, reibungslose Abnahme und Inbetriebnahme."},
+        {"h3": "Technologieunternehmen (AT)", "leistung": "ST4-Einführung mit DE/EN-Workflow.", "ergebnis": "rund 40 % schnellere Inhaltserstellung, Übersetzungskosten spürbar gesenkt."},
         {"h3": "Industrie (DE)", "leistung": "ISO/IEC-konforme Betriebs- und Wartungsanleitungen für Netzwerkinfrastruktur.", "ergebnis": "Klarere Verantwortlichkeiten, weniger Störungen."}
       ]
     }
   ],
   "kontakt": {
-    "h2": "Kontakt und Anfahrt",
-    "text": "Bäckerstraße 2 D, 14513 Teltow. Erstreaktion binnen 24 h. Auf Wunsch Kick-off (30 Min.) per Video oder vor Ort in Berlin und Brandenburg.",
+    "h2": "Kontakt und Standort",
+    "text": "Bäckerstraße 2 D, 14513 Teltow. Nennen Sie uns Produkt, Dokumentart und Umfang; wir melden uns an Werktagen binnen 24 h.",
     "betreff": "Anfrage Technische Dokumentation Berlin-Brandenburg"
   }
 }

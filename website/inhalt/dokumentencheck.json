@@ -1,6 +1,6 @@
 {
   "_hinweise": [
-    "Ergebnisform der Prüfung (Abschnitt „Ablauf und Ergebnis“) ist laut Phase 2 vom Betreiber festzulegen; der Text beschreibt Befunde nach Priorität mit Fundstelle, Normbezug und Empfehlung.",
+    "Ergebnisform der Prüfung (Abschnitt „Ablauf und Ergebnis“) ist laut Phase 2 vom Betreiber festzulegen; der Text beschreibt seit der Korrekturrunde vom 22.09.2026 nur noch „Befunde nach Priorität geordnet mit konkreten Empfehlungen“ (Fundstelle, Normbezug und Besprechungstermin gestrichen).",
     "Ob das interne Prüfwerkzeug (normlogik_82079.json) öffentlich genannt wird: Entscheidung des Betreibers; derzeit nicht genannt."
   ],
   "pfad": "/dokumentencheck/",
@@ -13,12 +13,11 @@
   "kicker": "Leistung · Dokumentencheck",
   "h1": "Dokumentencheck: Technische Dokumentation auf Normenkonformität prüfen",
   "einleitung": "Wir prüfen bestehende Betriebsanleitungen, Gebrauchsanweisungen und technische Unterlagen gegen DIN EN IEC/IEEE 82079-1, EN ISO 20607 und die für Ihr Produkt geltenden Vorschriften: Struktur, Rechtsbezug, Didaktik und Terminologie. Aus Teltow bei Berlin, für Hersteller und Betreiber deutschlandweit.",
-  "cta": {"primaer": {"text": "Dokumente prüfen lassen", "ziel": "#kontakt"}, "sekundaer": {"text": "Direkt anrufen", "ziel": "tel"}},
   "seitenkarte": {
     "kicker": "Aus der Praxis",
     "absaetze": [
-      "<strong>Energieversorger (DE):</strong> 10.000+ technische Dokumente gesichtet, klassifiziert und ins DMS überführt; Betriebsanleitungen an den neuen Anlagenstand angepasst und normkonform überarbeitet.",
-      "<strong>Ergebnis:</strong> auditfähige Dokumentation, reibungslose Übergabe an den Betrieb."
+      "<strong>Energieversorger (DE):</strong> 10.000+ Dokumente gesichtet, klassifiziert und ins DMS überführt; Betriebsanleitungen an den neuen Anlagenstand angepasst und normkonform überarbeitet.",
+      "<strong>Ergebnis:</strong> auditfähig übergeben, reibungslose Abnahme und Inbetriebnahme."
     ]
   },
   "abschnitte": [
@@ -56,8 +55,8 @@
       "art": "text",
       "h2": "Ablauf und Ergebnis",
       "inhalt": [
-        "Sie stellen die Dokumente bereit, wir prüfen sie gegen die vereinbarte Prüfgrundlage und liefern die Befunde nach Priorität geordnet, jeweils mit Fundstelle, Normbezug und konkreter Empfehlung. Auf Wunsch besprechen wir die Ergebnisse in einem Termin mit Ihrer Redaktion oder Ihrem QM.",
-        "Umfang und Form der Prüfung (Stichprobe oder vollständig, Anzahl der Dokumente, Sprachen) legen wir im Angebot fest."
+        "Sie stellen die Dokumente bereit, wir prüfen sie gegen die vereinbarte Prüfgrundlage. Sie erhalten die Befunde nach Priorität geordnet mit konkreten Empfehlungen.",
+        "Umfang, Form und Termin der Prüfung (Stichprobe oder vollständig, Anzahl der Dokumente, Sprachen) legen wir im Angebot fest."
       ]
     },
     {
@@ -66,7 +65,7 @@
       "h2": "Optimierung nach der Prüfung",
       "inhalt": [
         "Auf Wunsch setzen wir die Befunde direkt um: Anleitungen normkonform überarbeiten, Struktur und Terminologie vereinheitlichen, Warnhinweise mit der Risikobeurteilung abgleichen, Lieferantendokumente integrieren.",
-        "Bei größeren Beständen richten wir Dokumenten-Controlling ein: Master Document List (MDL), Versionierung und Änderungsstand, RACI- und Review-Matrix, Lieferantensteuerung, Freigabe- und Abnahmeprotokolle, Nachweismappe (audit-ready). Kundennutzen: weniger Schleifen, terminsichere Übergaben, nachvollziehbare Pflichtenübertragung, bestandene Audits, messbar über Durchlaufzeit, First-Time-Right und Änderungsquote.",
+        "Bei größeren Beständen richten wir ein Dokumenten-Controlling ein: Master Document List (MDL), Versionierung und Änderungsstand, Verantwortlichkeits- und Review-Matrix (RACI), Lieferantensteuerung, Freigabe- und Abnahmeprotokolle sowie eine auditfähige Nachweismappe. Ihr Nutzen: weniger Korrekturschleifen, terminsichere Übergaben, nachvollziehbare Pflichtenübertragung und bestandene Audits, messbar über Durchlaufzeit, First-Time-Right-Quote und Änderungsquote.",
         {"links": [
           {"text": "Zu den Betriebsanleitungen", "ziel": "/betriebsanleitungen/"},
           {"text": "Redaktionssysteme und Prozesse", "ziel": "/redaktionssysteme-st4/"}
@@ -78,7 +77,7 @@
       "art": "text",
       "h2": "Betreiberpflichten: Gefährdungsbeurteilung, Betriebsanweisungen, Prüfkataster",
       "inhalt": [
-        "Für Betreiber prüfen und erstellen wir die Dokumente nach ArbSchG und BetrSichV: Gefährdungsbeurteilungen, Explosionsschutzdokument, Betriebsanweisungen (unter anderem nach TRGS 555), Prüfkataster und Fristen, die Trennung von Hersteller- und Betreiberdokumentation sowie die Vorbereitung interner und externer Prüfungen, auch durch eine zugelassene Überwachungsstelle (ZÜS).",
+        "Für Betreiber prüfen und erstellen wir, in Ihrer Verantwortung als Arbeitgeber, die Dokumente nach ArbSchG, BetrSichV und GefStoffV: Gefährdungsbeurteilungen, Explosionsschutzdokument (§ 6 Abs. 9 GefStoffV), Betriebsanweisungen (§ 12 BetrSichV, § 14 GefStoffV, unter anderem nach TRGS 555) sowie Prüfkataster und Fristen. Dabei halten wir Hersteller- und Betreiberdokumentation sauber getrennt und bereiten interne und externe Prüfungen vor, auch durch eine zugelassene Überwachungsstelle (ZÜS).",
         {"links": [{"text": "Abgrenzung zur Risikobeurteilung des Herstellers", "ziel": "/risikobeurteilung/#betreiberpflichten"}]}
       ]
     },
@@ -97,9 +96,9 @@
       "h2": "Häufige Fragen",
       "fragen": [
         {"frage": "Was kostet ein Dokumentencheck?", "antwort": "Das richtet sich nach Umfang und Prüftiefe. Nach einem kurzen Kick-off erhalten Sie ein Angebot mit Festpreis oder Aufwandsschätzung; Preise netto zuzüglich Umsatzsteuer."},
-        {"frage": "Wie schnell liegt das Ergebnis vor?", "antwort": "Erstreaktion innerhalb von 24 h; den Liefertermin für die Prüfung legen wir im Angebot fest, abhängig von Umfang und Sprachen."},
+        {"frage": "Wie schnell liegt das Ergebnis vor?", "antwort": "Erstreaktion binnen 24 h an Werktagen; den Liefertermin für die Prüfung legen wir im Angebot fest, abhängig von Umfang und Sprachen."},
         {"frage": "Prüfen Sie auch Übersetzungen?", "antwort": "Ja, für Deutsch, Englisch, Ukrainisch und Russisch prüfen wir Konsistenz und Terminologie der Sprachfassungen."},
-        {"frage": "Können Sie die Befunde auch umsetzen?", "antwort": "Ja. Prüfung und Überarbeitung bieten wir getrennt oder als Paket an; die Überarbeitung folgt dem Ablauf aus vier Schritten mit Musterkapitel, Milestones und 30 Tagen Feinschliff nach der Abnahme."}
+        {"frage": "Können Sie die Befunde auch umsetzen?", "antwort": "Ja. Prüfung und Überarbeitung bieten wir getrennt oder als Paket an; die Überarbeitung folgt dem Ablauf aus vier Schritten mit Musterkapitel, Meilensteinen und 30 Tagen Feinschliff im vereinbarten Umfang nach der Abnahme (AGB § 7)."}
       ]
     },
     {
@@ -110,7 +109,7 @@
   ],
   "kontakt": {
     "h2": "Dokumentencheck anfragen",
-    "text": "Erstreaktion binnen 24 h. Nennen Sie uns Produkt, Dokumentart und Umfang; im Kick-off (30 Min.) legen wir die Prüfgrundlage fest.",
+    "text": "Erstreaktion binnen 24 h an Werktagen. Nennen Sie uns Produkt, Dokumentart und Umfang; im Kick-off (30 Minuten) legen wir die Prüfgrundlage fest.",
     "betreff": "Anfrage Dokumentencheck"
   }
 }

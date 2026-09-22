@@ -41,9 +41,26 @@ SPRACHEN_BCP47 = ["de", "en", "uk", "ru"]
 
 
 # ----------------------------------------------------------------------------- Hilfen
+_TYPO = [
+    # Zahl und Einheit, Paragraf und Nummer, mehrteilige Abkürzungen: geschütztes Leerzeichen (U+00A0)
+    (re.compile(r"(\d) (h|%|Min\.|Minuten|Stunden|Tage|Tagen|Werktagen|Jahre|Monaten|Kilometer|km|MB|KB)(?!\w)"), "\\1\u00a0\\2"),
+    (re.compile(r"(§|§§|Art\.|Abs\.|Nr\.|Kapitel|Anhang|Anhänge) (\d|[IVX]+\b)"), "\\1\u00a0\\2"),
+    (re.compile(r"\b(u|z|d)\. (a|B|h)\."), "\\1.\u00a0\\2."),
+    (re.compile(r"\(EU\) (\d)"), "(EU)\u00a0\\1"),
+    (re.compile(r"lit\. ([a-z])\b"), "lit.\u00a0\\1"),
+]
+
+
+def typo(s: str) -> str:
+    """Setzt geschützte Leerzeichen, damit „24 h“, „§ 5“ oder „z. B.“ nicht am Zeilenende getrennt werden."""
+    for muster, ersatz in _TYPO:
+        s = muster.sub(ersatz, s)
+    return s
+
+
 def esc(s) -> str:
     """Text für Attribute und reinen Text (Title, Description, Alt) escapen."""
-    return html.escape("" if s is None else str(s), quote=True)
+    return html.escape(typo("" if s is None else str(s)), quote=True)
 
 
 _AMP = re.compile(r"&(?!(?:[a-zA-Z][a-zA-Z0-9]*|#[0-9]+|#x[0-9a-fA-F]+);)")
@@ -51,7 +68,7 @@ _AMP = re.compile(r"&(?!(?:[a-zA-Z][a-zA-Z0-9]*|#[0-9]+|#x[0-9a-fA-F]+);)")
 
 def frag(s) -> str:
     """Inhaltstext als HTML-Fragment übernehmen; ein nacktes & wird zu &amp;."""
-    return _AMP.sub("&amp;", "" if s is None else str(s))
+    return typo(_AMP.sub("&amp;", "" if s is None else str(s)))
 
 
 def lade_json(pfad: Path):
@@ -356,7 +373,7 @@ def fuss(bau: Bau, seite: Seite) -> str:
   <div class="innen">
     <div class="fuss-spalten">
       <address class="adresse"><strong>{esc(site['firma'])}</strong><span>{esc(adr['strasse'])}<br>{esc(adr['plz'])} {esc(adr['ort'])}, {esc(adr['land'])}</span><a href="tel:{esc(site['telefon_link'])}">{esc(site['telefon'])}</a><a href="mailto:{esc(site['email'])}">{esc(site['email'])}</a></address>
-      <nav aria-label="Leistungen im Fußbereich"><strong>Leistungen</strong>{leistungen}</nav>
+      <nav aria-label="Leistungen und Region im Fußbereich"><strong>Leistungen und Region</strong>{leistungen}</nav>
       <nav aria-label="Rechtliches"><strong>Rechtliches</strong>{recht}</nav>
       {profile_block}
     </div>
@@ -418,8 +435,8 @@ def json_ld(bau: Bau, seite: Seite) -> dict:
     fragen = [x for a in d.get("abschnitte", []) if a.get("art") == "fragen" for x in a["fragen"]]
     if fragen:
         graph.append({"@type": "FAQPage", "@id": seite_url + "#faq", "mainEntity": [
-            {"@type": "Question", "name": re.sub("<[^>]+>", "", x["frage"]),
-             "acceptedAnswer": {"@type": "Answer", "text": re.sub("<[^>]+>", "", x["antwort"])}} for x in fragen]})
+            {"@type": "Question", "name": html.unescape(re.sub("<[^>]+>", "", x["frage"])),
+             "acceptedAnswer": {"@type": "Answer", "text": html.unescape(re.sub("<[^>]+>", "", x["antwort"]))}} for x in fragen]})
     return {"@context": "https://schema.org", "@graph": graph}
 
 

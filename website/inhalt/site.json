@@ -20,17 +20,17 @@
   "same_as": ["https://www.freelance.de/Freelancer/269905-Geschaeftsfuehrer-FSH-Documentation"],
   "_same_as_unbestaetigt": ["https://de.linkedin.com/in/sascha-falk-heinzmann-a589961b7"],
   "profile": [{"text": "Profil auf freelance.de", "url": "https://www.freelance.de/Freelancer/269905-Geschaeftsfuehrer-FSH-Documentation"}],
-  "hosting": "strato",
+  "hosting": "github",
   "og_bild": "/assets/img/og-fsh-documentation.jpg",
   "og_bild_alt": "Offene Hand hält drei leuchtende Zahnräder – Sinnbild für den Dokumentationsprozess",
   "fonts_vorladen": ["source-sans-3-latin.woff2", "poppins-700-latin.woff2"],
   "cta_kopf": "Jetzt anfragen",
   "cta_standard": {"primaer": {"text": "Jetzt anfragen", "ziel": "#kontakt"}, "sekundaer": {"text": "Direkt anrufen", "ziel": "tel"}},
-  "erstreaktion_kurz": "Erstreaktion binnen 24 h. Auf Wunsch Kick-off (30 Min.) zur Klärung von Ziel, Normen, Zielgruppe und Sprache.",
+  "erstreaktion_kurz": "Erstreaktion binnen 24 h an Werktagen. Kick-off (30 Minuten) zur Klärung von Ziel, Normen, Zielgruppe und Sprache.",
   "ablauf": [
     {"h3": "Kick-off (30 Minuten)", "text": "Ziel, Normen, Zielgruppe und Sprache klären."},
-    {"h3": "Struktur und Muster", "text": "Gliederung plus ein Musterkapitel zur Freigabe."},
-    {"h3": "Erstellung und Überarbeitung", "text": "Milestones, Reviews und Korrekturschleifen, HAZOP-Abgleich."},
+    {"h3": "Struktur und Muster", "text": "Gliederung und ein Musterkapitel zur Freigabe."},
+    {"h3": "Erstellung und Überarbeitung", "text": "Meilensteine, Reviews und Korrekturschleifen, HAZOP-Abgleich."},
     {"h3": "Abnahme und Übergabe", "text": "Quellen und PDF, optional DMS-Integration; 30 Tage Feinschliff inklusive."}
   ],
   "navigation": [
@@ -53,7 +53,7 @@
     "kicker": "Fehler 404",
     "h1": "Diese Seite gibt es nicht",
     "einleitung": "Die Adresse ist falsch geschrieben oder die Seite wurde verschoben. Über die Startseite und die Leistungsübersicht finden Sie alle Inhalte.",
-    "cta": {"primaer": {"text": "Zur Startseite", "ziel": "/"}, "sekundaer": {"text": "Leistungen", "ziel": "/#leistungen"}},
+    "cta": {"primaer": {"text": "Zur Startseite", "ziel": "/"}, "sekundaer": {"text": "Zu den Leistungen", "ziel": "/#leistungen"}},
     "abschnitte": []
   }
 }
