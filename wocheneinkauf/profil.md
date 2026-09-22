@@ -88,6 +88,49 @@ werden eingefroren.
 - Trainingstage der Routine-Session mitteilen (`Training: Di Do Sa`), dann verteilt sie Bananen und
   größere Beilagen auf diese Tage.
 
+## Trainingsplan (Einstieg, zuhause, ohne Geräte)
+
+3 Einheiten pro Woche mit je einem Ruhetag dazwischen, zum Beispiel Di, Do, Sa, jeweils 40 Minuten,
+am besten 17–19 Uhr, das Abendessen ist die Mahlzeit danach. Plan A und Plan B im Wechsel. Vorher
+5 Minuten aufwärmen: Schultern kreisen, Kniebeugen ohne Gewicht, Hampelmann. Pause zwischen den
+Sätzen 60–90 Sekunden. Als Gewicht dient ein Rucksack mit Wasserflaschen oder Büchern, bis 15–20 kg.
+
+| Plan A | Sätze × Wiederholungen | Schwerer machen |
+|---|---|---|
+| Kniebeugen, Rucksack vor der Brust | 3 × 10–15 | mehr Gewicht, langsamer runter (3 Sekunden) |
+| Liegestütze | 3 × 8–15 | erst an der Tischkante, dann Boden, dann Füße erhöht |
+| Rudern an der Tischkante (unterfassen, Körper gestreckt) | 3 × 8–12 | Füße weiter nach vorn, später Rucksack auf dem Rücken |
+| Ausfallschritte | 3 × 10 je Bein | Rucksack, langsamer |
+| Plank | 3 × 30–60 s | Füße erhöht |
+
+| Plan B | Sätze × Wiederholungen | Schwerer machen |
+|---|---|---|
+| Hüftheben einbeinig (Glute Bridge) | 3 × 12 je Bein | Rucksack auf der Hüfte, oben 2 Sekunden halten |
+| Pike-Liegestütze (Hüfte hoch, Kopf Richtung Boden) | 3 × 8–12 | Füße erhöht |
+| Rudern an der Tischkante | 3 × 10–15 | wie Plan A |
+| Bulgarische Kniebeuge (hinterer Fuß auf Stuhl) | 3 × 8–12 je Bein | Rucksack |
+| Seitstütz | 3 × 30 s je Seite | oberes Bein anheben |
+
+Regeln: Schafft du bei jeder Übung die obere Wiederholungszahl mit sauberer Form und noch 2
+Wiederholungen Reserve, wird die Übung schwerer gemacht. Sonst bleibt sie gleich. Bei
+Gelenkschmerzen oder einem Gichtschub Pause, kein Training durch Schmerz. Nach 4–6 Wochen wird
+das Körpergewicht zu leicht; dann zwei verstellbare Kurzhanteln (ca. 60–80 €) oder das Studio.
+
+## Trainingsplan (Studio-Variante, 2–3 × pro Woche)
+
+Ganzkörper, 45–60 Minuten, jede Übung 3 Sätze × 8–12 Wiederholungen; wenn 12 sauber klappen,
+beim nächsten Mal Gewicht erhöhen.
+
+1. Kniebeuge oder Beinpresse
+2. Bankdrücken oder Brustpresse
+3. Latzug oder Rudern am Kabel
+4. Rumänisches Kreuzheben oder Hip Thrust
+5. Schulterdrücken mit Kurzhanteln
+6. Plank oder Kabel-Crunch, 3 × 45 s
+
+Definiert aussehen entsteht aus wenig Bauchfett plus etwas Muskel an Schultern, Rücken und Beinen.
+Der Plan zielt genau darauf, nicht auf Masse. Bauchübungen sind Beiwerk.
+
 ## Alkohol
 
 Bisher 1–3 Gläser pro Woche, Bier und Wein. Regel: höchstens 2 Gläser pro Woche, bevorzugt Wein
