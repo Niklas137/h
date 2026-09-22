@@ -20,7 +20,7 @@
   "same_as": ["https://www.freelance.de/Freelancer/269905-Geschaeftsfuehrer-FSH-Documentation"],
   "_same_as_unbestaetigt": ["https://de.linkedin.com/in/sascha-falk-heinzmann-a589961b7"],
   "profile": [{"text": "Profil auf freelance.de", "url": "https://www.freelance.de/Freelancer/269905-Geschaeftsfuehrer-FSH-Documentation"}],
-  "hosting": "strato",
+  "hosting": "github",
   "og_bild": "/assets/img/og-fsh-documentation.jpg",
   "og_bild_alt": "Offene Hand hält drei leuchtende Zahnräder – Sinnbild für den Dokumentationsprozess",
   "fonts_vorladen": ["source-sans-3-latin.woff2", "poppins-700-latin.woff2"],

@@ -16,7 +16,7 @@ sich jeder Schritt zurücknehmen lässt.
 | Serverstandort | USA (GitHub, Inc.; Datenschutz-Variante `github`) | Deutschland (Variante `strato`) | weltweit (Variante `cloudflare`) |
 | Testadresse vorher | `https://niklas137.github.io/h/` | über die .de-Domain | `*.pages.dev` |
 
-Empfehlung: **GitHub Pages**. Die Website liegt schon im Repo, der Workflow `.github/workflows/website.yml`
+Entschieden am 22.09.2026: **GitHub Pages** (Weg A, Abschnitt 3). Die Website liegt schon im Repo, der Workflow `.github/workflows/website.yml`
 baut und prüft sie bei jedem Push und veröffentlicht sie, sobald eine Repository-Variable gesetzt ist.
 Die .com-Domain bleibt bei Canva registriert; nur drei DNS-Einträge ändern sich. Wer einen deutschen
 Serverstandort will, nimmt STRATO (Abschnitt 4); das setzt aber den Umzug der .com zu STRATO voraus,
@@ -24,9 +24,9 @@ weil STRATO-Webspace keine fremd verwalteten Domains aufschaltet.
 
 Vor dem Start festlegen und in `website/inhalt/site.json` eintragen:
 
-- `hosting`: `github`, `strato` oder `cloudflare` (steuert die Datenschutzerklärung, Abschnitte 2 und 5).
-- Offene Punkte aus `website/README.md`: Kundennamen auf der Startseite, Seite Redaktionssysteme ST4,
-  Titel der Regionalseite, Bildnachweise. Rechtstexte prüfen lassen (keine Rechtsberatung).
+- `hosting`: steht auf `github` (steuert die Datenschutzerklärung, Abschnitte 2 und 5).
+- Entschieden am 22.09.2026: keine Kundennamen auf der Startseite, Seite Redaktionssysteme ST4 bleibt,
+  kurzer Titel der Regionalseite. Offen: Bildnachweise; Rechtstexte prüfen lassen (keine Rechtsberatung).
 - Danach `python3 website/build.py --pruefen` laufen lassen und das Ergebnis committen.
 
 ## 2. Was vor der DNS-Umstellung zu sichern ist

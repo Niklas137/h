@@ -1,6 +1,6 @@
 {
   "_hinweise": [
-    "Vorbehalt aus Phase 2 (Abschnitt 4 und 9): Diese Seite nur veröffentlichen, wenn ST4-Praxis oder Quanos-Partnerstatus nachweisbar ist.",
+    "Entschieden am 22.09.2026: Seite bleibt (Vorbehalt aus Phase 2, Abschnitt 4 und 9, vom Betreiber aufgehoben).",
     "Sonst: diese Datei löschen, den Namen aus site.json (seiten, leistungsseiten) entfernen und die Links auf /redaktionssysteme-st4/ auf /betriebsanleitungen/ umstellen; build.py --pruefen meldet verbleibende Links."
   ],
   "pfad": "/redaktionssysteme-st4/",

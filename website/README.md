@@ -97,12 +97,13 @@ Die Website ist hosterneutral. Drei Wege, alle ohne Änderung an den Dateien:
 1. **STRATO-Webspace** (die .de-Domain und die E-Mail liegen schon dort): Inhalt von `dist/` per SFTP in
    das Webverzeichnis laden, `fsh-documentation.com` im STRATO-Kundenmenü auf dieses Verzeichnis
    zeigen lassen, „SSL erzwingen“ einschalten. Die mitgelieferte `.htaccess` setzt UTF-8, 404-Seite und
-   Cache-Header. Datenschutzerklärung: Variante `strato` (Standard).
+   Cache-Header. Datenschutzerklärung: Variante `strato`.
 2. **Cloudflare Pages**: Repo verbinden, Build-Befehl `python3 website/build.py`, Ausgabeordner
    `website/dist`; oder `dist/` direkt hochladen. Domain in Cloudflare umziehen oder per CNAME
    anbinden. `site.json` auf `"hosting": "cloudflare"` stellen und neu bauen.
-3. **GitHub Pages**: `dist/` per Workflow veröffentlichen (Actions → „Deploy static content“) und die
-   Domain als Custom Domain eintragen. `"hosting": "github"` setzen und neu bauen.
+3. **GitHub Pages** (gewählt): der Workflow `.github/workflows/website.yml` veröffentlicht `dist/`, sobald
+   die Repository-Variable `WEBSITE_HOSTING` auf `github` steht; Domain als Custom Domain eintragen.
+   `"hosting": "github"` ist in `site.json` gesetzt. Schritte in `livegang.md`, Abschnitt 3.
 
 Reihenfolge beim Umzug: Website hochladen und unter einer Testadresse prüfen → DNS der .com auf den
 neuen Hoster → HTTPS prüfen → in der Search Console Sitemap `https://fsh-documentation.com/sitemap.xml`
@@ -118,19 +119,19 @@ Alle Punkte stehen auch als `_hinweise` in der jeweiligen JSON-Datei.
   gestrichen, AGB § 7 ohne Platzhalter („im Angebot festgelegter Umfang“, alternativ Stundenzahl
   eintragen), AGB § 16 gekürzt, Logfile-Liste, LDA-URL, Bearbeiterhinweise entfernt. „Stand“-Daten
   beim Veröffentlichen setzen.
-- **Hosting** (`site.json` → `hosting`): Standard `strato`; die Datenschutzerklärung nennt dann STRATO
-  als Auftragsverarbeiter ohne Drittlandtransfer. Bei Cloudflare oder GitHub Pages die Variante
-  umstellen; Auftragsverarbeitungsvertrag ablegen und die tatsächliche Log-Speicherdauer eintragen.
+- **Hosting** (`site.json` → `hosting`): entschieden am 22.09.2026: `github` (GitHub Pages); die
+  Datenschutzerklärung nennt GitHub, Inc. als Auftragsverarbeiter mit Drittlandtransfer (DPF).
+  Bei einem Wechsel zu STRATO oder Cloudflare die Variante umstellen und neu bauen.
 - **Hauptdomain**: `basis_url` ist `https://fsh-documentation.com` (Empfehlung aus Phase 2: .com
   bleibt, .de leitet um). Bei Wechsel auf die .de nur `basis_url` ändern und neu bauen.
 - **Bildrechte**: Porträt und Zahnräder-Stockfoto stammen von der heutigen Seite; Lizenz und
   Einwilligung nicht belegt. Urheber im Impressum nennen, falls die Lizenz das verlangt.
-- **Kundennamen** auf der Startseite (Zeile „Ausgewählte Kundenprojekte“ in `start.json`): wie auf der
-  heutigen Seite im CV-Abschnitt; streichen, falls nur anonymisierte Referenzen gewünscht sind.
-- **Seite Redaktionssysteme ST4**: laut Phase 2 nur mit nachweisbarer ST4-Praxis oder
-  Quanos-Partnerstatus als eigene Seite; sonst entfernen (siehe „Seite entfernen“).
-- **Regionalseite**: Title-Variante mit „FSH Teltow“ (56 Zeichen) statt vollem Markennamen (63);
-  Zusage „auf Wunsch auch persönlich vor Ort“; Link auf das Google-Unternehmensprofil, sobald es existiert.
+- **Kundennamen**: entschieden am 22.09.2026: keine Kundennamen; die Startseite nennt Projekte nur
+  anonymisiert (Zeile „Weitere Projekte“ in `start.json`).
+- **Seite Redaktionssysteme ST4**: entschieden am 22.09.2026: bleibt als eigene Seite.
+- **Regionalseite**: entschieden am 22.09.2026: kurzer Title mit „FSH Teltow“ (56 Zeichen). Offen bleiben
+  die Zusage „auf Wunsch auch persönlich vor Ort“ und der Link auf das Google-Unternehmensprofil,
+  sobald es existiert.
 - **Dokumentencheck**: Ergebnisform der Prüfung ist beschrieben (Befunde nach Priorität mit Fundstelle,
   Normbezug, Empfehlung); anpassen, falls anders gewünscht. Das interne Prüfwerkzeug wird nicht genannt.
 - **Profile**: JSON-LD `sameAs` und Fußzeile enthalten nur das geprüfte freelance.de-Profil. Das
