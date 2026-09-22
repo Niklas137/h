@@ -36,7 +36,15 @@ python3 website/build.py --relativ --ausgabe /tmp/vorschau
 ```
 
 Weitere Schalter: `--basis-url https://…` (Canonical, Open Graph, Sitemap), `--hosting strato|cloudflare|github`
-(Textvariante der Datenschutzerklärung, Standard aus `site.json`).
+(Textvariante der Datenschutzerklärung, Standard aus `site.json`) und `--noindex` für den Testbetrieb
+(alle Seiten `noindex, nofollow`, `robots.txt` sperrt, keine Sitemap; vor dem Livegang ohne den Schalter
+neu bauen).
+
+Der Workflow `.github/workflows/website.yml` baut und prüft bei jedem Push nach `main`, der `website/`
+berührt. Er veröffentlicht auf GitHub Pages, sobald die Repository-Variable `WEBSITE_HOSTING` den Wert
+`github` hat; Bau-Schalter für den Test kommen aus `WEBSITE_BUILD_ARGS` (zum Beispiel `--relativ --noindex`).
+Die Schritte für den Livegang (Hosting, Testadresse, DNS, Search Console, Weiterleitung der .de) stehen
+in `livegang.md` (auch als `livegang.pdf`).
 
 Gerenderte Seite zusätzlich mit den Audit-Werkzeugen prüfen (wie beim Freitags-Audit):
 
