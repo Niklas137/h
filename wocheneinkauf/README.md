@@ -18,7 +18,7 @@ Skill `.claude/skills/wocheneinkauf/SKILL.md`, die Daten in diesem Ordner.
 ## Feste Parameter
 
 - Budget: 60 € pro Woche (fest, wird nicht nachgefragt)
-- Personen: 1–2 (Planung für 2, Hinweis für 1)
+- Personen: 1–2, die zweite Person etwa die Hälfte der Tage (Planung für 2, Reste einfrieren)
 - Einkauf: Penny (Lichterfelder Allee 7, 14513 Teltow) oder Rewe
   - Penny: Mo–Sa 7–21 Uhr, So geschlossen
   - Rewe: ca. 8–12 % teurer → Eigenmarke „ja!" bei Basics
@@ -29,13 +29,16 @@ Skill `.claude/skills/wocheneinkauf/SKILL.md`, die Daten in diesem Ordner.
 
 ## Ernährungsregeln
 
-- Nicht: Pilze, Innereien, Gorgonzola, Hüttenkäse
-- Immer mit Fleisch oder Fisch, ca. 100–150 g pro Tag
-- Purinarm: keine Innereien, Sardinen, Hering; wenig Wurst
-- Vollkorn statt Weißmehl, wenig Zucker, salzarm
+Persönliche Zielwerte stehen in `profil.md` (Stand 22.09.2026): 2100 kcal am Tag, Eiweiß 110–130 g,
+langsam abnehmen, kein Frühstück, Mittagsteller, fester Nachmittagssnack, gekochtes Gericht am Abend.
+
+- Nicht: Pilze, Innereien, Zunge, Gorgonzola, Hüttenkäse, Oktopus, Tintenfisch
+- Fleisch oder Fisch nur im Abendessen, 125–150 g pro Portion, also 100–150 g pro Tag
+- Purinarm: keine Innereien, Sardinen, Hering, Muscheln; wenig Wurst; täglich Quark oder Skyr
+- Vollkorn statt Weißmehl, wenig Zucker, salzarm (unter 6 g)
+- Alkohol höchstens 2 Gläser pro Woche, lieber Wein als Bier
 - Grund: Gicht, Blutzucker, Blutdruck
-- Homeoffice / Schreibtischarbeit: kleine Beilagenportionen mittags, Snacks vorher festlegen
-  (Apfel, Quark)
+- Homeoffice: Mittag vollwertig, Snack um 16 Uhr festgelegt (Quark oder Skyr, Beeren, Nüsse)
 - Trinken ist abgedeckt (2–3 l Wasser pro Tag)
 
 ## Ausgabeformat
@@ -60,6 +63,7 @@ Der Nutzer sagt selbst Bescheid. Dann stellt Claude Rückfragen statt einer Koch
 | Datei | Zweck |
 |---|---|
 | `README.md` | diese Übersicht, feste Parameter, Feiertage |
+| `profil.md` | Körperdaten, Kalorienziel, Mahlzeitenstruktur, Wochenmengen, Gewichtsverlauf |
 | `preise.md` | Richtpreise Penny / Rewe „ja!", per Kassenbon gepflegt |
 | `gerichte.md` | Gerichte- und Frühstückspool mit Rotation („Zuletzt") und Saisontabelle |
 | `verlauf.md` | Log aller Wochen, Proteine, geschätzter Vorrat |

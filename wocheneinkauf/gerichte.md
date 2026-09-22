@@ -38,7 +38,25 @@ um neue Gerichte erweitern. Sperre: 4 Wochen für Gerichte, 3 Wochen für Frühs
 | 27 | Rosenkohl-Kartoffel-Pfanne mit Schweinefilet | Schweinefilet | Rosenkohl, Kartoffeln, Zwiebel, Senf | – | Saison Okt–Feb | – |
 | 28 | Lachs-Kartoffel-Auflauf mit Lauch | Lachs (TK) | Kartoffeln, Lauch, Milch, Frischkäse, Dill | – | | – |
 
-## Frühstück
+## Mittagsteller (erste Mahlzeit, 800–900 kcal, ohne Fleisch und Fisch)
+
+Mittags liefern Eier, Quark, Skyr und Feta das Eiweiß; Fleisch und Fisch bleiben dem Abendessen
+vorbehalten. Pro Woche 2–3 Teller wählen, sie wiederholen sich im Wechsel.
+
+| Nr | Mittagsteller | Zutaten pro Person | kcal | Zuletzt |
+|---|---|---|---|---|
+| M1 | Rührei-Teller | 3 Eier, 2 Scheiben Vollkornbrot, 1 TL Öl, Tomaten und Gurke 200 g, dazu 200 g Skyr mit Beeren | 900 | – |
+| M2 | Skyr-Bowl | 300 g Skyr, 60 g Haferflocken, 100 g TK-Beeren, 1 Apfel, 25 g Walnüsse, Zimt | 850 | – |
+| M3 | Bulgur-Feta-Salat | 70 g Bulgur trocken, 80 g Feta, Gurke, Tomate, Paprika 250 g, Zitrone, 1 EL Olivenöl, Petersilie | 800 | – |
+| M4 | Ofenkartoffel mit Quark | 300 g Kartoffeln, 250 g Magerquark mit Kräutern und Leinöl, 200 g Brokkoli oder Erbsen | 800 | – |
+| M5 | Brot mit Frischkäse und Ei | 2 Scheiben Vollkornbrot, 60 g Frischkäse, 2 gekochte Eier, Paprika und Karotte 200 g, 25 g Mandeln | 850 | – |
+| M6 | Omelett mit Gemüse | 3 Eier, 200 g Zucchini und Paprika, 50 g Gouda, 1 Scheibe Vollkornbrot, 1 Apfel | 850 | – |
+| M7 | Kichererbsen-Salat | 200 g Kichererbsen (Dose), 80 g Feta, Gurke, Tomate 250 g, Zwiebel, Zitrone, 1 EL Öl, 1 Scheibe Vollkornbrot | 850 | Hülsenfrucht, nur 1 × pro Woche |
+
+## Frühstück (optional, Wochenende oder zweite Person)
+
+Werktags gibt es kein Frühstück (2 Mahlzeiten, siehe `profil.md`).
+
 
 | Nr | Frühstück | Zutaten | Zuletzt |
 |---|---|---|---|
@@ -52,10 +70,11 @@ um neue Gerichte erweitern. Sperre: 4 Wochen für Gerichte, 3 Wochen für Frühs
 
 ## Snacks (fest, jede Woche gleich)
 
-- Vormittag: 1 Apfel
-- Nachmittag: 150 g Magerquark mit Zimt oder TK-Beeren, alternativ 25 g Walnüsse
-- Vor Bewegung: 1 Banane
-- Gurke oder Karotte, wenn es knuspern soll
+- 16 Uhr, fest: 250 g Magerquark oder 200 g Skyr mit 100 g TK-Beeren und Zimt, dazu 25 g Walnüsse
+  (250–300 kcal). Alternativ 2 gekochte Eier mit Gurke und 25 g Nüsse.
+- Vormittags optional: 1 Apfel, nur bei Hunger.
+- Vor Bewegung: 1 Banane, höchstens 3 pro Woche.
+- Gurke oder Karotte, wenn es knuspern soll.
 
 ## Saison in Brandenburg (günstig und frisch)
 

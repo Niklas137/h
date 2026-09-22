@@ -38,6 +38,8 @@ KOPF_BUDGET = re.compile(r"Budget:\s*(?P<wert>\d{1,3}(?:,\d{2})?)\s*€")
 KOPF_TAGE = re.compile(r"Tage zu Hause:\s*(?P<tage>\d{1,2})\b")
 
 # Darf in der ganzen Datei nicht vorkommen (Liste und Rezepte).
+# Hinweis-Gruppen, die nur am Wortanfang gelten (sonst trifft "wein" auf "Schweinefilet").
+WORTANFANG = {"Alkohol (Gicht)"}
 # Teilstring-Suche in der ganzen Datei, damit auch Zusammensetzungen wie "Hähnchenleber"
 # oder "Bismarckhering" erkannt werden. "niere" braucht einen Sonderfall, weil sonst
 # "marinieren", "panieren" oder "garnieren" als Innereien gelten würden.
@@ -45,7 +47,9 @@ VERBOTEN = {
     "Pilze": ("pilz", "champignon", "pfifferling", "shiitake", "kräuterseitling"),
     "Innereien": ("leber", "niere", "innereien", "kutteln", "bries", "zunge"),
     "Gorgonzola": ("gorgonzola",),
-    "purinreicher Fisch": ("sardine", "sardelle", "anchovis", "hering", "matjes", "sprotte"),
+    "Hüttenkäse": ("hüttenkäse", "huettenkaese", "cottage"),
+    "Oktopus": ("oktopus", "tintenfisch", "calamari", "pulpo"),
+    "purinreicher Fisch": ("sardine", "sardelle", "anchovis", "hering", "matjes", "sprotte", "muschel"),
 }
 NIERE = re.compile(
     r"\bniere"                                  # Niere, Nieren, Nierenragout
@@ -63,6 +67,8 @@ def verboten_enthalten(wort: str, text_lc: str) -> bool:
 # Nur Hinweise, geprüft auf Artikelzeilen (wenig Wurst, Vollkorn, wenig Zucker).
 HINWEIS = {
     "Wurst (wenig)": ("salami", "schinken", "speck", "wurst", "wiener"),
+    "Alkohol (Gicht)": ("bier", "wein", "rotwein", "weißwein", "sekt", "schnaps", "likör", "wodka", "gin"),
+    "Garnelen (Purin)": ("garnele", "shrimp", "krabbe"),
     "Weißmehl": ("weißbrot", "toastbrot", "baguette", "brötchen", "semmel", "ciabatta", "weizenmehl"),
     "Zucker": ("zucker", "marmelade", "honig", "schokolade", "limonade", "cola", "saft", "nutella", "kekse"),
 }
@@ -146,7 +152,12 @@ def main(pfad: str) -> int:
             for gruppe, woerter in HINWEIS.items():
                 if gruppe == "Weißmehl" and "vollkorn" in zeile_lc:
                     continue
-                if any(w in zeile_lc for w in woerter):
+                if gruppe in WORTANFANG:
+                    # "wein" darf nicht in "Schweinefilet" anschlagen.
+                    treffer = any(re.search(r"\b" + re.escape(w), zeile_lc) for w in woerter)
+                else:
+                    treffer = any(w in zeile_lc for w in woerter)
+                if treffer:
                     hinweise.append(f"{gruppe}: {bezeichnung}")
 
     print(f"{'Gesamt (Penny)':<{breite}}{sum(len(a) for a in kategorien.values()):>8}{euro(gesamt):>12}")
@@ -184,7 +195,24 @@ def main(pfad: str) -> int:
     elif gesamt < ziel_min:
         hinweise.append(f"Unter Zielbereich: {euro(gesamt)} < {euro(ziel_min)} (Vorrat auffüllen?)")
 
-    text_lc = text.lower()
+    # Zeilen, in denen die Zutat verneint wird ("kein Hüttenkäse", "Hüttenkäse gestrichen"),
+    # sind Notizen und keine Verstöße.
+    NEGATION_VOR = re.compile(r"\b(kein|keine|keinen|ohne|nicht|statt)\b")
+    NEGATION_NACH = re.compile(r"\b(gestrichen|entfällt|entfernt|nicht|raus)\b")
+
+    def zeile_verneint(zeile_lc: str, wort: str) -> bool:
+        pos = zeile_lc.find(wort)
+        if pos < 0:
+            return False
+        davor = zeile_lc[:pos].split(".")[-1]
+        danach = zeile_lc[pos:].split(".")[0]
+        return bool(NEGATION_VOR.search(davor) or NEGATION_NACH.search(danach))
+
+    text_lc = "\n".join(
+        z.lower() for z in zeilen
+        if not any(w in z.lower() and zeile_verneint(z.lower(), w)
+                   for ws in VERBOTEN.values() for w in ws)
+    )
     for gruppe, woerter in VERBOTEN.items():
         treffer = sorted({w for w in woerter if verboten_enthalten(w, text_lc)})
         if treffer:
