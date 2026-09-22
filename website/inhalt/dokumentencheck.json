@@ -1,0 +1,116 @@
+{
+  "_hinweise": [
+    "Ergebnisform der Prüfung (Abschnitt „Ablauf und Ergebnis“) ist laut Phase 2 vom Betreiber festzulegen; der Text beschreibt Befunde nach Priorität mit Fundstelle, Normbezug und Empfehlung.",
+    "Ob das interne Prüfwerkzeug (normlogik_82079.json) öffentlich genannt wird: Entscheidung des Betreibers; derzeit nicht genannt."
+  ],
+  "pfad": "/dokumentencheck/",
+  "typ": "leistung",
+  "menue": "Dokumentencheck",
+  "kurz": "Prüfung und Optimierung bestehender Dokumentation: Struktur, Rechtsbezug, Didaktik, Terminologie; dazu Betreiberpflichten und Dokumenten-Controlling.",
+  "title": "Dokumentencheck: Anleitung prüfen lassen | FSH-Documentation",
+  "description": "Dokumentencheck bestehender Anleitungen: Struktur, Rechtsbezug, Didaktik, Terminologie, geprüft gegen IEC/IEEE 82079-1 und EN ISO 20607. Aus Teltow bei Berlin.",
+  "schema": {"name": "Dokumentencheck: Prüfung technischer Dokumentation auf Normenkonformität", "serviceType": "Prüfung und Optimierung bestehender technischer Dokumentation"},
+  "kicker": "Leistung · Dokumentencheck",
+  "h1": "Dokumentencheck: Technische Dokumentation auf Normenkonformität prüfen",
+  "einleitung": "Wir prüfen bestehende Betriebsanleitungen, Gebrauchsanweisungen und technische Unterlagen gegen DIN EN IEC/IEEE 82079-1, EN ISO 20607 und die für Ihr Produkt geltenden Vorschriften: Struktur, Rechtsbezug, Didaktik und Terminologie. Aus Teltow bei Berlin, für Hersteller und Betreiber deutschlandweit.",
+  "cta": {"primaer": {"text": "Dokumente prüfen lassen", "ziel": "#kontakt"}, "sekundaer": {"text": "Direkt anrufen", "ziel": "tel"}},
+  "seitenkarte": {
+    "kicker": "Aus der Praxis",
+    "absaetze": [
+      "<strong>Energieversorger (DE):</strong> 10.000+ technische Dokumente gesichtet, klassifiziert und ins DMS überführt; Betriebsanleitungen an den neuen Anlagenstand angepasst und normkonform überarbeitet.",
+      "<strong>Ergebnis:</strong> auditfähige Dokumentation, reibungslose Übergabe an den Betrieb."
+    ]
+  },
+  "abschnitte": [
+    {
+      "id": "was",
+      "art": "karten",
+      "spalten": 4,
+      "h2": "Was geprüft wird",
+      "karten": [
+        {"h3": "Struktur", "text": "Vollständigkeit und Reihenfolge der Kapitel, Auffindbarkeit, Gliederung nach Lebensphasen und Zielgruppen."},
+        {"h3": "Rechtsbezug", "text": "Passen Anleitung und Unterlagen zu Maschinenrichtlinie, Maschinenverordnung, MDR oder BetrSichV? Sind Restrisiken und Warnhinweise aus der Risikobeurteilung abgedeckt?"},
+        {"h3": "Didaktik", "text": "Verständlichkeit, Handlungsorientierung, Warnhinweise nach Signalwort-System, Bild-Text-Bezug."},
+        {"h3": "Terminologie", "text": "Einheitliche Benennungen, Schreibweisen und Übersetzbarkeit."}
+      ]
+    },
+    {
+      "id": "pruefgrundlage",
+      "art": "text",
+      "h2": "Prüfgrundlage: Was eine Anleitung nach DIN EN IEC/IEEE 82079-1 und EN ISO 20607 enthalten muss",
+      "inhalt": [
+        "Beide Normen beschreiben, welche Informationen eine Anleitung enthalten muss und wie sie aufzubereiten sind. Typische Prüfpunkte:",
+        {"liste": [
+          "Zielgruppen und Qualifikation der Nutzer benannt",
+          "Bestimmungsgemäße Verwendung und vernünftigerweise vorhersehbare Fehlanwendung",
+          "Sicherheitskapitel, Restrisiken und Warnhinweise mit Signalwörtern, konsistent zur Risikobeurteilung",
+          "Alle Lebensphasen: Transport, Aufstellung, Inbetriebnahme, Betrieb, Instandhaltung, Störungsbeseitigung, Außerbetriebnahme und Entsorgung",
+          "Technische Daten, Emissionen (zum Beispiel Lärm), Schnittstellen",
+          "Verständlichkeit: Handlungsschritte, Abbildungen, Terminologie, Sprache des Verwenderlandes",
+          "Identifikation: Produkt, Version, Hersteller, Ausgabestand"
+        ]}
+      ]
+    },
+    {
+      "id": "ablauf",
+      "art": "text",
+      "h2": "Ablauf und Ergebnis",
+      "inhalt": [
+        "Sie stellen die Dokumente bereit, wir prüfen sie gegen die vereinbarte Prüfgrundlage und liefern die Befunde nach Priorität geordnet, jeweils mit Fundstelle, Normbezug und konkreter Empfehlung. Auf Wunsch besprechen wir die Ergebnisse in einem Termin mit Ihrer Redaktion oder Ihrem QM.",
+        "Umfang und Form der Prüfung (Stichprobe oder vollständig, Anzahl der Dokumente, Sprachen) legen wir im Angebot fest."
+      ]
+    },
+    {
+      "id": "optimierung",
+      "art": "text",
+      "h2": "Optimierung nach der Prüfung",
+      "inhalt": [
+        "Auf Wunsch setzen wir die Befunde direkt um: Anleitungen normkonform überarbeiten, Struktur und Terminologie vereinheitlichen, Warnhinweise mit der Risikobeurteilung abgleichen, Lieferantendokumente integrieren.",
+        "Bei größeren Beständen richten wir Dokumenten-Controlling ein: Master Document List (MDL), Versionierung und Änderungsstand, RACI- und Review-Matrix, Lieferantensteuerung, Freigabe- und Abnahmeprotokolle, Nachweismappe (audit-ready). Kundennutzen: weniger Schleifen, terminsichere Übergaben, nachvollziehbare Pflichtenübertragung, bestandene Audits, messbar über Durchlaufzeit, First-Time-Right und Änderungsquote.",
+        {"links": [
+          {"text": "Zu den Betriebsanleitungen", "ziel": "/betriebsanleitungen/"},
+          {"text": "Redaktionssysteme und Prozesse", "ziel": "/redaktionssysteme-st4/"}
+        ]}
+      ]
+    },
+    {
+      "id": "betreiberpflichten",
+      "art": "text",
+      "h2": "Betreiberpflichten: Gefährdungsbeurteilung, Betriebsanweisungen, Prüfkataster",
+      "inhalt": [
+        "Für Betreiber prüfen und erstellen wir die Dokumente nach ArbSchG und BetrSichV: Gefährdungsbeurteilungen, Explosionsschutzdokument, Betriebsanweisungen (unter anderem nach TRGS 555), Prüfkataster und Fristen, die Trennung von Hersteller- und Betreiberdokumentation sowie die Vorbereitung interner und externer Prüfungen, auch durch eine zugelassene Überwachungsstelle (ZÜS).",
+        {"links": [{"text": "Abgrenzung zur Risikobeurteilung des Herstellers", "ziel": "/risikobeurteilung/#betreiberpflichten"}]}
+      ]
+    },
+    {
+      "id": "ifu",
+      "art": "text",
+      "h2": "IFU-Prüfung für Medizinprodukte",
+      "inhalt": [
+        "Gebrauchsanweisungen für Medizinprodukte prüfen wir zusätzlich gegen MDR Anhang I, ISO 14971 und IEC 62366-1, inklusive Konsistenz der Sprachfassungen.",
+        {"links": [{"text": "Medizinprodukte MDR/IVDR", "ziel": "/medizinprodukte-mdr-ivdr/"}]}
+      ]
+    },
+    {
+      "id": "fragen",
+      "art": "fragen",
+      "h2": "Häufige Fragen",
+      "fragen": [
+        {"frage": "Was kostet ein Dokumentencheck?", "antwort": "Das richtet sich nach Umfang und Prüftiefe. Nach einem kurzen Kick-off erhalten Sie ein Angebot mit Festpreis oder Aufwandsschätzung; Preise netto zuzüglich Umsatzsteuer."},
+        {"frage": "Wie schnell liegt das Ergebnis vor?", "antwort": "Erstreaktion innerhalb von 24 h; den Liefertermin für die Prüfung legen wir im Angebot fest, abhängig von Umfang und Sprachen."},
+        {"frage": "Prüfen Sie auch Übersetzungen?", "antwort": "Ja, für Deutsch, Englisch, Ukrainisch und Russisch prüfen wir Konsistenz und Terminologie der Sprachfassungen."},
+        {"frage": "Können Sie die Befunde auch umsetzen?", "antwort": "Ja. Prüfung und Überarbeitung bieten wir getrennt oder als Paket an; die Überarbeitung folgt dem Ablauf aus vier Schritten mit Musterkapitel, Milestones und 30 Tagen Feinschliff nach der Abnahme."}
+      ]
+    },
+    {
+      "art": "verwandt",
+      "h2": "Verwandte Leistungen",
+      "seiten": ["/betriebsanleitungen/", "/medizinprodukte-mdr-ivdr/", "/redaktionssysteme-st4/"]
+    }
+  ],
+  "kontakt": {
+    "h2": "Dokumentencheck anfragen",
+    "text": "Erstreaktion binnen 24 h. Nennen Sie uns Produkt, Dokumentart und Umfang; im Kick-off (30 Min.) legen wir die Prüfgrundlage fest.",
+    "betreff": "Anfrage Dokumentencheck"
+  }
+}

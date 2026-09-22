@@ -1,0 +1,220 @@
+{
+  "_hinweise": [
+    "Keine Rechtsberatung. Vor Veröffentlichung prüfen lassen.",
+    "Änderungen gegenüber dem Stand 13.08.2025 (Phase 2, Abschnitt 6): Bearbeiterhinweis im Kopf entfernt; § 2 Normbezeichnung „DIN ISO 82079-1“ → „DIN EN IEC/IEEE 82079-1“; § 7 Platzhalter „[X] Stunden“ → „im Angebot festgelegter Umfang“ (alternativ Stundenzahl eintragen); § 16 auf den VSBG-Satz gekürzt, Satz zur eingestellten EU-OS-Plattform gestrichen; Anschrift und Telefon in der NAP-Schreibweise.",
+    "„Stand“ beim Veröffentlichen auf das Datum der freigegebenen Fassung setzen."
+  ],
+  "pfad": "/agb/",
+  "typ": "recht",
+  "menue": "AGB",
+  "title": "AGB | FSH-Documentation",
+  "h1": "Allgemeine Geschäftsbedingungen (AGB)",
+  "einleitung": "Stand: 22.09.2026. Geltungsbereich: Verträge nach deutschem Recht mit Unternehmern.",
+  "cta": null,
+  "abschnitte": [
+    {
+      "art": "text",
+      "h2": "Anbieter",
+      "inhalt": [
+        "FSH-Documentation UG (haftungsbeschränkt)<br>Bäckerstraße 2 D<br>14513 Teltow<br>Deutschland<br>Telefon: <a href=\"tel:+491729795939\">+49 172 9795939</a> · E-Mail: <a href=\"mailto:Falk.Heinzmann@fsh-documentation.de\">Falk.Heinzmann@fsh-documentation.de</a>",
+        "Handelsregister: Amtsgericht Potsdam, HRB 37959 P<br>Vertretungsberechtigter Geschäftsführer: Sascha Falk Heinzmann<br>USt-IdNr.: DE 360111007"
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 1 Geltungsbereich, Begriffsbestimmungen",
+      "inhalt": [
+        {"nummern": [
+          "Diese AGB gelten für alle Verträge zwischen dem Anbieter (nachfolgend „Anbieter“) und seinen Kunden über Leistungen der technischen Redaktion, Beratung, Übersetzung, Erstellung von Betriebs- und Bedienungsanleitungen, Risikoanalysen sowie verwandte Services (nachfolgend „Leistungen“).",
+          "Kunden sind ausschließlich Unternehmer im Sinne des § 14 BGB, also natürliche oder juristische Personen, die bei Vertragsschluss in Ausübung ihrer gewerblichen oder selbständigen beruflichen Tätigkeit handeln. Verträge mit Verbrauchern werden nicht geschlossen.",
+          "Entgegenstehende, abweichende oder ergänzende AGB des Kunden werden nur Vertragsbestandteil, wenn der Anbieter ihrer Geltung ausdrücklich in Textform zustimmt."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 2 Vertragsgegenstand, Leistungsart",
+      "inhalt": [
+        {"nummern": [
+          "Der konkrete Leistungsumfang ergibt sich aus dem Angebot, der Leistungsbeschreibung, einem Pflichten- oder Lastenheft oder dem von beiden Parteien freigegebenen Projektplan (zusammen „Vertragsunterlagen“).",
+          "Soweit ein konkret messbarer Arbeitserfolg geschuldet ist (zum Beispiel die Erstellung definierter Dokumente gemäß Freigabe- und Abnahmekriterien), liegt ein Werkvertrag zugrunde. Bei rein unterstützenden Tätigkeiten ohne Erfolgsgarantie handelt es sich um einen Dienstvertrag.",
+          "Normen und Regelwerke (zum Beispiel DIN EN IEC/IEEE 82079-1, VGB-S-831, PED, BetrSichV, TRGS 555) werden nach ausdrücklicher Vereinbarung und in der jeweils zum Zeitpunkt der Angebotsabgabe bekannten Fassung berücksichtigt. Gesetzes- und Normänderungen nach Vertragsschluss gelten als Change Request (vgl. § 5)."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 3 Vertragsschluss, Angebote, Priorität der Unterlagen",
+      "inhalt": [
+        {"nummern": [
+          "Angebote des Anbieters sind freibleibend, sofern sie nicht ausdrücklich als bindend bezeichnet sind.",
+          "Ein Vertrag kommt durch Annahme eines Angebots, Gegenzeichnung oder Auftragsbestätigung in Textform zustande.",
+          "Reihenfolge bei Widersprüchen: individuelles Angebot, dann Pflichten- oder Lastenheft, dann Projektplan, dann diese AGB."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 4 Mitwirkungspflichten des Kunden, Termine",
+      "inhalt": [
+        {"nummern": [
+          "Der Kunde stellt sämtliche zur Leistungserbringung erforderlichen Informationen, Vorlagen, Daten (inklusive R&amp;I-Schemata, HAZOP, Risikobeurteilungen, Stücklisten), Zugangsdaten sowie Ansprechpartner rechtzeitig, vollständig und in geeigneten Formaten zur Verfügung und gewährleistet, dass deren Nutzung keine Rechte Dritter verletzt.",
+          "Verzögert sich die Leistungserbringung infolge fehlender oder verspäteter Mitwirkung, verlängern sich Fristen angemessen. Mehraufwände durch fehlende oder fehlerhafte Mitwirkung werden nach den vereinbarten Sätzen vergütet.",
+          "Der Kunde benennt einen fachlich bevollmächtigten Projektleiter; Entscheidungen sind zeitnah zu treffen."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 5 Leistungsänderungen, Change-Request-Verfahren",
+      "inhalt": [
+        {"nummern": [
+          "Jede Partei kann Änderungen des Leistungsumfangs vorschlagen. Der Anbieter prüft den Vorschlag und teilt dem Kunden die Auswirkungen auf Aufwand, Termine und Vergütung mit.",
+          "Änderungen werden erst verbindlich, wenn der Kunde das schriftliche oder elektronische Change-Offer freigibt. Bis dahin arbeitet der Anbieter nach dem zuletzt freigegebenen Stand weiter."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 6 Abnahme (bei Werkleistungen)",
+      "inhalt": [
+        {"nummern": [
+          "Der Anbieter zeigt die Fertigstellung an und übergibt die Ergebnisse (zum Beispiel Dokumente, Daten, Layouts) zur Prüfung. Der Kunde ist verpflichtet, die Ergebnisse innerhalb von 10 Werktagen zu prüfen und entweder die Abnahme zu erklären oder konkret begründete Mängellisten zu übermitteln.",
+          "Erfolgt innerhalb der Frist weder Abnahme noch Mängelanzeige, gilt das Werk als abgenommen (fiktive Abnahme), sofern der Anbieter hierauf bei Übergabe hingewiesen hat und keine wesentlichen Mängel vorliegen.",
+          "Unerhebliche Mängel berechtigen nicht zur Abnahmeverweigerung; sie sind im Rahmen der Nacherfüllung zu beheben."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 7 30-Tage-Nachbesserungs- und Optimierungsfenster („Service Window“)",
+      "inhalt": [
+        {"nummern": [
+          "Zusätzlich zu den gesetzlichen Mängelrechten (§ 8) räumt der Anbieter ab dem Tag der Abnahme ein 30-tägiges kostenfreies Nachbesserungs- und Optimierungsfenster ein. In diesem Zeitraum behebt der Anbieter a) Mängel (Abweichungen von den freigegebenen Spezifikationen) kostenfrei und b) kleine Optimierungswünsche des Kunden (rein redaktionelle Anpassungen, Formatierungen, Glossarangleichungen) bis zu dem im Angebot festgelegten Umfang einmalig und ohne Mehrkosten.",
+          "Vom Service Window nicht erfasst sind neue oder geänderte Anforderungen (Inhalte, Normen, Funktionsumfang), Daten- oder Systemänderungen beim Kunden sowie Änderungswünsche mit erheblichem Aufwand; solche Anpassungen erfolgen ausschließlich über § 5 (Change Request) und sind vergütungspflichtig.",
+          "Das Service Window lässt gesetzliche Ansprüche unberührt und verlängert keine gesetzlichen oder vertraglichen Verjährungsfristen."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 7a Service Level, Reaktionszeiten im 30-Tage-Window",
+      "inhalt": [
+        {"nummern": [
+          "Der Anbieter reagiert auf Anfragen des Kunden, die das Service Window nach § 7 betreffen, innerhalb von 24 Stunden nach Eingang der Anfrage beim Anbieter („Erstreaktion“). Die Erstreaktion umfasst die Eingangsbestätigung und, soweit möglich, eine erste Einschätzung sowie die Zuordnung einer Priorität.",
+          "Messpunkt ist der Eingang der Anfrage über die im Vertrag bezeichneten Supportkanäle (insbesondere die in diesen AGB genannte E-Mail-Adresse). Reaktionszeiten gelten an Werktagen (Montag bis Freitag) am Sitz des Anbieters; gesetzliche Feiertage am Sitz des Anbieters sind ausgenommen.",
+          "Die Reaktionszeit ist keine Zusage einer Behebungs- oder Lösungszeit. Lösungszeiten richten sich nach der Komplexität und werden mit dem Kunden abgestimmt.",
+          "Ein Verstoß gegen die Reaktionszeit begründet keine Vertragsstrafe und keine automatischen Minderungsrechte; gesetzliche Ansprüche (zum Beispiel bei Verzug oder Mängeln) bleiben unberührt."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 8 Gewährleistung, Mängelrechte (Werkvertrag)",
+      "inhalt": [
+        {"nummern": [
+          "Für Werkleistungen gelten die Rechte des Kunden nach §§ 634 ff. BGB (Nacherfüllung, Selbstvornahme, Rücktritt oder Minderung, Schadensersatz).",
+          "Verjährung: Mängelansprüche verjähren, soweit gesetzlich zulässig, in 12 Monaten ab Abnahme. Ausgenommen von der Verkürzung sind Ansprüche wegen Vorsatz, grober Fahrlässigkeit, arglistiger Täuschung sowie bei Verletzung von Leben, Körper oder Gesundheit und bei Übernahme einer Garantie; hierfür gelten die gesetzlichen Fristen.",
+          "Bei Dienstverträgen bestehen keine Gewährleistungsrechte; es gelten die Regeln über Schlechtleistung und Haftung."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 9 Vergütung, Zahlungsbedingungen, Aufrechnung",
+      "inhalt": [
+        {"nummern": [
+          "Preise verstehen sich netto zuzüglich gesetzlicher Umsatzsteuer. Abrechnungen erfolgen nach Festpreis, Einheitspreisen oder Zeitaufwand gemäß Vertragsunterlagen.",
+          "Zahlungsziel: 14 Tage netto ab Rechnungsdatum, sofern nichts Abweichendes vereinbart ist. Bei Zahlungsverzug gelten die gesetzlichen Verzugszinsen; weitergehende Rechte bleiben unberührt.",
+          "Aufrechnung und Zurückbehaltung sind nur mit unbestrittenen oder rechtskräftig festgestellten Forderungen zulässig."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 10 Nutzungsrechte, Schutzrechte Dritter",
+      "inhalt": [
+        {"nummern": [
+          "Der Anbieter räumt dem Kunden an den Arbeitsergebnissen (Texte, Grafiken, Layouts, Templates) nach vollständiger Zahlung ein einfaches, zeitlich und räumlich unbeschränktes Nutzungsrecht für den vertraglich vorgesehenen Zweck ein. Weitergehende Nutzungen (zum Beispiel Übertragung an Dritte außerhalb des Konzerns, produktfremde Verwendungen) bedürfen einer gesonderten Vereinbarung.",
+          "Urhebervermerke und Markenhinweise des Anbieters dürfen nicht entfernt werden.",
+          "Setzt der Anbieter Open-Source- oder Drittmaterial ein, gelten deren Lizenzbedingungen vorrangig; der Anbieter weist diese vor Abnahme aus.",
+          "Der Kunde stellt sicher, dass beigestellte Inhalte frei von Rechten Dritter sind, und stellt den Anbieter von entsprechenden Ansprüchen frei."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 11 Vertraulichkeit, Datenschutz, Auftragsverarbeitung",
+      "inhalt": [
+        {"nummern": [
+          "Beide Parteien behandeln nicht offenkundige Informationen vertraulich. Dies gilt auch nach Vertragsende.",
+          "Sofern der Anbieter personenbezogene Daten im Auftrag verarbeitet, schließen die Parteien vor Beginn der Verarbeitung eine Auftragsverarbeitungsvereinbarung (Art. 28 DSGVO) in der vom Anbieter angebotenen Fassung, soweit keine abweichende Vereinbarung getroffen wird."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 12 Haftung",
+      "inhalt": [
+        {"nummern": [
+          "Der Anbieter haftet unbeschränkt bei Vorsatz und grober Fahrlässigkeit, bei Verletzung von Leben, Körper oder Gesundheit sowie nach dem Produkthaftungsgesetz.",
+          "Bei einfach fahrlässiger Verletzung wesentlicher Vertragspflichten (Kardinalpflichten) ist die Haftung auf den vertragstypischen, vorhersehbaren Schaden begrenzt. Kardinalpflichten sind solche Pflichten, deren Erfüllung die ordnungsgemäße Durchführung des Vertrags überhaupt erst ermöglicht und auf deren Einhaltung der Kunde vertrauen darf.",
+          "Im Übrigen ist die Haftung für einfache Fahrlässigkeit ausgeschlossen.",
+          "Für Datenverluste haftet der Anbieter nur, soweit der Kunde angemessene Datensicherungen durchgeführt hat; die Haftung ist auf den Aufwand zur Wiederherstellung der Daten bei ordnungsgemäßer Sicherung beschränkt."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 13 Referenzen",
+      "inhalt": [
+        "Der Anbieter darf den Kunden als Referenz (Name, Logo) in angemessener Form nennen, sofern der Kunde dem nicht vorab in Textform widerspricht. Vertrauliche Inhalte werden nicht offengelegt."
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 14 Höhere Gewalt",
+      "inhalt": [
+        "Ereignisse außerhalb der Kontrolle einer Partei (zum Beispiel Streik, Krieg, Naturkatastrophen, Pandemien, Ausfälle von Netzen oder Diensten Dritter) befreien für die Dauer der Störung und in ihrem Umfang von den Leistungspflichten. Die Parteien informieren sich unverzüglich."
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 15 Laufzeit, Kündigung",
+      "inhalt": [
+        {"nummern": [
+          "Bei Projekten endet der Vertrag mit Abnahme bzw. Abschluss der vereinbarten Leistungen.",
+          "Bei Dauerschuldverhältnissen kann der Vertrag mit einer Frist von 3 Monaten zum Quartalsende ordentlich gekündigt werden, sofern nichts Abweichendes vereinbart ist. Das Recht zur außerordentlichen Kündigung aus wichtigem Grund bleibt unberührt."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 16 Verbraucherstreitbeilegung",
+      "inhalt": [
+        "Der Anbieter ist nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen. Dieser Hinweis wird nur vorsorglich erteilt, falls ausnahmsweise Verträge mit Verbrauchern zustande kommen sollten."
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 17 Anwendbares Recht, Gerichtsstand, Erfüllungsort",
+      "inhalt": [
+        {"nummern": [
+          "Es gilt deutsches Recht unter Ausschluss des UN-Kaufrechts (CISG).",
+          "Ausschließlicher Gerichtsstand für alle Streitigkeiten aus und im Zusammenhang mit dem Vertrag ist, soweit zulässig, der Sitz des Anbieters. Voraussetzung ist, dass beide Parteien Kaufleute, juristische Personen des öffentlichen Rechts oder öffentlich-rechtliche Sondervermögen sind.",
+          "Erfüllungsort ist der Sitz des Anbieters, sofern nichts anderes vereinbart ist."
+        ]}
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "§ 18 Textform, Teilunwirksamkeit, Rangfolge",
+      "inhalt": [
+        {"nummern": [
+          "Änderungen und Ergänzungen dieses Vertrags bedürfen der Textform (zum Beispiel E-Mail). Dies gilt auch für die Änderung dieses Textformerfordernisses.",
+          "Sollte eine Bestimmung dieser AGB unwirksam sein oder werden, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt. Anstelle der unwirksamen Bestimmung gilt diejenige wirksame Regelung als vereinbart, die dem wirtschaftlichen Zweck der unwirksamen Bestimmung am nächsten kommt."
+        ]}
+      ]
+    }
+  ]
+}

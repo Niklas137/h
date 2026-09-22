@@ -1,0 +1,87 @@
+{
+  "_hinweise": [
+    "Vorbehalt aus Phase 2 (Abschnitt 4 und 9): Diese Seite nur veröffentlichen, wenn ST4-Praxis oder Quanos-Partnerstatus nachweisbar ist.",
+    "Sonst: diese Datei löschen, den Namen aus site.json (seiten, leistungsseiten) entfernen und die Links auf /redaktionssysteme-st4/ auf /betriebsanleitungen/ umstellen; build.py --pruefen meldet verbleibende Links."
+  ],
+  "pfad": "/redaktionssysteme-st4/",
+  "typ": "leistung",
+  "menue": "Redaktionssysteme ST4",
+  "kurz": "SCHEMA ST4, Standardisierung, Modularisierung und mehrsprachige Workflows, terminologiesicher.",
+  "title": "SCHEMA ST4 Einführung & Modularisierung | FSH-Documentation",
+  "description": "Vorbereitung und Einführung von SCHEMA ST4: Strukturkonzept, Standardisierung, Modularisierung, DE/EN-Workflow. Referenz: rund 40 % schnellere Erstellung.",
+  "schema": {"name": "Redaktionssysteme und Prozesse (SCHEMA ST4)", "serviceType": "Vorbereitung und Einführung von Redaktionssystemen, Standardisierung und Modularisierung technischer Dokumentation"},
+  "kicker": "Leistung · Redaktionssysteme und Prozesse",
+  "h1": "Redaktionssysteme und Prozesse: SCHEMA ST4, Standardisierung, Modularisierung",
+  "einleitung": "Wir bereiten die Einführung eines Redaktionssystems vor, strukturieren Ihre Inhalte modular und richten mehrsprachige Workflows ein, damit Anleitungen schneller entstehen und Übersetzungen günstiger werden. Referenz: rund 40 % schnellere Inhaltserstellung nach der ST4-Einführung.",
+  "seitenkarte": {
+    "kicker": "Aus der Praxis",
+    "absaetze": [
+      "<strong>Technologieunternehmen (AT):</strong> Grundlagen für die Einführung von SCHEMA ST4 geschaffen, Bestand gesichtet und bewertet, Normen- und CE-Anforderungen dokumentationsseitig abgesichert, DE/EN-Workflow aufgesetzt.",
+      "<strong>Ergebnis:</strong> rund 40 % schnellere Inhaltserstellung, Übersetzungskosten spürbar gesenkt."
+    ]
+  },
+  "abschnitte": [
+    {
+      "id": "leistung",
+      "art": "karten",
+      "spalten": 4,
+      "h2": "Leistung",
+      "karten": [
+        {"h3": "SCHEMA ST4", "text": "Vorbereitung und Begleitung der Einführung, Informationsarchitektur, Erstellung und Pflege von Inhalten im System."},
+        {"h3": "Standardisierung", "text": "Terminologie, Styleguide, Vorlagen und Schreibregeln, die Inhalte wiederverwendbar und übersetzungsgerecht machen."},
+        {"h3": "Modularisierung", "text": "Zerlegung der Dokumentation in wiederverwendbare Module mit Metadaten, nach DIN EN IEC/IEEE 82079-1."},
+        {"h3": "Prozesse und Schnittstellen", "text": "Abstimmprozesse mit Konstruktion, Einkauf und Service; Rollen, Reviews und Freigaben."}
+      ]
+    },
+    {
+      "id": "vorbereitung",
+      "art": "text",
+      "h2": "Vorbereitung der Einführung",
+      "inhalt": [
+        "Ein Redaktionssystem lohnt sich erst mit passenden Inhalten und Prozessen. Deshalb beginnen wir vor der Software:",
+        {"liste": [
+          "Bestehende Dokumentation sichten, bewerten und Handlungsbedarf strukturiert ableiten",
+          "Anforderungen aus Normen und CE-Richtlinien identifizieren und dokumentationsseitig absichern",
+          "Relevante Schnittstellen zu Konstruktion, Einkauf und Service erfassen und Abstimmprozesse definieren",
+          "Informationsarchitektur, Metadaten und Variantenkonzept festlegen",
+          "Workshops mit Redaktion, Technik und Übersetzungsmanagement"
+        ]}
+      ]
+    },
+    {
+      "id": "migration",
+      "art": "text",
+      "h2": "Migration von Bestandsdokumentation",
+      "inhalt": [
+        "Bestehende Anleitungen aus Word oder anderen Werkzeugen übernehmen wir nicht eins zu eins, sondern nach dem neuen Strukturkonzept: Inhalte bereinigen, doppelte Passagen zusammenführen, Module schneiden, Metadaten vergeben. Priorisiert nach Nutzung und Änderungshäufigkeit, damit der laufende Betrieb weitergeht."
+      ]
+    },
+    {
+      "id": "modularisierung",
+      "art": "text",
+      "h2": "Modularisierung nach DIN EN IEC/IEEE 82079-1",
+      "inhalt": [
+        "Die Norm verlangt zielgruppengerechte, konsistente und vollständige Nutzungsinformationen. Modulare Inhalte erfüllen das systematisch: Ein Sicherheitshinweis, eine Handlungsanleitung oder eine Funktionsbeschreibung entsteht einmal und wird in allen Produkten, Varianten und Ausgabeformaten wiederverwendet. Änderungen erfolgen an einer Stelle und sind überall aktuell."
+      ]
+    },
+    {
+      "id": "mehrsprachig",
+      "art": "text",
+      "h2": "Mehrsprachiger Workflow DE/EN",
+      "inhalt": [
+        "Übersetzungsgerechte Quelltexte, Terminologiedatenbank und ein Workflow, in dem nur geänderte Module zur Übersetzung gehen. So sinken Übersetzungsaufwand und -kosten signifikant, und alle Sprachfassungen bleiben auf demselben Stand. Weitere Sprachen: Ukrainisch und Russisch im Kernteam und Netzwerk.",
+        {"links": [{"text": "Mehrsprachige Betriebsanleitungen", "ziel": "/betriebsanleitungen/#mehrsprachig"}]}
+      ]
+    },
+    {
+      "art": "verwandt",
+      "h2": "Verwandte Leistungen",
+      "seiten": ["/betriebsanleitungen/", "/dokumentencheck/", "/ce-ukca-konformitaet/"]
+    }
+  ],
+  "kontakt": {
+    "h2": "Redaktionssystem-Projekt anfragen",
+    "text": "Erstreaktion binnen 24 h. Im Kick-off (30 Min.) klären wir Bestand, Ziele, Sprachen und Schnittstellen.",
+    "betreff": "Anfrage Redaktionssysteme / SCHEMA ST4"
+  }
+}
