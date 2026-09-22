@@ -1,0 +1,93 @@
+{
+  "pfad": "/medizinprodukte-mdr-ivdr/",
+  "typ": "leistung",
+  "menue": "Medizinprodukte MDR/IVDR",
+  "kurz": "Technische Dokumentation nach Annex II/III, IFU, Labeling und UDI, Risikomanagement nach ISO 14971, Usability nach IEC 62366-1.",
+  "title": "MDR/IVDR Technische Dokumentation | FSH-Documentation",
+  "description": "Technische Dokumentation nach MDR Annex II/III, IFU/Labeling/UDI, Risikomanagement ISO 14971, Usability IEC 62366-1, CEP/CER, PMCF. FSH-Documentation, Teltow.",
+  "schema": {"name": "Technische Dokumentation für Medizinprodukte (MDR/IVDR)", "serviceType": "Technische Dokumentation, Gebrauchsanweisung und Risikomanagementakte für Medizinprodukte und In-vitro-Diagnostika"},
+  "kicker": "Leistung · Medizinprodukte",
+  "h1": "Technische Dokumentation für Medizinprodukte nach EU-MDR und IVDR",
+  "einleitung": "Technische Dokumentation, Gebrauchsanweisung, Labeling und Risikomanagementakte für Medizinprodukte und In-vitro-Diagnostika: prüffähig für Benannte Stellen, verständlich für Anwender. Technische Redaktion aus Teltow bei Berlin für MedTech-Unternehmen deutschlandweit.",
+  "seitenkarte": {
+    "kicker": "Unser Beitrag",
+    "absaetze": [
+      "<strong>Technische Redaktion, keine Zulassungsberatung:</strong> Wir erstellen und pflegen die Dokumente, die Ihr Regulatory-Affairs-Team und die Benannte Stelle brauchen, und halten sie über den Produktlebenszyklus konsistent.",
+      "Über 15 Jahre Erfahrung in regulierten Umfeldern, darunter MedTech."
+    ]
+  },
+  "abschnitte": [
+    {
+      "id": "leistungen",
+      "art": "karten",
+      "spalten": 4,
+      "h2": "Leistungen",
+      "karten": [
+        {"h3": "Technische Dokumentation (Anhang II und III)", "text": "Aufbau und Pflege der technischen Dokumentation nach MDR Anhang II sowie der Dokumentation zur Überwachung nach dem Inverkehrbringen nach Anhang III."},
+        {"h3": "Gebrauchsanweisung, Labeling, UDI", "text": "IFU nach MDR Anhang I und DIN EN IEC/IEEE 82079-1, Kennzeichnung und UDI-Angaben konsistent über alle Sprachen."},
+        {"h3": "Risikomanagement nach ISO 14971", "text": "Risikomanagementplan, Risikoanalyse, Bewertung, Maßnahmen und Restrisiko-Bericht als Risikomanagementakte."},
+        {"h3": "Usability nach IEC 62366-1", "text": "Gebrauchstauglichkeitsakte: Nutzungskontext, Anwenderprofile, Gefährdungen durch Bedienfehler, formative und summative Bewertung dokumentiert."},
+        {"h3": "Klinische Bewertung (CEP/CER)", "text": "Redaktionelle Erstellung und Pflege von Clinical Evaluation Plan und Report auf Basis Ihrer klinischen Daten."},
+        {"h3": "PMCF", "text": "Post-Market Clinical Follow-up: Plan und Bericht, abgestimmt mit PMS und Risikomanagement."},
+        {"h3": "Studienvorbereitung", "text": "Prüfplan (Protokoll), Ethikantrag und Investigator-Paket, formal und sprachlich prüffähig."},
+        {"h3": "Prüfung bestehender IFU", "text": "Bestehende Gebrauchsanweisungen gegen MDR, 82079-1 und Risikomanagementakte prüfen.", "link": "/dokumentencheck/", "linktext": "Zum Dokumentencheck"}
+      ]
+    },
+    {
+      "id": "ifu",
+      "art": "text",
+      "h2": "Gebrauchsanweisung (IFU) nach DIN EN IEC/IEEE 82079-1 und MDR",
+      "inhalt": [
+        "Die MDR legt in Anhang I, Kapitel III fest, welche Angaben Kennzeichnung und Gebrauchsanweisung enthalten müssen: Zweckbestimmung, Anwender, Kontraindikationen, Warnhinweise, Aufbereitung, Restrisiken und vieles mehr. DIN EN IEC/IEEE 82079-1 regelt, wie diese Informationen aufgebaut und dargestellt werden, damit Anwender sie verstehen.",
+        "Wir verbinden beides: vollständig nach MDR, verständlich nach 82079-1, konsistent mit Risikomanagement und Usability-Akte. Änderungen an einer Stelle ziehen wir nachvollziehbar durch alle Dokumente und Sprachen.",
+        {"links": [{"text": "Anleitungen für Maschinen und Anlagen", "ziel": "/betriebsanleitungen/"}]}
+      ]
+    },
+    {
+      "id": "risikomanagement",
+      "art": "text",
+      "h2": "Risikomanagementakte nach ISO 14971",
+      "inhalt": [
+        "Die Risikomanagementakte (Risk File) begleitet das Produkt über den gesamten Lebenszyklus. Wir dokumentieren Plan, Analyse, Bewertung, Maßnahmen und Restrisiken so, dass jede Gefährdung bis zur Maßnahme und zum Nachweis nachvollziehbar bleibt (Traceability Hazard → Risk → Control → Evidence) und die Verbindung zu IFU und Usability-Akte sichtbar ist.",
+        {"links": [{"text": "Risikobeurteilung für Maschinen und Anlagen", "ziel": "/risikobeurteilung/"}]}
+      ]
+    },
+    {
+      "id": "ivdr",
+      "art": "text",
+      "h2": "In-vitro-Diagnostika (IVDR)",
+      "inhalt": [
+        "Für In-vitro-Diagnostika gilt die Verordnung (EU) 2017/746 (IVDR) mit eigener Klassifizierung, eigenen Anforderungen an die technische Dokumentation (Anhang II und III), an Leistungsbewertung und Gebrauchsanweisung. Wir erstellen und pflegen die Dokumentation nach derselben Systematik wie für Medizinprodukte nach MDR."
+      ]
+    },
+    {
+      "id": "positionierung",
+      "art": "text",
+      "h2": "Redaktionsleistung, keine Zulassungsberatung",
+      "inhalt": [
+        "Regulatorische Strategie, Klassifizierung und die Kommunikation mit der Benannten Stelle bleiben bei Ihrem Regulatory-Affairs-Team. Wir arbeiten ihm zu: Wir strukturieren, schreiben, prüfen und pflegen die Dokumente, halten Versionen und Freigaben nach und liefern in Ihrem QM-System oder als Quelldateien mit Freigabeprotokoll."
+      ]
+    },
+    {
+      "id": "fragen",
+      "art": "fragen",
+      "h2": "Häufige Fragen",
+      "fragen": [
+        {"frage": "Übernehmen Sie die Zulassung?", "antwort": "Nein. Wir sind technische Redaktion: Wir erstellen, strukturieren und pflegen die Dokumente. Regulatorische Strategie, Klassifizierung und die Kommunikation mit der Benannten Stelle bleiben bei Ihrem Regulatory-Affairs-Team."},
+        {"frage": "Arbeiten Sie in unserem QM-System?", "antwort": "Ja. Wir halten uns an Ihre Dokumentenlenkung (Vorlagen, Freigaben, Versionierung) und liefern die Dokumente in Ihrem System oder als Quelldateien mit Freigabeprotokoll."},
+        {"frage": "In welchen Sprachen?", "antwort": "Deutsch, Englisch, Ukrainisch und Russisch, terminologiesicher und übersetzungsgerecht aufgebaut. Für weitere Sprachen bereiten wir die Quelle so vor, dass Ihre Übersetzer effizient arbeiten können."},
+        {"frage": "Prüfen Sie auch bestehende Gebrauchsanweisungen?", "antwort": "Ja, gegen MDR Anhang I, DIN EN IEC/IEEE 82079-1, ISO 14971 und IEC 62366-1. Sie erhalten die Befunde nach Priorität geordnet mit konkreten Empfehlungen."}
+      ]
+    },
+    {
+      "art": "verwandt",
+      "h2": "Verwandte Leistungen",
+      "seiten": ["/betriebsanleitungen/", "/risikobeurteilung/", "/dokumentencheck/"]
+    }
+  ],
+  "kontakt": {
+    "h2": "MDR-Dokumentation anfragen",
+    "text": "Erstreaktion binnen 24 h. Im Kick-off (30 Min.) klären wir Produkt, Klasse, vorhandene Dokumente, QM-System und Sprachen.",
+    "betreff": "Anfrage Medizinprodukte MDR/IVDR"
+  }
+}

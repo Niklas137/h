@@ -1,0 +1,113 @@
+{
+  "pfad": "/risikobeurteilung/",
+  "typ": "leistung",
+  "menue": "Risikobeurteilung",
+  "kurz": "ISO 12100, ISO 13849-1/-2, IEC 62061; HAZOP, FMEA, SIL/LOPA. Ergebnis: Risiko-Register, Maßnahmenplan, Traceability.",
+  "title": "Risikobeurteilung erstellen lassen | FSH-Documentation",
+  "description": "Risikobeurteilung für Maschinen und Anlagen nach ISO 12100, ISO 13849-1/-2, IEC 62061 mit HAZOP, FMEA, SIL/LOPA. Ergebnis: Risiko-Register und Maßnahmeplan.",
+  "schema": {"name": "Risikobeurteilung für Maschinen und Anlagen", "serviceType": "Risikobeurteilung nach ISO 12100 mit HAZOP, FMEA und SIL/LOPA"},
+  "kicker": "Leistung · Risikobeurteilung",
+  "h1": "Risikobeurteilung nach ISO 12100 – HAZOP, FMEA, SIL/LOPA",
+  "einleitung": "Systematische Risikobeurteilung für Maschinen und Anlagen: Gefährdungen erkennen, Risiken einschätzen, Maßnahmen festlegen und Restrisiken dokumentieren. Das Ergebnis trägt Betriebsanleitung und CE-Dokumentation. Aus Teltow bei Berlin, deutschlandweit.",
+  "seitenkarte": {
+    "kicker": "Ergebnis",
+    "absaetze": [
+      "<strong>Risiko-Register</strong> mit Gefährdungen, Einschätzung und Maßnahmen.",
+      "<strong>Maßnahmenplan</strong> mit Verantwortlichen und Nachweisen.",
+      "<strong>Traceability</strong> Hazard → Risk → Control → Evidence, bis in Warnhinweis und Anleitung."
+    ]
+  },
+  "abschnitte": [
+    {
+      "id": "leistung",
+      "art": "text",
+      "h2": "Leistung",
+      "inhalt": [
+        "Wir führen die Risikobeurteilung als moderierten Prozess mit Ihren Konstrukteuren, Sicherheitsverantwortlichen und dem Betrieb durch oder prüfen und vervollständigen eine vorhandene Beurteilung. Gefährdungen, Restrisiken und SAFE-Hinweise fließen direkt in Betriebsanleitung und technische Unterlagen ein.",
+        {"liste": [
+          "Gefährdungsanalyse über alle Lebensphasen: Transport, Montage, Inbetriebnahme, Betrieb, Instandhaltung, Außerbetriebnahme",
+          "Risikoeinschätzung und -bewertung, Maßnahmen nach der Drei-Stufen-Methode: inhärent sichere Konstruktion, technische Schutzmaßnahmen, Benutzerinformation",
+          "Restrisiken und daraus abgeleitete Warnhinweise für die Betriebsanleitung",
+          "Sicherheitsfunktionen: Performance Level nach ISO 13849-1, SIL nach IEC 62061"
+        ]}
+      ]
+    },
+    {
+      "id": "normen",
+      "art": "band",
+      "h2": "Normen und Verfahren",
+      "punkte": [
+        {"titel": "ISO 12100", "text": "Sicherheit von Maschinen, allgemeine Gestaltungsleitsätze, Risikobeurteilung und Risikominderung."},
+        {"titel": "ISO 13849-1/-2 und IEC 62061", "text": "Sicherheitsbezogene Teile von Steuerungen, Performance Level und Safety Integrity Level."},
+        {"titel": "HAZOP, FMEA, SIL/LOPA", "text": "Verfahren für Prozessanlagen und Maschinen: Abweichungsanalyse, Fehlermöglichkeits- und Einflussanalyse, Schutzebenenanalyse."},
+        {"titel": "ISO 14971", "text": "Risikomanagement für Medizinprodukte (Risk Files), siehe Medizinprodukte MDR/IVDR."}
+      ]
+    },
+    {
+      "id": "ergebnis",
+      "art": "karten",
+      "h2": "Ergebnis: Risiko-Register, Maßnahmenplan, Traceability",
+      "karten": [
+        {"h3": "Risiko-Register", "text": "Jede Gefährdung mit Ursache, Folge, Einschätzung vor und nach Maßnahmen, Verantwortlichem und Status."},
+        {"h3": "Maßnahmenplan", "text": "Konstruktive, technische und organisatorische Maßnahmen mit Nachweis; offene Punkte terminiert."},
+        {"h3": "Traceability", "text": "Von der Gefährdung (Hazard) über das Risiko und die Maßnahme (Control) bis zum Nachweis (Evidence) und zum Warnhinweis in der Anleitung."}
+      ]
+    },
+    {
+      "id": "hazop-abgleich",
+      "art": "text",
+      "h2": "HAZOP-Abgleich mit der Betriebsanleitung",
+      "inhalt": [
+        "Ein häufiger Auditbefund: Die Risikobeurteilung nennt Restrisiken, die in der Betriebsanleitung nicht auftauchen, oder die Anleitung warnt vor Gefahren, die nirgends bewertet sind. Beim HAZOP-Abgleich legen wir Risiko-Register und Anleitung nebeneinander und schließen die Lücken in beide Richtungen.",
+        "Dafür brauchen wir von Ihnen R&amp;I-Schemata, vorhandene HAZOP- oder FMEA-Protokolle und Stücklisten. Der Abgleich ist fester Schritt in unserem Ablauf (Erstellung und Überarbeitung).",
+        {"links": [{"text": "Zu den Betriebsanleitungen", "ziel": "/betriebsanleitungen/"}]}
+      ]
+    },
+    {
+      "id": "maschinenverordnung",
+      "art": "text",
+      "h2": "Risikobeurteilung und Maschinenverordnung (EU) 2023/1230",
+      "inhalt": [
+        "Die Risikobeurteilung ist unter Maschinenrichtlinie und Maschinenverordnung Pflicht und Ausgangspunkt der technischen Unterlagen: Der Hersteller muss sie durchführen und dokumentieren, bevor die Maschine konstruiert und gebaut wird, und die Ergebnisse bei Konstruktion und Anleitung berücksichtigen.",
+        "Die Maschinenverordnung gilt ab dem 20. Januar 2027 und ergänzt die Anforderungen unter anderem um Cybersicherheit und sich selbst entwickelndes Verhalten (KI). Bestehende Risikobeurteilungen prüfen wir auf diese Punkte und ergänzen sie.",
+        {"links": [{"text": "Zur CE-/UKCA-Konformität", "ziel": "/ce-ukca-konformitaet/"}]}
+      ]
+    },
+    {
+      "id": "betreiberpflichten",
+      "art": "text",
+      "h2": "Abgrenzung: Betreiberpflichten und Gefährdungsbeurteilung",
+      "inhalt": [
+        "Die Risikobeurteilung des Herstellers (ISO 12100) und die Gefährdungsbeurteilung des Betreibers (ArbSchG, BetrSichV) sind zwei verschiedene Dokumente mit verschiedenen Adressaten. Wir unterstützen auf beiden Seiten und halten Hersteller- und Betreiberdokumentation sauber getrennt.",
+        {"liste": [
+          "Gefährdungsbeurteilungen nach ArbSchG und BetrSichV",
+          "Explosionsschutzdokument",
+          "Betriebsanweisungen, unter anderem nach TRGS 555",
+          "Prüfkataster und Fristen, Vorbereitung interner und externer Prüfungen, auch durch eine zugelassene Überwachungsstelle (ZÜS)"
+        ]},
+        {"links": [{"text": "Dokumentencheck und Betreiberpflichten", "ziel": "/dokumentencheck/#betreiberpflichten"}]}
+      ]
+    },
+    {
+      "id": "fragen",
+      "art": "fragen",
+      "h2": "Häufige Fragen",
+      "fragen": [
+        {"frage": "Wann muss die Risikobeurteilung vorliegen?", "antwort": "Vor der Konstruktion beginnen, während der Entwicklung fortschreiben und mit den technischen Unterlagen abschließen. Bei wesentlichen Veränderungen an einer Maschine ist sie zu aktualisieren."},
+        {"frage": "Können Sie eine vorhandene Risikobeurteilung prüfen?", "antwort": "Ja. Wir prüfen Vollständigkeit, Methodik, Normbezug und die Verbindung zur Betriebsanleitung und liefern eine priorisierte Liste offener Punkte."},
+        {"frage": "Welche Verfahren setzen Sie ein?", "antwort": "Je nach Anlage HAZOP, FMEA oder SIL/LOPA; bei Maschinen die Methode nach ISO 12100 mit Risikograph oder Risikomatrix, wie im Projekt vereinbart."},
+        {"frage": "Gilt das auch für Medizinprodukte?", "antwort": "Für Medizinprodukte gilt ISO 14971. Die Risikomanagementakte erstellen und pflegen wir auf der Seite Medizinprodukte MDR/IVDR beschrieben, nach derselben Logik: Gefährdung, Risiko, Maßnahme, Nachweis."}
+      ]
+    },
+    {
+      "art": "verwandt",
+      "h2": "Verwandte Leistungen",
+      "seiten": ["/betriebsanleitungen/", "/ce-ukca-konformitaet/", "/medizinprodukte-mdr-ivdr/"]
+    }
+  ],
+  "kontakt": {
+    "h2": "Risikobeurteilung anfragen",
+    "text": "Erstreaktion binnen 24 h. Im Kick-off (30 Min.) klären wir Anlage, Normen, vorhandene Unterlagen und Verfahren.",
+    "betreff": "Anfrage Risikobeurteilung"
+  }
+}

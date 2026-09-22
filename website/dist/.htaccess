@@ -1,0 +1,18 @@
+# Apache (z. B. STRATO Webspace). Auf anderen Hostern ohne Wirkung.
+AddDefaultCharset UTF-8
+Options -Indexes
+ErrorDocument 404 /404.html
+<IfModule mod_headers.c>
+  <FilesMatch "\.(woff2|webp|jpg|png|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.css$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=600"
+  </FilesMatch>
+</IfModule>
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>

@@ -1,0 +1,66 @@
+{
+  "_hinweise": [
+    "Keine Rechtsberatung. Vor Veröffentlichung prüfen lassen.",
+    "Paragraphen nach Phase 2, Abschnitt 6: § 5 DDG statt § 5 TMG, § 18 Abs. 2 MStV statt § 55 Abs. 2 RStV; Satz zur EU-OS-Plattform entfällt (Plattform am 20.07.2025 eingestellt).",
+    "Bildnachweise: Porträt und Zahnräder-Foto (Stockfoto) ohne belegte Lizenz; Urheber hier nennen, falls die Lizenz es verlangt (Phase 2, Abschnitt 6).",
+    "Berufshaftpflichtversicherung nur ergänzen, falls vorhanden (Name, Anschrift des Versicherers, räumlicher Geltungsbereich)."
+  ],
+  "pfad": "/impressum/",
+  "typ": "recht",
+  "menue": "Impressum",
+  "title": "Impressum | FSH-Documentation",
+  "h1": "Impressum",
+  "cta": null,
+  "abschnitte": [
+    {
+      "art": "text",
+      "h2": "Angaben gemäß § 5 DDG",
+      "inhalt": [
+        "FSH-Documentation UG (haftungsbeschränkt)<br>Bäckerstraße 2 D<br>14513 Teltow<br>Deutschland",
+        "Vertreten durch den Geschäftsführer: Sascha Falk Heinzmann"
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "Kontakt",
+      "inhalt": [
+        "Telefon: <a href=\"tel:+491729795939\">+49 172 9795939</a><br>E-Mail: <a href=\"mailto:Falk.Heinzmann@fsh-documentation.de\">Falk.Heinzmann@fsh-documentation.de</a>"
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "Registereintrag",
+      "inhalt": [
+        "Registergericht: Amtsgericht Potsdam<br>Registernummer: HRB 37959 P"
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "Umsatzsteuer-Identifikationsnummer",
+      "inhalt": [
+        "Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz: DE 360111007"
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV",
+      "inhalt": [
+        "Sascha Falk Heinzmann, Bäckerstraße 2 D, 14513 Teltow, Deutschland"
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "Verbraucherstreitbeilegung",
+      "inhalt": [
+        "Unsere Leistungen richten sich ausschließlich an Unternehmer. Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen."
+      ]
+    },
+    {
+      "art": "text",
+      "h2": "Haftung für Links",
+      "inhalt": [
+        "Diese Website enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für diese Inhalte ist der jeweilige Anbieter oder Betreiber verantwortlich. Bei Bekanntwerden von Rechtsverletzungen entfernen wir derartige Links umgehend."
+      ]
+    }
+  ]
+}
