@@ -20,6 +20,7 @@ robots.txt, Alt-Texte, lokale Schriften, komprimierte Bilder, Lazy Loading, kein
 | `dist/` | **fertige Website zum Hochladen** (wird von `build.py` komplett neu erzeugt) |
 | `livegang.md` / `.pdf` | Livegang Schritt für Schritt (Hosting, Testadresse, DNS, Search Console, .de-Weiterleitung) |
 | `offene-punkte.md` / `.pdf` | die vier offenen Punkte mit fertigen Texten: GitHub-Support-Ticket, 40-%-Referenz, freelance.de-Profil, Rechtstexte |
+| `google-und-email-dns.md` / `.pdf` | Google-Unternehmensprofil (Entscheidungen, Schritte, fertige Texte) und E-Mail-DNS (SPF, DMARC, Null-MX) mit gemessenem Stand und fertigen Einträgen |
 | `pruefpaket-rechtstexte.md` / `.pdf` | Impressum, Datenschutz, AGB mit Änderungsliste und Fragen für den Rechtsprüfer; erzeugt von `tools/pruefpaket.py` |
 | `tools/` | `pruefpaket.py` und das Deckblatt des Prüfpakets |
 | `nachweise/` | Ablage für Belege (Support-Antworten, Freigaben, Lizenzen, DNS-Screenshot) |

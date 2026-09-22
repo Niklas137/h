@@ -52,7 +52,9 @@ wird mit dem vorherigen verglichen. Alle Parameter stehen fest. Nicht nachfragen
    beim Verbindungsaufbau, ist der Abruf gesperrt: Technik und On-Page bleiben „offen“, und der
    Prüfumfang nennt das ausdrücklich. Keine Umgehung über fremde Dienste.
 4. **Technik** (nur bei Erreichbarkeit): robots.txt, sitemap.xml, Weiterleitungen http→https,
-   www und Zweitdomain, Antwortzeit, 404-Verhalten, Stichprobe der Sitemap-URLs.
+   www und Zweitdomain, Antwortzeit, 404-Verhalten, Stichprobe der Sitemap-URLs. Unabhängig von
+   der Erreichbarkeit: E-Mail-DNS beider Domains (SPF, DMARC) per DNS-over-HTTPS, Befehle und
+   Sollwerte im Prüfkatalog.
 5. **On-Page** (nur bei Erreichbarkeit): Startseite und bis zu zehn Unterseiten speichern und
    mit `onpage_check.py` auswerten. Meldet es null Wörter oder keine Überschriften, baut die Seite
    ihren Inhalt per JavaScript: dann `bash seo-audit/tools/browser_setup.sh` (einmal je Container)
@@ -123,6 +125,22 @@ http→https als „nicht prüfbar“ eintragen, nicht als Fehler.
 Bewertung: `301` von http auf https und zwischen www und non-www in eine Richtung; Zweitdomain per
 `301` auf die Hauptdomain; robots.txt vorhanden und ohne `Disallow: /`; Sitemap vorhanden, URLs
 antworten mit `200`; 404-Test liefert `404`, nicht `200`; Antwortzeit der Startseite unter 1,5 s.
+
+### E-Mail-DNS (immer, auch ohne Erreichbarkeit der Website)
+
+```bash
+for n in fsh-documentation.de _dmarc.fsh-documentation.de fsh-documentation.com _dmarc.fsh-documentation.com; do
+  curl -sS -m 15 -w "\n" "https://dns.google/resolve?name=$n&type=TXT"
+done
+```
+
+Gelesen wird das Feld `Answer` → `data` der Antwort. Sollwerte (Herleitung in
+`website/google-und-email-dns.md`): `fsh-documentation.de` TXT mit `v=spf1 include:_spf.strato.com`
+(`~all` oder `-all`); `_dmarc.fsh-documentation.de` mit `p=reject` und `rua=`; `fsh-documentation.com`
+TXT `v=spf1 -all`; `_dmarc.fsh-documentation.com` mit `p=reject`. Fehlt ein Wert, bleibt der Befund
+„E-Mail-Authentifizierung“ (Priorität `mittel`, nächste freie B-Nummer, falls noch nicht vorhanden)
+offen und nennt die fehlenden Werte; sind alle gesetzt, gilt er als erledigt. Antwortet dns.google
+nicht, den Punkt als `offen` führen.
 
 ### On-Page
 

@@ -7,9 +7,9 @@ Die Regeln stehen im Skill `.claude/skills/seo-audit/SKILL.md`, die Daten in die
 ## So läuft eine Woche
 
 1. Freitag 7:30 Uhr: Die Routine prüft Erreichbarkeit, Technik und On-Page (sofern die Seite
-   abrufbar ist), Sichtbarkeit im Suchindex, Marke und lokale Einträge, vergleicht mit dem letzten
-   Lauf, schreibt `berichte/JJJJ-MM-TT-freitag-0730.json`, erzeugt beide PDFs, committet nach
-   `main` und schickt eine Push-Nachricht.
+   abrufbar ist), E-Mail-DNS (SPF, DMARC), Sichtbarkeit im Suchindex, Marke und lokale Einträge,
+   vergleicht mit dem letzten Lauf, schreibt `berichte/JJJJ-MM-TT-freitag-0730.json`, erzeugt beide
+   PDFs, committet nach `main` und schickt eine Push-Nachricht.
 2. Freitag 16:00 Uhr: derselbe Ablauf als Zwischenstand vor dem Wochenende, verglichen mit dem
    7:30-Lauf desselben Tages (`…-freitag-1600.json`). Gibt es keine Änderung, sagt der Bericht das.
 3. Von Hand jederzeit: `SEO-Audit` in einer Claude-Code-Session mit diesem Repo schreiben.
