@@ -1,0 +1,51 @@
+# Baut und prüft die Website bei jedem Push nach main, der website/ berührt.
+# Veröffentlicht auf GitHub Pages nur, wenn die Repository-Variable WEBSITE_HOSTING = github gesetzt ist
+# (Settings → Secrets and variables → Actions → Variables). Zusätzliche Bau-Schalter, zum Beispiel
+# "--noindex" für den Testbetrieb, kommen aus der Variable WEBSITE_BUILD_ARGS.
+name: Website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "website/**"
+      - ".github/workflows/website.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website
+  cancel-in-progress: false
+
+jobs:
+  pruefen:
+    name: Bauen und prüfen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Website bauen und prüfen
+        run: python3 website/build.py --pruefen ${{ vars.WEBSITE_BUILD_ARGS }}
+      - name: Ergebnis ablegen
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/dist
+
+  veroeffentlichen:
+    name: Auf GitHub Pages veröffentlichen
+    needs: pruefen
+    if: vars.WEBSITE_HOSTING == 'github'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

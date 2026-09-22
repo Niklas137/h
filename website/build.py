@@ -99,12 +99,13 @@ class Seite:
 
 
 class Bau:
-    def __init__(self, site: dict, seiten: list[Seite], ausgabe: Path, modus: str, basis: str):
+    def __init__(self, site: dict, seiten: list[Seite], ausgabe: Path, modus: str, basis: str, noindex: bool = False):
         self.site = site
         self.seiten = seiten
         self.ausgabe = ausgabe
         self.modus = modus  # "absolut" | "relativ"
         self.basis = basis.rstrip("/")
+        self.noindex = noindex  # Testbetrieb: keine Seite indexieren
         self.nach_pfad = {s.pfad: s for s in seiten}
         self.css_version = ""
         self.heute = dt.date.today().isoformat()
@@ -441,7 +442,12 @@ def seite_html(bau: Bau, seite: Seite, varianten: dict | None) -> str:
     seite_url = bau.url(seite.pfad)
     css = bau.href("/assets/site.css", seite) + ("?v=" + bau.css_version if bau.css_version else "")
     og_bild = bau.url(d.get("og_bild", site["og_bild"]))
-    robots = '<meta name="robots" content="noindex, follow">\n' if d.get("robots") == "noindex" else ""
+    if bau.noindex:
+        robots = '<meta name="robots" content="noindex, nofollow">\n'
+    elif d.get("robots") == "noindex":
+        robots = '<meta name="robots" content="noindex, follow">\n'
+    else:
+        robots = ""
     beschreibung = f'<meta name="description" content="{esc(d["description"])}">\n' if d.get("description") else ""
     og_desc = f'<meta property="og:description" content="{esc(d["description"])}">\n' if d.get("description") else ""
     fonts = "".join(
@@ -503,6 +509,8 @@ def sitemap(bau: Bau) -> str:
 
 
 def robots_txt(bau: Bau) -> str:
+    if bau.noindex:
+        return "# Testbetrieb: nicht indexieren (gebaut mit --noindex)\nUser-agent: *\nDisallow: /\n"
     return f"User-agent: *\nAllow: /\n\nSitemap: {bau.url('/sitemap.xml')}\n"
 
 
@@ -632,11 +640,12 @@ def pruefen(bau: Bau) -> int:
                     continue
                 if anker and ziel_datei in gesammelt and anker not in gesammelt[ziel_datei].ids:
                     fehler.append(f"{wo}: Anker {href!r} existiert auf der Zielseite nicht")
-    # Sitemap gegen Seiten
-    sm = (bau.ausgabe / "sitemap.xml").read_text(encoding="utf-8")
-    for s in bau.seiten:
-        if s.typ != "fehler" and s.daten.get("robots") != "noindex" and bau.url(s.pfad) not in sm:
-            fehler.append(f"sitemap.xml: {s.pfad} fehlt")
+    # Sitemap gegen Seiten (im Testbetrieb gibt es keine)
+    if not bau.noindex:
+        sm = (bau.ausgabe / "sitemap.xml").read_text(encoding="utf-8")
+        for s in bau.seiten:
+            if s.typ != "fehler" and s.daten.get("robots") != "noindex" and bau.url(s.pfad) not in sm:
+                fehler.append(f"sitemap.xml: {s.pfad} fehlt")
     for w in warnungen:
         print("Warnung:", w)
     for f in fehler:
@@ -653,6 +662,7 @@ def main(argv=None) -> int:
     ap.add_argument("--basis-url", default=None, help="Basis-URL für canonical, Open Graph, Sitemap (Standard aus site.json)")
     ap.add_argument("--pruefen", action="store_true", help="nach dem Bau prüfen; Fehler ergeben Exit-Code 1")
     ap.add_argument("--hosting", default=None, choices=["strato", "cloudflare", "github"], help="Hosting-Variante für die Datenschutzerklärung (Standard aus site.json)")
+    ap.add_argument("--noindex", action="store_true", help="Testbetrieb: alle Seiten noindex, robots.txt sperrt alles, keine Sitemap")
     args = ap.parse_args(argv)
 
     site = lade_json(INHALT / "site.json")
@@ -665,7 +675,7 @@ def main(argv=None) -> int:
     seiten.append(Seite("404", site["fehlerseite"], None))
 
     ausgabe = Path(args.ausgabe).resolve()
-    bau = Bau(site, seiten, ausgabe, "relativ" if args.relativ else "absolut", args.basis_url or site["basis_url"])
+    bau = Bau(site, seiten, ausgabe, "relativ" if args.relativ else "absolut", args.basis_url or site["basis_url"], args.noindex)
 
     if ausgabe.exists():
         shutil.rmtree(ausgabe)
@@ -681,10 +691,15 @@ def main(argv=None) -> int:
         ziel = ausgabe / s.datei.lstrip("/")
         ziel.parent.mkdir(parents=True, exist_ok=True)
         ziel.write_text(seite_html(bau, s, varianten), encoding="utf-8")
-    (ausgabe / "sitemap.xml").write_text(sitemap(bau), encoding="utf-8")
+    if not bau.noindex:
+        (ausgabe / "sitemap.xml").write_text(sitemap(bau), encoding="utf-8")
     (ausgabe / "robots.txt").write_text(robots_txt(bau), encoding="utf-8")
     (ausgabe / ".htaccess").write_text(HTACCESS, encoding="utf-8")
-    print(f"Gebaut: {len(seiten)} Seiten nach {ausgabe} (Links {bau.modus}, Basis {bau.basis}, Hosting {site.get('hosting')})")
+    # CNAME: von GitHub Pages für die eigene Domain gelesen, auf anderen Hostern ohne Wirkung
+    host = re.sub(r"^https?://", "", bau.basis).split("/")[0]
+    (ausgabe / "CNAME").write_text(host + "\n", encoding="utf-8")
+    print(f"Gebaut: {len(seiten)} Seiten nach {ausgabe} (Links {bau.modus}, Basis {bau.basis}, "
+          f"Hosting {site.get('hosting')}{', NOINDEX-Testbetrieb' if bau.noindex else ''})")
 
     if args.pruefen:
         return pruefen(bau)

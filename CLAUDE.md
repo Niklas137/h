@@ -21,4 +21,5 @@ unter `seo-audit/`. Die Website ist aus der Umgebung meist nicht abrufbar; dann 
 
 Die neue Website liegt unter `website/`: Inhalte als JSON in `website/inhalt/`, Bau mit
 `python3 website/build.py --pruefen`, fertige Dateien in `website/dist/`. Anleitung, Hosting-Wege und
-offene Entscheidungen stehen in `website/README.md`. Rechtstexte dort sind keine Rechtsberatung.
+offene Entscheidungen stehen in `website/README.md`, die Livegang-Schritte in `website/livegang.md`.
+Rechtstexte dort sind keine Rechtsberatung.
