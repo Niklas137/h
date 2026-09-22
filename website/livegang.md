@@ -34,8 +34,10 @@ Vor dem Start festlegen und in `website/inhalt/site.json` eintragen:
 1. Bei Canva anmelden → Startseite → Zahnrad **Einstellungen** → **Domains** → neben
    `fsh-documentation.com` auf **Verwalten** → **DNS-Einträge**. Alle vorhandenen Einträge
    (A, AAAA, CNAME, TXT, MX) als Screenshot sichern. Das ist der Rückweg, falls etwas schiefgeht.
-2. Notieren, welche Einträge Canva für die Website gesetzt hat (A-Eintrag `@` auf eine Canva-Adresse,
-   CNAME `www`). Genau diese werden später ersetzt; alles andere bleibt.
+2. Notieren, welche Einträge Canva für die Website gesetzt hat. Gemessen am 22.09.2026: A `@` →
+   `103.169.142.0`, A `www` → `103.169.142.0`, keine AAAA-Einträge, `_dmarc` TXT `v=DMARC1; p=none`,
+   Nameserver `ns1`–`ns3.systemdns.com`. Genau die beiden A-Einträge werden später ersetzt; alles andere
+   bleibt (auch die SPF- und DMARC-Einträge aus `google-und-email-dns.md`, sobald sie gesetzt sind).
 3. Wissen, dass die .com heute HSTS sendet: Browser, die die Seite schon besucht haben, verlangen
    HTTPS. Der neue Hoster muss deshalb vom ersten Aufruf an ein gültiges Zertifikat liefern. Bei
    GitHub Pages dauert das nach der DNS-Prüfung einige Minuten bis etwa eine Stunde; in dieser Zeit
