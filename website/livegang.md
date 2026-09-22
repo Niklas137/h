@@ -45,6 +45,12 @@ Vor dem Start festlegen und in `website/inhalt/site.json` eintragen:
 
 ### 3.1 Testadresse einrichten (die alte Seite bleibt online)
 
+0. Vorab beim GitHub-Support (support.github.com) schriftlich bestätigen lassen, dass eine statische
+   Unternehmens-Informationsseite mit Kontaktdaten, ohne Shop und ohne Formular, auf GitHub Pages
+   zulässig ist, und die Antwort ablegen. Hintergrund: Die Pages-Bedingungen verbieten, damit ein
+   „online business“ zu betreiben; eine Informationsseite ist nach dem Wortlaut nicht klar erfasst
+   (Rechtsprüfung vom 22.09.2026). Fällt die Antwort negativ aus: Weg C (Cloudflare Pages) nehmen,
+   Texte und Bau liegen bereit.
 1. Im Repo `Niklas137/h` → **Settings** → **Pages** → unter „Build and deployment" bei **Source**
    „GitHub Actions" wählen.
 2. **Settings** → **Secrets and variables** → **Actions** → Reiter **Variables** → **New repository variable**:

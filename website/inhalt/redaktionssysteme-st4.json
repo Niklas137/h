@@ -7,16 +7,16 @@
   "typ": "leistung",
   "menue": "Redaktionssysteme ST4",
   "kurz": "SCHEMA ST4, Standardisierung, Modularisierung und mehrsprachige Workflows, terminologiesicher.",
-  "title": "SCHEMA ST4 Einführung & Modularisierung | FSH-Documentation",
+  "title": "SCHEMA ST4: Einführung, Modularisierung | FSH-Documentation",
   "description": "Vorbereitung und Einführung von SCHEMA ST4: Strukturkonzept, Standardisierung, Modularisierung, DE/EN-Workflow. Referenz: rund 40 % schnellere Erstellung.",
   "schema": {"name": "Redaktionssysteme und Prozesse (SCHEMA ST4)", "serviceType": "Vorbereitung und Einführung von Redaktionssystemen, Standardisierung und Modularisierung technischer Dokumentation"},
-  "kicker": "Leistung · Redaktionssysteme und Prozesse",
+  "kicker": "Leistung · Redaktionssysteme ST4",
   "h1": "Redaktionssysteme und Prozesse: SCHEMA ST4, Standardisierung, Modularisierung",
-  "einleitung": "Wir bereiten die Einführung eines Redaktionssystems vor, strukturieren Ihre Inhalte modular und richten mehrsprachige Workflows ein, damit Anleitungen schneller entstehen und Übersetzungen günstiger werden. Referenz: rund 40 % schnellere Inhaltserstellung nach der ST4-Einführung.",
+  "einleitung": "Wir bereiten die Einführung eines Redaktionssystems vor, strukturieren Ihre Inhalte modular und richten mehrsprachige Workflows ein, damit Anleitungen schneller entstehen und Übersetzungen günstiger werden. Referenz: rund 40 % schnellere Inhaltserstellung im Projekt.",
   "seitenkarte": {
     "kicker": "Aus der Praxis",
     "absaetze": [
-      "<strong>Technologieunternehmen (AT):</strong> Grundlagen für die Einführung von SCHEMA ST4 geschaffen, Bestand gesichtet und bewertet, Normen- und CE-Anforderungen dokumentationsseitig abgesichert, DE/EN-Workflow aufgesetzt.",
+      "<strong>Technologieunternehmen (AT):</strong> Vorbereitung und Einführung von SCHEMA ST4 mit DE/EN-Workflow: Bestand gesichtet und bewertet, Normen- und CE-Anforderungen in der Dokumentation abgedeckt.",
       "<strong>Ergebnis:</strong> rund 40 % schnellere Inhaltserstellung, Übersetzungskosten spürbar gesenkt."
     ]
   },
@@ -41,10 +41,10 @@
         "Ein Redaktionssystem lohnt sich erst mit passenden Inhalten und Prozessen. Deshalb beginnen wir vor der Software:",
         {"liste": [
           "Bestehende Dokumentation sichten, bewerten und Handlungsbedarf strukturiert ableiten",
-          "Anforderungen aus Normen und CE-Richtlinien identifizieren und dokumentationsseitig absichern",
+          "Anforderungen aus Normen und CE-Richtlinien ermitteln und in der Dokumentation abdecken",
           "Relevante Schnittstellen zu Konstruktion, Einkauf und Service erfassen und Abstimmprozesse definieren",
           "Informationsarchitektur, Metadaten und Variantenkonzept festlegen",
-          "Workshops mit Redaktion, Technik und Übersetzungsmanagement"
+          "Workshops mit Redaktion, Technik und Übersetzungsmanagement durchführen"
         ]}
       ]
     },
@@ -53,7 +53,7 @@
       "art": "text",
       "h2": "Migration von Bestandsdokumentation",
       "inhalt": [
-        "Bestehende Anleitungen aus Word oder anderen Werkzeugen übernehmen wir nicht eins zu eins, sondern nach dem neuen Strukturkonzept: Inhalte bereinigen, doppelte Passagen zusammenführen, Module schneiden, Metadaten vergeben. Priorisiert nach Nutzung und Änderungshäufigkeit, damit der laufende Betrieb weitergeht."
+        "Bestehende Anleitungen aus Word oder anderen Werkzeugen strukturieren wir für das Redaktionssystem neu: Inhalte bereinigen, doppelte Passagen zusammenführen, Module schneiden, Metadaten vergeben. Priorisiert nach Nutzung und Änderungshäufigkeit, damit der laufende Betrieb weitergeht."
       ]
     },
     {
@@ -81,7 +81,7 @@
   ],
   "kontakt": {
     "h2": "Redaktionssystem-Projekt anfragen",
-    "text": "Erstreaktion binnen 24 h. Im Kick-off (30 Min.) klären wir Bestand, Ziele, Sprachen und Schnittstellen.",
+    "text": "Erstreaktion binnen 24 h an Werktagen. Im Kick-off (30 Minuten) klären wir Bestand, Ziele, Sprachen und Schnittstellen.",
     "betreff": "Anfrage Redaktionssysteme / SCHEMA ST4"
   }
 }

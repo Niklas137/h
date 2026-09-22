@@ -2,18 +2,18 @@
   "pfad": "/medizinprodukte-mdr-ivdr/",
   "typ": "leistung",
   "menue": "Medizinprodukte MDR/IVDR",
-  "kurz": "Technische Dokumentation nach Annex II/III, IFU, Labeling und UDI, Risikomanagement nach ISO 14971, Usability nach IEC 62366-1.",
-  "title": "MDR/IVDR Technische Dokumentation | FSH-Documentation",
-  "description": "Technische Dokumentation nach MDR Annex II/III, IFU/Labeling/UDI, Risikomanagement ISO 14971, Usability IEC 62366-1, CEP/CER, PMCF. FSH-Documentation, Teltow.",
+  "kurz": "Technische Dokumentation nach Anhang II/III, IFU, Kennzeichnung und UDI, Risikomanagement nach ISO 14971, Usability nach IEC 62366-1.",
+  "title": "Technische Dokumentation MDR/IVDR | FSH-Documentation",
+  "description": "Technische Dokumentation für Medizinprodukte nach MDR und IVDR: Gebrauchsanweisung, UDI, Risikomanagement nach ISO 14971, Usability, klinische Bewertung, PMCF.",
   "schema": {"name": "Technische Dokumentation für Medizinprodukte (MDR/IVDR)", "serviceType": "Technische Dokumentation, Gebrauchsanweisung und Risikomanagementakte für Medizinprodukte und In-vitro-Diagnostika"},
-  "kicker": "Leistung · Medizinprodukte",
+  "kicker": "Leistung · Medizinprodukte MDR/IVDR",
   "h1": "Technische Dokumentation für Medizinprodukte nach EU-MDR und IVDR",
   "einleitung": "Technische Dokumentation, Gebrauchsanweisung, Labeling und Risikomanagementakte für Medizinprodukte und In-vitro-Diagnostika: prüffähig für Benannte Stellen, verständlich für Anwender. Technische Redaktion aus Teltow bei Berlin für MedTech-Unternehmen deutschlandweit.",
   "seitenkarte": {
     "kicker": "Unser Beitrag",
     "absaetze": [
       "<strong>Technische Redaktion, keine Zulassungsberatung:</strong> Wir erstellen und pflegen die Dokumente, die Ihr Regulatory-Affairs-Team und die Benannte Stelle brauchen, und halten sie über den Produktlebenszyklus konsistent.",
-      "Über 15 Jahre Erfahrung in regulierten Umfeldern, darunter MedTech."
+      "Über 15 Jahre Erfahrung in regulierten Umfeldern, darunter Medizintechnik."
     ]
   },
   "abschnitte": [
@@ -24,13 +24,13 @@
       "h2": "Leistungen",
       "karten": [
         {"h3": "Technische Dokumentation (Anhang II und III)", "text": "Aufbau und Pflege der technischen Dokumentation nach MDR Anhang II sowie der Dokumentation zur Überwachung nach dem Inverkehrbringen nach Anhang III."},
-        {"h3": "Gebrauchsanweisung, Labeling, UDI", "text": "IFU nach MDR Anhang I und DIN EN IEC/IEEE 82079-1, Kennzeichnung und UDI-Angaben konsistent über alle Sprachen."},
+        {"h3": "Gebrauchsanweisung, Kennzeichnung, UDI", "text": "IFU nach MDR Anhang I und DIN EN IEC/IEEE 82079-1, Kennzeichnung und UDI-Angaben konsistent über alle Sprachen."},
         {"h3": "Risikomanagement nach ISO 14971", "text": "Risikomanagementplan, Risikoanalyse, Bewertung, Maßnahmen und Restrisiko-Bericht als Risikomanagementakte."},
         {"h3": "Usability nach IEC 62366-1", "text": "Gebrauchstauglichkeitsakte: Nutzungskontext, Anwenderprofile, Gefährdungen durch Bedienfehler, formative und summative Bewertung dokumentiert."},
         {"h3": "Klinische Bewertung (CEP/CER)", "text": "Redaktionelle Erstellung und Pflege von Clinical Evaluation Plan und Report auf Basis Ihrer klinischen Daten."},
-        {"h3": "PMCF", "text": "Post-Market Clinical Follow-up: Plan und Bericht, abgestimmt mit PMS und Risikomanagement."},
+        {"h3": "PMCF", "text": "Post-Market Clinical Follow-up: Plan und Bericht, abgestimmt mit der Überwachung nach dem Inverkehrbringen (PMS) und dem Risikomanagement."},
         {"h3": "Studienvorbereitung", "text": "Prüfplan (Protokoll), Ethikantrag und Investigator-Paket, formal und sprachlich prüffähig."},
-        {"h3": "Prüfung bestehender IFU", "text": "Bestehende Gebrauchsanweisungen gegen MDR, 82079-1 und Risikomanagementakte prüfen.", "link": "/dokumentencheck/", "linktext": "Zum Dokumentencheck"}
+        {"h3": "Prüfung bestehender IFU", "text": "Bestehende Gebrauchsanweisungen gegen MDR, DIN EN IEC/IEEE 82079-1 und Risikomanagementakte prüfen.", "link": "/dokumentencheck/", "linktext": "Zum Dokumentencheck"}
       ]
     },
     {
@@ -73,8 +73,8 @@
       "art": "fragen",
       "h2": "Häufige Fragen",
       "fragen": [
-        {"frage": "Übernehmen Sie die Zulassung?", "antwort": "Nein. Wir sind technische Redaktion: Wir erstellen, strukturieren und pflegen die Dokumente. Regulatorische Strategie, Klassifizierung und die Kommunikation mit der Benannten Stelle bleiben bei Ihrem Regulatory-Affairs-Team."},
-        {"frage": "Arbeiten Sie in unserem QM-System?", "antwort": "Ja. Wir halten uns an Ihre Dokumentenlenkung (Vorlagen, Freigaben, Versionierung) und liefern die Dokumente in Ihrem System oder als Quelldateien mit Freigabeprotokoll."},
+        {"frage": "Übernehmen Sie die Zulassung?", "antwort": "Nein. Wir sind Technische Redaktion und arbeiten Ihrem Regulatory-Affairs-Team zu; Strategie, Klassifizierung und die Kommunikation mit der Benannten Stelle bleiben dort (siehe Abschnitt „Redaktionsleistung, keine Zulassungsberatung“)."},
+        {"frage": "Arbeiten Sie in unserem QM-System?", "antwort": "Ja. Wir halten uns an Ihre Dokumentenlenkung (Vorlagen, Freigaben, Versionierung) und liefern direkt in Ihr System."},
         {"frage": "In welchen Sprachen?", "antwort": "Deutsch, Englisch, Ukrainisch und Russisch, terminologiesicher und übersetzungsgerecht aufgebaut. Für weitere Sprachen bereiten wir die Quelle so vor, dass Ihre Übersetzer effizient arbeiten können."},
         {"frage": "Prüfen Sie auch bestehende Gebrauchsanweisungen?", "antwort": "Ja, gegen MDR Anhang I, DIN EN IEC/IEEE 82079-1, ISO 14971 und IEC 62366-1. Sie erhalten die Befunde nach Priorität geordnet mit konkreten Empfehlungen."}
       ]
@@ -82,12 +82,12 @@
     {
       "art": "verwandt",
       "h2": "Verwandte Leistungen",
-      "seiten": ["/betriebsanleitungen/", "/risikobeurteilung/", "/dokumentencheck/"]
+      "seiten": ["/ce-ukca-konformitaet/", "/risikobeurteilung/", "/dokumentencheck/"]
     }
   ],
   "kontakt": {
     "h2": "MDR-Dokumentation anfragen",
-    "text": "Erstreaktion binnen 24 h. Im Kick-off (30 Min.) klären wir Produkt, Klasse, vorhandene Dokumente, QM-System und Sprachen.",
+    "text": "Erstreaktion binnen 24 h an Werktagen. Im Kick-off (30 Minuten) klären wir Produkt, Klasse, vorhandene Dokumente, QM-System und Sprachen.",
     "betreff": "Anfrage Medizinprodukte MDR/IVDR"
   }
 }
