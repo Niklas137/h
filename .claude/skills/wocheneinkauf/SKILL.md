@@ -74,18 +74,22 @@ Einkaufstag, Gerichten und Summe senden.
 
 ## Ernährungsregeln (hart)
 
-Die Zahlen kommen aus `wocheneinkauf/profil.md` (Stand 22.09.2026): Ziel 2100 kcal pro Tag,
-Eiweiß 110–130 g, langsam abnehmen, 2 Mahlzeiten und 1 Snack.
+Die Zahlen kommen aus `wocheneinkauf/profil.md` (Stand 22.09.2026): Rekomposition (Bauchfett weg,
+moderat Muskeln), Ziel 2100 kcal am Ruhetag und 2300 kcal am Trainingstag, Eiweiß 140–160 g,
+2 Mahlzeiten und 1 Snack.
 
 - Nie: Pilze, Innereien, Zunge, Gorgonzola, Hüttenkäse, Oktopus, Tintenfisch, Sardinen, Hering,
   Sardellen/Anchovis, Matjes, Muscheln. Garnelen selten.
 - **Mahlzeitenstruktur:** kein Frühstück. Mittag 12–13 Uhr vollwertig (800–900 kcal, nicht klein),
   fester Nachmittagssnack 16 Uhr (250–300 kcal, eiweißreich), Abendessen 19–20 Uhr das gekochte
   Gericht (900–1000 kcal). Vormittags höchstens 1 Apfel.
-- **Fleisch oder Fisch nur im Abendessen:** 125–150 g pro Portion, also 100–150 g pro Person und
-  Tag. Mittags kommt das Eiweiß aus Eiern, Quark, Skyr, Feta. Bei 1 Person die Hälfte einfrieren.
+- **Fleisch oder Fisch nur im Abendessen:** 150 g pro Portion, also 100–150 g pro Person und
+  Tag. Mittags kommt das Eiweiß aus Eiern, Quark, Skyr, Feta; abends 150 g Skyr oder Joghurt als
+  Dip oder Dessert dazu. Jede Mahlzeit mindestens 35 g Eiweiß. Bei 1 Person die Hälfte einfrieren.
 - **Portionen pro Person und Hauptmahlzeit:** Beilage 75 g Reis, Nudeln oder Bulgur trocken oder
-  300 g Kartoffeln oder 2 Scheiben Vollkornbrot; Gemüse mindestens 250 g; 1 EL Öl; Nüsse 25 g am Tag.
+  300 g Kartoffeln oder 2 Scheiben Vollkornbrot; Gemüse mindestens 250 g; 1 EL Öl; Nüsse 20–25 g am
+  Tag. **Trainingstag:** zusätzlich 1 Banane vor dem Training oder Beilage 100 g statt 75 g. Nennt
+  der Nutzer seine Trainingstage (`Training: Di Do Sa`), im Wochenplan dort eintragen.
 - Purinarm: keine Innereien, wenig Wurst (Salami, Schinken, Speck nur ausnahmsweise),
   Hülsenfrüchte höchstens einmal pro Woche, Hähnchenhaut abziehen, täglich Quark oder Skyr.
 - Vollkorn statt Weißmehl: Vollkornbrot, Vollkornnudeln, Naturreis, Bulgur, Haferflocken.
@@ -96,13 +100,14 @@ Eiweiß 110–130 g, langsam abnehmen, 2 Mahlzeiten und 1 Snack.
   höchstens 3 Scheiben am Tag.
 - Alkohol: höchstens 2 Gläser pro Woche, lieber Wein als Bier, nie an zwei Tagen nacheinander;
   an dem Tag die Beilage am Abend halbieren. Kein Bier in der Liste.
-- Gemüse 3,5–4 kg pro Person und Woche, Obst 2 Portionen am Tag, Eier 12–16 pro Woche,
-  Quark/Skyr/Joghurt 1,5–2 kg pro Woche (Wochenmengen in `profil.md`).
+- Gemüse 3,5–4 kg pro Person und Woche, Obst 2 Portionen am Tag, Eier 18–22 pro Woche,
+  Quark/Skyr/Joghurt 2–2,5 kg pro Woche (Wochenmengen in `profil.md`).
 - Hintergrund: Gicht, Blutzucker, Blutdruck. Moderates Defizit, keine ausgelassenen Mahlzeiten,
   viel trinken (2–3 l Wasser, abgedeckt).
 - Kochzeit ist keine Grenze: auch Aufläufe und Schmorgerichte sind erlaubt, Niklas nimmt sich Zeit.
-- Meldet der Nutzer ein Gewicht (`Gewicht: 87,4`), in `profil.md` unter Gewichtsverlauf eintragen.
-  Bei mehr als 3 kg Änderung Grundumsatz und Ziel neu rechnen und die Tabelle anpassen.
+- Meldet der Nutzer Gewicht oder Taille (`Gewicht: 87,4`, `Taille: 91`), in `profil.md` unter
+  Gewichtsverlauf eintragen. Bei mehr als 3 kg oder 3 cm Änderung Grundumsatz und Ziel neu rechnen.
+  Stehen Gewicht und Taille 3 Wochen still, 100 kcal vom Ruhetag abziehen und das im Plan nennen.
 
 ## Logistik
 

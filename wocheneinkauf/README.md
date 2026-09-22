@@ -29,8 +29,9 @@ Skill `.claude/skills/wocheneinkauf/SKILL.md`, die Daten in diesem Ordner.
 
 ## Ernährungsregeln
 
-Persönliche Zielwerte stehen in `profil.md` (Stand 22.09.2026): 2100 kcal am Tag, Eiweiß 110–130 g,
-langsam abnehmen, kein Frühstück, Mittagsteller, fester Nachmittagssnack, gekochtes Gericht am Abend.
+Persönliche Zielwerte stehen in `profil.md` (Stand 22.09.2026): Rekomposition, 2100 kcal am Ruhetag
+und 2300 kcal am Trainingstag, Eiweiß 140–160 g, kein Frühstück, Mittagsteller, fester
+Nachmittagssnack, gekochtes Gericht am Abend, Taille als Messgröße.
 
 - Nicht: Pilze, Innereien, Zunge, Gorgonzola, Hüttenkäse, Oktopus, Tintenfisch
 - Fleisch oder Fisch nur im Abendessen, 125–150 g pro Portion, also 100–150 g pro Tag
