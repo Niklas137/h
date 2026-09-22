@@ -195,26 +195,22 @@ def main(pfad: str) -> int:
     elif gesamt < ziel_min:
         hinweise.append(f"Unter Zielbereich: {euro(gesamt)} < {euro(ziel_min)} (Vorrat auffüllen?)")
 
-    # Zeilen, in denen die Zutat verneint wird ("kein Hüttenkäse", "Hüttenkäse gestrichen"),
-    # sind Notizen und keine Verstöße.
+    # Sätze, in denen die Zutat verneint wird ("kein Hüttenkäse", "Hüttenkäse gestrichen"),
+    # sind Notizen und keine Verstöße. Geprüft wird satzweise, damit ein anderer Satz derselben
+    # Zeile ("Champignons klein schneiden") trotzdem anschlägt.
     NEGATION_VOR = re.compile(r"\b(kein|keine|keinen|ohne|nicht|statt)\b")
     NEGATION_NACH = re.compile(r"\b(gestrichen|entfällt|entfernt|nicht|raus)\b")
 
-    def zeile_verneint(zeile_lc: str, wort: str) -> bool:
-        pos = zeile_lc.find(wort)
-        if pos < 0:
-            return False
-        davor = zeile_lc[:pos].split(".")[-1]
-        danach = zeile_lc[pos:].split(".")[0]
-        return bool(NEGATION_VOR.search(davor) or NEGATION_NACH.search(danach))
+    def verneint(satz: str, wort: str) -> bool:
+        pos = satz.find(wort)
+        return pos >= 0 and bool(NEGATION_VOR.search(satz[:pos]) or NEGATION_NACH.search(satz[pos:]))
 
-    text_lc = "\n".join(
-        z.lower() for z in zeilen
-        if not any(w in z.lower() and zeile_verneint(z.lower(), w)
-                   for ws in VERBOTEN.values() for w in ws)
-    )
+    saetze = [t.strip().lower() for z in zeilen for t in re.split(r"(?<=[.!?])\s+", z) if t.strip()]
     for gruppe, woerter in VERBOTEN.items():
-        treffer = sorted({w for w in woerter if verboten_enthalten(w, text_lc)})
+        treffer = sorted({
+            w for w in woerter
+            if any(verboten_enthalten(w, satz) and not verneint(satz, w) for satz in saetze)
+        })
         if treffer:
             probleme.append(f"Verbotene Zutat ({gruppe}): {', '.join(treffer)}")
 
