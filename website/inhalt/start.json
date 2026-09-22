@@ -11,7 +11,7 @@
     "kicker": "Auditfähig ab der ersten Lieferung",
     "text": "Wir arbeiten nach den im Angebot vereinbarten Normen, die Auditoren und Marktaufsicht prüfen:",
     "chips": ["DIN EN IEC/IEEE 82079-1", "EN ISO 20607", "ISO 12100", "VGB-S-831", "CE/Maschinenverordnung", "ISO 14971 (MedTech)"],
-    "hinweis": "Abnahme nach vereinbarten Freigabekriterien, danach 30 Tage Service-Window inklusive. Details in AGB (§ 6, § 7) und Angebot."
+    "hinweis": "Abnahme nach vereinbarten Freigabekriterien, danach 30-Tage-Service-Window inklusive. Details in AGB (§ 6, § 7) und Angebot."
   },
   "abschnitte": [
     {
@@ -78,9 +78,9 @@
       "inhalt": [
         {"liste": [
           "Über 15 Jahre Erfahrung in Energie, Maschinen- und Anlagenbau, Medizintechnik und Wehrtechnik",
-          "Audit-Niveau von Beginn an: DIN EN IEC/IEEE 82079-1, EN ISO 20607, VGB-S-831, CE/Maschinenverordnung. Das spart Zeit und Nacharbeit.",
+          "Audit-Niveau von Beginn an: DIN EN IEC/IEEE 82079-1, EN ISO 20607, VGB-S-831, CE/Maschinenverordnung, das spart Zeit und Nacharbeit",
           "Schnittstellenkompetenz zwischen Technik, Einkauf, Service, QM und Rechtsabteilung",
-          "Abnahme nach vereinbarten Freigabekriterien und 30 Tage Service-Window inklusive (AGB § 6 und § 7)"
+          "Abnahme nach vereinbarten Freigabekriterien und 30-Tage-Service-Window inklusive (AGB § 6 und § 7)"
         ]}
       ]
     },
@@ -105,7 +105,7 @@
   ],
   "kontakt": {
     "h2": "Kontakt und Projektstart",
-    "text": "Nennen Sie uns Produkt, Dokumentart und Umfang. Wir melden uns an Werktagen binnen 24 h mit einer ersten Einschätzung und klären im Kick-off (30 Minuten) Ziel, Normen, Zielgruppe und Sprache.",
+    "text": "Nennen Sie uns Produkt, Dokumentart und Umfang. Wir melden uns an Werktagen binnen 24 h, soweit möglich schon mit einer ersten Einschätzung, und klären im Kick-off (30 Minuten) Ziel, Normen, Zielgruppe und Sprache.",
     "betreff": "Anfrage Technische Dokumentation"
   }
 }

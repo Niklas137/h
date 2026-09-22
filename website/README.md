@@ -158,13 +158,14 @@ Alle Punkte stehen auch als `_hinweise` in der jeweiligen JSON-Datei.
     § 18 Überschrift) und Prüfhinweise stehen in `agb.json` unter `_hinweise`; Datenschutz-Hinweise in
     `datenschutz.json`. Alles vom Rechtsprüfer bestätigen lassen (keine Rechtsberatung).
 - **Kundennamen**: entschieden am 22.09.2026: keine Kundennamen; die Startseite nennt Projekte nur
-  anonymisiert (Zeile „Weitere Projekte“ in `start.json`).
+  anonymisiert (Zeile „Aus dem Werdegang außerdem“ in `start.json`).
 - **Seite Redaktionssysteme ST4**: entschieden am 22.09.2026: bleibt als eigene Seite.
 - **Regionalseite**: entschieden am 22.09.2026: kurzer Title mit „FSH Teltow“ (56 Zeichen). Offen bleiben
   die Zusage „auf Wunsch auch persönlich vor Ort“ und der Link auf das Google-Unternehmensprofil,
   sobald es existiert.
-- **Dokumentencheck**: Ergebnisform der Prüfung ist beschrieben (Befunde nach Priorität mit Fundstelle,
-  Normbezug, Empfehlung); anpassen, falls anders gewünscht. Das interne Prüfwerkzeug wird nicht genannt.
+- **Dokumentencheck**: Ergebnisform der Prüfung ist allgemein beschrieben (Befunde nach Priorität mit
+  konkreten Empfehlungen; Umfang, Form und Termin im Angebot); konkretisieren, sobald festgelegt. Das
+  interne Prüfwerkzeug wird nicht genannt.
 - **Profile**: JSON-LD `sameAs` und Fußzeile enthalten nur das geprüfte freelance.de-Profil. Das
   LinkedIn-Profil steht in `site.json` unter `_same_as_unbestaetigt` und wird erst nach Bestätigung in
   `same_as` übernommen.

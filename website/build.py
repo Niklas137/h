@@ -43,7 +43,7 @@ SPRACHEN_BCP47 = ["de", "en", "uk", "ru"]
 # ----------------------------------------------------------------------------- Hilfen
 _TYPO = [
     # Zahl und Einheit, Paragraf und Nummer, mehrteilige Abkürzungen: geschütztes Leerzeichen (U+00A0)
-    (re.compile(r"(\d) (h|%|Min\.|Minuten|Stunden|Tage|Tagen|Werktagen|Jahre|Monaten|Kilometer|km|MB|KB)\b"), "\\1\u00a0\\2"),
+    (re.compile(r"(\d) (h|%|Min\.|Minuten|Stunden|Tage|Tagen|Werktagen|Jahre|Monaten|Kilometer|km|MB|KB)(?!\w)"), "\\1\u00a0\\2"),
     (re.compile(r"(§|§§|Art\.|Abs\.|Nr\.|Kapitel|Anhang|Anhänge) (\d|[IVX]+\b)"), "\\1\u00a0\\2"),
     (re.compile(r"\b(u|z|d)\. (a|B|h)\."), "\\1.\u00a0\\2."),
     (re.compile(r"\(EU\) (\d)"), "(EU)\u00a0\\1"),

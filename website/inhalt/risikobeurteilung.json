@@ -59,7 +59,7 @@
       "h2": "HAZOP-Abgleich mit der Betriebsanleitung",
       "inhalt": [
         "Ein häufiger Auditbefund: Die Risikobeurteilung nennt Restrisiken, die in der Betriebsanleitung nicht auftauchen, oder die Anleitung warnt vor Gefahren, die nirgends bewertet sind. Beim HAZOP-Abgleich legen wir Risiko-Register und Anleitung nebeneinander und schließen die Lücken in beide Richtungen.",
-        "Dafür brauchen wir von Ihnen R&amp;I-Schemata, vorhandene HAZOP- oder FMEA-Protokolle und Stücklisten. Der Abgleich ist fester Bestandteil unseres Ablaufs (Schritt 3, Erstellung und Überarbeitung).",
+        "Dafür brauchen wir von Ihnen R&amp;I-Schemata, vorhandene HAZOP- oder FMEA-Protokolle und Stücklisten. Der Abgleich ist fester Bestandteil unseres Ablaufs im Schritt „Erstellung und Überarbeitung“ (siehe Startseite unter „So arbeiten wir“).",
         {"links": [{"text": "Zu den Betriebsanleitungen", "ziel": "/betriebsanleitungen/"}]}
       ]
     },
