@@ -4,8 +4,8 @@
     "Änderungen gegenüber dem Stand 13.08.2025 (Phase 2, Abschnitt 6): Bearbeiterhinweis im Kopf entfernt; § 2 Normbezeichnung „DIN ISO 82079-1“ → „DIN EN IEC/IEEE 82079-1“; § 7 Platzhalter „[X] Stunden“ → „im Angebot festgelegter Umfang“ (alternativ Stundenzahl eintragen); § 16 auf den VSBG-Satz gekürzt, Satz zur eingestellten EU-OS-Plattform gestrichen; Anschrift und Telefon in der NAP-Schreibweise.",
     "„Stand“ beim Veröffentlichen auf das Datum der freigegebenen Fassung setzen.",
     "Sprachliche Änderungen aus der Korrekturrunde vom 22.09.2026, inhaltlich neutral, vom Rechtsprüfer bestätigen lassen: § 7 Überschrift und Schreibweise „Service-Window“ (auch § 7a), § 7 Abs. 1 „behebt … und setzt … um“ statt Zeugma, § 10 Abs. 3 „dessen“ statt „deren“, § 18 Überschrift ohne „Rangfolge“ (Rangfolge steht in § 3 Abs. 3).",
-    "Rechtsprüfung 22.09.2026 zu § 7 Abs. 1 lit. b: Ohne Umfangsangabe im Angebot läuft die Klausel leer (§ 305c Abs. 2 BGB); Vorschlag „…, andernfalls bis zu insgesamt [Stundenzahl] Stunden“ mit einer vom Betreiber festzulegenden Zahl.",
-    "Zur Prüfung vorgemerkt, nicht geändert: § 1 Abs. 1 nennt „Betriebs- und Bedienungsanleitungen, Risikoanalysen“, die Website „Betriebs-, Montage- und Serviceanleitungen, Risikobeurteilungen, Dokumentencheck“; § 4 Abs. 1 „RB Stücklisten“ aus dem Alttext wurde als „Risikobeurteilungen, Stücklisten“ gelesen."
+    "Am 22.09.2026 auf Anweisung des Betreibers geändert: § 1 Abs. 1 Leistungsaufzählung an die Website angeglichen (Betriebs-, Montage- und Serviceanleitungen, Risikobeurteilungen und Risikoanalysen, Prüfung bestehender Dokumentation); § 7 Abs. 1 lit. b Rückfallwert „andernfalls bis zu insgesamt vier Stunden“ ergänzt, weil die Klausel ohne Umfangsangabe im Angebot leerläuft (§ 305c Abs. 2 BGB). Die vier Stunden sind ein Vorschlagswert und vom Betreiber zu bestätigen oder zu ändern.",
+    "Zur Prüfung vorgemerkt: § 4 Abs. 1 „RB Stücklisten“ aus dem Alttext wurde als „Risikobeurteilungen, Stücklisten“ gelesen."
   ],
   "pfad": "/agb/",
   "typ": "recht",
@@ -28,7 +28,7 @@
       "h2": "§ 1 Geltungsbereich, Begriffsbestimmungen",
       "inhalt": [
         {"nummern": [
-          "Diese AGB gelten für alle Verträge zwischen dem Anbieter (nachfolgend „Anbieter“) und seinen Kunden über Leistungen der technischen Redaktion, Beratung, Übersetzung, Erstellung von Betriebs- und Bedienungsanleitungen, Risikoanalysen sowie verwandte Services (nachfolgend „Leistungen“).",
+          "Diese AGB gelten für alle Verträge zwischen dem Anbieter (nachfolgend „Anbieter“) und seinen Kunden über Leistungen der technischen Redaktion, Beratung, Übersetzung, Erstellung von Betriebs-, Montage- und Serviceanleitungen, Risikobeurteilungen und Risikoanalysen, Prüfung bestehender Dokumentation sowie verwandte Services (nachfolgend „Leistungen“).",
           "Kunden sind ausschließlich Unternehmer im Sinne des § 14 BGB, also natürliche oder juristische Personen, die bei Vertragsschluss in Ausübung ihrer gewerblichen oder selbständigen beruflichen Tätigkeit handeln. Verträge mit Verbrauchern werden nicht geschlossen.",
           "Entgegenstehende, abweichende oder ergänzende AGB des Kunden werden nur Vertragsbestandteil, wenn der Anbieter ihrer Geltung ausdrücklich in Textform zustimmt."
         ]}
@@ -93,7 +93,7 @@
       "h2": "§ 7 Nachbesserungs- und Optimierungsfenster von 30 Tagen („Service-Window“)",
       "inhalt": [
         {"nummern": [
-          "Zusätzlich zu den gesetzlichen Mängelrechten (§ 8) räumt der Anbieter ab dem Tag der Abnahme ein 30-tägiges kostenfreies Nachbesserungs- und Optimierungsfenster ein. In diesem Zeitraum behebt der Anbieter a) Mängel (Abweichungen von den freigegebenen Spezifikationen) kostenfrei und setzt b) kleine Optimierungswünsche des Kunden (rein redaktionelle Anpassungen, Formatierungen, Glossarangleichungen) bis zu dem im Angebot festgelegten Umfang einmalig und ohne Mehrkosten um.",
+          "Zusätzlich zu den gesetzlichen Mängelrechten (§ 8) räumt der Anbieter ab dem Tag der Abnahme ein 30-tägiges kostenfreies Nachbesserungs- und Optimierungsfenster ein. In diesem Zeitraum behebt der Anbieter a) Mängel (Abweichungen von den freigegebenen Spezifikationen) kostenfrei und setzt b) kleine Optimierungswünsche des Kunden (rein redaktionelle Anpassungen, Formatierungen, Glossarangleichungen) bis zu dem im Angebot festgelegten Umfang, andernfalls bis zu insgesamt vier Stunden, einmalig und ohne Mehrkosten um.",
           "Vom Service-Window nicht erfasst sind neue oder geänderte Anforderungen (Inhalte, Normen, Funktionsumfang), Daten- oder Systemänderungen beim Kunden sowie Änderungswünsche mit erheblichem Aufwand; solche Anpassungen erfolgen ausschließlich über § 5 (Change Request) und sind vergütungspflichtig.",
           "Das Service-Window lässt gesetzliche Ansprüche unberührt und verlängert keine gesetzlichen oder vertraglichen Verjährungsfristen."
         ]}

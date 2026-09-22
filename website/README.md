@@ -155,8 +155,13 @@ Alle Punkte stehen auch als `_hinweise` in der jeweiligen JSON-Datei.
     Brandenburg, Deutschland) und „deutschlandweit“ in den Einleitungen sind plausibel, aber nicht
     aus der alten Seite belegt (Phase 2, Abschnitt 7e).
   - AGB: sprachliche Änderungen (§ 7 Überschrift, „Service-Window“, § 7 Abs. 1 Satzbau, § 10 „dessen“,
-    § 18 Überschrift) und Prüfhinweise stehen in `agb.json` unter `_hinweise`; Datenschutz-Hinweise in
-    `datenschutz.json`. Alles vom Rechtsprüfer bestätigen lassen (keine Rechtsberatung).
+    § 18 Überschrift) sowie auf Anweisung vom 22.09.2026 die Leistungsaufzählung in § 1 Abs. 1 (an die
+    Website angeglichen) und ein Rückfallwert in § 7 Abs. 1 lit. b („andernfalls bis zu insgesamt vier
+    Stunden“, Vorschlagswert, zu bestätigen oder zu ändern). Prüfhinweise stehen in `agb.json` unter
+    `_hinweise`, Datenschutz-Hinweise in `datenschutz.json`. Alles vom Rechtsprüfer bestätigen lassen
+    (keine Rechtsberatung).
+  - Auf Anweisung vom 22.09.2026 gestrichen: „auf Premium-Niveau“ (Einleitung der Startseite) und
+    „Keine Buzzwords.“ (Über uns).
 - **Kundennamen**: entschieden am 22.09.2026: keine Kundennamen; die Startseite nennt Projekte nur
   anonymisiert (Zeile „Aus dem Werdegang außerdem“ in `start.json`).
 - **Seite Redaktionssysteme ST4**: entschieden am 22.09.2026: bleibt als eigene Seite.
