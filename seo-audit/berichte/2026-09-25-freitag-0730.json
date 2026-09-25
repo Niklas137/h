@@ -1,0 +1,333 @@
+{
+  "domain": "fsh-documentation.com",
+  "firma": "FSH-Documentation UG (haftungsbeschränkt), Teltow",
+  "stand": "2026-09-25",
+  "uhrzeit": "07:37",
+  "lauf": "freitag-0730",
+  "art": "Vollprüfung",
+  "untertitel": "Wochenaudit für FSH-Documentation UG (haftungsbeschränkt), Teltow: Technik, E-Mail-DNS, On-Page, Suchindex, Marke und lokale Einträge. Erster Terminlauf der Freitags-Routine, Vergleich mit dem Lauf vom 21.09.2026 (12:42).",
+  "ergebnis_kurz": "Website unverändert, E-Mail-Schutz beider Domains lückenhaft",
+  "zusammenfassung": [
+    "Die Website ist gegenüber dem 21.09.2026 unverändert: erreichbar über HTTPS mit HSTS, http und www leiten per 301 auf https://fsh-documentation.com/, 404-Seite korrekt. Es bleibt der Canva-Einseiter mit Inhalt per JavaScript: Roh-HTML ohne Text, gerendert 3.123 Wörter ohne Überschrift, 19 Bilder ohne Alt-Text, kein Canonical, keine strukturierten Daten, keine internen Links, Sitemap mit einer URL (lastmod 17.01.2024), robots.txt 404. fsh-documentation.de zeigt weiterhin die STRATO-Platzhalterseite.",
+    "Neu geprüft wurde die E-Mail-Authentifizierung beider Domains per DNS. Die .de, über die alle Firmenadressen laufen, hat keinen SPF-Eintrag und ein DMARC mit p=reject ohne Berichtsadresse; die .com hat weder SPF noch ein wirksames DMARC (p=none). Das ist Befund B12 (mittel): Mails der Firma können abgewiesen werden, ohne dass jemand davon erfährt, und die .com ist gegen Absenderfälschung nicht geschützt. Die Sollwerte stehen in website/google-und-email-dns.md.",
+    "Im Suchindex ist nur die Startseite sichtbar (Domain-Abfrage, „FSH-Documentation Teltow“ auf Position 4, exakter Seitentitel auf Position 5); bei den vier Kernbegriff-Abfragen erscheint kein eigener Treffer. Die Prioritäten folgen ab diesem Lauf der Befundprüfung aus Phase 2 (Maßnahmenpaket vom 21.09.2026): B2 und B7 auf mittel, B8 auf niedrig. Offen sind zwölf Befunde: 3 hoch, 7 mittel, 2 niedrig."
+  ],
+  "veraenderungen": [
+    "Neu: B12 E-Mail-Authentifizierung (mittel). DNS-Abfrage am 25.09.2026: fsh-documentation.de ohne SPF, DMARC „v=DMARC1;p=reject;“ ohne rua; fsh-documentation.com ohne SPF, DMARC „v=DMARC1; p=none“. Der Prüfpunkt ist seit dem 22.09.2026 Teil des Skills.",
+    "Prioritäten nach der Befundprüfung in Phase 2 (seo-audit/massnahmen/2026-09-21-phase-2.md, Abschnitt 1) übernommen: B2 hoch → mittel (Title schwächt, verhindert nicht; Seite über den Firmennamen auffindbar), B7 hoch → mittel (Landmarken vorhanden, Überschriften-Reihenfolge für Google unerheblich), B8 mittel → niedrig (nur 11 Bilddateien, 13 Vorkommen als blob: ohnehin nicht indexierbar). Sachverhalte unverändert.",
+    "Keine Änderung an Technik und On-Page: Title 43 Zeichen, Description 145 Zeichen, 0 Überschriften, 19 von 19 Bildern ohne Alt-Text, kein Canonical, kein JSON-LD, 58 Ressourcen mit 3,5 MB. Laborzeiten in diesem Lauf: DOM fertig nach 2,9 s, Seite vollständig nach 5,5 s (21.09.: 2,4 s und 4,7 s; Nachmessungen in Phase 2: 3,8 bis 4,1 s). Die Streuung liegt am Messort, nicht an der Seite.",
+    "Suchindex unverändert: Startseite bei site:, „FSH-Documentation Teltow“ (Position 4) und exaktem Titel (Position 5); „FSH-Documentation“ in Anführungszeichen und „FSH documentation“ liefern nur FHIR-Shorthand und Hormon-Treffer. Bei Abfrage 7 neu unter den Treffern: cte-entwicklungen.de und ib-leimkuehler.de.",
+    "Massnahme 10 ergänzt (DNS-Einträge für SPF und DMARC); Kurzfassung zeigt B12 statt B2."
+  ],
+  "pruefstatus": [
+    {
+      "bereich": "Indexierung",
+      "status": "geprueft",
+      "ergebnis": "Nur die Startseite im Index; die Sitemap bestätigt, dass es nur diese eine URL gibt."
+    },
+    {
+      "bereich": "Kernbegriffe",
+      "status": "geprueft",
+      "ergebnis": "Kein eigener Treffer bei den vier Kernbegriff-Abfragen; Wettbewerber mit Leistungsseiten ranken. Unverändert."
+    },
+    {
+      "bereich": "Marke",
+      "status": "geprueft",
+      "ergebnis": "„FSH“ bleibt mehrdeutig; „FSH-Documentation Teltow“ (Position 4) und der exakte Seitentitel (Position 5) finden die Startseite, die Phrase „FSH-Documentation“ allein nicht."
+    },
+    {
+      "bereich": "Domains",
+      "status": "geprueft",
+      "ergebnis": "www und http leiten per 301 auf die Hauptdomain; .de zeigt einen STRATO-Platzhalter statt einer Weiterleitung. E-Mail-DNS beider Domains lückenhaft (B12)."
+    },
+    {
+      "bereich": "Lokale Signale",
+      "status": "teilweise",
+      "ergebnis": "Firmeneinträge konsistent, LinkedIn-Profil sichtbar; Google-Unternehmensprofil nicht prüfbar."
+    },
+    {
+      "bereich": "Technik",
+      "status": "geprueft",
+      "ergebnis": "HTTPS, HSTS, 301 von http und www, 404 korrekt; robots.txt fehlt; Sitemap mit einer URL; 3,5 MB, vollständig geladen nach 5,5 s (Labor). Unverändert."
+    },
+    {
+      "bereich": "On-Page",
+      "status": "geprueft",
+      "ergebnis": "Title und Description vorhanden, aber ohne Marke und Ort; keine H1, 19 Bilder ohne Alt-Text, kein Canonical, kein JSON-LD. Unverändert."
+    }
+  ],
+  "pruefumfang": [
+    "Technik: Erreichbarkeit aller Domain-Varianten einschließlich http, Weiterleitungen, robots.txt, sitemap.xml, 404-Verhalten, Antwort-Header und Ladeverhalten im Browser (Chromium aus einem Rechenzentrum, ohne Cache). E-Mail-DNS: TXT-Einträge (SPF, DMARC) beider Domains über dns.google. On-Page: Roh-HTML und gerenderter DOM der Startseite mit den Werkzeugen des Repos; Unterseiten gibt es nicht. Suchindex: die zehn festen Abfragen und eine Abfrage zum Geschäftsführer. Vergleichsstand ist die Bericht-JSON vom 21.09.2026 (12:42); die Prioritäten wurden an die Befundprüfung aus Phase 2 angeglichen.",
+    "Nicht prüfbar: Core Web Vitals aus Felddaten, das Google-Unternehmensprofil, DKIM-Selektoren (nur indirekt über die Phase-2-Prüfung belegt) und Daten der Search Console. Ladezeiten sind Laborwerte aus einem Rechenzentrum und nur als Größenordnung zu lesen. Die Websuche der Prüfumgebung beachtet den Operator site: nicht zuverlässig; beurteilt wurden die URLs der Treffer."
+  ],
+  "befunde": [
+    {
+      "id": "B1",
+      "titel": "Zweitdomain .de zeigt eine Platzhalterseite",
+      "prioritaet": "hoch",
+      "entwicklung": "unverändert",
+      "beleg": "Am 25.09.2026 erneut geprüft: https://fsh-documentation.de/ und https://www.fsh-documentation.de/ antworten mit 200 und liefern die STRATO-Platzhalterseite „STRATO - Domain reserved“. Keine Weiterleitung auf fsh-documentation.com. Die E-Mail-Adressen der Firma laufen auf dieser Domain; wer sie aus einer Signatur oder einem Angebot eintippt, landet auf dem Platzhalter.",
+      "empfehlung": "Bei STRATO eine dauerhafte Weiterleitung (301) von fsh-documentation.de und www.fsh-documentation.de auf https://fsh-documentation.com/ einrichten. Alternativ .de zur Hauptdomain machen (bei Canva als Domain verbinden) und .com weiterleiten; in jedem Fall nur eine Domain mit Inhalt. Beide Domains in der Google Search Console anlegen.",
+      "kurz": "Die E-Mail-Domain .de zeigt „STRATO - Domain reserved“ statt auf die Website weiterzuleiten. 301-Weiterleitung einrichten."
+    },
+    {
+      "id": "B2",
+      "titel": "Seitentitel ohne Marke, Ort und Leistung",
+      "prioritaet": "mittel",
+      "entwicklung": "unverändert",
+      "beleg": "Am 25.09.2026 bestätigt: Title „Technische Dokumentation auf Premium-Niveau“ (43 Zeichen), Meta-Description 145 Zeichen, beide ohne FSH-Documentation, Teltow, CE oder MDR. Priorität nach Phase 2 auf mittel: der Title schwächt die Auffindbarkeit, verhindert sie nicht, denn die Seite ist über den Firmennamen auffindbar. Bleibt Sofortmaßnahme Nr. 2.",
+      "empfehlung": "In den Canva-Seiteneinstellungen den Title „Technische Dokumentation & CE | FSH-Documentation Teltow“ und eine Description mit Betriebsanleitungen, CE-/UKCA-Konformität, Risikobeurteilung, Medizinprodukte (MDR) und der Region Berlin/Brandenburg setzen (70–160 Zeichen).",
+      "kurz": "Title und Description sind gesetzt, nennen aber weder FSH-Documentation noch Teltow noch CE oder MDR."
+    },
+    {
+      "id": "B3",
+      "titel": "Ein Einseiter: nur eine URL, keine Unterseiten",
+      "prioritaet": "hoch",
+      "entwicklung": "unverändert",
+      "beleg": "sitemap.xml enthält weiterhin genau eine URL (https://fsh-documentation.com/, lastmod 17.01.2024). Der 404-Test antwortet korrekt mit 404. Die Navigation (Start, Über uns, Leistungen, Kontakt & Projektstart, Recht & Datenschutz, CV) scrollt innerhalb der Seite; im gerenderten DOM gibt es keine internen Links, nur je zwei mailto- und tel-Links und sechs leere href-Attribute.",
+      "empfehlung": "Je Kernleistung eine eigene Seite mit eigener URL, eigenem Title und eigener Überschrift: Betriebs- und Montageanleitungen, CE-/UKCA-Konformität, Risikobeurteilung (HAZOP), Medizinprodukte (MDR/IVDR), Redaktionssysteme (ST4), Dokumentenprüfung. Canva erlaubt mehrseitige Websites; Überschriften und strukturierte Daten siehe B7 und B9.",
+      "kurz": "Sitemap mit genau einer URL, alle Unterseiten-Pfade 404, keine internen Links. Eine Seite je Kernleistung anlegen."
+    },
+    {
+      "id": "B4",
+      "titel": "Keine Sichtbarkeit für Kernbegriffe",
+      "prioritaet": "hoch",
+      "entwicklung": "unverändert",
+      "beleg": "Bei den vier Kernbegriff-Abfragen („Technische Dokumentation Teltow“, „Technische Dokumentation Potsdam Berlin Dienstleister“, „Technische Redaktion CE-Konformität Betriebsanleitung Dienstleister Berlin Brandenburg“, „Betriebsanleitung erstellen lassen Maschinenbau CE“) erscheint am 25.09.2026 kein eigener Treffer. Es ranken koenig-td.de (Berlin), technikdoc.de (Potsdam), d-und-a.de, mt-redaktion.de, ce-koordination.de, handbuch-experten.de, unique-doc.de, wiessneth.de, winklergmbh.de, cte-entwicklungen.de, ib-leimkuehler.de, dogrel.com und kerntecdoc.com, alle mit eigenen Leistungsseiten. Für Teltow erscheinen Bauaufsicht, OSZ und Branchenbuch.",
+      "empfehlung": "Folge von B3 und B7: Ohne eigene Seiten und Überschriften je Leistung gibt es für Suchmaschinen keine Zuordnung zu diesen Begriffen. Pro Leistung eine Seite mit Nutzen, Normbezug (Maschinenverordnung (EU) 2023/1230, IEC/IEEE 82079-1, EN ISO 20607) und Ablauf, dazu ein Regionalabschnitt für Berlin, Brandenburg und Potsdam."
+    },
+    {
+      "id": "B5",
+      "titel": "Marke „FSH“ ist mehrdeutig",
+      "prioritaet": "mittel",
+      "entwicklung": "unverändert",
+      "beleg": "„FSH documentation“ und die Phrase „FSH-Documentation“ liefern am 25.09.2026 ausschließlich FHIR Shorthand (HL7), FSH School, klinische Studien zum Hormon FSH und FSH Welding. „FSH-Documentation Teltow“ liefert Creditreform, openregister.de, freelance.de und an vierter Stelle die Website; der exakte Seitentitel findet sie an fünfter Stelle. Zum Geschäftsführer erscheinen openregister.de, freelance.de, LinkedIn und die Website.",
+      "empfehlung": "Überall den vollen Namen mit dem Zusatz „Technische Dokumentation“ führen (Titel, Profile, Signaturen). Organization-Schema (JSON-LD) mit sameAs-Verweisen auf Handelsregister-Auszug, freelance.de-Profil und das LinkedIn-Profil des Geschäftsführers, damit Suchmaschinen die Firma eindeutig zuordnen (Umsetzbarkeit siehe B9).",
+      "kurz": "Suchen nach „FSH documentation“ landen bei FHIR Shorthand; eindeutig ist nur der volle Name „FSH-Documentation“."
+    },
+    {
+      "id": "B6",
+      "titel": "Lokale Einträge konsistent, Google-Profil unklar",
+      "prioritaet": "mittel",
+      "entwicklung": "unverändert",
+      "beleg": "Handelsregister (Amtsgericht Potsdam, HRB 37959 P), Creditreform, freelance.de und Branchenbuch Teltow nennen die Adresse übereinstimmend (Schreibweise „2 D“ und „2d“). Das LinkedIn-Profil des Geschäftsführers ist im Index sichtbar. Ein Google-Unternehmensprofil war auch am 25.09.2026 in keiner Abfrage sichtbar; die fertigen Profiltexte liegen seit dem 22.09.2026 in website/google-und-email-dns.md.",
+      "empfehlung": "Google-Unternehmensprofil anlegen oder beanspruchen, NAP-Daten (Name, Adresse, Telefon) in einer Schreibweise, Leistungen und Link zur Website eintragen. Den Adressblock auf der Website als Text belassen, nicht als Bild."
+    },
+    {
+      "id": "B7",
+      "titel": "Keine Überschriften im gesamten Dokument",
+      "prioritaet": "mittel",
+      "entwicklung": "unverändert",
+      "beleg": "Der gerenderte DOM der Startseite enthält am 25.09.2026 3.123 Wörter, aber keine h1- bis h6-Elemente. Überschriften wie „Leistungen“ oder „Warum FSH-Documentation“ sind nur visuell hervorgehoben. Priorität nach Phase 2 auf mittel: Landmarken (main, nav, section) sind vorhanden, und Google bewertet die Überschriften-Reihenfolge nicht; ob Canva Überschriften-Rollen für Websites ausgibt, ist strittig und ungetestet.",
+      "empfehlung": "In Canva jedem Überschriften-Text die Rolle Überschrift zuweisen, sofern die Vorlage das anbietet: die Hauptzeile „Technische Dokumentation auf Premium-Niveau“ als H1, Abschnittsüberschriften als H2. Ist das in der Vorlage nicht möglich, ist das ein Argument für einen Plattformwechsel (siehe B10).",
+      "kurz": "3.000 Wörter Inhalt, aber kein einziges h1-, h2- oder h3-Element im gerenderten DOM."
+    },
+    {
+      "id": "B8",
+      "titel": "Alle 19 Bilder ohne Alt-Text",
+      "prioritaet": "niedrig",
+      "entwicklung": "unverändert",
+      "beleg": "19 img-Elemente im gerenderten DOM, keines mit alt-Attribut. Nach Phase 2 sind es nur 11 Bilddateien (Button und Icons mehrfach), 13 Vorkommen sind blob:-Adressen und für die Bildersuche ohnehin nicht indexierbar; SEO-Maßstab daher niedrig. Die Rechtsprüfung (WCAG) führt denselben Punkt als mittel, weshalb er im 30-Tage-Plan in Woche 2 steht. Alt-Texte liegen in Abschnitt 5 des Maßnahmenpakets fertig vor.",
+      "empfehlung": "In Canva für jedes Bild einen Alternativtext setzen: Logo „FSH-Documentation, Technische Dokumentation, Teltow“, Porträt „Sascha Falk Heinzmann, Geschäftsführer“, Icons kurz beschreiben oder als dekorativ markieren. Bildersuche und Barrierefreiheit profitieren gleichzeitig."
+    },
+    {
+      "id": "B9",
+      "titel": "Kein Canonical, keine strukturierten Daten",
+      "prioritaet": "mittel",
+      "entwicklung": "unverändert",
+      "beleg": "Weder link rel=canonical noch JSON-LD (Organization, LocalBusiness, ProfessionalService) im Roh-HTML oder im DOM. Open-Graph-Title und -Description sind vorhanden; hreflang gibt es nicht, weil nur eine deutsche Fassung existiert.",
+      "empfehlung": "Canonical auf https://fsh-documentation.com/ setzen und ein Organization- oder ProfessionalService-Schema mit Name, Adresse, Telefon, Logo und sameAs einbinden. Canva-Websites erlauben keinen eigenen Head-Code; die Umsetzung braucht entweder ein entsprechendes Canva-Feature oder einen Plattformwechsel (B10)."
+    },
+    {
+      "id": "B10",
+      "titel": "Seitengewicht und Ladezeit",
+      "prioritaet": "mittel",
+      "entwicklung": "unverändert",
+      "beleg": "Die Startseite lädt 58 Ressourcen mit 3,5 MB; das HTML allein hat 742 KB (83 KB komprimiert), weil der komplette Seiteninhalt als JavaScript-Datenblock eingebettet ist. Im Chromium-Test aus dem Rechenzentrum am 25.09.2026: DOM fertig nach 2,9 s, Seite vollständig nach 5,5 s (21.09.: 2,4 s und 4,7 s; Nachmessungen in Phase 2: 3,8 bis 4,1 s). Auf Mobilgeräten ist mit deutlich längeren Zeiten zu rechnen. Ohne JavaScript bleibt die Seite leer.",
+      "empfehlung": "Kurzfristig Bilder verkleinern und komprimieren, unnötige Elemente entfernen. Grundsätzlich: Canva rendert die gesamte Seite im Browser und bietet keine Kontrolle über Überschriften, Canonical, strukturierte Daten und robots.txt. Für dauerhafte Sichtbarkeit einen Wechsel auf ein System mit serverseitigem HTML prüfen (zum Beispiel WordPress oder ein statischer Generator); die vorhandenen Inhalte lassen sich vollständig übernehmen."
+    },
+    {
+      "id": "B11",
+      "titel": "robots.txt fehlt, Sitemap veraltet",
+      "prioritaet": "niedrig",
+      "entwicklung": "unverändert",
+      "beleg": "https://fsh-documentation.com/robots.txt antwortet weiterhin mit 404. Die Sitemap ist erreichbar, führt aber nur die Startseite mit lastmod 17.01.2024. Der Header x-robots-tag: all erlaubt die Indexierung.",
+      "empfehlung": "Kein Sperrgrund. Sitemap in der Search Console einreichen und nach dem Anlegen von Unterseiten prüfen, ob Canva sie automatisch ergänzt. Eine robots.txt mit Sitemap-Verweis ist bei Canva nicht konfigurierbar; nach einem Plattformwechsel anlegen."
+    },
+    {
+      "id": "B12",
+      "titel": "E-Mail-Authentifizierung beider Domains lückenhaft",
+      "prioritaet": "mittel",
+      "entwicklung": "neu",
+      "beleg": "DNS-Abfrage über dns.google am 25.09.2026: fsh-documentation.de hat keinen TXT-Eintrag mit v=spf1; _dmarc.fsh-documentation.de lautet „v=DMARC1;p=reject;“ ohne rua-Berichtsadresse. fsh-documentation.com hat keinen SPF-Eintrag; _dmarc.fsh-documentation.com lautet „v=DMARC1; p=none“. Sollwerte laut website/google-und-email-dns.md: .de mit „v=spf1 include:_spf.strato.com ~all“ und DMARC p=reject mit rua; .com mit „v=spf1 -all“ und DMARC p=reject. Folge: Mails der .de, die nicht über STRATO DKIM-signiert laufen, können abgewiesen werden, ohne dass jemand es erfährt; im Namen der .com kann jeder Mails versenden.",
+      "empfehlung": "Bei STRATO für fsh-documentation.de den SPF-Eintrag „v=spf1 include:_spf.strato.com ~all“ setzen und DMARC um „rua=mailto:dmarc@fsh-documentation.de; fo=1“ ergänzen (Postfach vorher anlegen); bei Canva für fsh-documentation.com „v=spf1 -all“ und „v=DMARC1; p=reject“ eintragen. Danach Testversand an ein Gmail-Konto: SPF, DKIM und DMARC müssen PASS zeigen. Die Routine prüft die Einträge in jedem Lauf; sind alle gesetzt, gilt der Befund als erledigt.",
+      "kurz": "Die .de hat kein SPF und DMARC ohne Berichtsadresse, die .com kein SPF und DMARC p=none. Einträge nach website/google-und-email-dns.md setzen."
+    }
+  ],
+  "massnahmen": [
+    {
+      "nr": 1,
+      "text": "fsh-documentation.de und www.fsh-documentation.de bei STRATO per 301 auf https://fsh-documentation.com/ weiterleiten; beide Domains in der Search Console anlegen",
+      "prioritaet": "hoch",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 2,
+      "text": "Title und Meta-Description mit Marke, Ort und Kernleistungen setzen (Canva-Seiteneinstellungen)",
+      "prioritaet": "hoch",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 3,
+      "text": "Überschriften-Rollen in Canva prüfen und setzen: eine H1, Abschnitte als H2",
+      "prioritaet": "hoch",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 4,
+      "text": "Alt-Texte für alle 19 Bilder eintragen",
+      "prioritaet": "mittel",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 5,
+      "text": "Sechs Unterseiten je Kernleistung anlegen, Sitemap in der Search Console einreichen",
+      "prioritaet": "hoch",
+      "aufwand": "mittel"
+    },
+    {
+      "nr": 6,
+      "text": "Google-Unternehmensprofil anlegen oder beanspruchen, NAP-Daten vereinheitlichen",
+      "prioritaet": "mittel",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 7,
+      "text": "Bilder komprimieren, Seitengewicht senken",
+      "prioritaet": "mittel",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 8,
+      "text": "Plattformwechsel prüfen: serverseitiges HTML, Überschriften, Canonical, JSON-LD, robots.txt, Ladezeit",
+      "prioritaet": "mittel",
+      "aufwand": "hoch"
+    },
+    {
+      "nr": 9,
+      "text": "Search-Console-Zugang bereitstellen, damit die Routine Index- und Leistungsdaten auswertet",
+      "prioritaet": "niedrig",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 10,
+      "text": "E-Mail-DNS setzen: .de SPF „v=spf1 include:_spf.strato.com ~all“ und DMARC mit rua bei STRATO; .com „v=spf1 -all“ und DMARC p=reject bei Canva; Testversand",
+      "prioritaet": "mittel",
+      "aufwand": "gering"
+    }
+  ],
+  "offene_pruefpunkte": [
+    {
+      "gruppe": "Technik",
+      "punkte": [
+        "Core Web Vitals aus Felddaten (Search Console, CrUX)",
+        "DKIM-Selektoren der .de (STRATO) nicht direkt abgefragt"
+      ]
+    },
+    {
+      "gruppe": "Extern",
+      "punkte": [
+        "Google-Unternehmensprofil vorhanden?",
+        "Search Console: indexierte Seiten und Suchanfragen"
+      ]
+    },
+    {
+      "gruppe": "Rechtliches",
+      "punkte": [
+        "Inhalt von Impressum und Datenschutzerklärung nicht in diesem Lauf geprüft (Rechtsbefunde in Phase 2, Abschnitt 6)",
+        "Cookie-Einwilligung nicht geprüft"
+      ]
+    }
+  ],
+  "dafuer_noetig": [
+    "Zugang zur Google Search Console (Property fsh-documentation.com) für Index- und Leistungsdaten.",
+    "Angabe, ob ein Google-Unternehmensprofil existiert und wer es verwaltet.",
+    "Rechtstexte durch den Betreiber oder einen Rechtsbeistand prüfen lassen."
+  ],
+  "quellen_hinweis": "Direkter Abruf und Chromium-Rendering am 25. September 2026 (07:37 Uhr) aus der Prüfumgebung, DNS-Abfrage über dns.google, Websuche mit den zehn festen Abfragen und einer Abfrage zum Geschäftsführer.",
+  "quellen": [
+    {
+      "text": "fsh-documentation.com",
+      "url": "https://fsh-documentation.com/",
+      "beschreibung": "Roh-HTML, gerenderter DOM, Antwort-Header, sitemap.xml, robots.txt (404), 404-Test, 301 von http und www"
+    },
+    {
+      "text": "fsh-documentation.de",
+      "url": "https://fsh-documentation.de/",
+      "beschreibung": "STRATO-Platzhalterseite „Domain reserved“ (auch www)"
+    },
+    {
+      "text": "dns.google",
+      "url": "https://dns.google/resolve?name=_dmarc.fsh-documentation.de&type=TXT",
+      "beschreibung": "TXT-Einträge (SPF, DMARC) für fsh-documentation.de und fsh-documentation.com"
+    },
+    {
+      "text": "Maßnahmenpaket Phase 2 und DNS-Sollwerte",
+      "beschreibung": "seo-audit/massnahmen/2026-09-21-phase-2.md (Befundprüfung, Prioritäten), website/google-und-email-dns.md (Sollwerte)"
+    },
+    {
+      "text": "openregister.de",
+      "url": "https://openregister.de/company/DE-HRB-G1312-37959",
+      "beschreibung": "Handelsregister-Auszug FSH-Documentation UG (haftungsbeschränkt)"
+    },
+    {
+      "text": "firmeneintrag.creditreform.de",
+      "url": "https://firmeneintrag.creditreform.de/14513/2013147869/FSH_DOCUMENTATION_UG_HAFTUNGSBESCHRAENKT",
+      "beschreibung": "Firmeneintrag"
+    },
+    {
+      "text": "freelance.de",
+      "url": "https://www.freelance.de/Freelancer/269905-Geschaeftsfuehrer-FSH-Documentation",
+      "beschreibung": "Profil „Geschäftsführer: FSH-Documentation aus Teltow“"
+    },
+    {
+      "text": "de.linkedin.com",
+      "url": "https://de.linkedin.com/in/sascha-falk-heinzmann-a589961b7",
+      "beschreibung": "LinkedIn-Profil des Geschäftsführers (neu sichtbar)"
+    },
+    {
+      "text": "teltow.branchen-info.net",
+      "url": "https://teltow.branchen-info.net/information-dokumentation-4748-1.php",
+      "beschreibung": "Branchenbuch „Information-Dokumentation Teltow“"
+    },
+    {
+      "text": "Kernbegriff-Treffer: koenig-td.de, technikdoc.de, d-und-a.de, instrktiv.com, mt-redaktion.de, ce-koordination.de, handbuch-experten.de, unique-doc.de, wiessneth.de, winklergmbh.de, cigus.de, kerntecdoc.com, dogrel.com, tuvsud.com"
+    },
+    {
+      "text": "Namenskollision: build.fhir.org (FHIR Shorthand), fshschool.org, github.com/HL7/fhir-shorthand, fsh-welding.ca, en.wikipedia.org/wiki/FSH, clinicaltrials.gov"
+    }
+  ],
+  "kurzfassung": {
+    "untertitel": "fsh-documentation.com · Wochenaudit 25.09.2026: Website unverändert, E-Mail-DNS neu geprüft",
+    "befunde": [
+      "B1",
+      "B12",
+      "B3",
+      "B4"
+    ],
+    "naechste_schritte": [
+      {
+        "titel": ".de weiterleiten, DNS setzen",
+        "text": "301 bei STRATO auf fsh-documentation.com; SPF und DMARC nach website/google-und-email-dns.md"
+      },
+      {
+        "titel": "Title, Description, Alt-Texte",
+        "text": "Marke, Ort und Leistungen nennen; Alt-Texte aus Phase 2 eintragen"
+      },
+      {
+        "titel": "Unterseiten und Unternehmensprofil",
+        "text": "Seitenplan Phase 2 umsetzen; Google-Unternehmensprofil anlegen"
+      }
+    ]
+  }
+}
