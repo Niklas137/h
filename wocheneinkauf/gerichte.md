@@ -37,6 +37,7 @@ um neue Gerichte erweitern. Sperre: 4 Wochen für Gerichte, 3 Wochen für Frühs
 | 26 | Putenschnitzel natur mit Ofengemüse | Putenschnitzel | Karotten, Zucchini, Paprika, Zwiebel | Kartoffeln | ohne Panade | – |
 | 27 | Rosenkohl-Kartoffel-Pfanne mit Schweinefilet | Schweinefilet | Rosenkohl, Kartoffeln, Zwiebel, Senf | – | Saison Okt–Feb | – |
 | 28 | Lachs-Kartoffel-Auflauf mit Lauch | Lachs (TK) | Kartoffeln, Lauch, Milch, Frischkäse, Dill | – | | – |
+| 29 | Steak mit Senf-Paprika-Schmand und Hasselback-Kartoffeln | Schweinelachs (Steak natur) | Zwiebel, Schmand, Senf, Paprikapulver, Chili, Thymian, wenig Brühe, Petersilie | Hasselback-Kartoffeln mit wenig Gouda, grüne Bohnen (TK) | Idee aus einem Reel (ontodaysbake), ohne Pilze, Sahne und Parmesan | – |
 
 ## Mittagsteller (erste Mahlzeit, 850–900 kcal, 45–55 g Eiweiß, ohne Fleisch und Fisch)
 
