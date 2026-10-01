@@ -368,6 +368,7 @@
         var e; try { e = JSON.parse(zeile); } catch (err) { return null; }
         if (e.fehler) { var fehler = new Error(e.fehler); fehler.status = e.status; throw fehler; }
         if (e.phase === 'fertig') return e.ergebnis;
+        if (e.id && e.pdfs) return e; // Antwort ohne Phasen, etwa von einem älteren Server
         S.lauf = { phase: e.phase, datei: S.lauf ? S.lauf.datei : '', n: e.n || 0, von: e.von || 0 }; renderLauf();
         return null;
       };
