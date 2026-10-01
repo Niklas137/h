@@ -5,6 +5,7 @@ Fehlt die Schrift, fällt der Bericht auf DejaVu Sans (Linux) oder Helvetica zur
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
@@ -19,7 +20,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
-from .. import config
+from .. import ablage, config
 from . import texte
 
 GOLD = colors.HexColor("#dda440")
@@ -58,7 +59,7 @@ def _stile() -> dict[str, ParagraphStyle]:
     return {
         "titel": ParagraphStyle("titel", fontName=s["fett"], fontSize=22, leading=27, textColor=INK, spaceAfter=2),
         "untertitel": ParagraphStyle("untertitel", fontName=s["normal"], fontSize=11, leading=15, textColor=MUTED),
-        "h2": ParagraphStyle("h2", fontName=s["fett"], fontSize=13, leading=17, textColor=INK, spaceBefore=10, spaceAfter=6),
+        "h2": ParagraphStyle("h2", fontName=s["fett"], fontSize=13, leading=17, textColor=INK, spaceBefore=10, spaceAfter=6, keepWithNext=True),
         "text": ParagraphStyle("text", fontName=s["normal"], fontSize=10, leading=14, textColor=INK, alignment=TA_LEFT),
         "klein": ParagraphStyle("klein", fontName=s["normal"], fontSize=8.5, leading=11.5, textColor=INK),
         "kleinfett": ParagraphStyle("kleinfett", fontName=s["fett"], fontSize=8.5, leading=11.5, textColor=INK),
@@ -81,7 +82,7 @@ def _datum(iso: str | None) -> str:
         return iso
 
 
-def _kopf_fuss(sprache: str, art: str):
+def _kopf_fuss(sprache: str, art: str, gesamt: int):
     s = _schriften()
 
     def zeichnen(canvas, doc):
@@ -100,7 +101,7 @@ def _kopf_fuss(sprache: str, art: str):
         canvas.line(20 * mm, 16 * mm, breite - 20 * mm, 16 * mm)
         canvas.setFont(s["normal"], 8)
         canvas.drawString(20 * mm, 11 * mm, f"{config.BERICHT_FUSS} · {texte.t(sprache, 'erstellt_mit')}")
-        canvas.drawRightString(breite - 20 * mm, 11 * mm, texte.t(sprache, "seite", n=doc.page, m="{m}"))
+        canvas.drawRightString(breite - 20 * mm, 11 * mm, texte.t(sprache, "seite", n=doc.page, m=gesamt))
         canvas.restoreState()
 
     return zeichnen
@@ -122,7 +123,7 @@ def _bauen(story: list, sprache: str, art: str) -> bytes:
             author=config.BERICHT_KOPF,
         )
         zaehler = {"n": 0}
-        basis = _kopf_fuss(sprache, art)
+        basis = _kopf_fuss(sprache, art, gesamt or 0)
 
         def seite(canvas, d):
             zaehler["n"] = d.page
@@ -131,18 +132,8 @@ def _bauen(story: list, sprache: str, art: str) -> bytes:
             canvas.saveState()
             basis(canvas, d)
             canvas.restoreState()
-            # „{m}“ im Fuß nachträglich ersetzen: wir zeichnen den rechten Fußtext erneut mit Zahl.
-            s = _schriften()
-            breite, _ = A4
-            canvas.saveState()
-            canvas.setFillColor(colors.white)
-            canvas.rect(breite - 60 * mm, 8 * mm, 40 * mm, 6 * mm, stroke=0, fill=1)
-            canvas.setFillColor(MUTED)
-            canvas.setFont(s["normal"], 8)
-            canvas.drawRightString(breite - 20 * mm, 11 * mm, texte.t(sprache, "seite", n=d.page, m=gesamt))
-            canvas.restoreState()
 
-        doc.build([*story], onFirstPage=seite, onLaterPages=seite)
+        doc.build(deepcopy(story), onFirstPage=seite, onLaterPages=seite)
         return buffer.getvalue(), zaehler["n"]
 
     # Story-Objekte dürfen nicht zweimal gebaut werden, deshalb Fabrik über Kopie der Liste.
@@ -278,6 +269,7 @@ def _fundeblock(ergebnis: dict[str, Any], sprache: str, st: dict) -> list:
         texte.t(sprache, "sp_minuten"),
     ]
     zeilen = [[Paragraph(_esc(k), st["kleinfett"]) for k in kopf]]
+    fundzeilen = []
     for f in funde:
         zeilen.append(
             [
@@ -291,8 +283,12 @@ def _fundeblock(ergebnis: dict[str, Any], sprache: str, st: dict) -> list:
                 Paragraph(str(f.get("Zeitaufwand_min", "")), st["klein"]),
             ]
         )
+        fundzeilen.append(len(zeilen))
+        zeilen.append([Paragraph(_esc(texte.t(sprache, "sp_fundstelle") + ": " + texte.fundstelle(sprache, f)), st["klein"])] + [""] * 7)
     tab = Table(zeilen, colWidths=[15 * mm, 21 * mm, 22 * mm, 19 * mm, 24 * mm, 47 * mm, 11 * mm, 11 * mm], repeatRows=1)
     tab.setStyle(_tabellenstil())
+    for nr in fundzeilen:
+        tab.setStyle(TableStyle([("SPAN", (0, nr), (-1, nr)), ("NOSPLIT", (0, nr - 1), (-1, nr))]))
     story.append(tab)
     return story
 
@@ -347,6 +343,19 @@ def freier_dateiname(ordner: Path, art: str, dokument: str, sprache: str, erstel
         if inhalt is not None and pfad.read_bytes() == inhalt:
             return pfad
     raise RuntimeError("Kein freier Dateiname gefunden.")
+
+
+def ablegen(ordner: Path, art: str, dokument: str, sprache: str, erstellt: str | None, inhalt: bytes) -> Path:
+    """Versionierte Ablage, auch bei zeitgleichen Prüfungen ohne Überschreiben."""
+    for version in range(1, 10000):
+        pfad = ordner / dateiname(art, dokument, sprache, erstellt, version)
+        try:
+            ablage.schreiben_neu(pfad, inhalt)
+            return pfad
+        except FileExistsError:
+            if pfad.is_file() and not pfad.is_symlink() and pfad.read_bytes() == inhalt:
+                return pfad
+    raise OSError("Kein freier Dateiname gefunden.")
 
 
 def dateiname(art: str, dokument: str, sprache: str, erstellt: str | None = None, version: int = 1) -> str:

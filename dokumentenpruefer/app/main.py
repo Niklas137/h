@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import io
 import json
 import logging
@@ -19,7 +20,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Streamin
 from fastapi.staticfiles import StaticFiles
 from starlette.concurrency import run_in_threadpool
 
-from . import auth, config, db, einstellungen, mail
+from . import ablage, auth, config, db, einstellungen, mail
 from .pruefer import berichte, lesen, pruefung, regeln, texte
 
 log = logging.getLogger("dokumentenpruefer")
@@ -120,7 +121,9 @@ def startseite() -> HTMLResponse:
 @app.get("/api/status")
 def status() -> dict[str, Any]:
     return {
-        "version": "1.0.0",
+        "version": "1.1.0",
+        "anwendung": "fsh-dokumentenpruefer",
+        "installation": hashlib.sha256(str(config.DATEN.resolve()).encode()).hexdigest()[:16],
         "verifizierung": config.VERIFIZIERUNG,
         "regeln": regeln.vorhanden(),
         "sprachen": config.SPRACHEN,
@@ -202,8 +205,14 @@ async def erst_start(request: Request):
                 auth.fehlversuch(con, user)
             return _fehler(401, "E-Mail-Adresse oder Einmal-Passwort stimmt nicht, oder das Einmal-Passwort ist abgelaufen.")
         if config.VERIFIZIERUNG == "code":
+            if not mail.smtp_konfiguriert() and not config.ENTWICKLUNG:
+                return _fehler(503, "Der E-Mail-Versand ist nicht eingerichtet. Bitte den Admin kontaktieren. Für einen lokalen Test kann der Admin mit DP_DEV=1 starten.")
             code = auth.code_setzen(con, user["id"])
-            gesendet = mail.code_senden(user["email"], code, user["name"])
+            try:
+                gesendet = mail.code_senden(user["email"], code, user["name"])
+            except (OSError, mail.smtplib.SMTPException):
+                log.warning("Der Verifizierungscode konnte nicht versendet werden.")
+                return _fehler(503, "Der Verifizierungscode konnte nicht versendet werden. Bitte später erneut versuchen oder den Admin kontaktieren.")
             ergebnis: dict[str, Any] = {"verifizierung": True, "gesendet": gesendet, "minuten": config.CODE_MINUTEN}
             if config.ENTWICKLUNG:
                 ergebnis["code"] = code
@@ -391,8 +400,11 @@ def _pdf_pfad(row: dict[str, Any], art: str, sprache: str) -> Path:
     pfad = ordner / berichte.dateiname(art, row["dateiname"], sprache, row["erstellt"])
     if not pfad.exists():
         ergebnis = db.json_laden(row["ergebnis"], {})
-        meta = {"dateiname": row["dateiname"], "erstellt": row["erstellt"], "pruefer": row.get("pruefer_name", "")}
-        pfad.write_bytes(berichte.erzeugen(art, ergebnis, meta, sprache))
+        meta = {"dateiname": row["dateiname"], "erstellt": row["erstellt"], "pruefer": ergebnis.get("pruefer", row.get("pruefer_name", ""))}
+        try:
+            ablage.schreiben_neu(pfad, berichte.erzeugen(art, ergebnis, meta, sprache))
+        except FileExistsError:
+            pass  # Ein zeitgleicher Download hat den vollständigen Bericht schon erzeugt.
     return pfad
 
 
@@ -444,45 +456,41 @@ def _pruefung_durchfuehren(
     """Läuft in einem Arbeitsfaden, damit der Server währenddessen bedienbar bleibt.
 
     melden(phase, daten) berichtet den Fortschritt: lesen, pruefen, berichte (mit n von N).
-    Die Datenbanktransaktion bleibt kurz; die PDFs entstehen danach.
+    Erst vollständige PDFs erzeugen, dann die fertige Prüfung kurz in SQLite veröffentlichen.
     """
+    with db.transaktion() as con:
+        einst = einstellungen.lesen(con, user["id"])
+    sprachen = _sprachen(einst, zusatz)
     melden("lesen", {})
     struktur, lesehinweise = lesen.lesen_mit_hinweisen(name, inhalt)
     melden("pruefen", {})
     ergebnis = pruefung.pruefen(struktur, gewaehlt)
     ergebnis["pruefer"] = user["name"]
     ergebnis["lesehinweise"] = lesehinweise
-    with db.transaktion() as con:
-        einst = einstellungen.lesen(con, user["id"])
-        sprachen = _sprachen(einst, zusatz)
-        pruef_id = uuid.uuid4().hex[:12]
-        ordner = config.PRUEFUNGEN / pruef_id
-        ordner.mkdir(parents=True, exist_ok=True)
-        con.execute(
-            "INSERT INTO pruefungen (id, user_id, dateiname, score, ampel, stunden, funde, sprachen, regelsaetze, erstellt, ergebnis, ordner)"
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (
-                pruef_id,
-                user["id"],
-                name,
-                ergebnis["score"],
-                ergebnis["ampel"],
-                ergebnis["stunden"],
-                len(ergebnis["funde"]),
-                json.dumps(sprachen),
-                json.dumps(gewaehlt),
-                db.jetzt(),
-                json.dumps(ergebnis, ensure_ascii=False),
-                str(ordner),
-            ),
-        )
-        row = _pruefung_laden(con, user, pruef_id)
-    row["pruefer_name"] = user["name"]
-    # Berichte sofort erzeugen, damit Pop-up und Knöpfe ohne Wartezeit funktionieren.
-    auftraege = [(art, sp) for art in ("pruef", "fach") for sp in sprachen]
-    for i, (art, sp) in enumerate(auftraege, 1):
-        melden("berichte", {"n": i, "von": len(auftraege)})
-        _pdf_pfad(row, art, sp)
+    pruef_id = uuid.uuid4().hex[:12]
+    ordner = config.PRUEFUNGEN / pruef_id
+    ordner.mkdir(mode=0o700, parents=True, exist_ok=False)
+    erstellt = db.jetzt()
+    row = {"id": pruef_id, "user_id": user["id"], "dateiname": name,
+           "score": ergebnis["score"], "ampel": ergebnis["ampel"], "stunden": ergebnis["stunden"],
+           "funde": len(ergebnis["funde"]), "sprachen": json.dumps(sprachen),
+           "regelsaetze": json.dumps(gewaehlt), "erstellt": erstellt,
+           "ergebnis": json.dumps(ergebnis, ensure_ascii=False), "ordner": str(ordner),
+           "pruefer_name": user["name"]}
+    try:
+        auftraege = [(art, sp) for art in ("pruef", "fach") for sp in sprachen]
+        for i, (art, sp) in enumerate(auftraege, 1):
+            melden("berichte", {"n": i, "von": len(auftraege)})
+            _pdf_pfad(row, art, sp)
+        with db.transaktion() as con:
+            con.execute(
+                "INSERT INTO pruefungen (id, user_id, dateiname, score, ampel, stunden, funde, sprachen, regelsaetze, erstellt, ergebnis, ordner)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                tuple(row[k] for k in ("id", "user_id", "dateiname", "score", "ampel", "stunden", "funde", "sprachen", "regelsaetze", "erstellt", "ergebnis", "ordner")),
+            )
+    except BaseException:
+        shutil.rmtree(ordner)
+        raise
     return _pruefung_antwort(row)
 
 
@@ -498,13 +506,15 @@ async def pruefung_starten(
     name = Path(datei.filename or "dokument").name
     if not name.lower().endswith((".docx", ".pdf")):
         return _fehler(400, "Nur Word (.docx) und PDF (.pdf) werden geprüft.")
-    inhalt = await datei.read()
+    inhalt = await datei.read(config.UPLOAD_MAX_BYTES + 1)
     if len(inhalt) > config.UPLOAD_MAX_BYTES:
         return _fehler(413, "Die Datei ist größer als 25 MB.")
     gewaehlt = list(dict.fromkeys(r.strip() for r in regelsaetze.split(",") if r.strip()))
     if not gewaehlt or any(r not in config.REGELSAETZE for r in gewaehlt):
         return _fehler(400, "Bitte gültige Regelsätze wählen: basis, din oder ce.")
     zusatz = zusatzsprache.strip() or None
+    if zusatz and zusatz not in config.SPRACHEN:
+        return _fehler(400, "Ungültige Zusatzsprache. Erlaubt sind de, en, uk und ru.")
 
     if fortschritt != "1":
         try:
@@ -513,6 +523,9 @@ async def pruefung_starten(
             return _fehler(422, str(e))
         except regeln.RegelFehler as e:
             return _fehler(503, str(e))
+        except Exception:
+            log.exception("Prüfung von %s fehlgeschlagen", name)
+            return _fehler(500, "Die Prüfung ist fehlgeschlagen. Bitte noch einmal versuchen.")
 
     # Fortschritt als Zeilenstrom (NDJSON): eine Zeile je Phase, zuletzt das Ergebnis oder der Fehler.
     loop = asyncio.get_running_loop()
@@ -599,15 +612,16 @@ def pruefung_ablegen(pruef_id: str, user: dict[str, Any] = Depends(aktueller_ben
     with db.transaktion() as con:
         row = _pruefung_laden(con, user, pruef_id)
     row["pruefer_name"] = user["name"]
-    config.OUTPUT.mkdir(parents=True, exist_ok=True)
     abgelegt = []
-    for eintrag in _pdf_liste(row):
-        quelle = _pdf_pfad(row, eintrag["bericht"], eintrag["sprache"])
-        # Nie überschreiben: gleicher Inhalt wird wiederverwendet, sonst nächste Version v02, v03, ...
-        ziel = berichte.freier_dateiname(config.OUTPUT, eintrag["bericht"], row["dateiname"], eintrag["sprache"], row["erstellt"], quelle.read_bytes())
-        if not ziel.exists():
-            shutil.copy2(quelle, ziel)
-        abgelegt.append(str(ziel))
+    try:
+        config.OUTPUT.mkdir(parents=True, exist_ok=True)
+        for eintrag in _pdf_liste(row):
+            quelle = _pdf_pfad(row, eintrag["bericht"], eintrag["sprache"])
+            ziel = berichte.ablegen(config.OUTPUT, eintrag["bericht"], row["dateiname"], eintrag["sprache"], row["erstellt"], quelle.read_bytes())
+            abgelegt.append(str(ziel))
+    except OSError:
+        log.warning("Berichtsablage fehlgeschlagen. Zielordner und Schreibrechte prüfen.")
+        return _fehler(500, "Berichte konnten nicht abgelegt werden. Bitte Zielordner, Schreibrechte und freien Speicher prüfen.")
     return {"abgelegt": abgelegt, "ordner": str(config.OUTPUT)}
 
 

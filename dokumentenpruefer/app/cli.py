@@ -53,9 +53,7 @@ def _pruefen(args: argparse.Namespace) -> int:
     for art in ("pruef", "fach"):
         for sp in sprachen:
             pdf = berichte.erzeugen(art, ergebnis, meta, sp)
-            ziel = berichte.freier_dateiname(ausgabe, art, pfad.name, sp, erstellt, pdf)
-            if not ziel.exists():
-                ziel.write_bytes(pdf)
+            ziel = berichte.ablegen(ausgabe, art, pfad.name, sp, erstellt, pdf)
             dateien.append(str(ziel))
 
     zusammenfassung = {

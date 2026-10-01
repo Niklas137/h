@@ -51,18 +51,22 @@ def docx_lesen(daten: bytes | IO[bytes]) -> Struktur:
     current_heading = "Unbekannt"
 
     def tabelle_lesen(table: Table, heading: str) -> None:
+        gesehen = set()
         for row in table.rows:
-            gesehen: set[int] = set()
             for cell in row.cells:
-                # Verbundene Zellen tauchen in row.cells mehrfach auf.
-                if id(cell._tc) in gesehen:
+                # Auch vertikal verbundene Zellen nur einmal; XML-Objekte festhalten.
+                if cell._tc in gesehen:
                     continue
-                gesehen.add(id(cell._tc))
-                text = " ".join(p.text.strip() for p in cell.paragraphs if p.text.strip())
-                if text:
-                    structured.append({"text": text, "heading": f"{heading} (Tabelle)"})
-                for innere in cell.tables:
-                    tabelle_lesen(innere, heading)
+                gesehen.add(cell._tc)
+                # Absätze und innere Tabellen in ihrer tatsächlichen Reihenfolge lesen.
+                for child in cell._tc.iterchildren():
+                    tag = child.tag.rsplit("}", 1)[-1]
+                    if tag == "p":
+                        text = Paragraph(child, cell).text.strip()
+                        if text:
+                            structured.append({"text": text, "heading": f"{heading} (Tabelle)"})
+                    elif tag == "tbl":
+                        tabelle_lesen(Table(child, cell), heading)
 
     try:
         for child in doc.element.body.iterchildren():

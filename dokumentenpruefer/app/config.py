@@ -17,10 +17,10 @@ TEXTE = APP / "texte"
 REGELN = Path(os.environ.get("DP_REGELN", BASIS / "regeln"))
 
 DATEN = Path(os.environ.get("DP_DATEN", BASIS / "daten"))
-DATEN.mkdir(parents=True, exist_ok=True)
+DATEN.mkdir(mode=0o700, parents=True, exist_ok=True)
 DB_PFAD = DATEN / "dokumentenpruefer.sqlite3"
 PRUEFUNGEN = DATEN / "pruefungen"
-PRUEFUNGEN.mkdir(parents=True, exist_ok=True)
+PRUEFUNGEN.mkdir(mode=0o700, parents=True, exist_ok=True)
 OUTPUT = Path(os.environ.get("DP_OUTPUT", BASIS / "output"))
 
 SPRACHEN = ["de", "en", "uk", "ru"]
@@ -39,8 +39,8 @@ PASSWORT_MIN = 14
 # "aus": das Einmal-Passwort allein gilt als Nachweis.
 VERIFIZIERUNG = os.environ.get("DP_VERIFIZIERUNG", "code")
 
-# Entwicklung: Codes und Einmal-Passwörter werden zusätzlich im Protokoll ausgegeben
-# und von der API zurückgegeben. Niemals im Betrieb einschalten.
+# Entwicklung: Verifizierungscodes werden in der API und Oberfläche zurückgegeben.
+# Keine Ausgabe im Protokoll. Niemals im Betrieb einschalten.
 ENTWICKLUNG = os.environ.get("DP_DEV", "0") == "1"
 
 SMTP_HOST = os.environ.get("DP_SMTP_HOST", "")

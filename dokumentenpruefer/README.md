@@ -4,6 +4,13 @@ Prüft technische Dokumente (Word, PDF) gegen die Regelsätze Basisprüfung, DIN
 CE / EU-Konformität. Mehrere Benutzer mit eigenem Konto und eigenen Einstellungen, Oberfläche im
 Look von FSH-Documentation, Berichte als PDF in Deutsch, Englisch, Ukrainisch und Russisch.
 
+Phase-1-Prüfstand 1.1.0: eigener Branch `codex/dokumentenpruefer`, eigene Arbeitskopie.
+Der Claude-Branch bleibt unabhängig; Zusammenführen erst nach Prüfung.
+
+Die technische Abnahme ist in [ABNAHME_PHASE1.md](ABNAHME_PHASE1.md) dokumentiert:
+83 Python-Tests und sieben Browser-Ablaufgruppen sind auf Linux und macOS bestanden.
+Dort stehen auch die noch ausstehenden Schritte für die tatsächliche Mac-Installation.
+
 Die bisherige Streamlit-App `app.py` im Ordner darüber bleibt unverändert als Rückfall. Die
 Prüflogik ist 1:1 übernommen (Schlüsselwörter, Gewichtung, Score, Ampel, Fazit, CE-To-dos).
 Die Prüfung ist eine automatische Vorprüfung per Schlüsselwortsuche. Die fachliche Prüfung und
@@ -17,8 +24,13 @@ Freigabe bleibt bei FSH-Documentation; jeder Bericht und die Kundenmail sagen da
    Terminal angezeigt.
 2. Der Browser öffnet `http://localhost:8765`.
 3. "Erstanmeldung mit Einmal-Passwort": E-Mail-Adresse und Einmal-Passwort eingeben, Code aus der
-   E-Mail (oder aus `daten/codes.log`, solange kein SMTP eingerichtet ist), dann Name und eigenes
+   E-Mail, dann Name und eigenes
    Passwort setzen (mindestens 14 Zeichen, ein Großbuchstabe, ein Sonderzeichen).
+
+Für einen lokalen Ersttest ohne SMTP: im Terminal `DP_DEV=1 ./start.command` starten.
+Dann steht der Code in der Oberfläche. Ohne SMTP und ohne Entwicklungsmodus meldet die
+App den fehlenden Versand ausdrücklich. Codes werden nie in Logs gespeichert.
+Ein Doppelstart öffnet die bereits laufende eigene Instanz; ein fremder belegter Port wird gemeldet.
 
 Von Hand statt per `start.command`:
 
@@ -26,7 +38,7 @@ Von Hand statt per `start.command`:
 python3 -m venv .venv
 ./.venv/bin/pip install -r requirements.txt
 ./.venv/bin/python -m app.verwaltung admin --email niklas@firma.de --name "Niklas"
-./.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8765
+./.venv/bin/python -m app.start
 ```
 
 ## Regeldateien
@@ -35,9 +47,9 @@ Die Regelsätze liegen im Ordner `regeln/`:
 
 | Datei                 | Regelsatz          | Status                              |
 |-----------------------|--------------------|-------------------------------------|
-| `pruefkatalog.json`   | Basisprüfung       | enthalten (Stand 21. Mai 2026), nur deutsch |
+| `pruefkatalog.json`   | Basisprüfung       | Regelinhalt vom 21. Mai 2026, Übersetzungen de/en/uk/ru |
 | `normlogik_82079.json`| DIN 82079-1        | enthalten, mit Übersetzungen        |
-| `ce_logik.json`       | CE / EU-Konformität| enthalten (Stand 21. Mai 2026), nur deutsch |
+| `ce_logik.json`       | CE / EU-Konformität| Regelinhalt vom 21. Mai 2026, Übersetzungen de/en/uk/ru |
 
 Fehlt eine gewählte Regeldatei oder ist sie ungültig, bricht die Prüfung ohne Ergebnis und ohne
 Berichte ab. Validiert werden JSON, nicht leere Regellisten, eindeutige IDs, Suchwörter, Pflichtfelder,
@@ -79,7 +91,8 @@ Die Oberfläche selbst ist in dieser Version deutsch; die Spracheinstellung steu
 ## Ablauf einer Prüfung
 
 Lesen, Prüfen und PDF-Erzeugung laufen in einem Arbeitsfaden, der Server bleibt währenddessen
-bedienbar. Die Datenbanktransaktion ist kurz, die PDFs entstehen danach. Die Oberfläche fragt die
+bedienbar. Erst wenn alle PDFs fertig sind, wird die Prüfung mit einer kurzen Datenbanktransaktion
+in den Verlauf aufgenommen. Die Oberfläche fragt die
 Prüfung mit `fortschritt=1` an und bekommt einen Zeilenstrom (NDJSON): je eine Zeile für die Phasen
 `lesen`, `pruefen`, `berichte` (mit `n` von `von`), zuletzt `fertig` mit dem Ergebnis oder `fehler`.
 Das Statuspanel zeigt diese Phasen; es erscheint erst, wenn die Prüfung länger als 400 ms dauert,
@@ -94,6 +107,13 @@ und nennt keinen erfundenen Prozentwert. Ohne `fortschritt` antwortet die Route 
   in der Kommandozeile. Ein PDF ganz ohne Text wird mit einer Fehlermeldung abgewiesen.
 - Ablage in `output/` überschreibt nie: Gleicher Inhalt wird wiederverwendet, sonst entsteht die
   nächste Version (`_v02`, `_v03`). Gilt für die Oberfläche und die Kommandozeile.
+  Auch parallele Ablagen können keine vorhandene Datei ersetzen. Der Zielordner muss Hardlinks
+  unterstützen (z. B. APFS auf dem Mac).
+- Historie und Erfolgsmeldung erscheinen erst, wenn sämtliche PDFs fertig sind.
+  Nach dem Abmelden werden verspätete Antworten verworfen. Eine laufende Arbeit auf dem Server
+  kann weiterlaufen und bleibt dem ursprünglichen Konto zugeordnet.
+- Verschachtelte Tabellen behalten ihre Reihenfolge; verbundene Zellen werden nur einmal gelesen.
+  Der interne Prüfbericht enthält die verfügbaren Fundstellen.
 
 ## Ergebnis und Weitergabe
 
@@ -122,7 +142,7 @@ Für Claude Code oder Skripte prüft `app/cli.py` ein Dokument direkt und legt d
 | `DP_DATEN`          | Datenordner (Standard `daten/`): Datenbank, Berichte, Geheimnis |
 | `DP_OUTPUT`         | Ablageordner für "in output ablegen" (Standard `output/`)     |
 | `DP_VERIFIZIERUNG`  | `code` (Standard) oder `aus` (kein Code bei der Erstanmeldung) |
-| `DP_SMTP_HOST`, `DP_SMTP_PORT`, `DP_SMTP_USER`, `DP_SMTP_PASSWORT`, `DP_SMTP_ABSENDER` | Versand des Codes. Ohne SMTP steht der Code in `daten/codes.log`. |
+| `DP_SMTP_HOST`, `DP_SMTP_PORT`, `DP_SMTP_USER`, `DP_SMTP_PASSWORT`, `DP_SMTP_ABSENDER` | Versand des Codes; ohne SMTP ist für den lokalen Test `DP_DEV=1` nötig. |
 | `DP_SUPPORT`, `DP_TELEFON`, `DP_ZEITEN` | Kontaktangaben in der Hilfe                       |
 | `DP_DEV=1`          | Entwicklungsmodus: Code wird in der Oberfläche angezeigt      |
 | `DP_COOKIE_SECURE=1`| Cookie nur über HTTPS (für Betrieb hinter einem Proxy)        |
@@ -164,9 +184,12 @@ app/main.py            FastAPI: Seiten, API, Prüfung, Berichte
 app/auth.py            Passwörter (argon2), Einmal-Passwort, Code, Sitzungen, Sperre
 app/db.py              SQLite-Schema und Verbindung
 app/einstellungen.py   Einstellungen je Benutzer
-app/mail.py            Versand des Codes (SMTP oder Protokoll)
+app/mail.py            Versand des Codes über SMTP, keine Codes in Logs
 app/verwaltung.py      Kommandozeile für Konten
 app/cli.py             Kommandozeile: Dokument prüfen, PDFs ablegen
+app/start.py           Portprüfung, Erstkonto und lokaler Serverstart
+app/sicherung.py       Geprüfte ZIP-Sicherung und Wiederherstellung in neuen Ordner
+app/ablage.py          Atomare Dateiablage ohne Überschreiben
 app/pruefer/lesen.py   Word und PDF einlesen
 app/pruefer/regeln.py  Regeldateien laden
 app/pruefer/pruefung.py Prüflogik (aus app.py übernommen), Regelsätze vorher validiert
@@ -178,9 +201,44 @@ tests/                 pytest
 daten/, output/        werden zur Laufzeit angelegt, nicht versioniert
 ```
 
-## Offen
+## Sicherung und Wiederherstellung
 
-- Regeldateien `pruefkatalog.json` und `ce_logik.json`: Stand vom 21. Mai 2026 aus der Git-Historie. Gibt es auf dem Mac eine neuere Fassung, diese hierher kopieren. Übersetzungen (`empfehlung_en/uk/ru`) fehlen noch, Berichte in anderen Sprachen zeigen dort die deutsche Empfehlung.
+Die Sicherung enthält eine konsistente SQLite-Kopie, die zugehörigen PDFs, vorhandene
+Regeldateien, das Installationsgeheimnis und PDFs aus dem Ausgabeordner. Jede Datei wird mit
+SHA-256 geprüft. SMTP-Zugangsdaten und Programmdateien sind nicht enthalten. Das Archiv enthält
+Kontodaten und Dokumentergebnisse; privat außerhalb des Git-Repositories aufbewahren.
+
+Im Programmordner ausführen:
+
+```bash
+./.venv/bin/python -m app.sicherung sichern --ziel "$HOME/Documents/Dokumentenpruefer-Sicherungen/phase1.zip"
+./.venv/bin/python -m app.sicherung pruefen "$HOME/Documents/Dokumentenpruefer-Sicherungen/phase1.zip"
+./.venv/bin/python -m app.sicherung wiederherstellen "$HOME/Documents/Dokumentenpruefer-Sicherungen/phase1.zip" --ziel "$HOME/Documents/Dokumentenpruefer-Wiederhergestellt"
+```
+
+Bestehende Sicherungen und Wiederherstellungsordner werden nie überschrieben. Für jede neue
+Sicherung einen neuen Namen wählen. Die Wiederherstellung zeigt den passenden Startbefehl an.
+Die alten Daten bleiben unberührt. Alte Sitzungen und Verifizierungscodes werden nicht reaktiviert;
+Passwörter, Konten, Einstellungen und Berichte bleiben erhalten. Originale hochgeladener Dokumente
+speichert die App nicht; diese müssen separat gesichert werden. Sichern ist bei laufendem Server
+möglich. Beim Umstieg auf die Wiederherstellung zuerst den Server beenden.
+
+## Reproduzierbare Abnahme
+
+`tests/test_phase1.py` und `tests/test_betrieb.py` ergänzen Berichtfehler, parallele Ablage,
+Tabellen, Übersetzungen, Sicherungsfehler, echte Serverstarts, Doppelstart, Neustart und
+wiederhergestellte Berichte über HTTP. Alle Testdaten werden separat erzeugt.
+
+Der Workflow `Dokumentenpruefer Phase 1` führt Python-Tests und `tests/browser_smoke.cjs` auf
+Linux und macOS aus. Der Browserlauf prüft Erstanmeldung, Word/PDF, Downloads, Einstellungen,
+320/390 px, Querformat, große Schrift, Benutzerwechsel und späte Antworten nach Logout.
+Screenshots und Ergebnisse liegen als Workflow-Artefakte vor. Ein vorhandener Workflow ist
+noch kein bestandener Lauf; den jeweiligen Status beachten. Native Apple-Mail-Übergabe und
+Finder-Doppelklick bleiben Bestandteil der Mac-Abnahme.
+
+## Installationseinstellungen und Phase 2
+
+- Regeldateien `pruefkatalog.json` und `ce_logik.json`: deutscher Regelinhalt vom 21. Mai 2026. Neuere lokale Kataloge vor einem Update sichern und fachlich vergleichen; nicht durch einen älteren Stand ersetzen. Ergänzte Übersetzungen ändern keine Prüfregel.
 - Impressum und Datenschutz unter Einstellungen → Rechtliches mit den eigenen Texten füllen
   (`app/static/index.html`, Bereich `data-pane="recht"`).
   Impressum nach DDG: Firma, Anschrift, vertretungsberechtigte Person, E-Mail, Telefon, Registereintrag, Umsatzsteuer-ID.
@@ -188,3 +246,4 @@ daten/, output/        werden zur Laufzeit angelegt, nicht versioniert
 - Kontaktangaben für die Hilfe setzen (`DP_SUPPORT`, `DP_TELEFON`, `DP_ZEITEN`).
 - SMTP für den Code einrichten oder `DP_VERIFIZIERUNG=aus` setzen.
 - Oberfläche in Englisch, Ukrainisch und Russisch (Phase 2).
+- Passwortanfrage per E-Mail, besonderer Admin-Passwortworkflow und Zwei-Faktor-Anmeldung (Phase 2).
