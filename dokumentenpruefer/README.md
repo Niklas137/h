@@ -80,6 +80,17 @@ Die Oberfläche selbst ist in dieser Version deutsch; die Spracheinstellung steu
 
 Dateinamen: `JJJJ-MM-TT_Dokument_Pruefbericht_DE_v01.pdf`.
 
+## Prüfung ohne Browser
+
+Für Claude Code oder Skripte prüft `app/cli.py` ein Dokument direkt und legt die PDFs ab:
+
+```bash
+./.venv/bin/python -m app.cli pruefen ../inbox/Anleitung.docx --sprachen de,en --ausgabe ../output
+```
+
+`--sprachen` nimmt die Basissprache und höchstens eine Zusatzsprache, `--regelsaetze` standardmäßig
+`basis,din,ce`, `--json` gibt die Zusammenfassung maschinenlesbar aus.
+
 ## Konfiguration (Umgebungsvariablen, alle optional)
 
 | Variable            | Bedeutung                                                     |
@@ -100,8 +111,8 @@ Zugangsdaten gehören nicht ins Projekt. SMTP-Daten nur als Umgebungsvariable se
 ./.venv/bin/python -m pytest tests -q
 ```
 
-21 Tests: Erstanmeldung mit Code, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
-Prüfung einer erzeugten Word-Datei, PDFs in vier Sprachen, ZIP, Ablegen, E-Mail-Entwurf.
+23 Tests: Erstanmeldung mit Code, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
+Prüfung einer erzeugten Word-Datei, PDFs in vier Sprachen, ZIP, Ablegen, E-Mail-Entwurf, Kommandozeile.
 
 ## Aufbau
 
@@ -112,6 +123,7 @@ app/db.py              SQLite-Schema und Verbindung
 app/einstellungen.py   Einstellungen je Benutzer
 app/mail.py            Versand des Codes (SMTP oder Protokoll)
 app/verwaltung.py      Kommandozeile für Konten
+app/cli.py             Kommandozeile: Dokument prüfen, PDFs ablegen
 app/pruefer/lesen.py   Word und PDF einlesen
 app/pruefer/regeln.py  Regeldateien laden
 app/pruefer/pruefung.py Prüflogik (aus app.py übernommen)
