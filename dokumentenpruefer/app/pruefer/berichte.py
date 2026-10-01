@@ -59,7 +59,7 @@ def _stile() -> dict[str, ParagraphStyle]:
     return {
         "titel": ParagraphStyle("titel", fontName=s["fett"], fontSize=22, leading=27, textColor=INK, spaceAfter=2),
         "untertitel": ParagraphStyle("untertitel", fontName=s["normal"], fontSize=11, leading=15, textColor=MUTED),
-        "h2": ParagraphStyle("h2", fontName=s["fett"], fontSize=13, leading=17, textColor=INK, spaceBefore=10, spaceAfter=6),
+        "h2": ParagraphStyle("h2", fontName=s["fett"], fontSize=13, leading=17, textColor=INK, spaceBefore=10, spaceAfter=6, keepWithNext=True),
         "text": ParagraphStyle("text", fontName=s["normal"], fontSize=10, leading=14, textColor=INK, alignment=TA_LEFT),
         "klein": ParagraphStyle("klein", fontName=s["normal"], fontSize=8.5, leading=11.5, textColor=INK),
         "kleinfett": ParagraphStyle("kleinfett", fontName=s["fett"], fontSize=8.5, leading=11.5, textColor=INK),

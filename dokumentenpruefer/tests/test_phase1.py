@@ -7,7 +7,7 @@ from docx import Document
 from PyPDF2 import PdfReader
 
 from app import config, db
-from app.pruefer import berichte, lesen, pruefung, texte
+from app.pruefer import berichte, lesen, pruefung
 
 
 def dokument():

@@ -71,6 +71,10 @@ async function checkFile(file) {
   page.on('pageerror', err => errors.push(err.message));
   await page.goto(url);
   await visible('#f-login');
+  await page.locator('#gate [data-go=recht]').first().click(); await visible('#modal-recht');
+  assert.match(await page.locator('#recht-inhalt').innerText(), /Datenschutzerklärung/);
+  await page.locator('#recht-close').click();
+  checks.push('Rechtliche Informationen vor der Anmeldung erreichbar');
   await page.locator('#to-erst').click();
   await page.locator('#erst-email').fill('admin@example.invalid');
   await page.locator('#erst-otp').fill(otp);
@@ -115,8 +119,9 @@ async function checkFile(file) {
   assert.match(await page.locator('html').getAttribute('style'), /1\.12/);
   for (const size of [{width:390,height:844}, {width:320,height:740}, {width:844,height:390}]) {
     await page.setViewportSize(size);
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
-    assert.equal(overflow, false, `Seitenueberlauf bei ${size.width}px`);
+    const overflow = await page.evaluate(() => ({ overflow: document.documentElement.scrollWidth > innerWidth + 1,
+      elements: Array.from(document.querySelectorAll('body *')).filter(e => e.getBoundingClientRect().right > innerWidth + 1 && e.clientWidth).slice(0,12).map(e => e.id || e.className || e.tagName) }));
+    assert.equal(overflow.overflow, false, `Seitenueberlauf bei ${size.width}px: ${overflow.elements.join(', ')}`);
     await page.screenshot({ path: path.join(out, `ansicht-${size.width}.png`), fullPage: true });
   }
   checks.push('Hilfe, Hell/Dunkel, grosse Schrift, Neuladen, 320/390px und Querformat');

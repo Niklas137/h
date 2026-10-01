@@ -257,8 +257,21 @@
   $('help-from-info').addEventListener('click', function () { S.help = true; render(); });
   $('drawer-close').addEventListener('click', function () { S.help = false; render(); });
   $('drawer-scrim').addEventListener('click', function () { S.help = false; render(); });
-  $$('[data-go]').forEach(function (el) { el.addEventListener('click', function () { if (!S.user) { showGateHinweis(); return; } goSection(el.dataset.go); }); });
-  function showGateHinweis() { alert && void 0; }
+  var rechtAusloeser = null;
+  function rechtSchliessen() { $('modal-recht').hidden = true; if (rechtAusloeser) rechtAusloeser.focus(); }
+  $$('[data-go]').forEach(function (el) { el.addEventListener('click', function () {
+    if (!S.user && el.dataset.go === 'recht') {
+      rechtAusloeser = el;
+      $('recht-inhalt').replaceChildren.apply($('recht-inhalt'), $$('[data-pane=recht] > *').map(function (kind) { return kind.cloneNode(true); }));
+      $('modal-recht').hidden = false; $('recht-close').focus(); return;
+    }
+    S.help = false; goSection(el.dataset.go);
+  }); });
+  $('recht-close').addEventListener('click', rechtSchliessen);
+  $('modal-recht').addEventListener('keydown', function (e) {
+    if (e.key === 'Tab') { e.preventDefault(); $('recht-close').focus(); }
+    if (e.key === 'Escape') rechtSchliessen();
+  });
 
   function sofort(aenderung) {
     Object.assign(S.draft, aenderung); render();

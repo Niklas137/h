@@ -132,7 +132,7 @@ def pruefen(archiv: Path) -> dict:
                 if len(daten) != soll["bytes"] or _sha(daten) != soll["sha256"]:
                     raise SicherungsFehler(f"Prüfsumme stimmt nicht: {name}")
             return manifest
-    except (OSError, zipfile.BadZipFile, KeyError, TypeError, AttributeError, json.JSONDecodeError) as e:
+    except (OSError, zipfile.BadZipFile, KeyError, TypeError, AttributeError, UnicodeError, json.JSONDecodeError) as e:
         raise SicherungsFehler("Sicherung ist unvollständig, beschädigt oder nicht lesbar.") from e
 
 
