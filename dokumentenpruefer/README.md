@@ -12,7 +12,9 @@ Die technische Abnahme ist in [ABNAHME_PHASE1.md](ABNAHME_PHASE1.md) dokumentier
 Dort stehen auch die noch ausstehenden Schritte für die tatsächliche Mac-Installation.
 
 Die bisherige Streamlit-App `app.py` im Ordner darüber bleibt unverändert als Rückfall. Die
-Prüflogik ist 1:1 übernommen (Schlüsselwörter, Gewichtung, Score, Ampel, Fazit, CE-To-dos).
+Schlüsselwortregeln, Gewichtung, Score, Ampel, Fazit und CE-To-dos sind übernommen.
+Die Satzlängenprüfung wurde korrigiert: Sie zählt einzelne Sätze im Textabschnitt statt den
+ganzen Absatz. Dadurch können neue Ergebnisse von früheren Fehlalarmen abweichen.
 Die Prüfung ist eine automatische Vorprüfung per Schlüsselwortsuche. Die fachliche Prüfung und
 Freigabe bleibt bei FSH-Documentation; jeder Bericht und die Kundenmail sagen das in einem Satz.
 
@@ -161,8 +163,21 @@ Word-Prüfung, PDFs in vier Sprachen, ZIP, Ablage, Mail-Entwurf, CLI und Fortsch
 Ladung), ungültige Regelsatz-Auswahl, Sperrumgehung und den Vorprüfungssatz in beiden
 Berichtstypen und allen vier Sprachen.
 
+`tests/test_satzlaenge.py` ergänzt 30 Fälle zur Absatzkorrektur: Satzzeichen, Abkürzungen,
+Zahlen, die Grenze 25/26 Wörter, mehrere lange Sätze sowie Word-Absätze und Tabellenzellen.
+Vor der Korrektur schlugen elf dieser Fälle fehl. Nach der Korrektur bestehen unter Linux
+alle 113 Python-Tests. Für diese Korrektur wurde kein neuer macOS- oder Browserlauf ausgeführt;
+die oben genannte Phase-1-Abnahme bezieht sich auf den vorherigen Programmstand.
+
 ## Vorprüfung und Regelprüfung
 
+- Die Lesbarkeitsregel `TXT-001` meldet Sätze mit mehr als 25 durch Leerraum getrennten Wörtern.
+  Mehrere kurze Sätze in einem Absatz lösen den Hinweis nicht aus. Die Trennung berücksichtigt
+  Punkt, Frage- und Ausrufezeichen, schließende Anführungszeichen sowie übliche Abkürzungen
+  (z. B. `z. B.`, `Nr.`, `ca.`) und deutsche Ordinalzahlen. Anzahl und Textauszug beziehen sich
+  auf die erkannten Sätze; die bisherige Sammelgewichtung und Aufwandsschätzung bleiben gleich.
+  Die Erkennung bleibt heuristisch und verbindet keine getrennt eingelesenen Abschnitte.
+  Insbesondere über mehrere PDF-Zeilen oder Seiten verteilte Sätze werden noch nicht rekonstruiert.
 - Score, Ampel und Fazit folgen der Vorgabe von Niklas und der alten App: Grün ab 80 %, Gelb ab
   60 %, sonst Rot. Score = 100 minus Summe der Gewichtungen aller Funde, mindestens 0.
 - Die Schlüsselwortsuche ist eine Vorprüfung. Jeder Bericht trägt unter dem Kopf einen Satz,
