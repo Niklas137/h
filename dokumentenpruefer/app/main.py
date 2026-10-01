@@ -622,8 +622,8 @@ async def pruefung_mail(pruef_id: str, request: Request, user: dict[str, Any] = 
         "Guten Tag,\n\n"
         f"anbei der Fachbericht zur Prüfung des Dokuments {row['dateiname']} "
         f"({', '.join(config.SPRACHNAMEN_DE.get(s, s) for s in sprachen)}).\n\n"
-        f"Automatische Vorprüfung: {row['score']} Suchpunkte, {texte.ampel('de', row['ampel'])}.\n"
-        f"{texte.t('de', 'hinweis_vorpruefung')}\n\n"
+        f"Ergebnis: {row['score']} %, {texte.ampel('de', row['ampel'])}.\n"
+        f"{texte.t('de', 'hinweis_vorpruefung', firma=config.BERICHT_KOPF)}\n\n"
         "Bei Fragen melden Sie sich gern.\n\n"
         f"Mit freundlichen Grüßen\n{user['name']}\n{config.BERICHT_KOPF}"
     )

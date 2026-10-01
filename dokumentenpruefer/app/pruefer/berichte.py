@@ -172,7 +172,7 @@ def _kopfblock(ergebnis: dict[str, Any], meta: dict[str, Any], sprache: str, art
 
     ampel = ergebnis.get("ampel", "rot")
     kacheln = [
-        [Paragraph(_esc(texte.t(sprache, "bewertung")), st["label"]), Paragraph(f"{ergebnis.get('score', 0)} / 100", st["wert"])],
+        [Paragraph(_esc(texte.t(sprache, "bewertung")), st["label"]), Paragraph(f"{ergebnis.get('score', 0)} %", st["wert"])],
         [Paragraph(_esc(texte.t(sprache, "ampel")), st["label"]), Paragraph(_esc(texte.ampel(sprache, ampel)), ParagraphStyle("ampel", parent=st["wert"], textColor=AMPEL_FARBEN.get(ampel, INK)))],
         [Paragraph(_esc(texte.t(sprache, "funde_anzahl")), st["label"]), Paragraph(str(len(ergebnis.get("funde", []))), st["wert"])],
     ]
@@ -196,6 +196,7 @@ def _kopfblock(ergebnis: dict[str, Any], meta: dict[str, Any], sprache: str, art
     story.append(kt)
     story.append(Spacer(1, 4 * mm))
     story.append(Paragraph(_esc(texte.t(sprache, "hinweis_intern" if art == "pruef" else "hinweis_fach")), st["muted"]))
+    story.append(Paragraph(_esc(texte.t(sprache, "hinweis_vorpruefung", firma=config.BERICHT_KOPF)), st["muted"]))
     return story
 
 

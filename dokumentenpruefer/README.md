@@ -4,10 +4,10 @@ Prüft technische Dokumente (Word, PDF) gegen die Regelsätze Basisprüfung, DIN
 CE / EU-Konformität. Mehrere Benutzer mit eigenem Konto und eigenen Einstellungen, Oberfläche im
 Look von FSH-Documentation, Berichte als PDF in Deutsch, Englisch, Ukrainisch und Russisch.
 
-Die bisherige Streamlit-App `app.py` im Ordner darüber bleibt als historischer Vergleich unverändert.
-Die Web-App verwendet weiterhin deren Suchregeln und Gewichtungen. Die P0-Korrektur vom
-1. Oktober 2026 ändert bewusst die Bewertung: Schlüsselwortsuche ist eine automatische Vorprüfung,
-kein Nachweis von Vollständigkeit, Richtigkeit oder Konformität und keine fachliche Freigabe.
+Die bisherige Streamlit-App `app.py` im Ordner darüber bleibt unverändert als Rückfall. Die
+Prüflogik ist 1:1 übernommen (Schlüsselwörter, Gewichtung, Score, Ampel, Fazit, CE-To-dos).
+Die Prüfung ist eine automatische Vorprüfung per Schlüsselwortsuche. Die fachliche Prüfung und
+Freigabe bleibt bei FSH-Documentation; jeder Bericht und die Kundenmail sagen das in einem Satz.
 
 ## Start auf dem Mac
 
@@ -87,7 +87,7 @@ und nennt keinen erfundenen Prozentwert. Ohne `fortschritt` antwortet die Route 
 
 ## Ergebnis und Weitergabe
 
-1. Ergebnis: Suchscore, Ampel, Prüfhinweise, geschätzter Aufwand, Fazit der Vorprüfung.
+1. Ergebnis: Score, Ampel, Funde, Aufwand, Fazit.
 2. Berichte: PDF je Sprache für Prüfbericht und Fachbericht.
 3. Weitergabe: E-Mail-Entwurf an den Kunden (auf dem Mac in Apple Mail, wird nie gesendet),
    alle PDFs als ZIP, Berichte in `output/` ablegen, Prüfung abschließen.
@@ -127,30 +127,25 @@ Zugangsdaten gehören nicht ins Projekt. SMTP-Daten nur als Umgebungsvariable se
 
 Die Bestandstests prüfen Erstanmeldung, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
 Word-Prüfung, PDFs in vier Sprachen, ZIP, Ablage, Mail-Entwurf, CLI und Fortschritts-Zeilenstrom.
-`tests/test_p0.py` ergänzt Gegenproben für ungültige Regeln (auch nach einer gültigen Ladung),
-irreführende Stichwortlisten, kritische Hinweise bei hohem Suchscore, Sperrumgehung und die
-Kennzeichnung in beiden Berichtstypen und allen vier Sprachen.
+`tests/test_p0.py` ergänzt Gegenproben für ungültige Regeldateien (auch nach einer gültigen
+Ladung), ungültige Regelsatz-Auswahl, Sperrumgehung und den Vorprüfungssatz in beiden
+Berichtstypen und allen vier Sprachen.
 
-## Bewertungsgrenzen und P0-Korrekturen
+## Vorprüfung und Regelprüfung
 
-- Der Suchscore bleibt rechnerisch `100 - Summe der Hinweisgewichtungen`, mindestens 0.
-  Er wird als Punkte von 100 angezeigt, nicht als Qualitäts- oder Konformitätsprozent.
-- Alle geprüften Regeln bleiben fachlich offen, auch wenn ein Suchwort vorkommt.
-  API und gespeichertes Ergebnis nennen `pruefstatus=fachlich_offen`, `freigabe=false`,
-  `bewertungsart=schluesselwortsuche` sowie den Suchstatus jeder Regel in `regelpruefungen`.
-- Kritische Prüfhinweise oder weniger als 60 Suchpunkte ergeben Rot. Sonst gilt Gelb.
-  Diese Automatik erzeugt niemals eine grüne Freigabe. Semantische Inhaltsprüfung und ein
-  fachlicher Freigabeworkflow sind damit noch nicht implementiert.
-- Regeldefekte liefern HTTP 503 im JSON-Modus, einen abschließenden Fehler mit Status 503
-  im bereits begonnenen NDJSON-Strom oder Exitcode 4 in der CLI. Es entsteht keine neue Prüfung.
-- Ein Aufruf der Erstanmeldung hebt eine laufende Anmeldesperre nicht mehr auf und verlängert
-  sie auch nicht. Nach regulärem Ablauf ist eine korrekte Anmeldung wieder möglich.
-- Berichte unterscheiden nicht gewählte CE-Prüfungen von einer gewählten CE-Suche ohne Hinweise.
-- Bestehende Datenbanken brauchen keine Migration. Historische Ergebnisse und gespeicherte PDFs
-  bleiben erhalten; die Oberfläche kennzeichnet geöffnete Altprüfungen. Für die neue Bewertung
-  muss das Originaldokument erneut geprüft werden.
-- Noch offen: Word-Tabellen, gemischte Scan-PDFs, Satzermittlung, Fundstellen im PDF,
-  vollständige Regelübersetzungen, überschreibungsfreie Ablage und fachliche Vergleichsdokumente.
+- Score, Ampel und Fazit folgen der Vorgabe von Niklas und der alten App: Grün ab 80 %, Gelb ab
+  60 %, sonst Rot. Score = 100 minus Summe der Gewichtungen aller Funde, mindestens 0.
+- Die Schlüsselwortsuche ist eine Vorprüfung. Jeder Bericht trägt unter dem Kopf einen Satz,
+  dass die fachliche Prüfung und Freigabe bei FSH-Documentation liegt; die Kundenmail ebenso.
+  Die API liefert dazu `pruefstatus=fachlich_offen`, `freigabe=false`,
+  `bewertungsart=schluesselwortsuche` und je Regel den Suchstatus in `regelpruefungen`.
+- Gewählte Regeldateien werden vor jeder Prüfung vollständig validiert (JSON, nicht leere Liste,
+  eindeutige IDs, Suchwörter, Fehlerklasse, Gewichtung, Pflichtfeld bei DIN). Ein Defekt bricht
+  die Prüfung ab: HTTP 503 im JSON-Modus, Fehlerzeile mit Status 503 im Zeilenstrom, Exitcode 4
+  in der Kommandozeile. Es entsteht keine Prüfung und kein PDF. Nicht gewählte Regelsätze dürfen fehlen.
+- Berichte unterscheiden „CE nicht gewählt" von „CE gewählt, keine Funde".
+- Eine laufende Anmeldesperre wird durch weitere Fehlversuche nicht verlängert. Ein neues
+  Einmal-Passwort hebt sie auf.
 
 ## Aufbau
 
@@ -164,7 +159,7 @@ app/verwaltung.py      Kommandozeile für Konten
 app/cli.py             Kommandozeile: Dokument prüfen, PDFs ablegen
 app/pruefer/lesen.py   Word und PDF einlesen
 app/pruefer/regeln.py  Regeldateien laden
-app/pruefer/pruefung.py Suchprüfung mit konservativer Bewertung, keine fachliche Freigabe
+app/pruefer/pruefung.py Prüflogik (aus app.py übernommen), Regelsätze vorher validiert
 app/pruefer/texte.py   Berichtstexte in de, en, uk, ru
 app/pruefer/berichte.py PDF-Erzeugung (reportlab, IBM Plex Sans)
 app/static/            Oberfläche: index.html, app.js, app.css, Schriften, Marke

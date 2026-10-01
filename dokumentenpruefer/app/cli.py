@@ -72,7 +72,7 @@ def _pruefen(args: argparse.Namespace) -> int:
     if args.json:
         print(json.dumps(zusammenfassung, ensure_ascii=False, indent=2))
     else:
-        print(f"{pfad.name}: {ergebnis['score']} Suchpunkte, {ergebnis['ampel']}, {len(ergebnis['funde'])} Prüfhinweise, {ergebnis['stunden']} h")
+        print(f"{pfad.name}: {ergebnis['score']} %, {ergebnis['ampel']}, {len(ergebnis['funde'])} Funde, {ergebnis['stunden']} h")
         for k, n in zusammenfassung["klassen"].items():
             print(f"  {k}: {n}")
         print(f"Fazit: {ergebnis['fazit']}")

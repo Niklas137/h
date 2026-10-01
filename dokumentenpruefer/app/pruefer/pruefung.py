@@ -1,7 +1,8 @@
 """Die Prüfung selbst: drei Regelsätze, Score, Ampel, Fazit, To-do-Liste.
 
-Die Schlüsselwortsuche liefert Prüfhinweise und einen technischen Suchscore.
-Sie weist keine inhaltliche Erfüllung nach und erteilt keine fachliche Freigabe.
+Die Rechenlogik (Score, Ampel, Fazit) ist 1:1 aus app.py übernommen, damit alte und neue
+Ergebnisse vergleichbar bleiben. Die Regelsätze werden vor der Prüfung vollständig validiert.
+Die Schlüsselwortsuche ist eine automatische Vorprüfung; die fachliche Freigabe bleibt bei FSH.
 """
 from __future__ import annotations
 
@@ -148,10 +149,12 @@ def check_ce_logik(structured_text: list[dict[str, str]], rules: list[dict[str, 
 
 
 def get_ampel(score: int, findings: list[Fund] | None = None) -> str:
-    """Kritische Hinweise haben Vorrang; reine Suchtreffer ergeben niemals Grün."""
-    if score < 60 or any(f.get("Fehlerklasse") == "Kritisch" for f in (findings or [])):
-        return "rot"
-    return "gelb"
+    """Ampel nach Score, wie in app.py: Grün ab 80, Gelb ab 60, sonst Rot."""
+    if score >= 80:
+        return "gruen"
+    if score >= 60:
+        return "gelb"
+    return "rot"
 
 
 def fazit_teile(findings: list[Fund], score: int) -> list[tuple[str, dict[str, int]]]:
@@ -160,11 +163,12 @@ def fazit_teile(findings: list[Fund], score: int) -> list[tuple[str, dict[str, i
     schwer = [f for f in findings if f.get("Fehlerklasse") == "Schwer"]
     ce_fehler = [f for f in findings if f.get("Normlogik") == "CE / EU-Konformität"]
     teile: list[tuple[str, dict[str, int]]] = []
-    if get_ampel(score, findings) == "rot":
+    if score < 60:
         teile.append(("fazit_rot", {}))
-    else:
+    elif score < 80:
         teile.append(("fazit_gelb", {}))
-    teile.append(("hinweis_vorpruefung", {}))
+    else:
+        teile.append(("fazit_gruen", {}))
     if kritisch:
         teile.append(("kritisch_1" if len(kritisch) == 1 else "kritisch_n", {"n": len(kritisch)}))
     if schwer:

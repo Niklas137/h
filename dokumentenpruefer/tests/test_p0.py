@@ -96,25 +96,27 @@ def test_nicht_gewaehlte_regeln_duerfen_fehlen(tmp_path, monkeypatch, katalog):
 
 
 def test_stichwortliste_ist_keine_freigabe(katalog):
-    # Die Aussage verneint das Vorhandensein jeder Anforderung ausdrücklich.
+    # Alle Suchwörter kommen vor, der Score ist 100. Die Ampel folgt dem Score (Grün),
+    # die fachliche Freigabe bleibt trotzdem offen und wird als Daten mitgegeben.
     woerter = [r["keywords"][0] + " fehlt." for rs in katalog.values() for r in rs]
     erg = pruefung.pruefen(struktur(*woerter))
-    assert erg["ampel"] == "gelb"
+    assert erg["score"] == 100 and erg["ampel"] == "gruen"
     assert erg["freigabe"] is False
     assert erg["pruefstatus"] == "fachlich_offen"
     assert erg["suchtrefferAnzahl"] == 24
-    assert "kein Erfüllungsnachweis" in erg["fazit"]
-    assert "verwendbar" not in erg["fazit"]
+    assert "grundsätzlich verwendbar" in erg["fazit"]
 
 
-def test_kritischer_befund_sperrt_gruen_und_fazit(katalog):
+def test_kritischer_befund_steht_im_fazit(katalog):
+    # Ampel nach Score wie in app.py; der kritische Fund wird im Fazit genannt.
     woerter = [r["keywords"][0] for rs in katalog.values() for r in rs if r["id"] != "CE-001"]
     erg = pruefung.pruefen(struktur(*woerter))
     assert erg["score"] == 95
     assert erg["klassen"]["Kritisch"] == 1
-    assert erg["ampel"] == "rot"
-    assert "verwendbar" not in erg["fazit"]
-    assert erg["fazitTeile"][0][0] == "fazit_rot"
+    assert erg["ampel"] == "gruen"
+    assert erg["fazitTeile"][0][0] == "fazit_gruen"
+    assert "1 kritische Abweichung" in erg["fazit"]
+    assert "CE wurde 1 Nachweislücke" in erg["fazit"]
 
 
 @pytest.mark.parametrize("stream", [False, True])
@@ -154,7 +156,7 @@ def test_pdf_kennzeichnet_vorpruefung_und_ungeprueftes(katalog, sprache, art):
     erg = pruefung.pruefen(struktur(*(r["keywords"][0] for r in katalog["din"])), ["din"])
     pdf = berichte.erzeugen(art, erg, {"dateiname": "Probe.docx", "pruefer": "Test"}, sprache)
     text = " ".join(" ".join(p.extract_text().split()) for p in PdfReader(io.BytesIO(pdf)).pages)
-    assert " ".join(texte.t(sprache, "hinweis_vorpruefung").split()) in text
+    assert " ".join(texte.t(sprache, "hinweis_vorpruefung", firma=config.BERICHT_KOPF).split()) in text
     assert texte.t(sprache, "ce_nicht_geprueft") in text
     assert texte.t(sprache, "bewertung") in text
 

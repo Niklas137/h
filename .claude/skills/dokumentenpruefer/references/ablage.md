@@ -49,6 +49,9 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 - Auf dem Mac liegt ein `git stash` „Jobschicht-Versuch vom Mac, 1. Oktober" mit einem fremden, unfertigen Umbau (db.py, main.py, app.css, index.html). Nicht übernehmen, bei Bedarf ansehen.
 - Im Stammordner von h liegen auf dem Mac zwei leere, unversionierte Dateien `ce_logik.json` und `pruefkatalog.json`; `.DS_Store` ist versehentlich versioniert. Beides beim Merge nach main aufräumen.
 
+- Codex-Commit `d082a41` (1. Oktober, 23:46) auseinandergenommen, Entscheidung C von Niklas: Ampel Grün/Gelb/Rot nach Score wie in app.py, alte Wortwahl (Score, Funde, Fazit), ein Satz zur Vorprüfung in jedem Bericht und der Kundenmail; strenge Regelprüfung, abgesicherte Sperre und die Tests aus test_p0.py bleiben.
+- Arbeitsregel seit 1. Oktober: Claude arbeitet nur auf `claude/dokumentenpruefer-webapp`, ChatGPT/Codex nur auf `codex/dokumentenpruefer` mit eigener Arbeitskopie. Zusammengeführt wird erst nach Prüfung.
+
 ## Offen, braucht Niklas
 
 - Name, E-Mail-Adresse und Rolle für die Konten von Niklas und Falk.
