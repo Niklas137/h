@@ -9,7 +9,7 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 | Code der Web-App | Repo h, Branch `claude/dokumentenpruefer-webapp`, Ordner `dokumentenpruefer/` |
 | README (Installation, Konfiguration, Befehle) | `dokumentenpruefer/README.md` |
 | Tests | `dokumentenpruefer/tests/` (pytest) |
-| Regeldateien | `dokumentenpruefer/regeln/` (nur `normlogik_82079.json` im Repo; `pruefkatalog.json` und `ce_logik.json` liegen auf Niklas' Mac) |
+| Regeldateien | `dokumentenpruefer/regeln/`: alle drei im Repo. `pruefkatalog.json` und `ce_logik.json` am 1. Oktober 2026 aus der Git-Historie (Commit vom 21. Mai 2026) wiederhergestellt; sie waren am 7. September im Commit „reg" versehentlich gelöscht worden |
 | Alte Streamlit-App (Rückfall) | `app.py` im Repo-Stamm, `normlogik_82079.json` daneben |
 | Google Drive | Ordner „Dokumenten prüfung / FSH Programm / Dokumentenpruefer_Web-App_2026-10-01" mit README, Plan und „Stand und Testprotokoll" als Google Docs |
 | Plan (Claude Doc) | „Konto-Einstellungen Dokumentenprüfer: Schritt-für-Schritt-Plan", fünf Phasen, Infopool |
@@ -46,7 +46,7 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 ## Offen, braucht Niklas
 
 - Name, E-Mail-Adresse und Rolle für die Konten von Niklas und Falk.
-- Regeldateien `pruefkatalog.json` und `ce_logik.json` nach `dokumentenpruefer/regeln/` kopieren.
+- Regeldateien Basis und CE: prüfen, ob auf dem Mac eine neuere Fassung als vom 21. Mai liegt; Übersetzungen der Empfehlungen (en, uk, ru) fehlen noch.
 - Impressum und Datenschutz (Bereich `data-pane="recht"` in `app/static/index.html`).
 - Telefonnummer, Zeiten und Support-Adresse für die Hilfe (`DP_SUPPORT`, `DP_TELEFON`, `DP_ZEITEN`).
 - SMTP für den Code (nur als Umgebungsvariable) oder `DP_VERIFIZIERUNG=aus`.

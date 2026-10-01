@@ -33,9 +33,9 @@ Die Regelsätze liegen im Ordner `regeln/`:
 
 | Datei                 | Regelsatz          | Status                              |
 |-----------------------|--------------------|-------------------------------------|
-| `pruefkatalog.json`   | Basisprüfung       | fehlt, vom Mac hierher kopieren     |
+| `pruefkatalog.json`   | Basisprüfung       | enthalten (Stand 21. Mai 2026), nur deutsch |
 | `normlogik_82079.json`| DIN 82079-1        | enthalten, mit Übersetzungen        |
-| `ce_logik.json`       | CE / EU-Konformität| fehlt, vom Mac hierher kopieren     |
+| `ce_logik.json`       | CE / EU-Konformität| enthalten (Stand 21. Mai 2026), nur deutsch |
 
 Fehlt eine Datei, zeigt die App einen Hinweis und der Regelsatz liefert keine Funde. Für
 Empfehlungen in anderen Sprachen kann jede Regel die Felder `empfehlung_en`, `empfehlung_uk`,
@@ -137,7 +137,7 @@ daten/, output/        werden zur Laufzeit angelegt, nicht versioniert
 
 ## Offen
 
-- Regeldateien `pruefkatalog.json` und `ce_logik.json` in `regeln/` kopieren.
+- Regeldateien `pruefkatalog.json` und `ce_logik.json`: Stand vom 21. Mai 2026 aus der Git-Historie. Gibt es auf dem Mac eine neuere Fassung, diese hierher kopieren. Übersetzungen (`empfehlung_en/uk/ru`) fehlen noch, Berichte in anderen Sprachen zeigen dort die deutsche Empfehlung.
 - Impressum und Datenschutz unter Einstellungen → Rechtliches mit den eigenen Texten füllen
   (`app/static/index.html`, Bereich `data-pane="recht"`).
 - Kontaktangaben für die Hilfe setzen (`DP_SUPPORT`, `DP_TELEFON`, `DP_ZEITEN`).

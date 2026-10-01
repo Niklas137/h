@@ -45,8 +45,8 @@ Entscheidungen bleiben bei Niklas.
    Das Einmal-Passwort erscheint einmal im Terminal. Es wird Niklas im Chat genannt und nirgends gespeichert.
 2. Server: `./.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8765` (auf dem Mac genügt Doppelklick
    auf `start.command`). Erreichbar unter http://localhost:8765.
-3. Fehlen Regeldateien, meldet das Log beim Start „Regeldateien fehlen". `pruefkatalog.json` und
-   `ce_logik.json` liegen nur auf Niklas' Mac; darauf hinweisen, nicht erfinden.
+3. Fehlen Regeldateien, meldet das Log beim Start „Regeldateien fehlen". Alle drei liegen in `regeln/`;
+   fehlt eine, darauf hinweisen und nicht erfinden.
 
 ## Testen
 
