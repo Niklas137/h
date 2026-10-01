@@ -63,9 +63,18 @@ Icons und Button-Hintergründe werden „als dekorativ“ markiert oder bekommen
 | Porträt | `Sascha Falk Heinzmann, Geschäftsführer von FSH-Documentation` |
 | Zahnräder-Foto | `Offene Hand hält drei leuchtende Zahnräder – Sinnbild für den Dokumentationsprozess` |
 
-**B4. Toter Link.** Der mailto-Link `info@fsh-documentation.com` auf der Startseite führt ins Leere (die
-.com kann keine Mail empfangen). Entscheidung mit Falk offen: auf `info@fsh-documentation.de` oder
-`Falk.Heinzmann@fsh-documentation.de` ändern, einheitlich mit dem sichtbaren Text daneben.
+**B4. Zwei tote Links** im Canva-Design, beide in den ukrainischen Rechtstexten. Die .com kann keine Mail
+empfangen, der zweite Link hat zusätzlich einen Tippfehler in der Domain.
+
+| Wo im Design | Sichtbarer Text | Linkziel heute | Ändern auf |
+|---|---|---|---|
+| Datenschutzerklärung (UA), Abschnitt „11. Контактна інформація“ | `info@fsh-documentation.de` | `mailto:info@fsh-documentation.com` | siehe unten |
+| AGB (UA), § 5 | `info@fsh-documenation.de` (Tippfehler) | `mailto:info@www-fsh-documenation.com` | siehe unten |
+
+Ändern auf: existiert das Postfach `info@fsh-documentation.de` bei STRATO, dann an beiden Stellen Text und
+Link auf `info@fsh-documentation.de`. Existiert es nicht, beide auf `Falk.Heinzmann@fsh-documentation.de`,
+die einzige Adresse, die im sichtbaren Impressum steht. In Canva: Text markieren → Link-Symbol → Ziel
+`mailto:…` eintragen, danach den sichtbaren Text angleichen. Nicht mischen.
 
 Rückmeldung: „B fertig“ (oder „B1 fertig“).
 
@@ -116,5 +125,6 @@ in Apple Mail, Falks Konto nicht anfassen. Erst Kategorien vorschlagen, noch nic
 
 ## Was danach noch offen bleibt
 
-Nur Punkte, die Falk entscheidet: toter Link `info@fsh-documentation.com` (B4), Kundennamen auf der
-Website (entschieden: keine), Plattformwechsel ist mit D erledigt.
+Nur Punkte, die Falk entscheidet: Adresse für B4 (gibt es `info@fsh-documentation.de`?) und ob Kunden
+namentlich genannt werden. Beide Seiten nennen heute keine Namen. Wer Namen will, braucht je Kunde eine
+schriftliche Freigabe; Vorlage in `website/referenzfreigabe-vorlage.md`. Plattformwechsel ist mit D erledigt.

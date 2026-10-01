@@ -21,6 +21,8 @@ robots.txt, Alt-Texte, lokale Schriften, komprimierte Bilder, Lazy Loading, kein
 | `livegang.md` / `.pdf` | Livegang Schritt für Schritt (Hosting, Testadresse, DNS, Search Console, .de-Weiterleitung) |
 | `offene-punkte.md` / `.pdf` | die vier offenen Punkte mit fertigen Texten: GitHub-Support-Ticket, 40-%-Referenz, freelance.de-Profil, Rechtstexte |
 | `google-und-email-dns.md` / `.pdf` | Google-Unternehmensprofil (Entscheidungen, Schritte, fertige Texte) und E-Mail-DNS (SPF, DMARC, Null-MX) mit gemessenem Stand und fertigen Einträgen |
+| `erledigen.md` / `.pdf` | alle Klick-Schritte des Betreibers in Reihenfolge mit Werten zum Kopieren |
+| `referenzfreigabe-vorlage.md` / `.pdf` | Anfrage an Kunden, bevor ein Name auf der Website erscheint |
 | `pruefpaket-rechtstexte.md` / `.pdf` | Impressum, Datenschutz, AGB mit Änderungsliste und Fragen für den Rechtsprüfer; erzeugt von `tools/pruefpaket.py` |
 | `tools/` | `pruefpaket.py` und das Deckblatt des Prüfpakets |
 | `nachweise/` | Ablage für Belege (Support-Antworten, Freigaben, Lizenzen, DNS-Screenshot) |
