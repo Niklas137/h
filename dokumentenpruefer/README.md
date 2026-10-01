@@ -71,6 +71,15 @@ Prüfbericht (intern, mit Gewichtung und Aufwand) und Fachbericht (für den Kund
 
 Die Oberfläche selbst ist in dieser Version deutsch; die Spracheinstellung steuert die Berichte.
 
+## Ablauf einer Prüfung
+
+Lesen, Prüfen und PDF-Erzeugung laufen in einem Arbeitsfaden, der Server bleibt währenddessen
+bedienbar. Die Datenbanktransaktion ist kurz, die PDFs entstehen danach. Die Oberfläche fragt die
+Prüfung mit `fortschritt=1` an und bekommt einen Zeilenstrom (NDJSON): je eine Zeile für die Phasen
+`lesen`, `pruefen`, `berichte` (mit `n` von `von`), zuletzt `fertig` mit dem Ergebnis oder `fehler`.
+Das Statuspanel zeigt diese Phasen; es erscheint erst, wenn die Prüfung länger als 400 ms dauert,
+und nennt keinen erfundenen Prozentwert. Ohne `fortschritt` antwortet die Route wie bisher mit JSON.
+
 ## Ergebnis und Weitergabe
 
 1. Ergebnis: Score, Ampel, Funde, Aufwand, Fazit.
@@ -111,8 +120,8 @@ Zugangsdaten gehören nicht ins Projekt. SMTP-Daten nur als Umgebungsvariable se
 ./.venv/bin/python -m pytest tests -q
 ```
 
-23 Tests: Erstanmeldung mit Code, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
-Prüfung einer erzeugten Word-Datei, PDFs in vier Sprachen, ZIP, Ablegen, E-Mail-Entwurf, Kommandozeile.
+24 Tests: Erstanmeldung mit Code, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
+Prüfung einer erzeugten Word-Datei, PDFs in vier Sprachen, ZIP, Ablegen, E-Mail-Entwurf, Kommandozeile, Fortschritts-Zeilenstrom.
 
 ## Aufbau
 

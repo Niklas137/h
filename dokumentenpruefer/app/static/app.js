@@ -15,7 +15,8 @@
     screen: 'start', step: 1, erst: { email: '', einmal: '', verifizierung: true },
     section: 'profil', help: false, langMenu: false, sheet: false, remember: false, showPwd: false,
     run: { basis: true, din: true, ce: true }, lang2: 'none', file: null, result: null, busy: false,
-    toastTimer: null, popTimer: null
+    toastTimer: null, popTimer: null,
+    lauf: null, laufSichtbar: false, laufTimer: null
   };
 
   // ------------------------------------------------------------ API
@@ -140,6 +141,7 @@
     $('dlg-sub').textContent = txt + (ch.length === 1 ? ' wird' : ' werden') + ' beim Speichern für dein Konto übernommen.';
     $('changes').innerHTML = ch.map(function (c) { return '<div><b>' + esc(c.label) + '</b><s>' + esc(c.from) + '</s><em>' + esc(c.to) + '</em></div>'; }).join('');
     $('drawer').hidden = !S.help;
+    renderLauf();
   }
 
   function go(screen) { S.screen = screen; S.langMenu = false; S.help = false; window.scrollTo(0, 0); render(); }
@@ -333,18 +335,79 @@
   $$('[data-run]').forEach(function (el) { el.addEventListener('click', function () { S.run[el.dataset.run] = !S.run[el.dataset.run]; render(); }); });
   $$('#seg-run-lang2 button').forEach(function (b) { b.addEventListener('click', function () { S.lang2 = b.dataset.v; try { localStorage.setItem('fsh-lang2', S.lang2); } catch (e) {} render(); }); });
 
+  // Statuspanel: erscheint erst nach 400 ms, damit kurze Prüfungen nicht aufblitzen.
+  var PHASEN = ['lesen', 'pruefen', 'berichte'];
+  function renderLauf() {
+    var l = S.lauf;
+    $('lauf').hidden = !(S.busy && S.laufSichtbar && l);
+    if (!l) return;
+    $('lauf-datei').textContent = l.datei || '';
+    var idx = PHASEN.indexOf(l.phase);
+    $$('.lauf-phasen li').forEach(function (li, i) {
+      li.classList.toggle('fertig', idx > i || l.phase === 'fertig');
+      li.classList.toggle('aktiv', idx === i);
+    });
+    $('lauf-berichte').textContent = (l.phase === 'berichte' && l.von) ? 'Bericht ' + l.n + ' von ' + l.von : '';
+  }
+  function laufStart(datei) {
+    S.lauf = { phase: 'lesen', datei: datei, n: 0, von: 0 }; S.laufSichtbar = false;
+    clearTimeout(S.laufTimer);
+    S.laufTimer = setTimeout(function () { S.laufSichtbar = true; renderLauf(); }, 400);
+  }
+  function laufEnde() { clearTimeout(S.laufTimer); S.laufTimer = null; S.lauf = null; S.laufSichtbar = false; }
+
+  // Die Prüfung schickt ihren Fortschritt als Zeilen (eine JSON-Zeile je Phase, zuletzt Ergebnis oder Fehler).
+  function pruefungStreamen(fd) {
+    return fetch('/api/pruefung', { method: 'POST', credentials: 'same-origin', body: fd }).then(function (r) {
+      if (r.status === 401) { abmelden(false); throw new Error('Bitte zuerst anmelden.'); }
+      if (!r.ok) {
+        return r.text().then(function (t) { var d = {}; try { d = JSON.parse(t); } catch (e) {} throw new Error(d.fehler || ('Fehler ' + r.status + '. Bitte noch einmal versuchen.')); });
+      }
+      var verarbeiten = function (zeile) {
+        if (!zeile.trim()) return null;
+        var e; try { e = JSON.parse(zeile); } catch (err) { return null; }
+        if (e.fehler) { var fehler = new Error(e.fehler); fehler.status = e.status; throw fehler; }
+        if (e.phase === 'fertig') return e.ergebnis;
+        S.lauf = { phase: e.phase, datei: S.lauf ? S.lauf.datei : '', n: e.n || 0, von: e.von || 0 }; renderLauf();
+        return null;
+      };
+      if (!r.body || !r.body.getReader) {
+        return r.text().then(function (t) { var erg = null; t.split('\n').forEach(function (z) { var x = verarbeiten(z); if (x) erg = x; }); if (!erg) throw new Error('Unerwartete Antwort vom Server.'); return erg; });
+      }
+      var reader = r.body.getReader(), dec = new TextDecoder(), rest = '';
+      return new Promise(function (resolve, reject) {
+        function weiter() {
+          reader.read().then(function (st) {
+            try {
+              if (st.done) {
+                var x = verarbeiten(rest); if (x) { resolve(x); } else { reject(new Error('Unerwartete Antwort vom Server.')); }
+                return;
+              }
+              rest += dec.decode(st.value, { stream: true });
+              var teile = rest.split('\n'); rest = teile.pop();
+              for (var i = 0; i < teile.length; i++) { var erg = verarbeiten(teile[i]); if (erg) { resolve(erg); reader.cancel(); return; } }
+              weiter();
+            } catch (err) { reject(err); reader.cancel(); }
+          }, reject);
+        }
+        weiter();
+      });
+    });
+  }
+
   $('start-check').addEventListener('click', function () {
     if (!S.file || S.busy) return;
-    zeigeFehler('check-err', ''); S.busy = true; render();
+    zeigeFehler('check-err', ''); S.busy = true; laufStart(S.file.name); render();
     var fd = new FormData();
     fd.append('datei', S.file);
     fd.append('regelsaetze', Object.keys(S.run).filter(function (k) { return S.run[k]; }).join(','));
     fd.append('zusatzsprache', S.lang2 === 'none' ? '' : S.lang2);
-    api('POST', '/api/pruefung', fd, true).then(function (r) {
-      S.busy = false; S.result = r; render(); zeigeErgebnis(r); ladePruefungen();
+    fd.append('fortschritt', '1');
+    pruefungStreamen(fd).then(function (r) {
+      laufEnde(); S.busy = false; S.result = r; render(); zeigeErgebnis(r); ladePruefungen();
       var a = AMPEL[r.ampel] || ['', r.ampel];
       showPop(r.dateiname + ': ' + r.score + ' %, ' + a[1].split(' · ')[0] + '. ' + r.pdfs.length + ' PDFs liegen bereit.');
-    }).catch(function (err) { S.busy = false; render(); zeigeFehler('check-err', err.message); });
+    }).catch(function (err) { laufEnde(); S.busy = false; render(); zeigeFehler('check-err', err.message); });
   });
 
   function zeigeErgebnis(r) {

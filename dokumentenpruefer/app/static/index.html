@@ -141,6 +141,15 @@
           <span class="cap">Basissprache: <span id="rl-main">Deutsch</span>, deine Oberflächensprache. Prüfbericht und Fachbericht werden in jeder gewählten Sprache als PDF erstellt.</span>
         </div>
         <div class="err" id="check-err" hidden></div>
+        <div class="lauf" id="lauf" role="status" aria-live="polite" hidden>
+          <div class="lauf-kopf"><b>Dokument wird geprüft</b><span class="cap" id="lauf-datei"></span></div>
+          <ol class="lauf-phasen">
+            <li data-phase="lesen"><span class="ldot"></span>Dokument lesen</li>
+            <li data-phase="pruefen"><span class="ldot"></span>Regeln prüfen</li>
+            <li data-phase="berichte"><span class="ldot"></span>Berichte erzeugen<span class="cap" id="lauf-berichte"></span></li>
+          </ol>
+          <span class="cap">Bearbeitung läuft. Die Phase sagt nichts über die Qualität des Dokuments.</span>
+        </div>
         <div class="row"><span class="cap" id="report-plan"></span><button class="btn-p" id="start-check" disabled>Prüfung starten</button></div>
       </div>
       <div class="col">

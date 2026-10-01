@@ -329,3 +329,17 @@ td { padding: 12px var(--pad); border-top: 1px solid var(--bsub); vertical-align
 .select { height: 40px; width: 100%; padding: 0 12px; border: 1px solid var(--bstr); border-radius: 2px; background: var(--s100); color: var(--ink); font: inherit; font-size: calc(14px * var(--k)); }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Statuspanel der laufenden Prüfung: echte Phasen, kein erfundener Prozentwert. */
+.lauf { border: 1px solid var(--bsub); border-radius: 4px; background: var(--s100); padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.lauf-kopf { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.lauf-kopf b { font-weight: 600; font-size: calc(14px * var(--k)); }
+.lauf-phasen { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.lauf-phasen li { display: flex; align-items: center; gap: 10px; font-size: calc(13px * var(--k)); color: var(--muted); }
+.lauf-phasen li.aktiv { color: var(--ink); }
+.lauf-phasen li .cap { margin-left: 4px; }
+.ldot { width: 8px; height: 8px; border-radius: 50%; background: var(--bstr); flex-shrink: 0; }
+.lauf-phasen li.aktiv .ldot { background: var(--accent); animation: lauf-puls 1.2s ease-in-out infinite; }
+.lauf-phasen li.fertig .ldot { background: var(--success); }
+@keyframes lauf-puls { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .lauf-phasen li.aktiv .ldot { animation: none; } }

@@ -1,5 +1,6 @@
 """Prüfung eines erzeugten Word-Dokuments, PDFs in mehreren Sprachen, ZIP, Ablegen, Mail-Entwurf."""
 import io
+import json
 import zipfile
 
 import pytest
@@ -141,3 +142,32 @@ def test_berichte_direkt_alle_sprachen():
             assert pdf[:5] == b"%PDF-", (art, sp)
     assert berichte.dateiname("fach", "Doku.docx", "uk", "2026-10-01T09:00:00") == "2026-10-01_Doku_Fachbericht_UK_v01.pdf"
     assert texte.t("uk", "pruefbericht")
+
+
+def test_pruefung_mit_fortschritt(client, admin):
+    """Der Zeilenstrom meldet die Phasen und zuletzt das Ergebnis."""
+    with client.stream(
+        "POST",
+        "/api/pruefung",
+        files={"datei": ("Strom.docx", _docx(LUECKENHAFT[:2]), "application/octet-stream")},
+        data={"regelsaetze": "din", "zusatzsprache": "en", "fortschritt": "1"},
+    ) as r:
+        assert r.status_code == 200
+        assert r.headers["content-type"].startswith("application/x-ndjson")
+        zeilen = [json.loads(z) for z in r.iter_lines() if z.strip()]
+    phasen = [z.get("phase") for z in zeilen]
+    assert phasen[:2] == ["lesen", "pruefen"]
+    assert phasen.count("berichte") == 4
+    assert [z for z in zeilen if z.get("phase") == "berichte"][-1] == {"phase": "berichte", "n": 4, "von": 4}
+    assert phasen[-1] == "fertig"
+    erg = zeilen[-1]["ergebnis"]
+    assert len(erg["pdfs"]) == 4 and erg["fundeAnzahl"] >= 1
+
+    with client.stream(
+        "POST",
+        "/api/pruefung",
+        files={"datei": ("kaputt.docx", b"kein zip", "application/octet-stream")},
+        data={"fortschritt": "1"},
+    ) as r:
+        zeilen = [json.loads(z) for z in r.iter_lines() if z.strip()]
+    assert zeilen[-1]["status"] == 422 and "fehler" in zeilen[-1]

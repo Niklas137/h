@@ -1,6 +1,7 @@
 """Web-Dienst des Dokumentenprüfers: Seiten, Anmeldung, Konten, Einstellungen, Prüfung, Berichte."""
 from __future__ import annotations
 
+import asyncio
 import io
 import json
 import logging
@@ -11,11 +12,12 @@ import subprocess
 import uuid
 import zipfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, Response, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.concurrency import run_in_threadpool
 
 from . import auth, config, db, einstellungen, mail
 from .pruefer import berichte, lesen, pruefung, regeln, texte
@@ -421,35 +423,30 @@ def _pruefung_antwort(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-@app.post("/api/pruefung")
-async def pruefung_starten(
-    request: Request,
-    datei: UploadFile = File(...),
-    regelsaetze: str = Form("basis,din,ce"),
-    zusatzsprache: str = Form(""),
-    user: dict[str, Any] = Depends(aktueller_benutzer),
-):
-    name = Path(datei.filename or "dokument").name
-    if not name.lower().endswith((".docx", ".pdf")):
-        return _fehler(400, "Nur Word (.docx) und PDF (.pdf) werden geprüft.")
-    inhalt = await datei.read()
-    if len(inhalt) > config.UPLOAD_MAX_BYTES:
-        return _fehler(413, "Die Datei ist größer als 25 MB.")
-    gewaehlt = [r for r in regelsaetze.split(",") if r in config.REGELSAETZE]
-    if not gewaehlt:
-        return _fehler(400, "Bitte mindestens einen Regelsatz wählen.")
-    try:
-        struktur = lesen.lesen(name, inhalt)
-    except lesen.LeseFehler as e:
-        return _fehler(422, str(e))
+def _pruefung_durchfuehren(
+    name: str,
+    inhalt: bytes,
+    gewaehlt: list[str],
+    zusatz: str | None,
+    user: dict[str, Any],
+    melden: Callable[[str, dict[str, Any]], None],
+) -> dict[str, Any]:
+    """Läuft in einem Arbeitsfaden, damit der Server währenddessen bedienbar bleibt.
+
+    melden(phase, daten) berichtet den Fortschritt: lesen, pruefen, berichte (mit n von N).
+    Die Datenbanktransaktion bleibt kurz; die PDFs entstehen danach.
+    """
+    melden("lesen", {})
+    struktur = lesen.lesen(name, inhalt)
+    melden("pruefen", {})
     ergebnis = pruefung.pruefen(struktur, gewaehlt)
+    ergebnis["pruefer"] = user["name"]
     with db.transaktion() as con:
         einst = einstellungen.lesen(con, user["id"])
-        sprachen = _sprachen(einst, zusatzsprache.strip() or None)
+        sprachen = _sprachen(einst, zusatz)
         pruef_id = uuid.uuid4().hex[:12]
         ordner = config.PRUEFUNGEN / pruef_id
         ordner.mkdir(parents=True, exist_ok=True)
-        ergebnis["pruefer"] = user["name"]
         con.execute(
             "INSERT INTO pruefungen (id, user_id, dateiname, score, ampel, stunden, funde, sprachen, regelsaetze, erstellt, ergebnis, ordner)"
             " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -469,12 +466,70 @@ async def pruefung_starten(
             ),
         )
         row = _pruefung_laden(con, user, pruef_id)
-        row["pruefer_name"] = user["name"]
-        # PDFs sofort erzeugen, damit Pop-up und Knöpfe ohne Wartezeit funktionieren.
-        for art in ("pruef", "fach"):
-            for sp in sprachen:
-                _pdf_pfad(row, art, sp)
+    row["pruefer_name"] = user["name"]
+    # Berichte sofort erzeugen, damit Pop-up und Knöpfe ohne Wartezeit funktionieren.
+    auftraege = [(art, sp) for art in ("pruef", "fach") for sp in sprachen]
+    for i, (art, sp) in enumerate(auftraege, 1):
+        melden("berichte", {"n": i, "von": len(auftraege)})
+        _pdf_pfad(row, art, sp)
     return _pruefung_antwort(row)
+
+
+@app.post("/api/pruefung")
+async def pruefung_starten(
+    request: Request,
+    datei: UploadFile = File(...),
+    regelsaetze: str = Form("basis,din,ce"),
+    zusatzsprache: str = Form(""),
+    fortschritt: str = Form(""),
+    user: dict[str, Any] = Depends(aktueller_benutzer),
+):
+    name = Path(datei.filename or "dokument").name
+    if not name.lower().endswith((".docx", ".pdf")):
+        return _fehler(400, "Nur Word (.docx) und PDF (.pdf) werden geprüft.")
+    inhalt = await datei.read()
+    if len(inhalt) > config.UPLOAD_MAX_BYTES:
+        return _fehler(413, "Die Datei ist größer als 25 MB.")
+    gewaehlt = [r for r in regelsaetze.split(",") if r in config.REGELSAETZE]
+    if not gewaehlt:
+        return _fehler(400, "Bitte mindestens einen Regelsatz wählen.")
+    zusatz = zusatzsprache.strip() or None
+
+    if fortschritt != "1":
+        try:
+            return await run_in_threadpool(_pruefung_durchfuehren, name, inhalt, gewaehlt, zusatz, user, lambda phase, daten: None)
+        except lesen.LeseFehler as e:
+            return _fehler(422, str(e))
+
+    # Fortschritt als Zeilenstrom (NDJSON): eine Zeile je Phase, zuletzt das Ergebnis oder der Fehler.
+    loop = asyncio.get_running_loop()
+    ereignisse: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
+
+    def melden(phase: str, daten: dict[str, Any]) -> None:
+        loop.call_soon_threadsafe(ereignisse.put_nowait, {"phase": phase, **daten})
+
+    async def arbeiten() -> None:
+        try:
+            antwort = await run_in_threadpool(_pruefung_durchfuehren, name, inhalt, gewaehlt, zusatz, user, melden)
+            await ereignisse.put({"phase": "fertig", "ergebnis": antwort})
+        except lesen.LeseFehler as e:
+            await ereignisse.put({"fehler": str(e), "status": 422})
+        except Exception:
+            log.exception("Prüfung von %s fehlgeschlagen", name)
+            await ereignisse.put({"fehler": "Die Prüfung ist fehlgeschlagen. Bitte noch einmal versuchen.", "status": 500})
+
+    async def zeilen():
+        aufgabe = asyncio.create_task(arbeiten())
+        try:
+            while True:
+                ereignis = await ereignisse.get()
+                yield json.dumps(ereignis, ensure_ascii=False) + "\n"
+                if "fehler" in ereignis or ereignis.get("phase") == "fertig":
+                    break
+        finally:
+            await aufgabe
+
+    return StreamingResponse(zeilen(), media_type="application/x-ndjson", headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"})
 
 
 @app.get("/api/pruefungen")
