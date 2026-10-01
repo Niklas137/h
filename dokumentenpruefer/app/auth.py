@@ -104,7 +104,7 @@ def einmal_passwort_erneuern(con, user_id: int) -> str:
     ablauf = _iso(_utc() + timedelta(days=config.EINMAL_PASSWORT_TAGE))
     con.execute(
         "UPDATE users SET einmal_hash = ?, einmal_ablauf = ?, status = 'einmal', passwort_hash = NULL,"
-        " code_hash = NULL, code_ablauf = NULL, code_versuche = 0 WHERE id = ?",
+        " code_hash = NULL, code_ablauf = NULL, code_versuche = 0, fehlversuche = 0, gesperrt_bis = NULL WHERE id = ?",
         (hash_passwort(einmal), ablauf, user_id),
     )
     return einmal

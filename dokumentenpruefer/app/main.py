@@ -195,7 +195,9 @@ async def erst_start(request: Request):
     einmal = str(daten.get("einmalPasswort", "")).strip()
     with db.transaktion() as con:
         user = auth.benutzer_per_email(con, email)
-        if user is None or auth.gesperrt(user) or not auth.einmal_passwort_stimmt(user, einmal):
+        if user is not None and auth.gesperrt(user):
+            return _fehler(423, f"Zu viele Fehlversuche. Bitte in {config.SPERRE_MINUTEN} Minuten erneut versuchen, oder der Admin vergibt ein neues Einmal-Passwort.")
+        if user is None or not auth.einmal_passwort_stimmt(user, einmal):
             if user is not None:
                 auth.fehlversuch(con, user)
             return _fehler(401, "E-Mail-Adresse oder Einmal-Passwort stimmt nicht, oder das Einmal-Passwort ist abgelaufen.")
@@ -239,7 +241,9 @@ async def erst_abschluss(request: Request):
         return _fehler(400, "Die beiden Passwörter stimmen nicht überein.", regel=["wiederholung"])
     with db.transaktion() as con:
         user = auth.benutzer_per_email(con, email)
-        if user is None or auth.gesperrt(user) or not auth.einmal_passwort_stimmt(user, einmal):
+        if user is not None and auth.gesperrt(user):
+            return _fehler(423, f"Zu viele Fehlversuche. Bitte in {config.SPERRE_MINUTEN} Minuten erneut versuchen, oder der Admin vergibt ein neues Einmal-Passwort.")
+        if user is None or not auth.einmal_passwort_stimmt(user, einmal):
             return _fehler(401, "E-Mail-Adresse oder Einmal-Passwort stimmt nicht, oder das Einmal-Passwort ist abgelaufen.")
         if config.VERIFIZIERUNG == "code" and not auth.code_stimmt(con, user, code):
             return _fehler(401, "Der Code stimmt nicht oder ist abgelaufen.")

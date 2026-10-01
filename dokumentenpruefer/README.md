@@ -48,7 +48,7 @@ Empfehlungen in anderen Sprachen kann jede Regel die Felder `empfehlung_en`, `em
 - Neue Benutzer legt ein Admin unter Einstellungen → Verwaltung an. Er bekommt ein Einmal-Passwort
   (7 Tage gültig) und gibt es persönlich weiter.
 - Passwort vergessen: Admin vergibt ein neues Einmal-Passwort, danach läuft die Erstanmeldung erneut.
-- Nach 8 Fehlversuchen ist ein Konto 15 Minuten gesperrt.
+- Nach 8 Fehlversuchen ist ein Konto 15 Minuten gesperrt. Ein neues Einmal-Passwort hebt die Sperre auf.
 
 Befehle im Terminal (im Ordner `dokumentenpruefer`):
 

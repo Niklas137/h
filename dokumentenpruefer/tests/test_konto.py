@@ -153,3 +153,21 @@ def test_sperre_nach_fehlversuchen(client, admin):
             assert r.status_code == 401
         r = c.post("/api/anmelden", json={"email": "sperre@test.local", "passwort": PASSWORT})
         assert r.status_code == 423
+
+
+def test_neues_einmal_passwort_hebt_sperre_auf(client, admin):
+    from app import config, db
+    from fastapi.testclient import TestClient
+    from app.main import app
+
+    with TestClient(app) as c:
+        with db.transaktion() as con:
+            u, einmal = auth.benutzer_anlegen(con, "sperre2@test.local", "Sperre Zwei", "mitglied")
+        for _ in range(config.FEHLVERSUCHE_MAX):
+            c.post("/api/erstanmeldung/start", json={"email": "sperre2@test.local", "einmalPasswort": "xxxx-xxxx-xxxx"})
+        r = c.post("/api/erstanmeldung/start", json={"email": "sperre2@test.local", "einmalPasswort": einmal})
+        assert r.status_code == 423
+        with db.transaktion() as con:
+            neu = auth.einmal_passwort_erneuern(con, u["id"])
+        r = c.post("/api/erstanmeldung/start", json={"email": "sperre2@test.local", "einmalPasswort": neu})
+        assert r.status_code == 200, r.text
