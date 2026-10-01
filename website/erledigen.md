@@ -71,10 +71,11 @@ empfangen, der zweite Link hat zusätzlich einen Tippfehler in der Domain.
 | Datenschutzerklärung (UA), Abschnitt „11. Контактна інформація“ | `info@fsh-documentation.de` | `mailto:info@fsh-documentation.com` | siehe unten |
 | AGB (UA), § 5 | `info@fsh-documenation.de` (Tippfehler) | `mailto:info@www-fsh-documenation.com` | siehe unten |
 
-Ändern auf: existiert das Postfach `info@fsh-documentation.de` bei STRATO, dann an beiden Stellen Text und
-Link auf `info@fsh-documentation.de`. Existiert es nicht, beide auf `Falk.Heinzmann@fsh-documentation.de`,
-die einzige Adresse, die im sichtbaren Impressum steht. In Canva: Text markieren → Link-Symbol → Ziel
-`mailto:…` eintragen, danach den sichtbaren Text angleichen. Nicht mischen.
+Stand 01.10.2026: Das Postfach `info@fsh-documentation.de` gibt es noch nicht. Niklas schlägt vor, es
+anzulegen (Begründung und Einrichtung: `website/vorschlag-info-postfach.md`). Sagt Falk ja: erst Postfach
+anlegen, dann beide Stellen auf `info@fsh-documentation.de`. Sagt er nein: beide Stellen auf
+`Falk.Heinzmann@fsh-documentation.de`. In Canva: Text markieren → Link-Symbol → Ziel `mailto:…` eintragen,
+danach den sichtbaren Text angleichen. Nicht mischen.
 
 Rückmeldung: „B fertig“ (oder „B1 fertig“).
 
@@ -125,6 +126,7 @@ in Apple Mail, Falks Konto nicht anfassen. Erst Kategorien vorschlagen, noch nic
 
 ## Was danach noch offen bleibt
 
-Nur Punkte, die Falk entscheidet: Adresse für B4 (gibt es `info@fsh-documentation.de`?) und ob Kunden
-namentlich genannt werden. Beide Seiten nennen heute keine Namen. Wer Namen will, braucht je Kunde eine
-schriftliche Freigabe; Vorlage in `website/referenzfreigabe-vorlage.md`. Plattformwechsel ist mit D erledigt.
+Nur ein Punkt, den Falk entscheidet: das Postfach `info@fsh-documentation.de` (Vorschlag in
+`website/vorschlag-info-postfach.md`), davon hängt die Adresse für B4 ab. Kundennamen: entschieden am
+01.10.2026, keine Namen, es bleibt bei den Branchen; die Vorlage `website/referenzfreigabe-vorlage.md` liegt
+nur für den Fall bereit, dass sich das ändert. Plattformwechsel ist mit D erledigt.
