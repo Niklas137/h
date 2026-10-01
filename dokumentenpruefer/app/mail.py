@@ -1,4 +1,4 @@
-"""Versand des Verifizierungscodes. Ohne SMTP-Zugang wird der Code nur protokolliert."""
+"""Versand des Verifizierungscodes; niemals Codes oder Passwörter protokollieren."""
 from __future__ import annotations
 
 import logging
@@ -26,10 +26,7 @@ def code_senden(empfaenger: str, code: str, name: str = "") -> bool:
         f"{config.BERICHT_KOPF}"
     )
     if not smtp_konfiguriert():
-        log.warning("Kein SMTP konfiguriert. Code für %s: %s", empfaenger, code)
-        protokoll = config.DATEN / "codes.log"
-        with protokoll.open("a", encoding="utf-8") as f:
-            f.write(f"{empfaenger}\t{code}\n")
+        log.warning("Kein SMTP konfiguriert. Es wurde kein Verifizierungscode versendet.")
         return False
     nachricht = EmailMessage()
     nachricht["Subject"] = betreff

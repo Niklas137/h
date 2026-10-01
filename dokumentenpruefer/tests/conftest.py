@@ -8,6 +8,7 @@ os.environ["DP_DATEN"] = str(_TMP / "daten")
 os.environ["DP_OUTPUT"] = str(_TMP / "output")
 os.environ["DP_DEV"] = "1"
 os.environ["DP_VERIFIZIERUNG"] = "code"
+os.environ["DP_SMTP_HOST"] = ""  # Tests versenden niemals E-Mails.
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

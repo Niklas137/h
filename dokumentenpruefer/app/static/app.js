@@ -16,17 +16,20 @@
     section: 'profil', help: false, langMenu: false, sheet: false, remember: false, showPwd: false,
     run: { basis: true, din: true, ce: true }, lang2: 'none', file: null, result: null, busy: false,
     toastTimer: null, popTimer: null,
-    lauf: null, laufSichtbar: false, laufTimer: null
+    lauf: null, laufSichtbar: false, laufTimer: null,
+    prueft: false, epoch: 0, pruefController: null
   };
 
   // ------------------------------------------------------------ API
   function api(method, url, body, isForm) {
+    var epoch = S.epoch;
     var opt = { method: method, credentials: 'same-origin', headers: {} };
     if (body !== undefined) {
       if (isForm) { opt.body = body; } else { opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body); }
     }
     return fetch(url, opt).then(function (r) {
       return r.text().then(function (t) {
+        if (epoch !== S.epoch && url !== '/api/status') { var alt = new Error(''); alt.veraltet = true; throw alt; }
         var d = {};
         try { d = t ? JSON.parse(t) : {}; } catch (e) { d = { fehler: 'Unerwartete Antwort vom Server.' }; }
         if (r.status === 401 && S.screen !== 'start' && S.screen !== 'erst' && !/anmelden|erstanmeldung|passwort/.test(url)) { abmelden(false); }
@@ -53,7 +56,7 @@
     return Object.keys(LABEL).filter(function (k) { return S.draft[k] !== S.saved[k]; }).map(function (k) { return { key: k, label: LABEL[k], from: fmt(k, S.saved[k]), to: fmt(k, S.draft[k]) }; });
   }
   function setVal(id, v) { var el = $(id); if (document.activeElement !== el && el.value !== v) el.value = v; }
-  function showToast(msg) { $('toast-txt').textContent = msg; $('toast').hidden = false; clearTimeout(S.toastTimer); S.toastTimer = setTimeout(function () { $('toast').hidden = true; }, 2200); }
+  function showToast(msg) { if (!msg) return; $('toast-txt').textContent = msg; $('toast').hidden = false; clearTimeout(S.toastTimer); S.toastTimer = setTimeout(function () { $('toast').hidden = true; }, 2200); }
   function showPop(msg, force) {
     if (!force && S.draft && !S.draft.notifyPopup) return;
     var p = $('pop'); $('pop-msg').textContent = msg; p.hidden = false; p.classList.remove('in');
@@ -61,7 +64,7 @@
     clearTimeout(S.popTimer); S.popTimer = setTimeout(hidePop, 9000);
   }
   function hidePop() { $('pop').hidden = true; $('pop').classList.remove('in'); }
-  function pwdRegeln(pwd, pwd2) { return { len: pwd.length >= 14, upper: /[A-ZÄÖÜ]/.test(pwd), special: /[^A-Za-z0-9ÄÖÜäöüß]/.test(pwd), match: pwd.length > 0 && pwd === pwd2 }; }
+  function pwdRegeln(pwd, pwd2) { return { len: pwd.length >= 14, upper: /[A-ZÄÖÜ]/.test(pwd), special: /[^A-Za-z0-9ÄÖÜäöüß\s]/.test(pwd), match: pwd.length > 0 && pwd === pwd2 }; }
 
   // ------------------------------------------------------------ Darstellung
   function applyTheme() {
@@ -120,8 +123,10 @@
     $$('[data-run]').forEach(function (el) { el.querySelector('.cb').classList.toggle('on', !!S.run[el.dataset.run]); });
     $('drop-text').textContent = S.file ? S.file.name : 'Word (.docx) oder PDF hierher ziehen';
     var runs = Object.keys(S.run).filter(function (k) { return S.run[k]; });
-    $('start-check').disabled = !S.file || !runs.length || S.busy;
-    $('start-check').innerHTML = S.busy ? '<span class="spinner"></span>Prüfung läuft' : 'Prüfung starten';
+    $('start-check').disabled = !S.file || !runs.length || S.busy || S.prueft;
+    $('start-check').innerHTML = S.prueft ? '<span class="spinner"></span>Prüfung läuft' : 'Prüfung starten';
+    $('file').disabled = S.prueft;
+    $$('[data-run], #seg-run-lang2 button').forEach(function (el) { el.disabled = S.prueft; });
 
     $$('.snav [data-sec]').forEach(function (el) { el.classList.toggle('on', el.dataset.sec === S.section); });
     $$('[data-pane]').forEach(function (el) { el.hidden = el.dataset.pane !== S.section; });
@@ -164,19 +169,31 @@
       if (fehlend.length) { $('regeln-warn').hidden = false; $('regeln-warn').textContent = 'Regeldateien fehlen oder sind ungültig: ' + fehlend.map(function (k) { return namen[k]; }).join(', ') + '. Prüfungen mit diesen Regelsätzen werden abgebrochen. Bitte die Dateien korrigieren.'; }
       fehlend.forEach(function (k) { var h = $('hint-' + k); if (h) h.textContent = 'Regeldatei fehlt oder ist ungültig'; });
     }).catch(function () {});
-    api('GET', '/api/ich').then(function (d) { anmeldungUebernehmen(d); go('main'); }).catch(function () { go('start'); });
+    api('GET', '/api/ich').then(function (d) { anmeldungUebernehmen(d); go('main'); }).catch(function (err) { if (!err.veraltet) go('start'); });
   }
 
   function anmeldungUebernehmen(d) {
+    S.epoch += 1; S.section = 'profil'; S.erst = { email: '', einmal: '', verifizierung: true };
     S.user = d.benutzer; S.saved = Object.assign({}, d.einstellungen, { name: d.benutzer.name }); S.draft = Object.assign({}, S.saved);
     try { var l2 = localStorage.getItem('fsh-lang2'); if (l2 && (l2 === 'none' || LANGS[l2])) S.lang2 = l2; } catch (e) {}
     $('stand').textContent = 'Stand ' + new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
     ladePruefungen();
   }
   function abmelden(serverseitig) {
-    var fertig = function () { S.user = null; S.saved = null; S.draft = null; S.result = null; S.file = null; $('result').hidden = true; $('f-login').reset(); go('start'); };
-    if (serverseitig === false) { fertig(); return; }
-    api('POST', '/api/abmelden').then(fertig, fertig);
+    S.epoch += 1;
+    if (S.pruefController) S.pruefController.abort();
+    S.pruefController = null; laufEnde(); S.prueft = false; S.busy = false;
+    clearTimeout(S.popTimer); clearTimeout(S.toastTimer); hidePop(); $('toast').hidden = true;
+    S.user = null; S.saved = null; S.draft = null; S.result = null; S.file = null;
+    S.section = 'profil'; S.sheet = false; S.showPwd = false;
+    S.erst = { email: '', einmal: '', verifizierung: true };
+    ['modal-pwd', 'modal-user', 'modal-mail', 'result'].forEach(function (id) { $(id).hidden = true; });
+    ['list-tbody', 'res-tbody', 'user-otp', 'mail-text'].forEach(function (id) { $(id).textContent = ''; });
+    ['f-login', 'f-step1', 'f-step2', 'f-step3', 'f-user', 'f-pwd'].forEach(function (id) { $(id).reset(); });
+    $('file').value = ''; go('start');
+    if (serverseitig === false) return;
+    $('login-btn').disabled = true;
+    api('POST', '/api/abmelden').catch(function () {}).then(function () { $('login-btn').disabled = false; });
   }
 
   // ------------------------------------------------------------ Anmeldung
@@ -204,7 +221,7 @@
         S.step = 2;
         var hint = $('erst2-hint');
         if (d.code) { hint.hidden = false; hint.textContent = 'Entwicklungsmodus: Der Code lautet ' + d.code + '.'; }
-        else if (!d.gesendet) { hint.hidden = false; hint.textContent = 'Es ist kein E-Mail-Versand eingerichtet. Der Admin findet den Code in der Datei daten/codes.log.'; }
+        else if (!d.gesendet) { hint.hidden = false; hint.textContent = 'Der Code wurde nicht versendet. Bitte den Admin kontaktieren.'; }
         else { hint.hidden = true; }
         if (erneut) showToast('Neuer Code gesendet');
       } else { S.step = 3; }
@@ -326,7 +343,7 @@
   });
 
   // ------------------------------------------------------------ Prüfung
-  function setFile(f) { if (!f) return; S.file = f; zeigeFehler('check-err', ''); render(); }
+  function setFile(f) { if (!f || S.prueft) return; S.file = f; zeigeFehler('check-err', ''); render(); }
   $('file').addEventListener('change', function () { setFile(this.files[0]); });
   var drop = $('drop');
   ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.style.borderColor = 'var(--accent)'; }); });
@@ -339,7 +356,7 @@
   var PHASEN = ['lesen', 'pruefen', 'berichte'];
   function renderLauf() {
     var l = S.lauf;
-    $('lauf').hidden = !(S.busy && S.laufSichtbar && l);
+    $('lauf').hidden = !(S.prueft && S.laufSichtbar && l);
     if (!l) return;
     $('lauf-datei').textContent = l.datei || '';
     var idx = PHASEN.indexOf(l.phase);
@@ -354,16 +371,19 @@
     clearTimeout(S.laufTimer);
     S.laufTimer = setTimeout(function () { S.laufSichtbar = true; renderLauf(); }, 400);
   }
-  function laufEnde() { clearTimeout(S.laufTimer); S.laufTimer = null; S.lauf = null; S.laufSichtbar = false; }
+  function laufEnde() { clearTimeout(S.laufTimer); S.laufTimer = null; S.lauf = null; S.laufSichtbar = false; $('lauf').hidden = true; }
 
   // Die Prüfung schickt ihren Fortschritt als Zeilen (eine JSON-Zeile je Phase, zuletzt Ergebnis oder Fehler).
-  function pruefungStreamen(fd) {
-    return fetch('/api/pruefung', { method: 'POST', credentials: 'same-origin', body: fd }).then(function (r) {
+  function pruefungStreamen(fd, epoch, controller) {
+    var aktuell = function () { if (epoch !== S.epoch) { var alt = new Error(''); alt.veraltet = true; throw alt; } };
+    return fetch('/api/pruefung', { method: 'POST', credentials: 'same-origin', body: fd, signal: controller.signal }).then(function (r) {
+      aktuell();
       if (r.status === 401) { abmelden(false); throw new Error('Bitte zuerst anmelden.'); }
       if (!r.ok) {
         return r.text().then(function (t) { var d = {}; try { d = JSON.parse(t); } catch (e) {} throw new Error(d.fehler || ('Fehler ' + r.status + '. Bitte noch einmal versuchen.')); });
       }
       var verarbeiten = function (zeile) {
+        aktuell();
         if (!zeile.trim()) return null;
         var e; try { e = JSON.parse(zeile); } catch (err) { return null; }
         if (e.fehler) { var fehler = new Error(e.fehler); fehler.status = e.status; throw fehler; }
@@ -397,18 +417,21 @@
   }
 
   $('start-check').addEventListener('click', function () {
-    if (!S.file || S.busy) return;
-    zeigeFehler('check-err', ''); S.result = null; $('result').hidden = true; S.busy = true; laufStart(S.file.name); render();
+    if (!S.file || S.busy || S.prueft) return;
+    var epoch = S.epoch;
+    S.pruefController = new AbortController();
+    zeigeFehler('check-err', ''); S.result = null; $('result').hidden = true; S.prueft = true; laufStart(S.file.name); render();
     var fd = new FormData();
     fd.append('datei', S.file);
     fd.append('regelsaetze', Object.keys(S.run).filter(function (k) { return S.run[k]; }).join(','));
     fd.append('zusatzsprache', S.lang2 === 'none' ? '' : S.lang2);
     fd.append('fortschritt', '1');
-    pruefungStreamen(fd).then(function (r) {
-      laufEnde(); S.busy = false; S.result = r; render(); zeigeErgebnis(r); ladePruefungen();
+    pruefungStreamen(fd, epoch, S.pruefController).then(function (r) {
+      if (epoch !== S.epoch) return;
+      laufEnde(); S.prueft = false; S.pruefController = null; S.result = r; render(); zeigeErgebnis(r); ladePruefungen();
       var a = AMPEL[r.ampel] || ['', r.ampel];
       showPop(r.dateiname + ': ' + r.score + ' %, ' + a[1].split(' · ')[0] + '. ' + r.pdfs.length + ' PDFs liegen bereit.');
-    }).catch(function (err) { laufEnde(); S.busy = false; render(); zeigeFehler('check-err', err.message); });
+    }).catch(function (err) { if (epoch !== S.epoch) return; laufEnde(); S.prueft = false; S.pruefController = null; render(); zeigeFehler('check-err', err.message); });
   });
 
   function zeigeErgebnis(r) {
