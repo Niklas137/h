@@ -422,7 +422,7 @@ def _pruefung_antwort(row: dict[str, Any]) -> dict[str, Any]:
         "funde": ergebnis.get("funde", []),
         "todos": ergebnis.get("todos", []),
         "regelnVorhanden": ergebnis.get("regelnVorhanden", {}),
-        "lesehinweise": ergebnis.get("lesehinweise", []),
+        "lesehinweise": [texte.lesehinweis("de", h) for h in ergebnis.get("lesehinweise", [])],
         "pruefstatus": ergebnis.get("pruefstatus", "altbestand"),
         "freigabe": False,
         "suchtrefferAnzahl": ergebnis.get("suchtrefferAnzahl", 0),

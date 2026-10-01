@@ -198,7 +198,7 @@ def _kopfblock(ergebnis: dict[str, Any], meta: dict[str, Any], sprache: str, art
     story.append(Paragraph(_esc(texte.t(sprache, "hinweis_intern" if art == "pruef" else "hinweis_fach")), st["muted"]))
     story.append(Paragraph(_esc(texte.t(sprache, "hinweis_vorpruefung", firma=config.BERICHT_KOPF)), st["muted"]))
     for hinweis in ergebnis.get("lesehinweise", []):
-        story.append(Paragraph(_esc(texte.t(sprache, "lesehinweis") + " " + hinweis), st["muted"]))
+        story.append(Paragraph(_esc(texte.t(sprache, "lesehinweis") + " " + texte.lesehinweis(sprache, hinweis)), st["muted"]))
     return story
 
 

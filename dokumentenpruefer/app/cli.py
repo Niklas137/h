@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 
 from . import config
-from .pruefer import berichte, lesen, pruefung, regeln
+from .pruefer import berichte, lesen, pruefung, regeln, texte
 
 
 def _pruefen(args: argparse.Namespace) -> int:
@@ -81,7 +81,7 @@ def _pruefen(args: argparse.Namespace) -> int:
             print(f"  {k}: {n}")
         print(f"Fazit: {ergebnis['fazit']}")
         for h in lesehinweise:
-            print(f"Lesehinweis: {h}")
+            print(f"Lesehinweis: {texte.lesehinweis('de', h)}")
         for d in dateien:
             print(f"PDF: {d}")
     return 0

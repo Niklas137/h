@@ -74,6 +74,8 @@ TEXTE: dict[str, dict[str, str]] = {
         "hinweis_vorpruefung": "Automatische Vorprüfung auf Basis einer Schlüsselwortsuche. Die fachliche Prüfung und Freigabe erfolgt durch {firma}.",
         "ce_nicht_geprueft": "CE wurde bei dieser Prüfung nicht ausgewählt und nicht geprüft.",
         "lesehinweis": "Lesehinweis:",
+        "scan_seiten_1": "Seite {seiten} von {gesamt} Seiten hat keine Textebene und wurde nicht geprüft. Vermutlich gescannt.",
+        "scan_seiten_n": "Seiten {seiten} von {gesamt} Seiten haben keine Textebene und wurden nicht geprüft. Vermutlich gescannt.",
         "seite": "Seite {n} von {m}",
         "erstellt_mit": "Erstellt mit dem Dokumentenprüfer",
         "sprache": "Sprache des Berichts",
@@ -155,6 +157,8 @@ TEXTE: dict[str, dict[str, str]] = {
         "hinweis_vorpruefung": "Automated preliminary check based on a keyword search. Professional review and release are carried out by {firma}.",
         "ce_nicht_geprueft": "CE was not selected and was not checked in this review.",
         "lesehinweis": "Reading note:",
+        "scan_seiten_1": "Page {seiten} of {gesamt} pages has no text layer and was not checked. Probably scanned.",
+        "scan_seiten_n": "Pages {seiten} of {gesamt} pages have no text layer and were not checked. Probably scanned.",
         "seite": "Page {n} of {m}",
         "erstellt_mit": "Created with the document checker",
         "sprache": "Report language",
@@ -236,6 +240,8 @@ TEXTE: dict[str, dict[str, str]] = {
         "hinweis_vorpruefung": "Автоматична попередня перевірка на основі пошуку ключових слів. Фахову перевірку та затвердження виконує {firma}.",
         "ce_nicht_geprueft": "CE не було вибрано та не перевірялося під час цієї перевірки.",
         "lesehinweis": "Примітка щодо читання:",
+        "scan_seiten_1": "Сторінка {seiten} з {gesamt} не має текстового шару і не перевірялася. Ймовірно, скан.",
+        "scan_seiten_n": "Сторінки {seiten} з {gesamt} не мають текстового шару і не перевірялися. Ймовірно, скан.",
         "seite": "Сторінка {n} з {m}",
         "erstellt_mit": "Створено за допомогою Перевірника документів",
         "sprache": "Мова звіту",
@@ -317,6 +323,8 @@ TEXTE: dict[str, dict[str, str]] = {
         "hinweis_vorpruefung": "Автоматическая предварительная проверка на основе поиска ключевых слов. Профессиональную проверку и утверждение выполняет {firma}.",
         "ce_nicht_geprueft": "CE не было выбрано и не проверялось в ходе этой проверки.",
         "lesehinweis": "Примечание о чтении:",
+        "scan_seiten_1": "Страница {seiten} из {gesamt} не имеет текстового слоя и не проверялась. Вероятно, скан.",
+        "scan_seiten_n": "Страницы {seiten} из {gesamt} не имеют текстового слоя и не проверялись. Вероятно, скан.",
         "seite": "Страница {n} из {m}",
         "erstellt_mit": "Создано с помощью Проверщика документов",
         "sprache": "Язык отчёта",
@@ -410,3 +418,12 @@ def fazit(sprache: str, teile: list) -> str:
 
 def ampel(sprache: str, wert: str) -> str:
     return t(sprache, f"ampel_{wert}")
+
+
+def lesehinweis(sprache: str, hinweis: dict) -> str:
+    """Strukturierten Lesehinweis aus lesen.py in der Berichtssprache formulieren."""
+    if hinweis.get("art") == "scan_seiten":
+        seiten = [int(s) for s in hinweis.get("seiten", [])]
+        schluessel = "scan_seiten_1" if len(seiten) == 1 else "scan_seiten_n"
+        return t(sprache, schluessel, seiten=", ".join(str(s) for s in seiten), gesamt=hinweis.get("gesamt", "?"))
+    return str(hinweis.get("text", ""))

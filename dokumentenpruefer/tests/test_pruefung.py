@@ -209,7 +209,9 @@ def test_pdf_scanseiten_werden_gemeldet(tmp_path):
     c.save()
     struktur, hinweise = lesen.lesen_mit_hinweisen("gemischt.pdf", pfad.read_bytes())
     assert len(struktur) == 2
-    assert hinweise and "2 von 3" in hinweise[0]
+    assert hinweise == [{"art": "scan_seiten", "seiten": [2], "gesamt": 3}]
+    assert texte.lesehinweis("de", hinweise[0]) == "Seite 2 von 3 Seiten hat keine Textebene und wurde nicht geprüft. Vermutlich gescannt."
+    assert texte.lesehinweis("en", {"art": "scan_seiten", "seiten": [2, 5], "gesamt": 7}).startswith("Pages 2, 5 of 7 pages")
 
     nur_bild = tmp_path / "scan.pdf"
     c = canvas.Canvas(str(nur_bild), pagesize=A4)

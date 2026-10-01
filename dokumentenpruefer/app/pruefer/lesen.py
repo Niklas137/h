@@ -32,6 +32,7 @@ class LeseFehler(Exception):
 
 
 Struktur = list[dict[str, str]]
+Hinweis = dict[str, object]  # {"art": "scan_seiten", "seiten": [2, 5], "gesamt": 7}
 
 
 def _bytesio(daten: bytes | IO[bytes]) -> IO[bytes]:
@@ -96,11 +97,7 @@ def _seitentexte_pdfplumber(f: IO[bytes]) -> list[str]:
         return [page.extract_text() or "" for page in pdf.pages]
 
 
-def _seiten_zusammenfassen(seiten: list[int]) -> str:
-    return ", ".join(str(s) for s in seiten)
-
-
-def pdf_lesen_mit_hinweisen(daten: bytes | IO[bytes]) -> tuple[Struktur, list[str]]:
+def pdf_lesen_mit_hinweisen(daten: bytes | IO[bytes]) -> tuple[Struktur, list[Hinweis]]:
     """Text je Seite; Seiten ohne Textebene werden gesammelt und als Hinweis gemeldet."""
     f = _bytesio(daten)
     seiten: list[str] = []
@@ -134,9 +131,9 @@ def pdf_lesen_mit_hinweisen(daten: bytes | IO[bytes]) -> tuple[Struktur, list[st
         structured.extend({"text": z, "heading": f"Seite {i}"} for z in zeilen)
     if not structured:
         raise LeseFehler("Keine Textinhalte erkannt. Vermutlich ein Scan ohne Textebene.")
-    hinweise: list[str] = []
+    hinweise: list[Hinweis] = []
     if leer:
-        hinweise.append(f"Seiten ohne Textebene, nicht geprüft: {_seiten_zusammenfassen(leer)} von {len(seiten)}. Vermutlich gescannte Seiten.")
+        hinweise.append({"art": "scan_seiten", "seiten": leer, "gesamt": len(seiten)})
     return structured, hinweise
 
 
@@ -144,8 +141,8 @@ def pdf_lesen(daten: bytes | IO[bytes]) -> Struktur:
     return pdf_lesen_mit_hinweisen(daten)[0]
 
 
-def lesen_mit_hinweisen(dateiname: str, daten: bytes | IO[bytes]) -> tuple[Struktur, list[str]]:
-    """Struktur plus Lesehinweise, die im Ergebnis und in den Berichten erscheinen."""
+def lesen_mit_hinweisen(dateiname: str, daten: bytes | IO[bytes]) -> tuple[Struktur, list[Hinweis]]:
+    """Struktur plus Lesehinweise (strukturiert, Text je Sprache über texte.lesehinweis)."""
     name = dateiname.lower()
     if name.endswith(".pdf"):
         return pdf_lesen_mit_hinweisen(daten)
