@@ -172,7 +172,7 @@ def _kopfblock(ergebnis: dict[str, Any], meta: dict[str, Any], sprache: str, art
 
     ampel = ergebnis.get("ampel", "rot")
     kacheln = [
-        [Paragraph(_esc(texte.t(sprache, "bewertung")), st["label"]), Paragraph(f"{ergebnis.get('score', 0)} %", st["wert"])],
+        [Paragraph(_esc(texte.t(sprache, "bewertung")), st["label"]), Paragraph(f"{ergebnis.get('score', 0)} / 100", st["wert"])],
         [Paragraph(_esc(texte.t(sprache, "ampel")), st["label"]), Paragraph(_esc(texte.ampel(sprache, ampel)), ParagraphStyle("ampel", parent=st["wert"], textColor=AMPEL_FARBEN.get(ampel, INK)))],
         [Paragraph(_esc(texte.t(sprache, "funde_anzahl")), st["label"]), Paragraph(str(len(ergebnis.get("funde", []))), st["wert"])],
     ]
@@ -206,6 +206,9 @@ def _fazitblock(ergebnis: dict[str, Any], sprache: str, st: dict) -> list:
 
 def _todoblock(ergebnis: dict[str, Any], sprache: str, st: dict, mit_aufwand: bool) -> list:
     story: list = [Paragraph(_esc(texte.t(sprache, "todo")), st["h2"])]
+    if "ce" not in ergebnis.get("regelsaetze", []):
+        story.append(Paragraph(_esc(texte.t(sprache, "ce_nicht_geprueft")), st["text"]))
+        return story
     todos = ergebnis.get("todos", [])
     if not todos:
         story.append(Paragraph(_esc(texte.t(sprache, "keine_todos")), st["text"]))

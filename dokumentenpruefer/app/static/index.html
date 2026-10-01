@@ -164,9 +164,9 @@
         </div>
         <div class="card stack" style="gap:10px">
           <h3>Ampel</h3>
-          <div class="ampel"><span class="dot g"></span>Grün ab 80 %: verwendbar</div>
-          <div class="ampel"><span class="dot y"></span>Gelb 60 bis 79 %: überarbeiten</div>
-          <div class="ampel"><span class="dot r"></span>Rot unter 60 %: nicht abgabereif</div>
+          <p class="sm">Die automatische Vorprüfung erteilt keine grüne Freigabe.</p>
+          <div class="ampel"><span class="dot y"></span>Gelb: fachliche Bewertung offen</div>
+          <div class="ampel"><span class="dot r"></span>Rot: kritische Hinweise oder Suchscore unter 60</div>
         </div>
       </div>
     </div>
@@ -175,15 +175,16 @@
       <div class="card stack">
         <div class="row"><h2><span class="stepnum">1</span>Ergebnis</h2><span class="cap" id="res-meta"></span></div>
         <div class="res-grid">
-          <div class="score"><b class="mono" id="res-score">–</b><span class="tick" id="res-ampel"></span></div>
+          <div class="score"><span class="cap">Suchscore</span><b class="mono" id="res-score">–</b><span class="tick" id="res-ampel"></span></div>
           <div class="kv-grid">
             <div class="kv"><span class="cap">Regelsätze</span><b id="res-regeln"></b></div>
-            <div class="kv"><span class="cap">Funde</span><b id="res-funde"></b></div>
-            <div class="kv"><span class="cap">Aufwand</span><b class="mono" id="res-aufwand"></b></div>
+            <div class="kv"><span class="cap">Prüfhinweise</span><b id="res-funde"></b></div>
+            <div class="kv"><span class="cap">Geschätzter Aufwand</span><b class="mono" id="res-aufwand"></b></div>
             <div class="kv"><span class="cap">Berichte</span><b id="res-langs"></b></div>
           </div>
         </div>
-        <p class="sm"><b style="font-weight:500">Fazit:</b> <span id="res-fazit"></span></p>
+        <p class="cap" id="res-suchtreffer"></p>
+        <p class="sm"><b style="font-weight:500">Fazit der Vorprüfung:</b> <span id="res-fazit"></span></p>
       </div>
       <div class="rep-grid">
         <div class="card stack" style="gap:10px"><div class="row"><h2><span class="stepnum">2</span>Prüfbericht</h2><span class="badge">intern</span></div><p class="muted sm">Für alle, die mit dem Tool arbeiten: jeder Fund mit Gewichtung, Fundstelle und Aufwand.</p><div class="pdfs" id="pdf-pruef"></div></div>
@@ -211,7 +212,7 @@
     <div class="card flush">
       <div class="head"><h2>Letzte Prüfungen</h2><span class="cap" id="list-hint">Deine letzten 20 Prüfungen</span></div>
       <div class="tbl-wrap"><table>
-        <thead><tr><th>Datum</th><th>Dokument</th><th>Score</th><th>Ampel</th><th>Berichte</th></tr></thead>
+        <thead><tr><th>Datum</th><th>Dokument</th><th>Suchscore</th><th>Ampel</th><th>Berichte</th></tr></thead>
         <tbody id="list-tbody"><tr><td colspan="5" class="muted">Noch keine Prüfung.</td></tr></tbody>
       </table></div>
     </div>
@@ -283,7 +284,7 @@
 
       <div class="sec" data-pane="benach" hidden>
         <div class="card"><h2 style="margin-bottom:8px">Benachrichtigungen</h2>
-          <div class="list-row"><div class="txt"><b style="font-weight:500">Pop-up, wenn ein Prüfbericht fertig ist</b><span class="muted sm">Erscheint oben auf dem Bildschirm mit Score, Ampel und Knopf zum Bericht. Keine Bestätigungs-E-Mail.</span></div><button class="sw" data-sw="notifyPopup" aria-label="Pop-up bei fertigem Bericht" role="switch"></button></div>
+          <div class="list-row"><div class="txt"><b style="font-weight:500">Pop-up, wenn ein Prüfbericht fertig ist</b><span class="muted sm">Erscheint oben auf dem Bildschirm mit Suchscore, Prüfstatus und Knopf zum Bericht. Keine Bestätigungs-E-Mail.</span></div><button class="sw" data-sw="notifyPopup" aria-label="Pop-up bei fertigem Bericht" role="switch"></button></div>
           <div class="list-row"><div class="txt"><b style="font-weight:500">So sieht das Pop-up aus</b><span class="muted sm">Beispiel mit einem fertigen Bericht, verschwindet nach 9 Sekunden von selbst.</span></div><button class="btn" id="pop-demo">Vorschau anzeigen</button></div>
           <div class="list-row"><div class="txt"><b style="font-weight:500">Hinweise im Tool</b><span class="muted sm">Neue Regelsätze, Wartung, Aktualisierungen. Vorschlag, noch ohne Funktion.</span></div><button class="sw" data-sw="notifyApp" aria-label="Hinweise im Tool" role="switch"></button></div>
           <div class="list-row"><div class="txt"><b style="font-weight:500">Wöchentliche Zusammenfassung</b><span class="muted sm">Montags: Prüfungen der Woche, offene To-dos. Vorschlag, noch ohne Versand.</span></div><button class="sw" data-sw="notifyWeekly" aria-label="Wöchentliche Zusammenfassung" role="switch"></button></div>
@@ -386,7 +387,7 @@
     <div class="panel">
       <div class="row"><h2>Hilfe</h2><button class="btn x" id="drawer-close" aria-label="Schließen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       <section><h3>Dokument prüfen</h3><ol><li>Word- oder PDF-Datei in das Feld ziehen oder auswählen.</li><li>Regelsätze prüfen und eine zusätzliche Berichtssprache wählen, oder keine.</li><li>„Prüfung starten“. Wenn der Bericht fertig ist, erscheint oben ein Pop-up. Darunter das Ergebnis in drei Schritten: Ergebnis mit Fazit, die Berichte (Prüfbericht intern, Fachbericht Kunde) als PDF je Sprache, und die Weitergabe mit E-Mail-Entwurf, ZIP und Ablage.</li></ol></section>
-      <section><h3>Ampel</h3><p class="sm">Grün ab 80 %: verwendbar. Gelb 60 bis 79 %: überarbeiten. Rot unter 60 %: nicht abgabereif. Der Score sinkt je Fund um dessen Gewichtung.</p></section>
+      <section><h3>Ampel</h3><p class="sm">Die Schlüsselwortsuche erteilt keine fachliche Freigabe. Gelb bedeutet fachlich offen. Kritische Prüfhinweise oder ein Suchscore unter 60 ergeben Rot. Der Suchscore startet bei 100 Punkten und sinkt je Hinweis um dessen Gewichtung; er bewertet keine Vollständigkeit oder Konformität.</p></section>
       <section><h3>Erstanmeldung</h3><p class="sm">Einmal-Passwort vom Admin, Code an deine E-Mail-Adresse, dann eigenes Passwort: mindestens 14 Zeichen, ein Großbuchstabe, ein Sonderzeichen.</p></section>
       <section><h3>Kopfleiste</h3><p class="sm">Sprache (Deutsch, Englisch, Ukrainisch, Russisch) und Helligkeit wirken sofort und werden für dein Konto gespeichert. Die Oberflächensprache ist zugleich die Basissprache der Berichte. Alles Weitere unter Einstellungen.</p></section>
       <section><h3>Kontakt</h3><p class="sm mono" id="help-adresse">[Support-Adresse]</p><p class="sm" id="help-kontakt">Antwort innerhalb von 24 Stunden. Beschreibe deinen Fall so genau wie möglich und häng gern Screenshots an: aktueller Stand, angezeigte Fehlermeldung oder was sonst hilft. Bei dringenden Fragen erreichst du uns telefonisch unter [Telefonnummer], Montag bis Freitag von [8:00] bis [16:00] Uhr.</p></section>

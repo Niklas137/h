@@ -4,8 +4,10 @@ Prüft technische Dokumente (Word, PDF) gegen die Regelsätze Basisprüfung, DIN
 CE / EU-Konformität. Mehrere Benutzer mit eigenem Konto und eigenen Einstellungen, Oberfläche im
 Look von FSH-Documentation, Berichte als PDF in Deutsch, Englisch, Ukrainisch und Russisch.
 
-Die bisherige Streamlit-App `app.py` im Ordner darüber bleibt unverändert als Rückfall. Die
-Prüflogik ist 1:1 übernommen (Schlüsselwörter, Gewichtung, Score, Ampel, Fazit, CE-To-dos).
+Die bisherige Streamlit-App `app.py` im Ordner darüber bleibt als historischer Vergleich unverändert.
+Die Web-App verwendet weiterhin deren Suchregeln und Gewichtungen. Die P0-Korrektur vom
+1. Oktober 2026 ändert bewusst die Bewertung: Schlüsselwortsuche ist eine automatische Vorprüfung,
+kein Nachweis von Vollständigkeit, Richtigkeit oder Konformität und keine fachliche Freigabe.
 
 ## Start auf dem Mac
 
@@ -37,7 +39,10 @@ Die Regelsätze liegen im Ordner `regeln/`:
 | `normlogik_82079.json`| DIN 82079-1        | enthalten, mit Übersetzungen        |
 | `ce_logik.json`       | CE / EU-Konformität| enthalten (Stand 21. Mai 2026), nur deutsch |
 
-Fehlt eine Datei, zeigt die App einen Hinweis und der Regelsatz liefert keine Funde. Für
+Fehlt eine gewählte Regeldatei oder ist sie ungültig, bricht die Prüfung ohne Ergebnis und ohne
+Berichte ab. Validiert werden JSON, nicht leere Regellisten, eindeutige IDs, Suchwörter, Pflichtfelder,
+Fehlerklassen und Gewichtungen. Nicht ausgewählte Regelsätze dürfen fehlen. Unbekannte Regelsatznamen
+werden abgewiesen, auch zusammen mit gültigen Namen. Für
 Empfehlungen in anderen Sprachen kann jede Regel die Felder `empfehlung_en`, `empfehlung_uk`,
 `empfehlung_ru` (und `bereich_en` usw.) tragen. Ohne Übersetzung wird der deutsche Text genommen.
 
@@ -82,7 +87,7 @@ und nennt keinen erfundenen Prozentwert. Ohne `fortschritt` antwortet die Route 
 
 ## Ergebnis und Weitergabe
 
-1. Ergebnis: Score, Ampel, Funde, Aufwand, Fazit.
+1. Ergebnis: Suchscore, Ampel, Prüfhinweise, geschätzter Aufwand, Fazit der Vorprüfung.
 2. Berichte: PDF je Sprache für Prüfbericht und Fachbericht.
 3. Weitergabe: E-Mail-Entwurf an den Kunden (auf dem Mac in Apple Mail, wird nie gesendet),
    alle PDFs als ZIP, Berichte in `output/` ablegen, Prüfung abschließen.
@@ -120,8 +125,32 @@ Zugangsdaten gehören nicht ins Projekt. SMTP-Daten nur als Umgebungsvariable se
 ./.venv/bin/python -m pytest tests -q
 ```
 
-24 Tests: Erstanmeldung mit Code, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
-Prüfung einer erzeugten Word-Datei, PDFs in vier Sprachen, ZIP, Ablegen, E-Mail-Entwurf, Kommandozeile, Fortschritts-Zeilenstrom.
+Die Bestandstests prüfen Erstanmeldung, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
+Word-Prüfung, PDFs in vier Sprachen, ZIP, Ablage, Mail-Entwurf, CLI und Fortschritts-Zeilenstrom.
+`tests/test_p0.py` ergänzt Gegenproben für ungültige Regeln (auch nach einer gültigen Ladung),
+irreführende Stichwortlisten, kritische Hinweise bei hohem Suchscore, Sperrumgehung und die
+Kennzeichnung in beiden Berichtstypen und allen vier Sprachen.
+
+## Bewertungsgrenzen und P0-Korrekturen
+
+- Der Suchscore bleibt rechnerisch `100 - Summe der Hinweisgewichtungen`, mindestens 0.
+  Er wird als Punkte von 100 angezeigt, nicht als Qualitäts- oder Konformitätsprozent.
+- Alle geprüften Regeln bleiben fachlich offen, auch wenn ein Suchwort vorkommt.
+  API und gespeichertes Ergebnis nennen `pruefstatus=fachlich_offen`, `freigabe=false`,
+  `bewertungsart=schluesselwortsuche` sowie den Suchstatus jeder Regel in `regelpruefungen`.
+- Kritische Prüfhinweise oder weniger als 60 Suchpunkte ergeben Rot. Sonst gilt Gelb.
+  Diese Automatik erzeugt niemals eine grüne Freigabe. Semantische Inhaltsprüfung und ein
+  fachlicher Freigabeworkflow sind damit noch nicht implementiert.
+- Regeldefekte liefern HTTP 503 im JSON-Modus, einen abschließenden Fehler mit Status 503
+  im bereits begonnenen NDJSON-Strom oder Exitcode 4 in der CLI. Es entsteht keine neue Prüfung.
+- Ein Aufruf der Erstanmeldung hebt eine laufende Anmeldesperre nicht mehr auf und verlängert
+  sie auch nicht. Nach regulärem Ablauf ist eine korrekte Anmeldung wieder möglich.
+- Berichte unterscheiden nicht gewählte CE-Prüfungen von einer gewählten CE-Suche ohne Hinweise.
+- Bestehende Datenbanken brauchen keine Migration. Historische Ergebnisse und gespeicherte PDFs
+  bleiben erhalten; die Oberfläche kennzeichnet geöffnete Altprüfungen. Für die neue Bewertung
+  muss das Originaldokument erneut geprüft werden.
+- Noch offen: Word-Tabellen, gemischte Scan-PDFs, Satzermittlung, Fundstellen im PDF,
+  vollständige Regelübersetzungen, überschreibungsfreie Ablage und fachliche Vergleichsdokumente.
 
 ## Aufbau
 
@@ -135,7 +164,7 @@ app/verwaltung.py      Kommandozeile für Konten
 app/cli.py             Kommandozeile: Dokument prüfen, PDFs ablegen
 app/pruefer/lesen.py   Word und PDF einlesen
 app/pruefer/regeln.py  Regeldateien laden
-app/pruefer/pruefung.py Prüflogik (aus app.py übernommen)
+app/pruefer/pruefung.py Suchprüfung mit konservativer Bewertung, keine fachliche Freigabe
 app/pruefer/texte.py   Berichtstexte in de, en, uk, ru
 app/pruefer/berichte.py PDF-Erzeugung (reportlab, IBM Plex Sans)
 app/static/            Oberfläche: index.html, app.js, app.css, Schriften, Marke

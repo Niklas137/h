@@ -40,7 +40,7 @@ def start() -> None:
         log.warning("Noch kein Konto vorhanden. Admin anlegen: python -m app.verwaltung admin --email ... --name ...")
     fehlend = [k for k, v in regeln.vorhanden().items() if not v]
     if fehlend:
-        log.warning("Regeldateien fehlen in %s: %s", config.REGELN, ", ".join(regeln.DATEIEN[k] for k in fehlend))
+        log.warning("Regeldateien fehlen oder sind ungültig in %s: %s", config.REGELN, ", ".join(regeln.DATEIEN[k] for k in fehlend))
 
 
 # ---------------------------------------------------------------- Hilfen
@@ -422,6 +422,11 @@ def _pruefung_antwort(row: dict[str, Any]) -> dict[str, Any]:
         "funde": ergebnis.get("funde", []),
         "todos": ergebnis.get("todos", []),
         "regelnVorhanden": ergebnis.get("regelnVorhanden", {}),
+        "pruefstatus": ergebnis.get("pruefstatus", "altbestand"),
+        "freigabe": False,
+        "suchtrefferAnzahl": ergebnis.get("suchtrefferAnzahl", 0),
+        "regelpruefungen": ergebnis.get("regelpruefungen", []),
+        "bewertungsart": ergebnis.get("bewertungsart", "altbestand"),
         "pdfs": _pdf_liste(row),
         "zip": f"/api/pruefung/{row['id']}/zip",
     }
@@ -494,9 +499,9 @@ async def pruefung_starten(
     inhalt = await datei.read()
     if len(inhalt) > config.UPLOAD_MAX_BYTES:
         return _fehler(413, "Die Datei ist größer als 25 MB.")
-    gewaehlt = [r for r in regelsaetze.split(",") if r in config.REGELSAETZE]
-    if not gewaehlt:
-        return _fehler(400, "Bitte mindestens einen Regelsatz wählen.")
+    gewaehlt = list(dict.fromkeys(r.strip() for r in regelsaetze.split(",") if r.strip()))
+    if not gewaehlt or any(r not in config.REGELSAETZE for r in gewaehlt):
+        return _fehler(400, "Bitte gültige Regelsätze wählen: basis, din oder ce.")
     zusatz = zusatzsprache.strip() or None
 
     if fortschritt != "1":
@@ -504,6 +509,8 @@ async def pruefung_starten(
             return await run_in_threadpool(_pruefung_durchfuehren, name, inhalt, gewaehlt, zusatz, user, lambda phase, daten: None)
         except lesen.LeseFehler as e:
             return _fehler(422, str(e))
+        except regeln.RegelFehler as e:
+            return _fehler(503, str(e))
 
     # Fortschritt als Zeilenstrom (NDJSON): eine Zeile je Phase, zuletzt das Ergebnis oder der Fehler.
     loop = asyncio.get_running_loop()
@@ -518,6 +525,8 @@ async def pruefung_starten(
             await ereignisse.put({"phase": "fertig", "ergebnis": antwort})
         except lesen.LeseFehler as e:
             await ereignisse.put({"fehler": str(e), "status": 422})
+        except regeln.RegelFehler as e:
+            await ereignisse.put({"fehler": str(e), "status": 503})
         except Exception:
             log.exception("Prüfung von %s fehlgeschlagen", name)
             await ereignisse.put({"fehler": "Die Prüfung ist fehlgeschlagen. Bitte noch einmal versuchen.", "status": 500})
@@ -613,7 +622,8 @@ async def pruefung_mail(pruef_id: str, request: Request, user: dict[str, Any] = 
         "Guten Tag,\n\n"
         f"anbei der Fachbericht zur Prüfung des Dokuments {row['dateiname']} "
         f"({', '.join(config.SPRACHNAMEN_DE.get(s, s) for s in sprachen)}).\n\n"
-        f"Ergebnis: {row['score']} %, {texte.ampel('de', row['ampel'])}.\n\n"
+        f"Automatische Vorprüfung: {row['score']} Suchpunkte, {texte.ampel('de', row['ampel'])}.\n"
+        f"{texte.t('de', 'hinweis_vorpruefung')}\n\n"
         "Bei Fragen melden Sie sich gern.\n\n"
         f"Mit freundlichen Grüßen\n{user['name']}\n{config.BERICHT_KOPF}"
     )

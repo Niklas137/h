@@ -1,7 +1,7 @@
 """Die Prüfung selbst: drei Regelsätze, Score, Ampel, Fazit, To-do-Liste.
 
-Die Rechenlogik ist 1:1 aus app.py übernommen, damit alte und neue Ergebnisse
-vergleichbar bleiben. Verbesserungen an der Prüfung kommen später als eigener Schritt.
+Die Schlüsselwortsuche liefert Prüfhinweise und einen technischen Suchscore.
+Sie weist keine inhaltliche Erfüllung nach und erteilt keine fachliche Freigabe.
 """
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ import re
 from typing import Any
 
 from . import regeln as regelmodul
+from . import texte
 
 Fund = dict[str, Any]
 
@@ -146,12 +147,11 @@ def check_ce_logik(structured_text: list[dict[str, str]], rules: list[dict[str, 
     return findings
 
 
-def get_ampel(score: int) -> str:
-    if score >= 80:
-        return "gruen"
-    if score >= 60:
-        return "gelb"
-    return "rot"
+def get_ampel(score: int, findings: list[Fund] | None = None) -> str:
+    """Kritische Hinweise haben Vorrang; reine Suchtreffer ergeben niemals Grün."""
+    if score < 60 or any(f.get("Fehlerklasse") == "Kritisch" for f in (findings or [])):
+        return "rot"
+    return "gelb"
 
 
 def fazit_teile(findings: list[Fund], score: int) -> list[tuple[str, dict[str, int]]]:
@@ -160,12 +160,11 @@ def fazit_teile(findings: list[Fund], score: int) -> list[tuple[str, dict[str, i
     schwer = [f for f in findings if f.get("Fehlerklasse") == "Schwer"]
     ce_fehler = [f for f in findings if f.get("Normlogik") == "CE / EU-Konformität"]
     teile: list[tuple[str, dict[str, int]]] = []
-    if score < 60:
+    if get_ampel(score, findings) == "rot":
         teile.append(("fazit_rot", {}))
-    elif score < 80:
-        teile.append(("fazit_gelb", {}))
     else:
-        teile.append(("fazit_gruen", {}))
+        teile.append(("fazit_gelb", {}))
+    teile.append(("hinweis_vorpruefung", {}))
     if kritisch:
         teile.append(("kritisch_1" if len(kritisch) == 1 else "kritisch_n", {"n": len(kritisch)}))
     if schwer:
@@ -176,24 +175,8 @@ def fazit_teile(findings: list[Fund], score: int) -> list[tuple[str, dict[str, i
 
 
 def generate_fazit(findings: list[Fund], score: int) -> str:
-    """Wortlaut wie in app.py, auf Deutsch, mit Einzahl bei genau einem Fund."""
-    kritisch = [f for f in findings if f.get("Fehlerklasse") == "Kritisch"]
-    schwer = [f for f in findings if f.get("Fehlerklasse") == "Schwer"]
-    ce_fehler = [f for f in findings if f.get("Normlogik") == "CE / EU-Konformität"]
-    text: list[str] = []
-    if score < 60:
-        text.append("Das Dokument ist in der vorliegenden Form fachlich nicht abgabereif.")
-    elif score < 80:
-        text.append("Das Dokument weist relevante Mängel auf und ist überarbeitungsbedürftig.")
-    else:
-        text.append("Das Dokument ist grundsätzlich verwendbar, weist jedoch Optimierungspotenzial auf.")
-    if kritisch:
-        text.append("Es wurde 1 kritische Abweichung festgestellt." if len(kritisch) == 1 else f"Es wurden {len(kritisch)} kritische Abweichungen festgestellt.")
-    if schwer:
-        text.append("Zusätzlich wurde 1 schwerwiegendes Defizit identifiziert." if len(schwer) == 1 else f"Zusätzlich wurden {len(schwer)} schwerwiegende Defizite identifiziert.")
-    if ce_fehler:
-        text.append("Im Bereich CE wurde 1 Nachweislücke festgestellt." if len(ce_fehler) == 1 else f"Im Bereich CE wurden {len(ce_fehler)} Nachweislücken festgestellt.")
-    return " ".join(text)
+    """API, Oberfläche und PDF verwenden dieselben vorsichtigen Aussagen."""
+    return texte.fazit("de", fazit_teile(findings, score))
 
 
 def generate_todo_list(findings: list[Fund]) -> list[dict[str, Any]]:
@@ -214,14 +197,27 @@ def generate_todo_list(findings: list[Fund]) -> list[dict[str, Any]]:
 
 def pruefen(structured_text: list[dict[str, str]], regelsaetze: list[str] | None = None) -> dict[str, Any]:
     """Führt die gewählten Regelsätze aus und liefert das vollständige Ergebnis."""
-    gewaehlt = set(regelsaetze or ["basis", "din", "ce"])
+    gewaehlt = set(["basis", "din", "ce"] if regelsaetze is None else regelsaetze)
+    if not gewaehlt or not gewaehlt.issubset(regelmodul.DATEIEN):
+        raise regelmodul.RegelFehler("Regelsatz-Auswahl ist leer oder ungültig.")
+    # Erst alle ausgewählten Regeln prüfen. Kein Teilergebnis bei Regeldefekten.
+    kataloge = {k: regelmodul.laden(k) for k in sorted(gewaehlt)}
+    regel_ids = [r["id"] for rs in kataloge.values() for r in rs]
+    if len(set(regel_ids)) != len(regel_ids):
+        raise regelmodul.RegelFehler("Regelsatz-Auswahl enthält doppelte Regel-IDs. Prüfung abgebrochen.")
+    volltext = _volltext(structured_text)
+    regelpruefungen = [
+        {"id": r["id"], "regelsatz": k, "fachlich": "offen",
+         "suchstatus": "treffer" if keyword_found(volltext, r["keywords"]) else "nicht_gefunden"}
+        for k, rs in kataloge.items() for r in rs
+    ]
     findings: list[Fund] = []
     if "basis" in gewaehlt:
-        findings.extend(check_document(structured_text, regelmodul.laden("basis")))
+        findings.extend(check_document(structured_text, kataloge["basis"]))
     if "din" in gewaehlt:
-        findings.extend(check_normlogik_82079(structured_text, regelmodul.laden("din")))
+        findings.extend(check_normlogik_82079(structured_text, kataloge["din"]))
     if "ce" in gewaehlt:
-        findings.extend(check_ce_logik(structured_text, regelmodul.laden("ce")))
+        findings.extend(check_ce_logik(structured_text, kataloge["ce"]))
     findings = deduplicate_findings(findings)
 
     deduction = sum(f.get("Gewichtung", 0) for f in findings)
@@ -237,7 +233,12 @@ def pruefen(structured_text: list[dict[str, str]], regelsaetze: list[str] | None
     return {
         "funde": findings,
         "score": score,
-        "ampel": get_ampel(score),
+        "ampel": get_ampel(score, findings),
+        "pruefstatus": "fachlich_offen",
+        "freigabe": False,
+        "bewertungsart": "schluesselwortsuche",
+        "regelpruefungen": regelpruefungen,
+        "suchtrefferAnzahl": sum(r["suchstatus"] == "treffer" for r in regelpruefungen),
         "stunden": total_hours,
         "minuten": total_minutes,
         "fazit": generate_fazit(findings, score),

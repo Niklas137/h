@@ -25,14 +25,10 @@ def _pruefen(args: argparse.Namespace) -> int:
     if not sprachen or unbekannt or len(sprachen) > 2:
         print(f"--sprachen: Basissprache und höchstens eine Zusatzsprache aus {', '.join(config.SPRACHEN)}", file=sys.stderr)
         return 2
-    regelsaetze = [r.strip() for r in args.regelsaetze.split(",") if r.strip() in config.REGELSAETZE]
-    if not regelsaetze:
+    regelsaetze = list(dict.fromkeys(r.strip() for r in args.regelsaetze.split(",") if r.strip()))
+    if not regelsaetze or any(r not in config.REGELSAETZE for r in regelsaetze):
         print(f"--regelsaetze: mindestens einer aus {', '.join(config.REGELSAETZE)}", file=sys.stderr)
         return 2
-    fehlend = [regeln.DATEIEN[k] for k in regelsaetze if not regeln.vorhanden().get(k)]
-    if fehlend:
-        print(f"Hinweis: Regeldateien fehlen in {config.REGELN}: {', '.join(fehlend)}. Diese Regelsätze liefern keine Funde.", file=sys.stderr)
-
     try:
         struktur = lesen.lesen(pfad.name, pfad.read_bytes())
     except lesen.LeseFehler as e:
@@ -42,7 +38,11 @@ def _pruefen(args: argparse.Namespace) -> int:
         print("Kein Text gefunden. Bei PDF vermutlich ein Scan ohne Textebene.", file=sys.stderr)
         return 3
 
-    ergebnis = pruefung.pruefen(struktur, regelsaetze)
+    try:
+        ergebnis = pruefung.pruefen(struktur, regelsaetze)
+    except regeln.RegelFehler as e:
+        print(str(e), file=sys.stderr)
+        return 4
     ergebnis["pruefer"] = args.pruefer
     erstellt = datetime.now().isoformat(timespec="seconds")
     meta = {"dateiname": pfad.name, "erstellt": erstellt, "pruefer": args.pruefer}
@@ -65,12 +65,14 @@ def _pruefen(args: argparse.Namespace) -> int:
         "regelsaetze": regelsaetze,
         "sprachen": sprachen,
         "fazit": ergebnis["fazit"],
+        "pruefstatus": ergebnis["pruefstatus"],
+        "freigabe": ergebnis["freigabe"],
         "pdfs": dateien,
     }
     if args.json:
         print(json.dumps(zusammenfassung, ensure_ascii=False, indent=2))
     else:
-        print(f"{pfad.name}: {ergebnis['score']} %, {ergebnis['ampel']}, {len(ergebnis['funde'])} Funde, {ergebnis['stunden']} h")
+        print(f"{pfad.name}: {ergebnis['score']} Suchpunkte, {ergebnis['ampel']}, {len(ergebnis['funde'])} Prüfhinweise, {ergebnis['stunden']} h")
         for k, n in zusammenfassung["klassen"].items():
             print(f"  {k}: {n}")
         print(f"Fazit: {ergebnis['fazit']}")

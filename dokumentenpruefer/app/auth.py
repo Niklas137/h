@@ -140,6 +140,9 @@ def gesperrt(user: dict[str, Any]) -> bool:
 
 
 def fehlversuch(con, user: dict[str, Any]) -> None:
+    # Eine laufende Sperre darf weder gelöscht noch durch weitere Aufrufe verlängert werden.
+    if gesperrt(user):
+        return
     n = int(user.get("fehlversuche") or 0) + 1
     sperre = None
     if n >= config.FEHLVERSUCHE_MAX:

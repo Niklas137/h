@@ -8,7 +8,7 @@
   var LANGS_DE = { de: 'Deutsch', en: 'Englisch', uk: 'Ukrainisch', ru: 'Russisch' };
   var LABEL = { name: 'Name', dark: 'Helligkeit', textSize: 'Textgröße', density: 'Dichte', language: 'Sprache', notifyPopup: 'Pop-up bei fertigem Bericht', notifyApp: 'Hinweise im Tool', notifyWeekly: 'Wöchentliche Zusammenfassung' };
   var KLASSE = { Kritisch: 'r', Schwer: 'y', Mittel: '', Gering: '' };
-  var AMPEL = { gruen: ['g', 'Grün · verwendbar'], gelb: ['y', 'Gelb · überarbeiten'], rot: ['r', 'Rot · nicht abgabereif'] };
+  var AMPEL = { gruen: ['y', 'Altbewertung · erneut prüfen'], gelb: ['y', 'Gelb · fachlich offen'], rot: ['r', 'Rot · dringender Prüfbedarf'] };
 
   var S = {
     status: null, user: null, saved: null, draft: null,
@@ -161,8 +161,8 @@
       }
       var fehlend = Object.keys(st.regeln || {}).filter(function (k) { return !st.regeln[k]; });
       var namen = { basis: 'pruefkatalog.json (Basisprüfung)', din: 'normlogik_82079.json (DIN 82079-1)', ce: 'ce_logik.json (CE)' };
-      if (fehlend.length) { $('regeln-warn').hidden = false; $('regeln-warn').textContent = 'Regeldateien fehlen im Ordner regeln: ' + fehlend.map(function (k) { return namen[k]; }).join(', ') + '. Diese Regelsätze liefern keine Funde, bis die Dateien dort liegen.'; }
-      fehlend.forEach(function (k) { var h = $('hint-' + k); if (h) h.textContent = 'Regeldatei fehlt'; });
+      if (fehlend.length) { $('regeln-warn').hidden = false; $('regeln-warn').textContent = 'Regeldateien fehlen oder sind ungültig: ' + fehlend.map(function (k) { return namen[k]; }).join(', ') + '. Prüfungen mit diesen Regelsätzen werden abgebrochen. Bitte die Dateien korrigieren.'; }
+      fehlend.forEach(function (k) { var h = $('hint-' + k); if (h) h.textContent = 'Regeldatei fehlt oder ist ungültig'; });
     }).catch(function () {});
     api('GET', '/api/ich').then(function (d) { anmeldungUebernehmen(d); go('main'); }).catch(function () { go('start'); });
   }
@@ -398,7 +398,7 @@
 
   $('start-check').addEventListener('click', function () {
     if (!S.file || S.busy) return;
-    zeigeFehler('check-err', ''); S.busy = true; laufStart(S.file.name); render();
+    zeigeFehler('check-err', ''); S.result = null; $('result').hidden = true; S.busy = true; laufStart(S.file.name); render();
     var fd = new FormData();
     fd.append('datei', S.file);
     fd.append('regelsaetze', Object.keys(S.run).filter(function (k) { return S.run[k]; }).join(','));
@@ -407,7 +407,7 @@
     pruefungStreamen(fd).then(function (r) {
       laufEnde(); S.busy = false; S.result = r; render(); zeigeErgebnis(r); ladePruefungen();
       var a = AMPEL[r.ampel] || ['', r.ampel];
-      showPop(r.dateiname + ': ' + r.score + ' %, ' + a[1].split(' · ')[0] + '. ' + r.pdfs.length + ' PDFs liegen bereit.');
+      showPop(r.dateiname + ': ' + r.score + ' Suchpunkte, ' + a[1].split(' · ')[0] + '. ' + r.pdfs.length + ' PDFs liegen bereit.');
     }).catch(function (err) { laufEnde(); S.busy = false; render(); zeigeFehler('check-err', err.message); });
   });
 
@@ -415,7 +415,7 @@
     var a = AMPEL[r.ampel] || ['', r.ampel];
     var namen = { basis: 'Basisprüfung', din: 'DIN 82079-1', ce: 'CE' };
     $('res-meta').textContent = r.dateiname + ' · ' + fmtDatum(r.erstellt);
-    $('res-score').textContent = r.score + ' %';
+    $('res-score').textContent = r.score + ' / 100';
     $('res-ampel').innerHTML = '<span class="dot ' + a[0] + '"></span>' + esc(a[1]);
     $('res-regeln').textContent = r.regelsaetze.map(function (k) { return namen[k] || k; }).join(', ');
     var kl = r.klassen || {};
@@ -424,7 +424,8 @@
     $('res-funde').textContent = r.fundeAnzahl + (teile.length ? ' · ' + teile.join(', ') : '');
     $('res-aufwand').textContent = String(r.stunden).replace('.', ',') + ' h';
     $('res-langs').textContent = r.sprachen.map(function (l) { return LANGS_DE[l] || l; }).join(' und ');
-    $('res-fazit').textContent = r.fazit;
+    $('res-fazit').textContent = r.pruefstatus === 'fachlich_offen' ? r.fazit : 'Altprüfung nach bisheriger Bewertungslogik. Bitte erneut prüfen. Die gespeicherten Berichte und Bewertungen belegen keine fachliche Freigabe.';
+    $('res-suchtreffer').textContent = r.pruefstatus === 'fachlich_offen' ? r.suchtrefferAnzahl + ' Regeln mit Suchtreffern. Alle Anforderungen bleiben fachlich zu prüfen.' : 'Historisches Ergebnis';
     var btn = function (art) { return r.pdfs.filter(function (p) { return p.bericht === art; }).map(function (p) { return '<a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">PDF ' + esc(LANGS[p.sprache] || p.sprache) + '</a>'; }).join(''); };
     $('pdf-pruef').innerHTML = btn('pruef'); $('pdf-fach').innerHTML = btn('fach');
     $('zip-label').textContent = r.pdfs.length + ' PDFs';
@@ -433,7 +434,7 @@
     $('res-tbody').innerHTML = (r.funde || []).map(function (f) {
       var k = KLASSE[f.Fehlerklasse]; var kz = k ? '<span class="tick"><span class="dot ' + k + '"></span>' + esc(f.Fehlerklasse) + '</span>' : esc(f.Fehlerklasse);
       return '<tr><td data-l="ID" class="mono">' + esc(f.ID) + '</td><td data-l="Bereich">' + esc(f.Bereich) + '</td><td data-l="Klasse">' + kz + '</td><td data-l="Bewertung">' + esc(f.Bewertung) + '</td><td data-l="Empfehlung">' + esc(f.Empfehlung) + '</td></tr>';
-    }).join('') || '<tr><td colspan="5" class="muted">Keine Abweichungen festgestellt.</td></tr>';
+    }).join('') || '<tr><td colspan="5" class="muted">Keine weiteren automatischen Hinweise. Die fachliche Prüfung bleibt offen.</td></tr>';
     $('result').hidden = false;
     $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -441,14 +442,14 @@
     api('GET', '/api/pruefungen').then(function (d) {
       $('list-tbody').innerHTML = d.pruefungen.map(function (p) {
         var a = AMPEL[p.ampel] || ['', p.ampel];
-        return '<tr><td data-l="Datum" class="mono">' + esc(fmtDatum(p.erstellt)) + '</td><td data-l="Dokument">' + esc(p.dateiname) + '</td><td data-l="Score" class="mono">' + p.score + ' %</td><td data-l="Ampel"><span class="tick"><span class="dot ' + a[0] + '"></span>' + esc(a[1]) + '</span></td><td data-l="Berichte"><button class="btn-link" data-open="' + esc(p.id) + '">Öffnen</button></td></tr>';
+        return '<tr><td data-l="Datum" class="mono">' + esc(fmtDatum(p.erstellt)) + '</td><td data-l="Dokument">' + esc(p.dateiname) + '</td><td data-l="Suchscore" class="mono">' + p.score + ' / 100</td><td data-l="Ampel"><span class="tick"><span class="dot ' + a[0] + '"></span>' + esc(a[1]) + '</span></td><td data-l="Berichte"><button class="btn-link" data-open="' + esc(p.id) + '">Öffnen</button></td></tr>';
       }).join('') || '<tr><td colspan="5" class="muted">Noch keine Prüfung.</td></tr>';
       $$('[data-open]').forEach(function (b) { b.addEventListener('click', function () { api('GET', '/api/pruefung/' + b.dataset.open).then(function (r) { S.result = r; zeigeErgebnis(r); }).catch(function (err) { showToast(err.message); }); }); });
     }).catch(function () {});
   }
   $('pop-close').addEventListener('click', hidePop);
   $('pop-open').addEventListener('click', function () { hidePop(); if (S.result) { $('result').hidden = false; $('result').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
-  $('pop-demo').addEventListener('click', function () { showPop('Beispiel.docx: 82 %, Grün. 4 PDFs liegen bereit.', true); });
+  $('pop-demo').addEventListener('click', function () { showPop('Beispiel.docx: 82 Suchpunkte, fachlich offen. 4 PDFs liegen bereit.', true); });
   $('act-store').addEventListener('click', function () { if (!S.result) return; api('POST', '/api/pruefung/' + S.result.id + '/ablegen').then(function (r) { showToast(r.abgelegt.length + ' PDFs im Ordner ' + (String(r.ordner).split('/').pop() || 'output') + ' abgelegt'); }).catch(function (err) { showToast(err.message); }); });
   $('act-done').addEventListener('click', function () { S.result = null; S.file = null; $('file').value = ''; $('result').hidden = true; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); showToast('Prüfung abgeschlossen'); });
   $('act-mail').addEventListener('click', function () { if (!S.result) return; $('mail-sub').textContent = 'Fachbericht zu ' + S.result.dateiname + ' in ' + S.result.sprachen.map(function (l) { return LANGS_DE[l] || l; }).join(' und '); $('mail-text').hidden = true; $('mail-copy').hidden = true; zeigeFehler('mail-err', ''); $('modal-mail').hidden = false; });
