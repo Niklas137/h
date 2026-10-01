@@ -36,7 +36,7 @@ def deduplicate_findings(findings: list[Fund]) -> list[Fund]:
     if txt_findings:
         agg = txt_findings[0].copy()
         agg["Bewertung"] = f"Sätze zu lang ({len(txt_findings)} gefunden)"
-        agg["Empfehlung"] = f"{len(txt_findings)} Sätze mit >25 Wörtern gefunden"
+        agg["Empfehlung"] = f"{len(txt_findings)} Sätze mit mehr als 25 Wörtern gefunden"
         agg["Anzahl"] = len(txt_findings)
         agg["Schluessel"] = "satz_zu_lang"
         deduped.append(agg)
@@ -167,16 +167,16 @@ def fazit_teile(findings: list[Fund], score: int) -> list[tuple[str, dict[str, i
     else:
         teile.append(("fazit_gruen", {}))
     if kritisch:
-        teile.append(("kritisch_n", {"n": len(kritisch)}))
+        teile.append(("kritisch_1" if len(kritisch) == 1 else "kritisch_n", {"n": len(kritisch)}))
     if schwer:
-        teile.append(("schwer_n", {"n": len(schwer)}))
+        teile.append(("schwer_1" if len(schwer) == 1 else "schwer_n", {"n": len(schwer)}))
     if ce_fehler:
-        teile.append(("ce_n", {"n": len(ce_fehler)}))
+        teile.append(("ce_1" if len(ce_fehler) == 1 else "ce_n", {"n": len(ce_fehler)}))
     return teile
 
 
 def generate_fazit(findings: list[Fund], score: int) -> str:
-    """Wortlaut wie in app.py, auf Deutsch."""
+    """Wortlaut wie in app.py, auf Deutsch, mit Einzahl bei genau einem Fund."""
     kritisch = [f for f in findings if f.get("Fehlerklasse") == "Kritisch"]
     schwer = [f for f in findings if f.get("Fehlerklasse") == "Schwer"]
     ce_fehler = [f for f in findings if f.get("Normlogik") == "CE / EU-Konformität"]
@@ -188,11 +188,11 @@ def generate_fazit(findings: list[Fund], score: int) -> str:
     else:
         text.append("Das Dokument ist grundsätzlich verwendbar, weist jedoch Optimierungspotenzial auf.")
     if kritisch:
-        text.append(f"Es wurden {len(kritisch)} kritische Abweichungen festgestellt.")
+        text.append("Es wurde 1 kritische Abweichung festgestellt." if len(kritisch) == 1 else f"Es wurden {len(kritisch)} kritische Abweichungen festgestellt.")
     if schwer:
-        text.append(f"Zusätzlich wurden {len(schwer)} schwerwiegende Defizite identifiziert.")
+        text.append("Zusätzlich wurde 1 schwerwiegendes Defizit identifiziert." if len(schwer) == 1 else f"Zusätzlich wurden {len(schwer)} schwerwiegende Defizite identifiziert.")
     if ce_fehler:
-        text.append(f"Im Bereich CE wurden {len(ce_fehler)} Nachweislücken festgestellt.")
+        text.append("Im Bereich CE wurde 1 Nachweislücke festgestellt." if len(ce_fehler) == 1 else f"Im Bereich CE wurden {len(ce_fehler)} Nachweislücken festgestellt.")
     return " ".join(text)
 
 

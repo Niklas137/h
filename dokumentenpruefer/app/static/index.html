@@ -18,10 +18,10 @@
     <div class="gate-pitch" id="pitch-start">
       <div class="goldline"></div>
       <h1 class="display">Dokumentenprüfer</h1>
-      <p class="muted">Technische Dokumente gegen DIN 82079-1 und CE-Anforderungen prüfen, Berichte als PDF, Ergebnisse im Team teilen.</p>
+      <p class="muted">Technische Dokumente gegen DIN 82079-1 und CE-Anforderungen prüfen, Berichte als PDF für Team und Kunden.</p>
       <div class="feat">
         <div><span class="cb"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span>Word und PDF</div>
-        <div><span class="cb"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span>Drei Regelsätze: Basis, DIN 82079-1, CE</div>
+        <div><span class="cb"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span>Drei Regelsätze: Basisprüfung, DIN 82079-1, CE</div>
         <div><span class="cb"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span>Prüfbericht und Fachbericht in bis zu zwei Sprachen</div>
       </div>
     </div>
@@ -30,7 +30,7 @@
       <h1>Erstanmeldung</h1>
       <p class="muted sm">Drei Schritte, dann ist dein Konto eingerichtet. Das Einmal-Passwort gilt nur für diesen Vorgang.</p>
       <div class="steps-list">
-        <div class="step" data-step="1"><div class="num">1</div><div class="t"><b>Einmal-Passwort</b><span>E-Mail und Passwort vom Admin</span></div></div>
+        <div class="step" data-step="1"><div class="num">1</div><div class="t"><b>Einmal-Passwort</b><span>E-Mail-Adresse und Einmal-Passwort vom Admin</span></div></div>
         <div class="step" data-step="2"><div class="num">2</div><div class="t"><b>Verifizierung</b><span>Code an deine E-Mail-Adresse</span></div></div>
         <div class="step" data-step="3"><div class="num">3</div><div class="t"><b>Konto einrichten</b><span>Name und eigenes Passwort</span></div></div>
       </div>
@@ -62,7 +62,7 @@
 
     <form class="gate-card" id="f-step2" hidden autocomplete="off">
       <div class="prog"><span class="done"></span><span class="active"></span><span></span></div>
-      <div class="stack" style="gap:6px"><span class="cap">Schritt 2 von 3</span><h2>Verifizierung</h2><p class="muted sm" id="erst2-text">Wir haben einen 6-stelligen Code an <b id="email-shown">deine E-Mail-Adresse</b> geschickt. Er gilt 10 Minuten.</p></div>
+      <div class="stack" style="gap:6px"><span class="cap">Schritt 2 von 3</span><h2>Verifizierung</h2><p class="muted sm" id="erst2-text">Wir haben einen sechsstelligen Code an <b id="email-shown">deine E-Mail-Adresse</b> geschickt. Er gilt 10 Minuten.</p></div>
       <div class="hint-box" id="erst2-hint" hidden></div>
       <div class="field"><label class="label" for="erst-code">Code</label><input class="input code" id="erst-code" type="text" maxlength="6" placeholder="000000" inputmode="numeric" required></div>
       <div class="err" id="erst2-err" hidden></div>
@@ -132,7 +132,7 @@
           <div class="rule-row">
             <button class="toggle-card" data-run="basis"><span class="cb on"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="t"><b class="sm" style="font-weight:500">Basisprüfung</b><span class="cap" id="hint-basis">Pflichtinhalte und Lesbarkeit</span></span></button>
             <button class="toggle-card" data-run="din"><span class="cb on"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="t"><b class="sm" style="font-weight:500">DIN 82079-1</b><span class="cap" id="hint-din">Nutzungsinformationen</span></span></button>
-            <button class="toggle-card" data-run="ce"><span class="cb on"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="t"><b class="sm" style="font-weight:500">CE / EU-Konformität</b><span class="cap" id="hint-ce">Nachweise und To-do</span></span></button>
+            <button class="toggle-card" data-run="ce"><span class="cb on"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="t"><b class="sm" style="font-weight:500">CE / EU-Konformität</b><span class="cap" id="hint-ce">Nachweise und To-do-Liste</span></span></button>
           </div>
         </div>
         <div class="stack" style="gap:10px">
@@ -177,23 +177,23 @@
         <p class="sm"><b style="font-weight:500">Fazit:</b> <span id="res-fazit"></span></p>
       </div>
       <div class="rep-grid">
-        <div class="card stack" style="gap:10px"><div class="row"><h2><span class="stepnum">2</span>Prüfbericht</h2><span class="badge">intern</span></div><p class="muted sm">Für alle, die mit dem Tool arbeiten: alle Funde mit Gewichtung, Fundstelle und Aufwand.</p><div class="pdfs" id="pdf-pruef"></div></div>
+        <div class="card stack" style="gap:10px"><div class="row"><h2><span class="stepnum">2</span>Prüfbericht</h2><span class="badge">intern</span></div><p class="muted sm">Für alle, die mit dem Tool arbeiten: jeder Fund mit Gewichtung, Fundstelle und Aufwand.</p><div class="pdfs" id="pdf-pruef"></div></div>
         <div class="card stack" style="gap:10px"><div class="row"><h2>Fachbericht</h2><span class="badge">Kunde</span></div><p class="muted sm">Geht an den Kunden: Fazit, To-do-Liste und Maßnahmen, ohne interne Gewichtung und Aufwand.</p><div class="pdfs" id="pdf-fach"></div></div>
       </div>
       <div class="card stack">
         <div class="row"><h2><span class="stepnum">3</span>Weitergabe</h2><span class="cap" id="zip-label"></span></div>
         <div class="actions-row">
-          <button class="btn" id="act-mail"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>E-Mail-Entwurf an Kunden, Fachbericht anhängen</button>
+          <button class="btn" id="act-mail"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>E-Mail-Entwurf an den Kunden mit Fachbericht</button>
           <a class="btn" id="act-zip" href="#" download>Alle PDFs als ZIP</a>
-          <button class="btn" id="act-store">Berichte in output ablegen</button>
+          <button class="btn" id="act-store">Berichte im Ordner output ablegen</button>
           <button class="btn" id="act-done">Prüfung abschließen</button>
         </div>
-        <span class="cap" id="act-hint">Der E-Mail-Entwurf wird in Apple Mail angelegt und nicht gesendet. Du prüfst ihn und schickst ihn selbst ab.</span>
+        <span class="cap" id="act-hint">Auf dem Mac wird der Entwurf in Apple Mail angelegt, sonst als Text zum Kopieren. Gesendet wird nie, du prüfst ihn und schickst ihn selbst ab.</span>
       </div>
       <details class="card details">
         <summary>Funde im Detail (<span id="res-n">0</span>) <span class="cap">nur intern, nicht im Fachbericht</span></summary>
         <div class="tbl-wrap" style="margin-top:12px"><table>
-          <thead><tr><th>ID</th><th>Bereich</th><th>Klasse</th><th>Bewertung</th><th>Empfehlung</th></tr></thead>
+          <thead><tr><th>ID</th><th>Bereich</th><th>Fehlerklasse</th><th>Bewertung</th><th>Empfehlung</th></tr></thead>
           <tbody id="res-tbody"></tbody>
         </table></div>
       </details>
@@ -210,7 +210,7 @@
   </main>
 
   <main class="wrap" id="settings" hidden>
-    <div class="titlebar"><div class="t"><button class="btn" id="back-main" style="align-self:flex-start;margin-bottom:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Zurück zur Prüfung</button><h1>Einstellungen</h1><p class="muted sm">Angemeldet als <span id="user-name2">–</span> · <span id="user-rolle">–</span>. Änderungen wirken sofort und werden mit „Speichern“ übernommen.</p></div><button class="btn-p" id="save-top" disabled>Speichern</button></div>
+    <div class="titlebar"><div class="t"><button class="btn" id="back-main" style="align-self:flex-start;margin-bottom:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Zurück zur Prüfung</button><h1>Einstellungen</h1><p class="muted sm">Angemeldet als <span id="user-name2">–</span> · <span id="user-rolle">–</span>. Änderungen siehst du sofort, gespeichert werden sie mit „Speichern“.</p></div><button class="btn-p" id="save-top" disabled>Speichern</button></div>
     <div class="settings">
       <nav class="snav" aria-label="Einstellungen">
         <span class="grp">Konto</span>
@@ -241,15 +241,15 @@
       <div class="sec" data-pane="sicherheit" hidden>
         <div class="card stack" style="gap:12px"><h2>Passwort</h2><p class="muted sm">Regel: mindestens 14 Zeichen, ein Großbuchstabe, ein Sonderzeichen.</p><button class="btn" id="pwd-open" style="align-self:flex-start">Passwort ändern</button></div>
         <div class="card stack" style="gap:8px"><h2>Aktive Sitzungen</h2><div id="sess-list"><span class="muted sm">Wird geladen …</span></div></div>
-        <div class="card stack proposal" style="gap:10px"><div class="row"><h2>Zwei-Faktor-Anmeldung</h2><span class="badge" style="color:var(--warn)">Vorschlag</span></div><p class="muted sm">Zweiter Faktor per Authentifizierungs-App. Noch nicht gebaut, für Phase 2 vorgeschlagen.</p></div>
+        <div class="card stack proposal" style="gap:10px"><div class="row"><h2>Zwei-Faktor-Anmeldung</h2><span class="badge" style="color:var(--warn)">Vorschlag</span></div><p class="muted sm">Zweiter Faktor per Authentifizierungs-App. Noch nicht verfügbar, für einen späteren Ausbau vorgesehen.</p></div>
       </div>
 
       <div class="sec" data-pane="erscheinung" hidden>
         <div class="card stack" style="gap:var(--gap)">
           <h2>Erscheinungsbild</h2>
-          <div class="row"><div class="txt"><b style="font-weight:500">Helligkeit</b><span class="muted sm">Dunkel ist die Standard-Darstellung von FSH. Hell ist die Papierfassung.</span></div><div class="seg" id="seg-dark"><button data-v="1">Dunkel</button><button data-v="0">Hell</button></div></div>
+          <div class="row"><div class="txt"><b style="font-weight:500">Helligkeit</b><span class="muted sm">Dunkel ist der Standard bei FSH. Hell ist die helle Fassung für helle Räume und zum Drucken.</span></div><div class="seg" id="seg-dark"><button data-v="1">Dunkel</button><button data-v="0">Hell</button></div></div>
           <div class="hr"></div>
-          <div class="row"><div class="txt"><b style="font-weight:500">Textgröße</b><span class="muted sm">Skaliert alle Texte, Zeilen bleiben unter 80 Zeichen.</span></div><div class="seg" id="seg-ts"><button data-v="klein">Klein</button><button data-v="normal">Normal</button><button data-v="gross">Groß</button></div></div>
+          <div class="row"><div class="txt"><b style="font-weight:500">Textgröße</b><span class="muted sm">Vergrößert oder verkleinert alle Texte.</span></div><div class="seg" id="seg-ts"><button data-v="klein">Klein</button><button data-v="normal">Normal</button><button data-v="gross">Groß</button></div></div>
           <div class="hr"></div>
           <div class="row"><div class="txt"><b style="font-weight:500">Dichte</b><span class="muted sm">Kompakt zeigt mehr auf einen Blick, Normal lässt mehr Luft.</span></div><div class="seg" id="seg-dens"><button data-v="kompakt">Kompakt</button><button data-v="normal">Normal</button></div></div>
         </div>
@@ -260,14 +260,14 @@
           <h2>Sprachen</h2>
           <p class="muted sm">Zum Nachlesen. Die Oberflächensprache wechselst du oben über „Sprache“. Die Berichtssprachen wählst du auf der Prüfseite je Prüfung, nicht hier.</p>
           <div class="sess"><div class="kv"><b class="sm" style="font-weight:500">Deutsch</b><span class="cap">Oberfläche und Berichte · Standard</span></div><span class="badge">DE</span></div>
-          <div class="sess"><div class="kv"><b class="sm" style="font-weight:500">English</b><span class="cap">Oberfläche und Berichte · Englisch</span></div><span class="badge">EN</span></div>
-          <div class="sess"><div class="kv"><b class="sm" style="font-weight:500">Українська</b><span class="cap">Oberfläche und Berichte · Ukrainisch</span></div><span class="badge">UK</span></div>
-          <div class="sess"><div class="kv"><b class="sm" style="font-weight:500">Русский</b><span class="cap">Oberfläche und Berichte · Russisch</span></div><span class="badge">RU</span></div>
+          <div class="sess"><div class="kv"><b class="sm" style="font-weight:500">English</b><span class="cap">Berichte · Englisch</span></div><span class="badge">EN</span></div>
+          <div class="sess"><div class="kv"><b class="sm" style="font-weight:500">Українська</b><span class="cap">Berichte · Ukrainisch</span></div><span class="badge">UK</span></div>
+          <div class="sess"><div class="kv"><b class="sm" style="font-weight:500">Русский</b><span class="cap">Berichte · Russisch</span></div><span class="badge">RU</span></div>
         </div>
         <div class="card stack" style="gap:8px">
           <h3>So werden die Sprachen genutzt</h3>
           <p class="sm">Die Oberflächensprache gilt für Menüs, Knöpfe und Hinweise und ist zugleich die Basissprache der Berichte.</p>
-          <p class="sm">Auf der Prüfseite wählst du je Prüfung eine zusätzliche Berichtssprache oder keine. Prüfbericht und Fachbericht entstehen dann als PDF in der Basissprache und noch einmal in der Zusatzsprache.</p>
+          <p class="sm">Auf der Prüfseite wählst du je Prüfung eine zusätzliche Berichtssprache oder keine. Prüfbericht und Fachbericht entstehen dann als PDF in der Basissprache und noch einmal in der zusätzlichen Berichtssprache.</p>
           <p class="cap">Die Oberfläche selbst ist in dieser Version auf Deutsch. Die Berichte gibt es in allen vier Sprachen.</p>
         </div>
       </div>
@@ -276,7 +276,7 @@
         <div class="card"><h2 style="margin-bottom:8px">Benachrichtigungen</h2>
           <div class="list-row"><div class="txt"><b style="font-weight:500">Pop-up, wenn ein Prüfbericht fertig ist</b><span class="muted sm">Erscheint oben auf dem Bildschirm mit Score, Ampel und Knopf zum Bericht. Keine Bestätigungs-E-Mail.</span></div><button class="sw" data-sw="notifyPopup" aria-label="Pop-up bei fertigem Bericht" role="switch"></button></div>
           <div class="list-row"><div class="txt"><b style="font-weight:500">So sieht das Pop-up aus</b><span class="muted sm">Beispiel mit einem fertigen Bericht, verschwindet nach 9 Sekunden von selbst.</span></div><button class="btn" id="pop-demo">Vorschau anzeigen</button></div>
-          <div class="list-row"><div class="txt"><b style="font-weight:500">Hinweise im Tool</b><span class="muted sm">Neue Regelsätze, Wartung, Updates</span></div><button class="sw" data-sw="notifyApp" aria-label="Hinweise im Tool" role="switch"></button></div>
+          <div class="list-row"><div class="txt"><b style="font-weight:500">Hinweise im Tool</b><span class="muted sm">Neue Regelsätze, Wartung, Aktualisierungen. Vorschlag, noch ohne Funktion.</span></div><button class="sw" data-sw="notifyApp" aria-label="Hinweise im Tool" role="switch"></button></div>
           <div class="list-row"><div class="txt"><b style="font-weight:500">Wöchentliche Zusammenfassung</b><span class="muted sm">Montags: Prüfungen der Woche, offene To-dos. Vorschlag, noch ohne Versand.</span></div><button class="sw" data-sw="notifyWeekly" aria-label="Wöchentliche Zusammenfassung" role="switch"></button></div>
         </div>
       </div>
@@ -292,9 +292,9 @@
       </div>
 
       <div class="sec legal" data-pane="recht" hidden>
-        <div class="card stack" style="gap:10px"><h2>Impressum</h2><p>[Impressum nach DDG: Firma, Anschrift, vertretungsberechtigte Person, E-Mail, Telefon, Registereintrag, Umsatzsteuer-ID]</p><span class="cap">Text kommt von Niklas, Stand wird mit Datum angezeigt.</span></div>
-        <div class="card stack" style="gap:10px"><h2>Datenschutzerklärung</h2><p>[Datenschutzerklärung: Verantwortlicher, Zwecke und Rechtsgrundlagen, gespeicherte Daten (Konto, Einstellungen, Prüfprotokolle), Speicherdauer, Rechte der Betroffenen, Kontakt]</p><span class="cap">Hochgeladene Dokumente werden nur für die Prüfung gelesen und nicht gespeichert. Gespeichert werden Ergebnis und Berichte.</span></div>
-        <div class="card stack" style="gap:10px"><h2>Lizenzen</h2><p class="sm">Schriften IBM Plex Sans und IBM Plex Mono: SIL Open Font License. Bibliotheken: FastAPI, Uvicorn, SQLite, python-docx, PyPDF2, pdfplumber, reportlab, argon2-cffi, Open-Source-Lizenzen laut requirements.txt.</p></div>
+        <div class="card stack" style="gap:10px"><h2>Impressum</h2><p>Impressum folgt.</p></div>
+        <div class="card stack" style="gap:10px"><h2>Datenschutzerklärung</h2><p>Datenschutzerklärung folgt.</p><span class="cap">Hochgeladene Dokumente werden nur für die Prüfung gelesen und nicht gespeichert. Gespeichert werden Ergebnis und Berichte.</span></div>
+        <div class="card stack" style="gap:10px"><h2>Lizenzen</h2><p class="sm">Schrift IBM Plex Sans: SIL Open Font License. Bibliotheken: FastAPI, Uvicorn, SQLite, python-docx, PyPDF2, pdfplumber, reportlab, argon2-cffi, Open-Source-Lizenzen laut requirements.txt.</p></div>
       </div>
 
       <div class="sec" data-pane="info" hidden>
@@ -315,13 +315,13 @@
   <div class="bar" id="bar" hidden>
     <span class="pdot"></span><span class="txt" id="bar-txt">1 Änderung</span>
     <button class="btn" id="discard">Verwerfen</button>
-    <button class="btn" id="review">Prüfen</button>
+    <button class="btn" id="review">Ansehen</button>
   </div>
   <div class="toast" id="toast" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span id="toast-txt">Gespeichert</span></div>
 
   <div class="modal" id="modal" hidden>
     <div class="dialog" role="dialog" aria-labelledby="dlg-title">
-      <div class="kv"><h2 id="dlg-title">Änderungen prüfen</h2><p class="muted sm" id="dlg-sub"></p></div>
+      <div class="kv"><h2 id="dlg-title">Änderungen ansehen</h2><p class="muted sm" id="dlg-sub"></p></div>
       <div class="changes" id="changes"></div>
       <div class="actions"><button class="btn" id="dlg-close">Weiter bearbeiten</button><button class="btn-p" id="save">Speichern</button></div>
     </div>
@@ -365,7 +365,7 @@
   <div class="modal" id="modal-mail" hidden>
     <div class="dialog" role="dialog" aria-labelledby="mail-title">
       <div class="kv"><h2 id="mail-title">E-Mail-Entwurf</h2><p class="muted sm" id="mail-sub"></p></div>
-      <div class="field"><label class="label" for="mail-an">An (optional)</label><input class="input" id="mail-an" type="email" placeholder="kunde@firma.de"></div>
+      <div class="field"><label class="label" for="mail-an">Empfänger (optional)</label><input class="input" id="mail-an" type="email" placeholder="kunde@firma.de"></div>
       <div class="hint-box" id="mail-text" hidden style="white-space:pre-wrap"></div>
       <div class="err" id="mail-err" hidden></div>
       <div class="actions"><button type="button" class="btn" id="mail-close">Schließen</button><button type="button" class="btn" id="mail-copy" hidden>Text kopieren</button><button type="button" class="btn-p" id="mail-go">Entwurf anlegen</button></div>
@@ -377,7 +377,7 @@
     <div class="panel">
       <div class="row"><h2>Hilfe</h2><button class="btn x" id="drawer-close" aria-label="Schließen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       <section><h3>Dokument prüfen</h3><ol><li>Word- oder PDF-Datei in das Feld ziehen oder auswählen.</li><li>Regelsätze prüfen und eine zusätzliche Berichtssprache wählen, oder keine.</li><li>„Prüfung starten“. Wenn der Bericht fertig ist, erscheint oben ein Pop-up. Darunter das Ergebnis in drei Schritten: Ergebnis mit Fazit, die Berichte (Prüfbericht intern, Fachbericht Kunde) als PDF je Sprache, und die Weitergabe mit E-Mail-Entwurf, ZIP und Ablage.</li></ol></section>
-      <section><h3>Ampel</h3><p class="sm">Grün ab 80 %: verwendbar. Gelb von 60 bis 79 %: überarbeiten. Rot unter 60 %: nicht abgabereif. Der Score sinkt je Fund um dessen Gewichtung.</p></section>
+      <section><h3>Ampel</h3><p class="sm">Grün ab 80 %: verwendbar. Gelb 60 bis 79 %: überarbeiten. Rot unter 60 %: nicht abgabereif. Der Score sinkt je Fund um dessen Gewichtung.</p></section>
       <section><h3>Erstanmeldung</h3><p class="sm">Einmal-Passwort vom Admin, Code an deine E-Mail-Adresse, dann eigenes Passwort: mindestens 14 Zeichen, ein Großbuchstabe, ein Sonderzeichen.</p></section>
       <section><h3>Kopfleiste</h3><p class="sm">Sprache (Deutsch, Englisch, Ukrainisch, Russisch) und Helligkeit wirken sofort und werden für dein Konto gespeichert. Die Oberflächensprache ist zugleich die Basissprache der Berichte. Alles Weitere unter Einstellungen.</p></section>
       <section><h3>Kontakt</h3><p class="sm mono" id="help-adresse">[Support-Adresse]</p><p class="sm" id="help-kontakt">Antwort innerhalb von 24 Stunden. Beschreibe deinen Fall so genau wie möglich und häng gern Screenshots an: aktueller Stand, angezeigte Fehlermeldung oder was sonst hilft. Bei dringenden Fragen erreichst du uns telefonisch unter [Telefonnummer], Montag bis Freitag von [8:00] bis [16:00] Uhr.</p></section>

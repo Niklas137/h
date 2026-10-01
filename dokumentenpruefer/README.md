@@ -140,6 +140,8 @@ daten/, output/        werden zur Laufzeit angelegt, nicht versioniert
 - Regeldateien `pruefkatalog.json` und `ce_logik.json`: Stand vom 21. Mai 2026 aus der Git-Historie. Gibt es auf dem Mac eine neuere Fassung, diese hierher kopieren. Übersetzungen (`empfehlung_en/uk/ru`) fehlen noch, Berichte in anderen Sprachen zeigen dort die deutsche Empfehlung.
 - Impressum und Datenschutz unter Einstellungen → Rechtliches mit den eigenen Texten füllen
   (`app/static/index.html`, Bereich `data-pane="recht"`).
+  Impressum nach DDG: Firma, Anschrift, vertretungsberechtigte Person, E-Mail, Telefon, Registereintrag, Umsatzsteuer-ID.
+  Datenschutzerklärung: Verantwortlicher, Zwecke und Rechtsgrundlagen, gespeicherte Daten (Konto, Einstellungen, Prüfergebnisse), Speicherdauer, Rechte der Betroffenen, Kontakt.
 - Kontaktangaben für die Hilfe setzen (`DP_SUPPORT`, `DP_TELEFON`, `DP_ZEITEN`).
 - SMTP für den Code einrichten oder `DP_VERIFIZIERUNG=aus` setzen.
 - Oberfläche in Englisch, Ukrainisch und Russisch (Phase 2).

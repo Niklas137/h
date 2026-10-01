@@ -18,7 +18,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import auth, config, db, einstellungen, mail
-from .pruefer import berichte, lesen, pruefung, regeln
+from .pruefer import berichte, lesen, pruefung, regeln, texte
 
 log = logging.getLogger("dokumentenpruefer")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -69,7 +69,7 @@ def aktueller_benutzer(request: Request) -> dict[str, Any]:
     with db.transaktion() as con:
         user = auth.sitzung_pruefen(con, token)
     if user is None:
-        raise HTTPException(status_code=401, detail="Nicht angemeldet")
+        raise HTTPException(status_code=401, detail="Bitte zuerst anmelden.")
     return user
 
 
@@ -259,7 +259,7 @@ async def einstellungen_aendern(request: Request, user: dict[str, Any] = Depends
     daten = await _json(request)
     gueltig, fehler = einstellungen.pruefen(daten)
     if fehler:
-        return _fehler(400, "Ungültige Werte.", felder=fehler)
+        return _fehler(400, "Diese Einstellung gibt es nicht oder der Wert ist nicht erlaubt.", felder=fehler)
     with db.transaktion() as con:
         einst = einstellungen.schreiben(con, user["id"], gueltig)
     return {"einstellungen": einst}
@@ -553,8 +553,8 @@ async def pruefung_mail(pruef_id: str, request: Request, user: dict[str, Any] = 
     text = (
         "Guten Tag,\n\n"
         f"anbei der Fachbericht zur Prüfung des Dokuments {row['dateiname']} "
-        f"({', '.join(config.SPRACHNAMEN.get(s, s) for s in sprachen)}).\n\n"
-        f"Ergebnis: {row['score']} %.\n\n"
+        f"({', '.join(config.SPRACHNAMEN_DE.get(s, s) for s in sprachen)}).\n\n"
+        f"Ergebnis: {row['score']} %, {texte.ampel('de', row['ampel'])}.\n\n"
         "Bei Fragen melden Sie sich gern.\n\n"
         f"Mit freundlichen Grüßen\n{user['name']}\n{config.BERICHT_KOPF}"
     )

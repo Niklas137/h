@@ -4,6 +4,8 @@
   var $ = function (id) { return document.getElementById(id); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
   var LANGS = { de: 'Deutsch', en: 'English', uk: 'Українська', ru: 'Русский' };
+  // Deutsche Namen für Sätze; LANGS bleibt für Knöpfe und Menü.
+  var LANGS_DE = { de: 'Deutsch', en: 'Englisch', uk: 'Ukrainisch', ru: 'Russisch' };
   var LABEL = { name: 'Name', dark: 'Helligkeit', textSize: 'Textgröße', density: 'Dichte', language: 'Sprache', notifyPopup: 'Pop-up bei fertigem Bericht', notifyApp: 'Hinweise im Tool', notifyWeekly: 'Wöchentliche Zusammenfassung' };
   var KLASSE = { Kritisch: 'r', Schwer: 'y', Mittel: '', Gering: '' };
   var AMPEL = { gruen: ['g', 'Grün · verwendbar'], gelb: ['y', 'Gelb · überarbeiten'], rot: ['r', 'Rot · nicht abgabereif'] };
@@ -27,7 +29,7 @@
         var d = {};
         try { d = t ? JSON.parse(t) : {}; } catch (e) { d = { fehler: 'Unerwartete Antwort vom Server.' }; }
         if (r.status === 401 && S.screen !== 'start' && S.screen !== 'erst' && !/anmelden|erstanmeldung|passwort/.test(url)) { abmelden(false); }
-        if (!r.ok) { var err = new Error(d.fehler || ('Fehler ' + r.status)); err.daten = d; err.status = r.status; throw err; }
+        if (!r.ok) { var err = new Error(d.fehler || ('Fehler ' + r.status + '. Bitte noch einmal versuchen.')); err.daten = d; err.status = r.status; throw err; }
         return d;
       });
     });
@@ -42,7 +44,7 @@
     if (typeof v === 'boolean') { if (key === 'dark') return v ? 'Dunkel' : 'Hell'; return v ? 'An' : 'Aus'; }
     if (key === 'textSize') return { klein: 'Klein', normal: 'Normal', gross: 'Groß' }[v] || v;
     if (key === 'density') return v === 'kompakt' ? 'Kompakt' : 'Normal';
-    if (key === 'language') return LANGS[v] || 'Deutsch';
+    if (key === 'language') return LANGS_DE[v] || 'Deutsch';
     return String(v);
   }
   function changes() {
@@ -108,11 +110,11 @@
     $('grp-team').hidden = u.rolle !== 'admin'; $('nav-verwaltung').hidden = u.rolle !== 'admin';
 
     var baseLang = LANGS[d.language] ? d.language : 'de';
-    $('rl-main').textContent = LANGS[baseLang]; $('ui-side').textContent = LANGS[baseLang];
+    $('rl-main').textContent = LANGS_DE[baseLang]; $('ui-side').textContent = LANGS_DE[baseLang];
     var extra = (S.lang2 !== 'none' && S.lang2 !== baseLang && LANGS[S.lang2]) ? S.lang2 : null;
-    $('rl-side').textContent = extra ? LANGS[extra] : 'Keine';
+    $('rl-side').textContent = extra ? LANGS_DE[extra] : 'Keine';
     var langs = extra ? [baseLang, extra] : [baseLang];
-    $('report-plan').textContent = 'Erzeugt: Prüfbericht und Fachbericht in ' + langs.map(function (l) { return LANGS[l]; }).join(' und ') + ' (' + (langs.length * 2) + ' PDFs)';
+    $('report-plan').textContent = 'Erzeugt: Prüfbericht und Fachbericht in ' + langs.map(function (l) { return LANGS_DE[l]; }).join(' und ') + ' (' + (langs.length * 2) + ' PDFs)';
     $$('#seg-run-lang2 button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === S.lang2); });
     $$('[data-run]').forEach(function (el) { el.querySelector('.cb').classList.toggle('on', !!S.run[el.dataset.run]); });
     $('drop-text').textContent = S.file ? S.file.name : 'Word (.docx) oder PDF hierher ziehen';
@@ -200,7 +202,7 @@
         S.step = 2;
         var hint = $('erst2-hint');
         if (d.code) { hint.hidden = false; hint.textContent = 'Entwicklungsmodus: Der Code lautet ' + d.code + '.'; }
-        else if (!d.gesendet) { hint.hidden = false; hint.textContent = 'Es ist kein E-Mail-Versand eingerichtet. Der Code steht im Protokoll des Servers (daten/codes.log). Bitte beim Admin erfragen.'; }
+        else if (!d.gesendet) { hint.hidden = false; hint.textContent = 'Es ist kein E-Mail-Versand eingerichtet. Der Admin findet den Code in der Datei daten/codes.log.'; }
         else { hint.hidden = true; }
         if (erneut) showToast('Neuer Code gesendet');
       } else { S.step = 3; }
@@ -294,7 +296,7 @@
   function ladeBenutzer() {
     if (!S.user || S.user.rolle !== 'admin') return;
     api('GET', '/api/benutzer').then(function (d) {
-      var st = { aktiv: ['g', 'Aktiv'], einmal: ['y', 'Einmal-Passwort offen'], gesperrt: ['r', 'Gesperrt'] };
+      var st = { aktiv: ['g', 'Aktiv'], einmal: ['y', 'Erstanmeldung offen'], gesperrt: ['r', 'Gesperrt'] };
       $('users-tbody').innerHTML = d.benutzer.map(function (u) {
         var s = st[u.status] || ['', u.status];
         var selbst = u.id === S.user.id;
@@ -317,7 +319,7 @@
   $('f-user').addEventListener('submit', function (e) {
     e.preventDefault(); zeigeFehler('user-err', '');
     api('POST', '/api/benutzer', { name: $('u-name').value.trim(), email: $('u-email').value.trim(), rolle: $('u-rolle').value })
-      .then(function (r) { zeigeOtp('Konto für ' + r.benutzer.name + ' angelegt. Einmal-Passwort, gilt ' + r.gueltigTage + ' Tage:', r.einmalPasswort); ladeBenutzer(); })
+      .then(function (r) { zeigeOtp('Konto für ' + r.benutzer.name + ' angelegt. Das Einmal-Passwort gilt ' + r.gueltigTage + ' Tage:', r.einmalPasswort); ladeBenutzer(); })
       .catch(function (err) { zeigeFehler('user-err', err.message); });
   });
 
@@ -347,7 +349,7 @@
 
   function zeigeErgebnis(r) {
     var a = AMPEL[r.ampel] || ['', r.ampel];
-    var namen = { basis: 'Basis', din: 'DIN 82079-1', ce: 'CE' };
+    var namen = { basis: 'Basisprüfung', din: 'DIN 82079-1', ce: 'CE' };
     $('res-meta').textContent = r.dateiname + ' · ' + fmtDatum(r.erstellt);
     $('res-score').textContent = r.score + ' %';
     $('res-ampel').innerHTML = '<span class="dot ' + a[0] + '"></span>' + esc(a[1]);
@@ -357,7 +359,7 @@
     if (kl.Kritisch) teile.push(kl.Kritisch + ' kritisch'); if (kl.Schwer) teile.push(kl.Schwer + ' schwer'); if (kl.Mittel) teile.push(kl.Mittel + ' mittel'); if (kl.Gering) teile.push(kl.Gering + ' gering');
     $('res-funde').textContent = r.fundeAnzahl + (teile.length ? ' · ' + teile.join(', ') : '');
     $('res-aufwand').textContent = String(r.stunden).replace('.', ',') + ' h';
-    $('res-langs').textContent = r.sprachen.map(function (l) { return LANGS[l] || l; }).join(' und ');
+    $('res-langs').textContent = r.sprachen.map(function (l) { return LANGS_DE[l] || l; }).join(' und ');
     $('res-fazit').textContent = r.fazit;
     var btn = function (art) { return r.pdfs.filter(function (p) { return p.bericht === art; }).map(function (p) { return '<a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">PDF ' + esc(LANGS[p.sprache] || p.sprache) + '</a>'; }).join(''); };
     $('pdf-pruef').innerHTML = btn('pruef'); $('pdf-fach').innerHTML = btn('fach');
@@ -368,7 +370,6 @@
       var k = KLASSE[f.Fehlerklasse]; var kz = k ? '<span class="tick"><span class="dot ' + k + '"></span>' + esc(f.Fehlerklasse) + '</span>' : esc(f.Fehlerklasse);
       return '<tr><td data-l="ID" class="mono">' + esc(f.ID) + '</td><td data-l="Bereich">' + esc(f.Bereich) + '</td><td data-l="Klasse">' + kz + '</td><td data-l="Bewertung">' + esc(f.Bewertung) + '</td><td data-l="Empfehlung">' + esc(f.Empfehlung) + '</td></tr>';
     }).join('') || '<tr><td colspan="5" class="muted">Keine Abweichungen festgestellt.</td></tr>';
-    $('act-hint').textContent = 'Der E-Mail-Entwurf wird auf dem Mac in Apple Mail angelegt und nicht gesendet. Du prüfst ihn und schickst ihn selbst ab.';
     $('result').hidden = false;
     $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -384,9 +385,9 @@
   $('pop-close').addEventListener('click', hidePop);
   $('pop-open').addEventListener('click', function () { hidePop(); if (S.result) { $('result').hidden = false; $('result').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
   $('pop-demo').addEventListener('click', function () { showPop('Beispiel.docx: 82 %, Grün. 4 PDFs liegen bereit.', true); });
-  $('act-store').addEventListener('click', function () { if (!S.result) return; api('POST', '/api/pruefung/' + S.result.id + '/ablegen').then(function (r) { showToast(r.abgelegt.length + ' PDFs abgelegt in ' + r.ordner); }).catch(function (err) { showToast(err.message); }); });
+  $('act-store').addEventListener('click', function () { if (!S.result) return; api('POST', '/api/pruefung/' + S.result.id + '/ablegen').then(function (r) { showToast(r.abgelegt.length + ' PDFs im Ordner ' + (String(r.ordner).split('/').pop() || 'output') + ' abgelegt'); }).catch(function (err) { showToast(err.message); }); });
   $('act-done').addEventListener('click', function () { S.result = null; S.file = null; $('file').value = ''; $('result').hidden = true; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); showToast('Prüfung abgeschlossen'); });
-  $('act-mail').addEventListener('click', function () { if (!S.result) return; $('mail-sub').textContent = 'Fachbericht zu ' + S.result.dateiname + ' in ' + S.result.sprachen.map(function (l) { return LANGS[l] || l; }).join(' und '); $('mail-text').hidden = true; $('mail-copy').hidden = true; zeigeFehler('mail-err', ''); $('modal-mail').hidden = false; });
+  $('act-mail').addEventListener('click', function () { if (!S.result) return; $('mail-sub').textContent = 'Fachbericht zu ' + S.result.dateiname + ' in ' + S.result.sprachen.map(function (l) { return LANGS_DE[l] || l; }).join(' und '); $('mail-text').hidden = true; $('mail-copy').hidden = true; zeigeFehler('mail-err', ''); $('modal-mail').hidden = false; });
   $('mail-close').addEventListener('click', function () { $('modal-mail').hidden = true; });
   $('mail-go').addEventListener('click', function () {
     api('POST', '/api/pruefung/' + S.result.id + '/mail-entwurf', { an: $('mail-an').value.trim() }).then(function (r) {

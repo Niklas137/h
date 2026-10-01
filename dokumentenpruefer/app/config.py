@@ -25,6 +25,7 @@ OUTPUT = Path(os.environ.get("DP_OUTPUT", BASIS / "output"))
 
 SPRACHEN = ["de", "en", "uk", "ru"]
 SPRACHNAMEN = {"de": "Deutsch", "en": "English", "uk": "Українська", "ru": "Русский"}
+SPRACHNAMEN_DE = {"de": "Deutsch", "en": "Englisch", "uk": "Ukrainisch", "ru": "Russisch"}
 REGELSAETZE = ["basis", "din", "ce"]
 
 SITZUNG_TAGE = int(os.environ.get("DP_SITZUNG_TAGE", "14"))
