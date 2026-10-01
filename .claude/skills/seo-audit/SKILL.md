@@ -38,6 +38,7 @@ wird mit dem vorherigen verglichen. Alle Parameter stehen fest. Nicht nachfragen
 | `seo-audit/tools/onpage_check.py` | liest eine gespeicherte HTML-Seite und gibt die On-Page-Merkmale als JSON aus |
 | `seo-audit/tools/browser_setup.sh` | einmal je Container: Proxy-Zertifikat für Chromium einrichten |
 | `seo-audit/tools/fetch_rendered.js` | lädt eine Seite im Browser und speichert den gerenderten DOM, Ladezeiten und Screenshot |
+| `seo-audit/tools/mail_dns_check.py` | prüft SPF, DMARC, DKIM und MX beider Domains gegen die Sollwerte (Befund B12) |
 
 ## Ablauf
 
@@ -134,7 +135,8 @@ for n in fsh-documentation.de _dmarc.fsh-documentation.de fsh-documentation.com 
 done
 ```
 
-Gelesen wird das Feld `Answer` → `data` der Antwort. Sollwerte (Herleitung in
+Kurzform: `python3 seo-audit/tools/mail_dns_check.py` prüft alle Einträge gegen die Sollwerte (Exit 0 =
+alle gesetzt). Gelesen wird das Feld `Answer` → `data` der Antwort. Sollwerte (Herleitung in
 `website/google-und-email-dns.md`): `fsh-documentation.de` TXT mit `v=spf1 include:_spf.strato.com`
 (`~all` oder `-all`); `_dmarc.fsh-documentation.de` mit `p=reject` und `rua=`; `fsh-documentation.com`
 TXT `v=spf1 -all`; `_dmarc.fsh-documentation.com` mit `p=reject`. Fehlt ein Wert, bleibt der Befund
