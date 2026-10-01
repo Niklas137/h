@@ -1,6 +1,6 @@
 # Dokumentenprüfer auf dem Mac: Schritt für Schritt im Terminal
 
-Stand: 2. Oktober 2026, Phase-1-Prüfstand 1.1.0. Jeder Schritt hat eine Kontrolle.
+Stand: 1. Oktober 2026 (UTC), Phase-1-Prüfstand 1.1.0. Jeder Schritt hat eine Kontrolle.
 Bei einer abweichenden Ausgabe stoppen und die Fehlermeldung weitergeben.
 
 ## 1. Terminal öffnen

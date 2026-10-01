@@ -7,6 +7,10 @@ Look von FSH-Documentation, Berichte als PDF in Deutsch, Englisch, Ukrainisch un
 Phase-1-Prüfstand 1.1.0: eigener Branch `codex/dokumentenpruefer`, eigene Arbeitskopie.
 Der Claude-Branch bleibt unabhängig; Zusammenführen erst nach Prüfung.
 
+Die technische Abnahme ist in [ABNAHME_PHASE1.md](ABNAHME_PHASE1.md) dokumentiert:
+83 Python-Tests und sieben Browser-Ablaufgruppen sind auf Linux und macOS bestanden.
+Dort stehen auch die noch ausstehenden Schritte für die tatsächliche Mac-Installation.
+
 Die bisherige Streamlit-App `app.py` im Ordner darüber bleibt unverändert als Rückfall. Die
 Prüflogik ist 1:1 übernommen (Schlüsselwörter, Gewichtung, Score, Ampel, Fazit, CE-To-dos).
 Die Prüfung ist eine automatische Vorprüfung per Schlüsselwortsuche. Die fachliche Prüfung und
