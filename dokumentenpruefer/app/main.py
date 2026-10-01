@@ -422,6 +422,7 @@ def _pruefung_antwort(row: dict[str, Any]) -> dict[str, Any]:
         "funde": ergebnis.get("funde", []),
         "todos": ergebnis.get("todos", []),
         "regelnVorhanden": ergebnis.get("regelnVorhanden", {}),
+        "lesehinweise": ergebnis.get("lesehinweise", []),
         "pruefstatus": ergebnis.get("pruefstatus", "altbestand"),
         "freigabe": False,
         "suchtrefferAnzahl": ergebnis.get("suchtrefferAnzahl", 0),
@@ -446,10 +447,11 @@ def _pruefung_durchfuehren(
     Die Datenbanktransaktion bleibt kurz; die PDFs entstehen danach.
     """
     melden("lesen", {})
-    struktur = lesen.lesen(name, inhalt)
+    struktur, lesehinweise = lesen.lesen_mit_hinweisen(name, inhalt)
     melden("pruefen", {})
     ergebnis = pruefung.pruefen(struktur, gewaehlt)
     ergebnis["pruefer"] = user["name"]
+    ergebnis["lesehinweise"] = lesehinweise
     with db.transaktion() as con:
         einst = einstellungen.lesen(con, user["id"])
         sprachen = _sprachen(einst, zusatz)
@@ -601,8 +603,10 @@ def pruefung_ablegen(pruef_id: str, user: dict[str, Any] = Depends(aktueller_ben
     abgelegt = []
     for eintrag in _pdf_liste(row):
         quelle = _pdf_pfad(row, eintrag["bericht"], eintrag["sprache"])
-        ziel = config.OUTPUT / quelle.name
-        shutil.copy2(quelle, ziel)
+        # Nie überschreiben: gleicher Inhalt wird wiederverwendet, sonst nächste Version v02, v03, ...
+        ziel = berichte.freier_dateiname(config.OUTPUT, eintrag["bericht"], row["dateiname"], eintrag["sprache"], row["erstellt"], quelle.read_bytes())
+        if not ziel.exists():
+            shutil.copy2(quelle, ziel)
         abgelegt.append(str(ziel))
     return {"abgelegt": abgelegt, "ordner": str(config.OUTPUT)}
 

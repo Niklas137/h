@@ -197,6 +197,8 @@ def _kopfblock(ergebnis: dict[str, Any], meta: dict[str, Any], sprache: str, art
     story.append(Spacer(1, 4 * mm))
     story.append(Paragraph(_esc(texte.t(sprache, "hinweis_intern" if art == "pruef" else "hinweis_fach")), st["muted"]))
     story.append(Paragraph(_esc(texte.t(sprache, "hinweis_vorpruefung", firma=config.BERICHT_KOPF)), st["muted"]))
+    for hinweis in ergebnis.get("lesehinweise", []):
+        story.append(Paragraph(_esc(texte.t(sprache, "lesehinweis") + " " + hinweis), st["muted"]))
     return story
 
 
@@ -334,6 +336,17 @@ def erzeugen(art: str, ergebnis: dict[str, Any], meta: dict[str, Any], sprache: 
     if art == "fach":
         return fachbericht(ergebnis, meta, sprache)
     raise ValueError(f"Unbekannte Berichtsart: {art}")
+
+
+def freier_dateiname(ordner: Path, art: str, dokument: str, sprache: str, erstellt: str | None, inhalt: bytes | None = None) -> Path:
+    """Nächster freier Name im Ordner: v01, v02, ... Ein vorhandener, byte-gleicher Bericht wird wiederverwendet."""
+    for version in range(1, 1000):
+        pfad = ordner / dateiname(art, dokument, sprache, erstellt, version)
+        if not pfad.exists():
+            return pfad
+        if inhalt is not None and pfad.read_bytes() == inhalt:
+            return pfad
+    raise RuntimeError("Kein freier Dateiname gefunden.")
 
 
 def dateiname(art: str, dokument: str, sprache: str, erstellt: str | None = None, version: int = 1) -> str:

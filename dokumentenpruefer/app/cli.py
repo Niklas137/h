@@ -30,7 +30,7 @@ def _pruefen(args: argparse.Namespace) -> int:
         print(f"--regelsaetze: mindestens einer aus {', '.join(config.REGELSAETZE)}", file=sys.stderr)
         return 2
     try:
-        struktur = lesen.lesen(pfad.name, pfad.read_bytes())
+        struktur, lesehinweise = lesen.lesen_mit_hinweisen(pfad.name, pfad.read_bytes())
     except lesen.LeseFehler as e:
         print(f"Einlesen fehlgeschlagen: {e}", file=sys.stderr)
         return 3
@@ -44,6 +44,7 @@ def _pruefen(args: argparse.Namespace) -> int:
         print(str(e), file=sys.stderr)
         return 4
     ergebnis["pruefer"] = args.pruefer
+    ergebnis["lesehinweise"] = lesehinweise
     erstellt = datetime.now().isoformat(timespec="seconds")
     meta = {"dateiname": pfad.name, "erstellt": erstellt, "pruefer": args.pruefer}
     ausgabe = Path(args.ausgabe)
@@ -51,8 +52,10 @@ def _pruefen(args: argparse.Namespace) -> int:
     dateien: list[str] = []
     for art in ("pruef", "fach"):
         for sp in sprachen:
-            ziel = ausgabe / berichte.dateiname(art, pfad.name, sp, erstellt)
-            ziel.write_bytes(berichte.erzeugen(art, ergebnis, meta, sp))
+            pdf = berichte.erzeugen(art, ergebnis, meta, sp)
+            ziel = berichte.freier_dateiname(ausgabe, art, pfad.name, sp, erstellt, pdf)
+            if not ziel.exists():
+                ziel.write_bytes(pdf)
             dateien.append(str(ziel))
 
     zusammenfassung = {
@@ -65,6 +68,7 @@ def _pruefen(args: argparse.Namespace) -> int:
         "regelsaetze": regelsaetze,
         "sprachen": sprachen,
         "fazit": ergebnis["fazit"],
+        "lesehinweise": lesehinweise,
         "pruefstatus": ergebnis["pruefstatus"],
         "freigabe": ergebnis["freigabe"],
         "pdfs": dateien,
@@ -76,6 +80,8 @@ def _pruefen(args: argparse.Namespace) -> int:
         for k, n in zusammenfassung["klassen"].items():
             print(f"  {k}: {n}")
         print(f"Fazit: {ergebnis['fazit']}")
+        for h in lesehinweise:
+            print(f"Lesehinweis: {h}")
         for d in dateien:
             print(f"PDF: {d}")
     return 0

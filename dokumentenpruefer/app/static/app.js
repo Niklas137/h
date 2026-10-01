@@ -425,6 +425,8 @@
     $('res-aufwand').textContent = String(r.stunden).replace('.', ',') + ' h';
     $('res-langs').textContent = r.sprachen.map(function (l) { return LANGS_DE[l] || l; }).join(' und ');
     $('res-fazit').textContent = r.fazit;
+    var hinweise = r.lesehinweise || [];
+    $('res-hinweise').hidden = !hinweise.length; $('res-hinweise').textContent = hinweise.length ? 'Lesehinweis: ' + hinweise.join(' ') : '';
     var btn = function (art) { return r.pdfs.filter(function (p) { return p.bericht === art; }).map(function (p) { return '<a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">PDF ' + esc(LANGS[p.sprache] || p.sprache) + '</a>'; }).join(''); };
     $('pdf-pruef').innerHTML = btn('pruef'); $('pdf-fach').innerHTML = btn('fach');
     $('zip-label').textContent = r.pdfs.length + ' PDFs';

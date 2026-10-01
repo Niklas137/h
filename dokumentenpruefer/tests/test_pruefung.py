@@ -171,3 +171,70 @@ def test_pruefung_mit_fortschritt(client, admin):
     ) as r:
         zeilen = [json.loads(z) for z in r.iter_lines() if z.strip()]
     assert zeilen[-1]["status"] == 422 and "fehler" in zeilen[-1]
+
+
+def test_word_tabellen_werden_gelesen():
+    from app.pruefer import lesen
+    doc = Document()
+    doc.add_paragraph("Einleitung ohne Stichwörter.")
+    tab = doc.add_table(rows=2, cols=2)
+    tab.cell(0, 0).text = "Sicherheitshinweise"
+    tab.cell(0, 1).text = "Vor der Montage lesen."
+    tab.cell(1, 0).text = "Garantie"
+    tab.cell(1, 1).text = "24 Monate Gewährleistung."
+    puffer = io.BytesIO()
+    doc.save(puffer)
+    struktur = lesen.docx_lesen(puffer.getvalue())
+    texte_ = [z["text"] for z in struktur]
+    assert "Sicherheitshinweise" in texte_ and "24 Monate Gewährleistung." in texte_
+    assert any(z["heading"].endswith("(Tabelle)") for z in struktur)
+    erg = pruefung.pruefen(struktur, ["basis"])
+    ids = {f["ID"] for f in erg["funde"]}
+    assert "CHK-002" not in ids and "CHK-008" not in ids
+
+
+def test_pdf_scanseiten_werden_gemeldet(tmp_path):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+    from app.pruefer import lesen
+
+    pfad = tmp_path / "gemischt.pdf"
+    c = canvas.Canvas(str(pfad), pagesize=A4)
+    c.drawString(72, 750, "Diese Anleitung richtet sich an die Zielgruppe der Benutzer.")
+    c.showPage()
+    c.rect(100, 100, 200, 200)  # Seite 2: nur Grafik, keine Textebene
+    c.showPage()
+    c.drawString(72, 750, "Ein Inhaltsverzeichnis ist enthalten.")
+    c.showPage()
+    c.save()
+    struktur, hinweise = lesen.lesen_mit_hinweisen("gemischt.pdf", pfad.read_bytes())
+    assert len(struktur) == 2
+    assert hinweise and "2 von 3" in hinweise[0]
+
+    nur_bild = tmp_path / "scan.pdf"
+    c = canvas.Canvas(str(nur_bild), pagesize=A4)
+    c.rect(100, 100, 200, 200)
+    c.showPage()
+    c.save()
+    with pytest.raises(lesen.LeseFehler, match="Scan"):
+        lesen.lesen_mit_hinweisen("scan.pdf", nur_bild.read_bytes())
+
+
+def test_ablegen_ueberschreibt_nicht(client, admin, tmp_path, monkeypatch):
+    from app import config
+    monkeypatch.setattr(config, "OUTPUT", tmp_path)
+    r = client.post(
+        "/api/pruefung",
+        files={"datei": ("Ablage.docx", _docx(LUECKENHAFT[:1]), "application/octet-stream")},
+        data={"regelsaetze": "din", "zusatzsprache": ""},
+    )
+    pid = r.json()["id"]
+    erste = client.post(f"/api/pruefung/{pid}/ablegen").json()["abgelegt"]
+    zweite = client.post(f"/api/pruefung/{pid}/ablegen").json()["abgelegt"]
+    assert erste == zweite and all(n.endswith("_v01.pdf") for n in erste)
+    # Fremde Datei gleichen Namens mit anderem Inhalt darf nicht überschrieben werden.
+    fremd = tmp_path / erste[0].split("/")[-1]
+    fremd.write_bytes(b"%PDF-fremd")
+    dritte = client.post(f"/api/pruefung/{pid}/ablegen").json()["abgelegt"]
+    assert fremd.read_bytes() == b"%PDF-fremd"
+    assert dritte[0].endswith("_v02.pdf")

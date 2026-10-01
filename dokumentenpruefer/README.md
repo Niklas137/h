@@ -85,6 +85,16 @@ Prüfung mit `fortschritt=1` an und bekommt einen Zeilenstrom (NDJSON): je eine 
 Das Statuspanel zeigt diese Phasen; es erscheint erst, wenn die Prüfung länger als 400 ms dauert,
 und nennt keinen erfundenen Prozentwert. Ohne `fortschritt` antwortet die Route wie bisher mit JSON.
 
+## Was gelesen wird
+
+- Word: Absätze und Tabellen in Dokumentreihenfolge, auch verschachtelte Tabellen. Tabellenzellen
+  tragen in der Fundstelle den Zusatz „(Tabelle)".
+- PDF: Text je Seite, erst PyPDF2, bei leeren Seiten zusätzlich pdfplumber. Seiten ohne Textebene
+  (Scans) werden nicht geprüft und als Lesehinweis genannt: im Ergebnis, in beiden Berichten und
+  in der Kommandozeile. Ein PDF ganz ohne Text wird mit einer Fehlermeldung abgewiesen.
+- Ablage in `output/` überschreibt nie: Gleicher Inhalt wird wiederverwendet, sonst entsteht die
+  nächste Version (`_v02`, `_v03`). Gilt für die Oberfläche und die Kommandozeile.
+
 ## Ergebnis und Weitergabe
 
 1. Ergebnis: Score, Ampel, Funde, Aufwand, Fazit.
