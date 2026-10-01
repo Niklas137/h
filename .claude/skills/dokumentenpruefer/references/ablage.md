@@ -37,11 +37,17 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 
 ## Phasen laut Plan
 
-1. Konto-Modul bauen und testen: umgesetzt, wartet auf Niklas' Klick-Durchlauf (Tor 1).
-2. Einbau in den Prüfer, Konten für Niklas und Falk: Prüfteil umgesetzt, Konten offen (Tor 2).
+1. Konto-Modul bauen und testen: Tor 1 am 1. Oktober 2026 bestanden. Niklas hat die App auf dem Mac installiert, sich angemeldet, Word- und PDF-Dokumente geprüft, PDFs geöffnet.
+2. Einbau in den Prüfer, Konten für Niklas und Falk: Prüfteil umgesetzt, Niklas' Konto aktiv, Konto für Falk offen (Tor 2).
 3. Neutrale Kundenvorlage mit `kunde.json`, Abbott Bridge ansehen.
 4. Präsentation für Falk, fünf bis sechs Minuten, live im Tool.
 5. Übergabe als ZIP, Falk bestätigt Installation und Tests.
+
+## Heute geklärt (1. Oktober 2026)
+
+- Variante A aus der Videoanalyse umgesetzt: Prüfung im Arbeitsfaden, kurze Transaktion, Statuspanel mit Phasen. Jobschicht mit Abbruch und Figuren bewusst nicht gebaut.
+- Auf dem Mac liegt ein `git stash` „Jobschicht-Versuch vom Mac, 1. Oktober" mit einem fremden, unfertigen Umbau (db.py, main.py, app.css, index.html). Nicht übernehmen, bei Bedarf ansehen.
+- Im Stammordner von h liegen auf dem Mac zwei leere, unversionierte Dateien `ce_logik.json` und `pruefkatalog.json`; `.DS_Store` ist versehentlich versioniert. Beides beim Merge nach main aufräumen.
 
 ## Offen, braucht Niklas
 
