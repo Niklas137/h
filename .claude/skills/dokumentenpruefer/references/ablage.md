@@ -60,8 +60,10 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 ## Heute (2. Oktober 2026)
 
 - Arbeitsbranch `claude/explanation-code-example-2dt2yu` setzt auf `codex/dokumentenpruefer-satzlaenge` auf (Phase-1-Abnahme, 113 Tests).
-  Der Claude-Commit `b4d6425` (Berichte: Tabellen ohne Umbruch im Wort, Fuß ohne Platzhalter) ist dort nicht enthalten:
-  er kollidiert in `app/pruefer/berichte.py` mit der Codex-Fassung und braucht eine Entscheidung von Niklas.
+  Der Claude-Commit `b4d6425` (Berichte: Tabellen ohne Umbruch im Wort, Fuß ohne Platzhalter) ist auf Niklas' Entscheidung
+  übernommen und in `app/pruefer/berichte.py` von Hand mit der Codex-Fassung zusammengeführt: Codex' Fundstellenzeile,
+  `deepcopy` der Story und `ablegen()` bleiben, Claudes Seitenrand, Silbentrennung und Spaltenbreiten kommen dazu.
+  Dabei fehlende Singular-Texte `emp_satz_1` für uk und ru ergänzt (vom Qualitätstest X3 gefunden).
 
 ## Offen, braucht Niklas
 
