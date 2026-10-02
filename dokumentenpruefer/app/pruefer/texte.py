@@ -60,6 +60,7 @@ TEXTE: dict[str, dict[str, str]] = {
         "bew_nicht_nachweisbar": "Nicht ausreichend nachweisbar",
         "bew_satz": "Sätze zu lang ({n} gefunden)",
         "emp_satz": "{n} Sätze mit mehr als 25 Wörtern gefunden",
+        "emp_satz_1": "1 Satz mit mehr als 25 Wörtern gefunden",
         "fund_nicht_vorhanden": "Nicht vorhanden",
         "fund_nicht_gefunden": "Nicht gefunden",
         "pflicht_ja": "Ja",
@@ -143,6 +144,7 @@ TEXTE: dict[str, dict[str, str]] = {
         "bew_nicht_nachweisbar": "Not sufficiently evidenced",
         "bew_satz": "Sentences too long ({n} found)",
         "emp_satz": "{n} sentences with more than 25 words found",
+        "emp_satz_1": "1 sentence with more than 25 words found",
         "fund_nicht_vorhanden": "Not present",
         "fund_nicht_gefunden": "Not found",
         "pflicht_ja": "Yes",
@@ -226,6 +228,7 @@ TEXTE: dict[str, dict[str, str]] = {
         "bew_nicht_nachweisbar": "Недостатньо підтверджено",
         "bew_satz": "Занадто довгі речення (знайдено: {n})",
         "emp_satz": "Знайдено речень довших за 25 слів: {n}",
+        "emp_satz_1": "Знайдено 1 речення довше за 25 слів",
         "fund_nicht_vorhanden": "Відсутнє",
         "fund_nicht_gefunden": "Не знайдено",
         "pflicht_ja": "Так",
@@ -309,6 +312,7 @@ TEXTE: dict[str, dict[str, str]] = {
         "bew_nicht_nachweisbar": "Недостаточно подтверждено",
         "bew_satz": "Слишком длинные предложения (найдено: {n})",
         "emp_satz": "Найдено предложений длиннее 25 слов: {n}",
+        "emp_satz_1": "Найдено 1 предложение длиннее 25 слов",
         "fund_nicht_vorhanden": "Отсутствует",
         "fund_nicht_gefunden": "Не найдено",
         "pflicht_ja": "Да",
@@ -397,7 +401,10 @@ def fundstelle(sprache: str, fund: dict) -> str:
 
 def empfehlung(sprache: str, fund: dict) -> str:
     if fund.get("Schluessel") == "satz_zu_lang":
-        return t(sprache, "emp_satz", n=fund.get("Anzahl", 0))
+        n = fund.get("Anzahl", 0)
+        if n == 1 and "emp_satz_1" in TEXTE.get(sprache, {}):
+            return t(sprache, "emp_satz_1")
+        return t(sprache, "emp_satz", n=n)
     eigen = fund.get(f"empfehlung_{sprache}")
     if eigen:
         return str(eigen)

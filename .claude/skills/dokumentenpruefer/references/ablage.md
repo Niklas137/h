@@ -54,6 +54,8 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 
 - Codex-Commit `d082a41` (1. Oktober, 23:46) auseinandergenommen, Entscheidung C von Niklas: Ampel Grün/Gelb/Rot nach Score wie in app.py, alte Wortwahl (Score, Funde, Fazit), ein Satz zur Vorprüfung in jedem Bericht und der Kundenmail; strenge Regelprüfung, abgesicherte Sperre und die Tests aus test_p0.py bleiben.
 - Arbeitsregel seit 1. Oktober: Claude arbeitet nur auf `claude/dokumentenpruefer-webapp`, ChatGPT/Codex nur auf `codex/dokumentenpruefer` mit eigener Arbeitskopie. Zusammengeführt wird erst nach Prüfung.
+- 2. Oktober: Codex-Frontend-Rest (`app.js`, Abbrechen-Knopf und Ladeoverlay) auf dem Mac als Stash „Jobschicht-Frontend vom Mac, 1. Oktober" abgelegt, neben dem Backend-Stash. Codex-Branch `codex/dokumentenpruefer` existiert seitdem auf GitHub.
+- PDF-Layout: Seitenrand 16 mm, Tabellen füllen die Breite (`BREITE` in berichte.py). Fundtabelle 8 pt, Trennung an Bindestrichen (`embeddedHyphenation`), Spaltenbreiten gegen die längsten Wörter aller vier Sprachen geprüft; Fuß ohne Platzhalter. Bei neuen langen Wörtern in Regeln oder Übersetzungen Spaltenbreiten nachmessen.
 
 ## Heute (2. Oktober 2026)
 

@@ -30,6 +30,10 @@ LINIE = colors.HexColor("#d9cfbc")
 KOPFFLAECHE = colors.HexColor("#e6ddcd")
 AMPEL_FARBEN = {"gruen": colors.HexColor("#2f6b3f"), "gelb": colors.HexColor("#8a4f06"), "rot": colors.HexColor("#a32020")}
 
+# Seitenrand links und rechts; die Tabellen füllen die Breite dazwischen.
+RAND = 16 * mm
+BREITE = A4[0] - 2 * RAND
+
 _SCHRIFT: dict[str, str] = {}
 
 
@@ -61,8 +65,11 @@ def _stile() -> dict[str, ParagraphStyle]:
         "untertitel": ParagraphStyle("untertitel", fontName=s["normal"], fontSize=11, leading=15, textColor=MUTED),
         "h2": ParagraphStyle("h2", fontName=s["fett"], fontSize=13, leading=17, textColor=INK, spaceBefore=10, spaceAfter=6, keepWithNext=True),
         "text": ParagraphStyle("text", fontName=s["normal"], fontSize=10, leading=14, textColor=INK, alignment=TA_LEFT),
-        "klein": ParagraphStyle("klein", fontName=s["normal"], fontSize=8.5, leading=11.5, textColor=INK),
-        "kleinfett": ParagraphStyle("kleinfett", fontName=s["fett"], fontSize=8.5, leading=11.5, textColor=INK),
+        "klein": ParagraphStyle("klein", fontName=s["normal"], fontSize=8.5, leading=11.5, textColor=INK, embeddedHyphenation=1),
+        "kleinfett": ParagraphStyle("kleinfett", fontName=s["fett"], fontSize=8.5, leading=11.5, textColor=INK, embeddedHyphenation=1),
+        # Fundtabelle mit acht Spalten: etwas kleiner, damit kein Wort mitten im Wort umbricht.
+        "tab": ParagraphStyle("tab", fontName=s["normal"], fontSize=8, leading=10.5, textColor=INK, embeddedHyphenation=1),
+        "tabfett": ParagraphStyle("tabfett", fontName=s["fett"], fontSize=8, leading=10.5, textColor=INK, embeddedHyphenation=1),
         "muted": ParagraphStyle("muted", fontName=s["normal"], fontSize=9, leading=12.5, textColor=MUTED),
         "label": ParagraphStyle("label", fontName=s["normal"], fontSize=8.5, leading=11, textColor=MUTED),
         "wert": ParagraphStyle("wert", fontName=s["fett"], fontSize=11, leading=14, textColor=INK),
@@ -82,7 +89,7 @@ def _datum(iso: str | None) -> str:
         return iso
 
 
-def _kopf_fuss(sprache: str, art: str, gesamt: int):
+def _kopf_fuss(sprache: str, art: str, gesamt: int | None):
     s = _schriften()
 
     def zeichnen(canvas, doc):
@@ -92,46 +99,44 @@ def _kopf_fuss(sprache: str, art: str, gesamt: int):
         canvas.rect(0, hoehe - 6 * mm, breite, 6 * mm, stroke=0, fill=1)
         canvas.setFillColor(INK)
         canvas.setFont(s["fett"], 9)
-        canvas.drawString(20 * mm, hoehe - 14 * mm, config.BERICHT_KOPF)
+        canvas.drawString(RAND, hoehe - 14 * mm, config.BERICHT_KOPF)
         canvas.setFont(s["normal"], 9)
         canvas.setFillColor(MUTED)
-        canvas.drawRightString(breite - 20 * mm, hoehe - 14 * mm, texte.t(sprache, "titel_pruef" if art == "pruef" else "titel_fach"))
+        canvas.drawRightString(breite - RAND, hoehe - 14 * mm, texte.t(sprache, "titel_pruef" if art == "pruef" else "titel_fach"))
         canvas.setStrokeColor(LINIE)
         canvas.setLineWidth(0.5)
-        canvas.line(20 * mm, 16 * mm, breite - 20 * mm, 16 * mm)
+        canvas.line(RAND, 16 * mm, breite - RAND, 16 * mm)
         canvas.setFont(s["normal"], 8)
-        canvas.drawString(20 * mm, 11 * mm, f"{config.BERICHT_FUSS} · {texte.t(sprache, 'erstellt_mit')}")
-        canvas.drawRightString(breite - 20 * mm, 11 * mm, texte.t(sprache, "seite", n=doc.page, m=gesamt))
+        canvas.drawString(RAND, 11 * mm, f"{config.BERICHT_FUSS} · {texte.t(sprache, 'erstellt_mit')}")
+        if gesamt is not None:
+            canvas.drawRightString(breite - RAND, 11 * mm, texte.t(sprache, "seite", n=doc.page, m=gesamt))
         canvas.restoreState()
 
     return zeichnen
 
 
 def _bauen(story: list, sprache: str, art: str) -> bytes:
-    """Zwei Durchläufe: erst Seiten zählen, dann mit Gesamtzahl setzen."""
+    """Zwei Durchläufe: erst nur Seiten zählen, dann mit Kopf, Fuß und Gesamtzahl setzen."""
 
     def einmal(gesamt: int | None) -> tuple[bytes, int]:
         buffer = BytesIO()
         doc = SimpleDocTemplate(
             buffer,
             pagesize=A4,
-            leftMargin=20 * mm,
-            rightMargin=20 * mm,
+            leftMargin=RAND,
+            rightMargin=RAND,
             topMargin=24 * mm,
             bottomMargin=22 * mm,
             title=texte.t(sprache, "titel_pruef" if art == "pruef" else "titel_fach"),
             author=config.BERICHT_KOPF,
         )
         zaehler = {"n": 0}
-        basis = _kopf_fuss(sprache, art, gesamt or 0)
+        basis = _kopf_fuss(sprache, art, gesamt)
 
         def seite(canvas, d):
             zaehler["n"] = d.page
-            if gesamt is None:
-                return
-            canvas.saveState()
-            basis(canvas, d)
-            canvas.restoreState()
+            if gesamt is not None:
+                basis(canvas, d)
 
         doc.build(deepcopy(story), onFirstPage=seite, onLaterPages=seite)
         return buffer.getvalue(), zaehler["n"]
@@ -156,7 +161,7 @@ def _kopfblock(ergebnis: dict[str, Any], meta: dict[str, Any], sprache: str, art
         (texte.t(sprache, "regelsaetze"), regeln),
     ]
     daten = [[Paragraph(_esc(k), st["label"]), Paragraph(_esc(v), st["text"])] for k, v in zellen]
-    tab = Table(daten, colWidths=[45 * mm, 125 * mm])
+    tab = Table(daten, colWidths=[45 * mm, BREITE - 45 * mm])
     tab.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("BOTTOMPADDING", (0, 0), (-1, -1), 3), ("TOPPADDING", (0, 0), (-1, -1), 3)]))
     story.append(tab)
     story.append(Spacer(1, 6 * mm))
@@ -170,7 +175,7 @@ def _kopfblock(ergebnis: dict[str, Any], meta: dict[str, Any], sprache: str, art
     if art == "pruef":
         kacheln.append([Paragraph(_esc(texte.t(sprache, "aufwand")), st["label"]), Paragraph(f"{str(ergebnis.get('stunden', 0)).replace('.', ',')} {texte.t(sprache, 'stunden')}", st["wert"])])
     zeile = [[k[0] for k in kacheln], [k[1] for k in kacheln]]
-    breite = 170 * mm / len(kacheln)
+    breite = BREITE / len(kacheln)
     kt = Table(zeile, colWidths=[breite] * len(kacheln))
     kt.setStyle(
         TableStyle(
@@ -222,7 +227,7 @@ def _todoblock(ergebnis: dict[str, Any], sprache: str, st: dict, mit_aufwand: bo
         if mit_aufwand:
             zeile.append(Paragraph(str(todo.get("Aufwand (h)", "")).replace(".", ","), st["klein"]))
         zeilen.append(zeile)
-    breiten = [35 * mm, 95 * mm, 22 * mm, 18 * mm] if mit_aufwand else [40 * mm, 105 * mm, 25 * mm]
+    breiten = [37 * mm, BREITE - 77 * mm, 22 * mm, 18 * mm] if mit_aufwand else [42 * mm, BREITE - 68 * mm, 26 * mm]
     tab = Table(zeilen, colWidths=breiten, repeatRows=1)
     tab.setStyle(_tabellenstil())
     story.append(tab)
@@ -246,7 +251,7 @@ def _massnahmenblock(ergebnis: dict[str, Any], sprache: str, st: dict) -> list:
                 Paragraph(_esc(texte.empfehlung(sprache, f)), st["klein"]),
             ]
         )
-    tab = Table(zeilen, colWidths=[35 * mm, 25 * mm, 110 * mm], repeatRows=1)
+    tab = Table(zeilen, colWidths=[37 * mm, 26 * mm, BREITE - 63 * mm], repeatRows=1)
     tab.setStyle(_tabellenstil())
     story.append(tab)
     return story
@@ -268,24 +273,24 @@ def _fundeblock(ergebnis: dict[str, Any], sprache: str, st: dict) -> list:
         texte.t(sprache, "sp_gewichtung"),
         texte.t(sprache, "sp_minuten"),
     ]
-    zeilen = [[Paragraph(_esc(k), st["kleinfett"]) for k in kopf]]
+    zeilen = [[Paragraph(_esc(k), st["tabfett"]) for k in kopf]]
     fundzeilen = []
     for f in funde:
         zeilen.append(
             [
-                Paragraph(_esc(f.get("ID")), st["klein"]),
-                Paragraph(_esc(texte.normlogik(sprache, f.get("Normlogik"))), st["klein"]),
-                Paragraph(_esc(texte.bereich(sprache, f)), st["klein"]),
-                Paragraph(_esc(texte.klasse(sprache, f.get("Fehlerklasse"))), st["klein"]),
-                Paragraph(_esc(texte.bewertung(sprache, f)), st["klein"]),
-                Paragraph(_esc(texte.empfehlung(sprache, f)), st["klein"]),
-                Paragraph(str(f.get("Gewichtung", "")), st["klein"]),
-                Paragraph(str(f.get("Zeitaufwand_min", "")), st["klein"]),
+                Paragraph(_esc(f.get("ID")), st["tab"]),
+                Paragraph(_esc(texte.normlogik(sprache, f.get("Normlogik"))), st["tab"]),
+                Paragraph(_esc(texte.bereich(sprache, f)), st["tab"]),
+                Paragraph(_esc(texte.klasse(sprache, f.get("Fehlerklasse"))), st["tab"]),
+                Paragraph(_esc(texte.bewertung(sprache, f)), st["tab"]),
+                Paragraph(_esc(texte.empfehlung(sprache, f)), st["tab"]),
+                Paragraph(str(f.get("Gewichtung", "")), st["tab"]),
+                Paragraph(str(f.get("Zeitaufwand_min", "")), st["tab"]),
             ]
         )
         fundzeilen.append(len(zeilen))
-        zeilen.append([Paragraph(_esc(texte.t(sprache, "sp_fundstelle") + ": " + texte.fundstelle(sprache, f)), st["klein"])] + [""] * 7)
-    tab = Table(zeilen, colWidths=[15 * mm, 21 * mm, 22 * mm, 19 * mm, 24 * mm, 47 * mm, 11 * mm, 11 * mm], repeatRows=1)
+        zeilen.append([Paragraph(_esc(texte.t(sprache, "sp_fundstelle") + ": " + texte.fundstelle(sprache, f)), st["tab"])] + [""] * 7)
+    tab = Table(zeilen, colWidths=[15 * mm, 21 * mm, 32 * mm, 25.5 * mm, 23 * mm, BREITE - 134.5 * mm, 9.5 * mm, 8.5 * mm], repeatRows=1)
     tab.setStyle(_tabellenstil())
     for nr in fundzeilen:
         tab.setStyle(TableStyle([("SPAN", (0, nr), (-1, nr)), ("NOSPLIT", (0, nr - 1), (-1, nr))]))
@@ -302,8 +307,8 @@ def _tabellenstil() -> TableStyle:
             ("VALIGN", (0, 0), (-1, -1), "TOP"),
             ("TOPPADDING", (0, 0), (-1, -1), 3),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
-            ("LEFTPADDING", (0, 0), (-1, -1), 4),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+            ("LEFTPADDING", (0, 0), (-1, -1), 3),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 3),
         ]
     )
 
