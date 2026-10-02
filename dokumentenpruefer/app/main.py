@@ -319,6 +319,8 @@ def sitzungen(user: dict[str, Any] = Depends(aktueller_benutzer)):
 
 @app.delete("/api/ich/sitzungen/{kurz_id}")
 def sitzung_beenden(kurz_id: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    if not re.fullmatch(r"[0-9a-f]{8,64}", kurz_id):
+        return _fehler(404, "Sitzung nicht gefunden.")
     with db.transaktion() as con:
         n = auth.sitzung_loeschen_per_kurz_id(con, user["id"], kurz_id)
     return {"beendet": n}
