@@ -22,7 +22,10 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 - Technik: eigener Web-Dienst (FastAPI, SQLite, HTML/CSS/JS ohne Framework), kein Streamlit.
 - Startmaske für alle gleich, dunkel. Erstanmeldung: Einmal-Passwort vom Admin, Code an die E-Mail-Adresse,
   dann eigenes Passwort (mindestens 14 Zeichen, ein Großbuchstabe, ein Sonderzeichen). Konten legt nur ein Admin an.
-- Kopfleiste: Sprache, Helligkeit, Einstellungen, Hilfe. Sprache und Helligkeit wirken sofort.
+- Seitenleiste (seit 2. Oktober): oben Konto mit Rolle, dann Prüfen, Verlauf, Einstellungen, Mitarbeiter (nur Admin),
+  unten Sprache, Helligkeit, Hilfe, Abmelden. Kopfzeile nur Seitentitel, Kurztext und eine Aktion. Sprache und Helligkeit wirken sofort.
+- Mitarbeiterverwaltung als eigene Seite: anlegen, bearbeiten, deaktivieren, weich löschen mit E-Mail-Bestätigung,
+  wiederherstellen, Protokoll. Rechte serverseitig (401/403), letzter aktiver Admin geschützt.
 - Einstellungen enthalten alles Weitere einschließlich Impressum, Datenschutz, Info. Speichern-Knopf oben, Zurück-Knopf.
 - Kein Register „Prüfer-Vorgaben" in den Einstellungen. Unter „Sprachen" nur Nachlesen.
 - Berichtssprache: Basis ist die Oberflächensprache; je Prüfung eine Zusatzsprache oder keine, Auswahl auf der Prüfseite.
@@ -51,6 +54,12 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 
 - Codex-Commit `d082a41` (1. Oktober, 23:46) auseinandergenommen, Entscheidung C von Niklas: Ampel Grün/Gelb/Rot nach Score wie in app.py, alte Wortwahl (Score, Funde, Fazit), ein Satz zur Vorprüfung in jedem Bericht und der Kundenmail; strenge Regelprüfung, abgesicherte Sperre und die Tests aus test_p0.py bleiben.
 - Arbeitsregel seit 1. Oktober: Claude arbeitet nur auf `claude/dokumentenpruefer-webapp`, ChatGPT/Codex nur auf `codex/dokumentenpruefer` mit eigener Arbeitskopie. Zusammengeführt wird erst nach Prüfung.
+
+## Heute (2. Oktober 2026)
+
+- Arbeitsbranch `claude/explanation-code-example-2dt2yu` setzt auf `codex/dokumentenpruefer-satzlaenge` auf (Phase-1-Abnahme, 113 Tests).
+  Der Claude-Commit `b4d6425` (Berichte: Tabellen ohne Umbruch im Wort, Fuß ohne Platzhalter) ist dort nicht enthalten:
+  er kollidiert in `app/pruefer/berichte.py` mit der Codex-Fassung und braucht eine Entscheidung von Niklas.
 
 ## Offen, braucht Niklas
 

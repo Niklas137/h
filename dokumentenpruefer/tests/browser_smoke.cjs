@@ -110,11 +110,12 @@ async function checkFile(file) {
   await page.locator('#drawer-close').click();
   await response('/api/ich/einstellungen', () => page.locator('#b-theme').click());
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
-  await page.locator('#b-settings').click();
+  await page.locator('#b-settings').click(); await visible('#settings');
   await page.locator('[data-sec=erscheinung]').click();
   await page.locator('#seg-ts button[data-v=gross]').click();
   await response('/api/ich/einstellungen', () => page.locator('#save-top').click());
-  await page.reload(); await visible('#main');
+  await page.reload(); await visible('#settings'); // Hash-Adresse bleibt nach dem Neuladen erhalten
+  await page.locator('#nav-main').click(); await visible('#main');
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
   assert.match(await page.locator('html').getAttribute('style'), /1\.12/);
   for (const size of [{width:390,height:844}, {width:320,height:740}, {width:844,height:390}]) {
@@ -135,14 +136,36 @@ async function checkFile(file) {
   await checkFile('Testanleitung.docx');
   checks.push('Gemischtes PDF, defekte Datei, Fehleranzeige und erneute Pruefung');
 
-  await page.locator('#b-settings').click(); await page.locator('#nav-verwaltung').click();
+  assert.equal(await page.locator('#nav-team').isVisible(), true);
+  await page.locator('#nav-team').click(); await visible('#team');
+  assert.equal(await page.locator('#nav-team').getAttribute('aria-current'), 'page');
   await page.locator('#user-new').click();
   await page.locator('#u-name').fill('Zusaetzlicher Testnutzer');
   await page.locator('#u-email').fill('neu@example.invalid');
   await page.locator('#user-save').click(); await visible('#user-otp');
   assert.ok((await page.locator('#user-otp').innerText()).length > 10);
-  await page.locator('#user-close').click(); await page.locator('#back-main').click();
-  checks.push('Admin legt zusaetzliches Mitglied an');
+  await page.locator('#user-close').click();
+  await page.locator('#team-tbody tr:has-text("neu@example.invalid") .rowbtn').click(); await visible('#rowmenu');
+  await page.locator('#rowmenu [data-act=edit]').click(); await visible('#modal-edit');
+  await page.locator('#e-name').fill('Zusaetzlicher Testnutzer Neu');
+  await response('/api/benutzer/' + (await page.locator('#team-tbody tr:has-text("neu@example.invalid")').getAttribute('data-uid')), () => page.locator('#edit-save').click());
+  await page.locator('#team-tbody tr:has-text("neu@example.invalid") .rowbtn').click();
+  await page.locator('#rowmenu [data-act=inaktiv]').click(); await visible('#modal-confirm');
+  await page.locator('#confirm-ok').click();
+  await page.locator('#team-tbody tr:has-text("neu@example.invalid"):has-text("Inaktiv")').waitFor({ timeout: 10000 });
+  await page.locator('#team-tbody tr:has-text("neu@example.invalid") .rowbtn').click();
+  await page.locator('#rowmenu [data-act=aktiv]').click();
+  await page.locator('#team-tbody tr:has-text("neu@example.invalid"):has-text("Erstanmeldung offen")').waitFor({ timeout: 10000 });
+  await page.locator('#team-tbody tr:has-text("neu@example.invalid") .rowbtn').click();
+  await page.locator('#rowmenu [data-act=del]').click(); await visible('#modal-confirm');
+  assert.equal(await page.locator('#confirm-ok').isEnabled(), false);
+  await page.locator('#confirm-input').fill('neu@example.invalid');
+  await page.locator('#confirm-ok').click();
+  await page.locator('#team-tbody tr:has-text("neu@example.invalid")').waitFor({ state: 'detached', timeout: 10000 });
+  await page.locator('#protokoll-card summary').click();
+  assert.ok((await page.locator('#protokoll-tbody').innerText()).includes('gelöscht'));
+  await page.locator('#nav-main').click(); await visible('#main');
+  checks.push('Admin legt Mitglied an, bearbeitet, deaktiviert, aktiviert, loescht mit Bestaetigung, Protokoll');
 
   // Simulierte langsame Antwort nach einem echten Pruefrequest: keine Daten nach Logout zeigen.
   let release;
@@ -158,7 +181,7 @@ async function checkFile(file) {
   await page.locator('#start-check').click(); await visible('#lauf');
   assert.equal(await page.locator('#start-check').isEnabled(), false);
   await page.locator('#b-help').click(); await visible('#drawer'); await page.locator('#drawer-close').click();
-  await page.locator('#b-settings').click();
+  await page.locator('#b-settings').click(); await visible('#settings');
   await page.locator('[data-sec=profil]').click();
   await page.locator('#logout2').click(); await visible('#f-login');
   await login('mitglied@example.invalid');
@@ -168,11 +191,15 @@ async function checkFile(file) {
   assert.equal(await page.locator('#lauf').isVisible(), false);
   assert.equal((await context.request.get(url + `/api/pruefung/${pid}`)).status(), 404);
   assert.equal((await context.request.get(url + '/api/benutzer')).status(), 403);
-  await page.locator('#b-settings').click();
-  assert.equal(await page.locator('#nav-verwaltung').isVisible(), false);
-  await page.locator('#back-main').click();
+  assert.equal(await page.locator('#nav-team').isVisible(), false);
+  assert.equal(await page.locator('#grp-team').isVisible(), false);
+  await page.goto(url + '/#/mitarbeiter'); await visible('#main');
+  assert.equal(await page.locator('#team').isVisible(), false);
+  for (const [m, p] of [['GET', '/api/benutzer'], ['POST', '/api/benutzer'], ['PATCH', '/api/benutzer/1'], ['DELETE', '/api/benutzer/1'], ['GET', '/api/protokoll']]) {
+    assert.equal((await context.request.fetch(url + p, { method: m, data: {} })).status(), 403, m + ' ' + p);
+  }
   await checkFile('Testanleitung.docx');
-  checks.push('Langer Lauf, bedienbarer Header, Logout, spaete Antwort, Mitglied und Rechte');
+  checks.push('Langer Lauf, bedienbare Seitenleiste, Logout, spaete Antwort, Mitglied ohne Mitarbeiter-Menue, Direkt-URL und API abgewiesen');
   assert.deepEqual(errors, []);
   fs.writeFileSync(path.join(out, 'browser-ergebnis.json'), JSON.stringify({status:'bestanden', platform:process.platform, checks, javascriptErrors:errors}, null, 2));
   console.log(`Browser-Abnahme bestanden: ${checks.length} Ablaufsgruppen, keine JavaScript-Ausnahmen.`);

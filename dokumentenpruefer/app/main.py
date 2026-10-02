@@ -20,7 +20,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Streamin
 from fastapi.staticfiles import StaticFiles
 from starlette.concurrency import run_in_threadpool
 
-from . import ablage, auth, config, db, einstellungen, mail
+from . import ablage, auth, config, db, einstellungen, mail, team
 from .pruefer import berichte, lesen, pruefung, regeln, texte
 
 log = logging.getLogger("dokumentenpruefer")
@@ -149,9 +149,12 @@ async def anmelden(request: Request, antwort: Response):
             return _fehler(423, f"Zu viele Fehlversuche. Bitte in {config.SPERRE_MINUTEN} Minuten erneut versuchen.")
         if user["status"] == "einmal":
             return _fehler(409, "Dieses Konto ist noch nicht eingerichtet. Bitte die Erstanmeldung mit dem Einmal-Passwort nutzen.", erstanmeldung=True)
-        if user["status"] != "aktiv" or not auth.passwort_stimmt(user["passwort_hash"], passwort):
+        if not auth.passwort_stimmt(user["passwort_hash"], passwort):
             auth.fehlversuch(con, user)
             return _fehler(401, "E-Mail-Adresse oder Passwort stimmt nicht.")
+        if user["status"] != "aktiv" or user.get("geloescht_am"):
+            # Passwort stimmt, aber das Konto wurde von einem Admin deaktiviert oder gelöscht.
+            return _fehler(403, "Dieses Konto ist deaktiviert. Bitte an einen Admin wenden.")
         auth.erfolg(con, user["id"])
         token = auth.sitzung_anlegen(con, user["id"], _geraet(request))
         einst = einstellungen.lesen(con, user["id"])
@@ -313,14 +316,20 @@ def sitzung_beenden(kurz_id: str, user: dict[str, Any] = Depends(aktueller_benut
     return {"beendet": n}
 
 
-# ---------------------------------------------------------------- Verwaltung (Admin)
+# ---------------------------------------------------------------- Mitarbeiter (nur Admin)
+# Jede Route hängt an admin_benutzer: ohne Sitzung 401, als Mitglied 403, auch bei direktem Aufruf.
+
+
+def _team_fehler(e: team.TeamFehler) -> JSONResponse:
+    return _fehler(e.status, str(e), **({"feld": e.feld} if e.feld else {}))
 
 
 @app.get("/api/benutzer")
-def benutzer_liste(user: dict[str, Any] = Depends(admin_benutzer)):
+def benutzer_liste(geloeschte: str = "", user: dict[str, Any] = Depends(admin_benutzer)):
     with db.transaktion() as con:
-        rows = db.zeilen(con.execute("SELECT * FROM users ORDER BY angelegt_am").fetchall())
-    return {"benutzer": [auth.oeffentlich(r) for r in rows]}
+        liste = team.liste(con, mit_geloeschten=geloeschte == "1")
+        admins = team.aktive_admins(con)
+    return {"benutzer": liste, "aktiveAdmins": admins}
 
 
 @app.post("/api/benutzer")
@@ -331,49 +340,66 @@ async def benutzer_anlegen(request: Request, user: dict[str, Any] = Depends(admi
     rolle = str(daten.get("rolle", "mitglied"))
     if not EMAIL_RE.match(email):
         return _fehler(400, "Bitte eine gültige E-Mail-Adresse eingeben.", feld="email")
-    if len(name) < 2:
-        return _fehler(400, "Bitte einen Namen eingeben.", feld="name")
-    if rolle not in ("admin", "mitglied"):
-        return _fehler(400, "Rolle muss admin oder mitglied sein.", feld="rolle")
-    with db.transaktion() as con:
-        if auth.benutzer_per_email(con, email):
-            return _fehler(409, "Diese E-Mail-Adresse hat schon ein Konto.")
-        neu, einmal = auth.benutzer_anlegen(con, email, name, rolle)
+    if len(name) < 2 or len(name) > 80:
+        return _fehler(400, "Der Name braucht 2 bis 80 Zeichen.", feld="name")
+    try:
+        with db.transaktion() as con:
+            neu, einmal = team.anlegen(con, user, email, name, rolle)
+    except team.TeamFehler as e:
+        return _team_fehler(e)
     return {"benutzer": auth.oeffentlich(neu), "einmalPasswort": einmal, "gueltigTage": config.EINMAL_PASSWORT_TAGE}
 
 
 @app.post("/api/benutzer/{user_id}/einmal-passwort")
 def einmal_neu(user_id: int, user: dict[str, Any] = Depends(admin_benutzer)):
-    with db.transaktion() as con:
-        ziel = auth.benutzer_per_id(con, user_id)
-        if ziel is None:
-            return _fehler(404, "Konto nicht gefunden.")
-        einmal = auth.einmal_passwort_erneuern(con, user_id)
-        auth.alle_sitzungen_beenden(con, user_id)
+    try:
+        with db.transaktion() as con:
+            einmal = team.einmal_passwort(con, user, user_id)
+    except team.TeamFehler as e:
+        return _team_fehler(e)
     return {"einmalPasswort": einmal, "gueltigTage": config.EINMAL_PASSWORT_TAGE}
 
 
 @app.patch("/api/benutzer/{user_id}")
 async def benutzer_aendern(user_id: int, request: Request, user: dict[str, Any] = Depends(admin_benutzer)):
     daten = await _json(request)
-    with db.transaktion() as con:
-        ziel = auth.benutzer_per_id(con, user_id)
-        if ziel is None:
-            return _fehler(404, "Konto nicht gefunden.")
-        if "rolle" in daten:
-            if daten["rolle"] not in ("admin", "mitglied"):
-                return _fehler(400, "Rolle muss admin oder mitglied sein.")
-            if ziel["id"] == user["id"] and daten["rolle"] != "admin":
-                return _fehler(400, "Du kannst dir selbst die Admin-Rolle nicht entziehen.")
-            con.execute("UPDATE users SET rolle = ? WHERE id = ?", (daten["rolle"], user_id))
-        if "status" in daten and daten["status"] in ("aktiv", "gesperrt") and ziel["status"] != "einmal":
-            if ziel["id"] == user["id"]:
-                return _fehler(400, "Du kannst dich nicht selbst sperren.")
-            con.execute("UPDATE users SET status = ? WHERE id = ?", (daten["status"], user_id))
-            if daten["status"] == "gesperrt":
-                auth.alle_sitzungen_beenden(con, user_id)
-        neu = auth.benutzer_per_id(con, user_id)
+    erlaubt = {k: v for k, v in daten.items() if k in ("name", "rolle", "status")}
+    if not erlaubt:
+        return _fehler(400, "Nichts zu ändern. Erlaubt sind name, rolle und status.")
+    try:
+        with db.transaktion() as con:
+            neu = team.aendern(con, user, user_id, erlaubt)
+    except team.TeamFehler as e:
+        return _team_fehler(e)
     return {"benutzer": auth.oeffentlich(neu)}
+
+
+@app.delete("/api/benutzer/{user_id}")
+async def benutzer_loeschen(user_id: int, request: Request, user: dict[str, Any] = Depends(admin_benutzer)):
+    daten = await _json(request)
+    try:
+        with db.transaktion() as con:
+            neu = team.loeschen(con, user, user_id, str(daten.get("bestaetigung", "")))
+    except team.TeamFehler as e:
+        return _team_fehler(e)
+    return {"benutzer": auth.oeffentlich(neu)}
+
+
+@app.post("/api/benutzer/{user_id}/wiederherstellen")
+def benutzer_wiederherstellen(user_id: int, user: dict[str, Any] = Depends(admin_benutzer)):
+    try:
+        with db.transaktion() as con:
+            neu = team.wiederherstellen(con, user, user_id)
+    except team.TeamFehler as e:
+        return _team_fehler(e)
+    return {"benutzer": auth.oeffentlich(neu)}
+
+
+@app.get("/api/protokoll")
+def protokoll(user: dict[str, Any] = Depends(admin_benutzer)):
+    with db.transaktion() as con:
+        eintraege = team.protokoll(con)
+    return {"protokoll": eintraege}
 
 
 # ---------------------------------------------------------------- Prüfung

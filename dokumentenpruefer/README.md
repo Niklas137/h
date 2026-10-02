@@ -62,12 +62,25 @@ Empfehlungen in anderen Sprachen kann jede Regel die Felder `empfehlung_en`, `em
 
 ## Konten und Rollen
 
-- `admin`: legt Benutzer an, vergibt neue Einmal-Passwörter, ändert Rollen und Status.
+- `admin`: legt Mitarbeiter an, vergibt neue Einmal-Passwörter, ändert Namen, Rollen und Status,
+  deaktiviert und löscht Konten, sieht das Protokoll.
 - `mitglied`: prüft Dokumente, verwaltet nur das eigene Konto.
-- Neue Benutzer legt ein Admin unter Einstellungen → Verwaltung an. Er bekommt ein Einmal-Passwort
-  (7 Tage gültig) und gibt es persönlich weiter.
+- Neue Mitarbeiter legt ein Admin auf der Seite „Mitarbeiter" an (Seitenleiste, nur für Admins
+  sichtbar). Das Konto bekommt ein Einmal-Passwort (7 Tage gültig), das der Admin persönlich weitergibt.
 - Passwort vergessen: Admin vergibt ein neues Einmal-Passwort, danach läuft die Erstanmeldung erneut.
 - Nach 8 Fehlversuchen ist ein Konto 15 Minuten gesperrt. Ein neues Einmal-Passwort hebt die Sperre auf.
+- Deaktivieren: Das Konto kann sich nicht mehr anmelden, laufende Sitzungen enden sofort, Prüfungen
+  bleiben erhalten. Aktivieren macht es wieder nutzbar (ohne eigenes Passwort zurück in die Erstanmeldung).
+- Löschen ist weich: Das Konto wird deaktiviert, aus der Liste genommen und behält seine Prüfungen und
+  Protokolleinträge. Zur Bestätigung muss die E-Mail-Adresse eingetippt werden. Unter „Gelöschte
+  anzeigen" lässt es sich wiederherstellen (dann inaktiv). Die E-Mail-Adresse bleibt belegt.
+- Der letzte aktive Admin kann weder gelöscht, deaktiviert noch zum Mitglied gemacht werden. Niemand
+  ändert die eigene Rolle, deaktiviert oder löscht sich selbst.
+- Alle Rechte gelten serverseitig: Jede Route unter `/api/benutzer` und `/api/protokoll` antwortet ohne
+  Sitzung mit 401 und für Mitglieder mit 403, auch bei direktem Aufruf. Das Ausblenden in der
+  Oberfläche ist nur Komfort.
+- Protokoll (`audit_log`): Zeit, handelnder Admin, Aktion, betroffenes Konto, Details wie „Rolle von
+  mitglied nach admin". Keine Passwörter, Hashes oder Codes.
 
 Befehle im Terminal (im Ordner `dokumentenpruefer`):
 
@@ -79,10 +92,16 @@ Befehle im Terminal (im Ordner `dokumentenpruefer`):
 
 ## Einstellungen je Benutzer
 
-Sprache (Deutsch, Englisch, Ukrainisch, Russisch) und Helligkeit sitzen in der Kopfleiste und
-wirken sofort. Alles Weitere unter Einstellungen: Profil, Sicherheit (Passwort, Sitzungen),
-Erscheinungsbild (Textgröße, Dichte), Sprachen (nur zum Nachlesen), Benachrichtigungen (Pop-up,
-keine E-Mails), Verwaltung (Admin), Rechtliches (Impressum, Datenschutz), Info.
+Die Seitenleiste links zeigt oben das angemeldete Konto mit Rolle, darunter die Seiten Prüfen,
+Verlauf, Einstellungen und (nur für Admins) Mitarbeiter; unten Helligkeit, Sprache (Deutsch,
+Englisch, Ukrainisch, Russisch), Hilfe und Abmelden. Sprache und Helligkeit wirken sofort. Die
+Kopfzeile nennt nur Seitentitel, Kurzbeschreibung und die eine Aktion der Seite. Jede Seite hat eine
+Adresse (`#/pruefen`, `#/verlauf`, `#/einstellungen`, `#/mitarbeiter`), die nach dem Neuladen erhalten
+bleibt. Unter 1024 px wird die Seitenleiste zur Symbolleiste, unter 640 px zur Schublade.
+
+Einstellungen: Profil, Sicherheit (Passwort, Sitzungen), Erscheinungsbild (Textgröße, Dichte),
+Sprachen (nur zum Nachlesen), Benachrichtigungen (Pop-up, keine E-Mails), Rechtliches (Impressum,
+Datenschutz), Info.
 
 Die Oberflächensprache ist die Basissprache der Berichte. Eine zusätzliche Berichtssprache wird
 je Prüfung auf der Prüfseite gewählt (eine oder keine). Je Sprache entstehen zwei PDFs:
@@ -159,6 +178,12 @@ Zugangsdaten gehören nicht ins Projekt. SMTP-Daten nur als Umgebungsvariable se
 
 Die Bestandstests prüfen Erstanmeldung, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
 Word-Prüfung, PDFs in vier Sprachen, ZIP, Ablage, Mail-Entwurf, CLI und Fortschritts-Zeilenstrom.
+`tests/test_team.py` deckt die Mitarbeiterverwaltung ab: 401 ohne Sitzung und 403 als Mitglied auf
+jeder Admin-Route (GET, POST, PATCH, DELETE), Anlegen, Ändern, Deaktivieren mit sofortigem
+Sitzungsende, weiches Löschen mit Bestätigung und Wiederherstellen, Selbstschutz, Schutz des letzten
+aktiven Admins, Protokoll ohne Geheimnisse und die Schema-Migration. Stand 2. Oktober 2026: 137 Tests.
+`tests/browser_smoke.cjs` klickt zusätzlich die Seitenleiste, die Mitarbeiterseite und die Rechte
+eines Mitglieds im Browser durch.
 `tests/test_p0.py` ergänzt Gegenproben für ungültige Regeldateien (auch nach einer gültigen
 Ladung), ungültige Regelsatz-Auswahl, Sperrumgehung und den Vorprüfungssatz in beiden
 Berichtstypen und allen vier Sprachen.
@@ -197,8 +222,9 @@ die oben genannte Phase-1-Abnahme bezieht sich auf den vorherigen Programmstand.
 ```
 app/main.py            FastAPI: Seiten, API, Prüfung, Berichte
 app/auth.py            Passwörter (argon2), Einmal-Passwort, Code, Sitzungen, Sperre
-app/db.py              SQLite-Schema und Verbindung
+app/db.py              SQLite-Schema, nachträgliche Spalten und Verbindung
 app/einstellungen.py   Einstellungen je Benutzer
+app/team.py            Mitarbeiterverwaltung (Admin): Liste, Anlegen, Ändern, Deaktivieren, weiches Löschen, Protokoll
 app/mail.py            Versand des Codes über SMTP, keine Codes in Logs
 app/verwaltung.py      Kommandozeile für Konten
 app/cli.py             Kommandozeile: Dokument prüfen, PDFs ablegen

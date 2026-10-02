@@ -128,6 +128,7 @@ def oeffentlich(user: dict[str, Any]) -> dict[str, Any]:
         "status": user["status"],
         "angelegtAm": user["angelegt_am"],
         "letzteAnmeldung": user["letzte_anmeldung"],
+        "geloeschtAm": user.get("geloescht_am"),
     }
 
 

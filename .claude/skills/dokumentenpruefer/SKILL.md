@@ -56,9 +56,10 @@ Nach jeder Änderung, bevor etwas als fertig gilt:
 cd dokumentenpruefer && ./.venv/bin/python -m pytest tests -q -p no:warnings
 ```
 
-Alle Tests müssen grün sein (Stand 1. Oktober 2026: 63). Zusätzlich `./.venv/bin/python -m pyflakes app tests`,
+Alle Tests müssen grün sein (Stand 2. Oktober 2026: 137). Zusätzlich `./.venv/bin/python -m pyflakes app tests`,
 wenn pyflakes installiert ist. Bei Änderungen an `app/static/` die Seite im Browser oder mit Playwright
-durchklicken: Erstanmeldung, Prüfung, Einstellungen, Handy-Breite 390 px. Was nicht geprüft wurde, wird
+durchklicken: Erstanmeldung, Prüfung, Einstellungen, Mitarbeiter (als Admin und als Mitglied), Handy-Breite 390 px;
+  `node tests/browser_smoke.cjs` macht das automatisch. Was nicht geprüft wurde, wird
 im Ergebnis als ungeprüft genannt.
 
 ## Dokument prüfen

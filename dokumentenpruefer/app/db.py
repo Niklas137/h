@@ -1,4 +1,4 @@
-"""SQLite-Zugriff ohne ORM. Eine Datei, drei Tabellen, kein Zauber."""
+"""SQLite-Zugriff ohne ORM. Eine Datei, fünf Tabellen, kein Zauber."""
 from __future__ import annotations
 
 import json
@@ -60,9 +60,26 @@ CREATE TABLE IF NOT EXISTS pruefungen (
     ergebnis TEXT NOT NULL,
     ordner TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS audit_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    zeit TEXT NOT NULL,
+    akteur_id INTEGER,
+    akteur_email TEXT NOT NULL DEFAULT '',
+    aktion TEXT NOT NULL,
+    ziel_id INTEGER,
+    ziel_email TEXT NOT NULL DEFAULT '',
+    details TEXT NOT NULL DEFAULT ''
+);
 CREATE INDEX IF NOT EXISTS idx_pruefungen_user ON pruefungen(user_id, erstellt DESC);
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_zeit ON audit_log(zeit DESC);
 """
+
+# Spalten, die nach der ersten Fassung dazugekommen sind. SQLite kann Spalten anhängen,
+# aber keine CHECK-Regel ändern; deshalb bleibt "geloescht" ein eigenes Feld statt ein Status.
+_NACHTRAEGLICH = {
+    "users": [("geloescht_am", "TEXT")],
+}
 
 
 def jetzt() -> str:
@@ -80,6 +97,11 @@ def verbinden(pfad: Path | None = None) -> sqlite3.Connection:
 def init_db(pfad: Path | None = None) -> None:
     with verbinden(pfad) as con:
         con.executescript(SCHEMA)
+        for tabelle, spalten in _NACHTRAEGLICH.items():
+            vorhanden = {r["name"] for r in con.execute(f"PRAGMA table_info({tabelle})").fetchall()}
+            for name, typ in spalten:
+                if name not in vorhanden:
+                    con.execute(f"ALTER TABLE {tabelle} ADD COLUMN {name} {typ}")
 
 
 @contextmanager

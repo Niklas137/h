@@ -17,8 +17,18 @@
     run: { basis: true, din: true, ce: true }, lang2: 'none', file: null, result: null, busy: false,
     toastTimer: null, popTimer: null,
     lauf: null, laufSichtbar: false, laufTimer: null,
-    prueft: false, epoch: 0, pruefController: null
+    prueft: false, epoch: 0, pruefController: null,
+    userMenu: false, sbOpen: false,
+    team: { suche: '', geloeschte: false, liste: [], admins: 0, rowMenu: null, bearbeite: null }
   };
+  // Seiten der App: Schlüssel im Zustand, Adresse im Hash, Titel und Untertitel in der Kopfzeile.
+  var SEITEN = {
+    main: { hash: 'pruefen', titel: 'Prüfen', sub: 'Word oder PDF gegen Basisprüfung, DIN 82079-1 und CE prüfen.' },
+    verlauf: { hash: 'verlauf', titel: 'Verlauf', sub: 'Deine letzten Prüfungen mit Berichten.' },
+    settings: { hash: 'einstellungen', titel: 'Einstellungen', sub: '' },
+    team: { hash: 'mitarbeiter', titel: 'Mitarbeiter', sub: 'Konten, Rollen und Status des Teams. Nur für Admins.', admin: true }
+  };
+  var ROLLE = { admin: 'Admin', mitglied: 'Mitglied' };
 
   // ------------------------------------------------------------ API
   function api(method, url, body, isForm) {
@@ -99,19 +109,26 @@
     if (inGate || !S.user) return;
 
     var d = S.draft, u = S.user;
-    $('main').hidden = S.screen !== 'main'; $('settings').hidden = S.screen !== 'settings';
-    $('b-settings').classList.toggle('on', S.screen === 'settings');
+    var seite = SEITEN[S.screen] || SEITEN.main;
+    ['main', 'verlauf', 'settings', 'team'].forEach(function (id) { $(id).hidden = S.screen !== id; });
+    $$('[data-nav]').forEach(function (el) { el.classList.toggle('on', el.dataset.nav === S.screen); el.setAttribute('aria-current', el.dataset.nav === S.screen ? 'page' : 'false'); });
+    $('sb').classList.toggle('open', S.sbOpen); $('sb-scrim').hidden = !S.sbOpen;
+    $('user-menu').hidden = !S.userMenu;
     $('lang-code').textContent = (LANGS[d.language] ? d.language : 'de').toUpperCase();
     $('lang-menu').hidden = !S.langMenu;
     $$('#lang-menu [data-lang]').forEach(function (el) { el.classList.toggle('on', el.dataset.lang === d.language); });
     $('ic-sun').hidden = !d.dark; $('ic-moon').hidden = d.dark;
     var nm = d.name || u.name || '–', ini = initials(nm);
-    $('user-name').textContent = nm; $('user-name2').textContent = nm; $('user-name3').textContent = nm;
-    $('user-rolle').textContent = u.rolle === 'admin' ? 'Admin' : 'Mitglied'; $('rolle-badge').textContent = u.rolle === 'admin' ? 'Admin' : 'Mitglied';
-    $('avatar').textContent = ini; $('avatar2').textContent = ini;
-    $('hello').textContent = 'Hallo ' + nm.trim().split(/\s+/)[0];
+    $('user-name').textContent = nm; $('user-name3').textContent = nm;
+    $('user-rolle-sb').textContent = ROLLE[u.rolle] || u.rolle; $('rolle-badge').textContent = ROLLE[u.rolle] || u.rolle;
+    $('avatar-ini').textContent = ini; $('avatar2').textContent = ini;
     $('s-email').value = u.email;
-    $('grp-team').hidden = u.rolle !== 'admin'; $('nav-verwaltung').hidden = u.rolle !== 'admin';
+    $('grp-team').hidden = u.rolle !== 'admin'; $('nav-team').hidden = u.rolle !== 'admin';
+    $('page-title').textContent = seite.titel;
+    $('page-sub').textContent = S.screen === 'settings' ? ('Angemeldet als ' + nm + ' · ' + (ROLLE[u.rolle] || u.rolle) + '. Änderungen siehst du sofort, gespeichert werden sie mit „Speichern“.') : seite.sub;
+    $('save-top').hidden = S.screen !== 'settings';
+    $('user-new').hidden = !(S.screen === 'team' && u.rolle === 'admin');
+    $('team-geloeschte-cb').classList.toggle('on', S.team.geloeschte);
 
     var baseLang = LANGS[d.language] ? d.language : 'de';
     $('rl-main').textContent = LANGS_DE[baseLang]; $('ui-side').textContent = LANGS_DE[baseLang];
@@ -149,8 +166,23 @@
     renderLauf();
   }
 
-  function go(screen) { S.screen = screen; S.langMenu = false; S.help = false; window.scrollTo(0, 0); render(); }
-  function goSection(id) { S.section = id; go('settings'); if (id === 'sicherheit') ladeSitzungen(); if (id === 'verwaltung') ladeBenutzer(); }
+  function go(screen) {
+    var gate = screen === 'start' || screen === 'erst';
+    if (!gate && !SEITEN[screen]) screen = 'main';
+    if (!gate && SEITEN[screen].admin && (!S.user || S.user.rolle !== 'admin')) { screen = 'main'; showToast('Kein Zugriff: nur für Admins.'); }
+    S.screen = screen; S.langMenu = false; S.userMenu = false; S.sbOpen = false; S.help = false; schliesseRowMenu();
+    if (!gate && S.user) { var hash = '#/' + SEITEN[screen].hash; if (location.hash !== hash) history.replaceState(null, '', hash); }
+    window.scrollTo(0, 0); render();
+    if (screen === 'team') ladeTeam();
+    if (screen === 'verlauf') ladePruefungen();
+  }
+  function goSection(id) { S.section = id; go('settings'); if (id === 'sicherheit') ladeSitzungen(); }
+  function seiteAusHash() {
+    var h = (location.hash || '').replace(/^#\/?/, '');
+    var key = Object.keys(SEITEN).filter(function (k) { return SEITEN[k].hash === h; })[0];
+    return key || 'main';
+  }
+  window.addEventListener('hashchange', function () { if (S.user && seiteAusHash() !== S.screen) go(seiteAusHash()); });
 
   // ------------------------------------------------------------ Start
   function boot() {
@@ -169,14 +201,13 @@
       if (fehlend.length) { $('regeln-warn').hidden = false; $('regeln-warn').textContent = 'Regeldateien fehlen oder sind ungültig: ' + fehlend.map(function (k) { return namen[k]; }).join(', ') + '. Prüfungen mit diesen Regelsätzen werden abgebrochen. Bitte die Dateien korrigieren.'; }
       fehlend.forEach(function (k) { var h = $('hint-' + k); if (h) h.textContent = 'Regeldatei fehlt oder ist ungültig'; });
     }).catch(function () {});
-    api('GET', '/api/ich').then(function (d) { anmeldungUebernehmen(d); go('main'); }).catch(function (err) { if (!err.veraltet) go('start'); });
+    api('GET', '/api/ich').then(function (d) { anmeldungUebernehmen(d); go(seiteAusHash()); }).catch(function (err) { if (!err.veraltet) go('start'); });
   }
 
   function anmeldungUebernehmen(d) {
     S.epoch += 1; S.section = 'profil'; S.erst = { email: '', einmal: '', verifizierung: true };
     S.user = d.benutzer; S.saved = Object.assign({}, d.einstellungen, { name: d.benutzer.name }); S.draft = Object.assign({}, S.saved);
     try { var l2 = localStorage.getItem('fsh-lang2'); if (l2 && (l2 === 'none' || LANGS[l2])) S.lang2 = l2; } catch (e) {}
-    $('stand').textContent = 'Stand ' + new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
     ladePruefungen();
   }
   function abmelden(serverseitig) {
@@ -185,12 +216,13 @@
     S.pruefController = null; laufEnde(); S.prueft = false; S.busy = false;
     clearTimeout(S.popTimer); clearTimeout(S.toastTimer); hidePop(); $('toast').hidden = true;
     S.user = null; S.saved = null; S.draft = null; S.result = null; S.file = null;
-    S.section = 'profil'; S.sheet = false; S.showPwd = false;
+    S.section = 'profil'; S.sheet = false; S.showPwd = false; S.userMenu = false; S.sbOpen = false; schliesseRowMenu();
+    S.team = { suche: '', geloeschte: false, liste: [], admins: 0, rowMenu: null, bearbeite: null }; $('team-search').value = '';
     S.erst = { email: '', einmal: '', verifizierung: true };
-    ['modal-pwd', 'modal-user', 'modal-mail', 'result'].forEach(function (id) { $(id).hidden = true; });
-    ['list-tbody', 'res-tbody', 'user-otp', 'mail-text'].forEach(function (id) { $(id).textContent = ''; });
-    ['f-login', 'f-step1', 'f-step2', 'f-step3', 'f-user', 'f-pwd'].forEach(function (id) { $(id).reset(); });
-    $('file').value = ''; go('start');
+    ['modal-pwd', 'modal-user', 'modal-mail', 'modal-edit', 'modal-confirm', 'result'].forEach(function (id) { $(id).hidden = true; });
+    ['list-tbody', 'res-tbody', 'team-tbody', 'protokoll-tbody', 'user-otp', 'mail-text'].forEach(function (id) { $(id).textContent = ''; });
+    ['f-login', 'f-step1', 'f-step2', 'f-step3', 'f-user', 'f-pwd', 'f-edit', 'f-confirm'].forEach(function (id) { $(id).reset(); });
+    $('file').value = ''; history.replaceState(null, '', location.pathname); S.screen = 'start'; S.langMenu = false; S.help = false; window.scrollTo(0, 0); render();
     if (serverseitig === false) return;
     $('login-btn').disabled = true;
     api('POST', '/api/abmelden').catch(function () {}).then(function () { $('login-btn').disabled = false; });
@@ -201,7 +233,7 @@
     e.preventDefault(); zeigeFehler('login-err', '');
     $('login-btn').disabled = true;
     api('POST', '/api/anmelden', { email: $('login-email').value.trim(), passwort: $('login-pwd').value, merken: S.remember })
-      .then(function (d) { $('login-pwd').value = ''; anmeldungUebernehmen(d); go('main'); })
+      .then(function (d) { $('login-pwd').value = ''; anmeldungUebernehmen(d); go(seiteAusHash()); })
       .catch(function (err) { zeigeFehler('login-err', err.message); if (err.daten && err.daten.erstanmeldung) { S.erst.email = $('login-email').value.trim(); } })
       .then(function () { $('login-btn').disabled = false; });
   });
@@ -244,16 +276,20 @@
   });
   ['erst-pwd', 'erst-pwd2', 'erst-name', 'pwd-alt', 'pwd-neu', 'pwd-neu2'].forEach(function (id) { $(id).addEventListener('input', render); });
 
-  // ------------------------------------------------------------ Kopfleiste
-  $('home').addEventListener('click', function () { go('main'); });
+  // ------------------------------------------------------------ Seitenleiste und Kopfzeile
+  $$('[data-nav]').forEach(function (el) { el.addEventListener('click', function () { if (el.dataset.nav === 'settings') goSection(S.section); else go(el.dataset.nav); }); });
   $('logout').addEventListener('click', function () { abmelden(true); });
+  $('logout-foot').addEventListener('click', function () { abmelden(true); });
   $('logout2').addEventListener('click', function () { abmelden(true); });
-  $('avatar').addEventListener('click', function () { goSection('profil'); });
-  $('b-lang').addEventListener('click', function () { S.langMenu = !S.langMenu; render(); });
+  $('avatar').addEventListener('click', function () { S.userMenu = !S.userMenu; S.langMenu = false; render(); });
+  $('um-profil').addEventListener('click', function () { goSection('profil'); });
+  $('um-sicherheit').addEventListener('click', function () { goSection('sicherheit'); });
+  $('sb-open').addEventListener('click', function () { S.sbOpen = true; render(); });
+  $('sb-scrim').addEventListener('click', function () { S.sbOpen = false; S.userMenu = false; S.langMenu = false; render(); });
+  $('b-lang').addEventListener('click', function () { S.langMenu = !S.langMenu; S.userMenu = false; render(); });
   $$('#lang-menu [data-lang]').forEach(function (el) { el.addEventListener('click', function () { sofort({ language: el.dataset.lang }); S.langMenu = false; render(); }); });
   $('b-theme').addEventListener('click', function () { sofort({ dark: !S.draft.dark }); });
-  $('b-settings').addEventListener('click', function () { goSection(S.section); });
-  $('b-help').addEventListener('click', function () { S.help = !S.help; S.langMenu = false; render(); });
+  $('b-help').addEventListener('click', function () { S.help = !S.help; S.langMenu = false; S.userMenu = false; S.sbOpen = false; render(); });
   $('help-from-info').addEventListener('click', function () { S.help = true; render(); });
   $('drawer-close').addEventListener('click', function () { S.help = false; render(); });
   $('drawer-scrim').addEventListener('click', function () { S.help = false; render(); });
@@ -279,7 +315,6 @@
   }
 
   // ------------------------------------------------------------ Einstellungen
-  $('back-main').addEventListener('click', function () { var n = changes().length; go('main'); if (n) showToast(n === 1 ? '1 Änderung noch nicht gespeichert' : n + ' Änderungen noch nicht gespeichert'); });
   $$('.snav [data-sec]').forEach(function (el) { el.addEventListener('click', function () { goSection(el.dataset.sec); el.scrollIntoView({ block: 'nearest', inline: 'center' }); }); });
   $('s-name').addEventListener('input', function () { S.draft.name = this.value; render(); });
   $$('#seg-dark button').forEach(function (b) { b.addEventListener('click', function () { S.draft.dark = b.dataset.v === '1'; render(); }); });
@@ -324,26 +359,104 @@
     }).catch(function () {});
   }
 
-  // Verwaltung
-  function ladeBenutzer() {
+  // ------------------------------------------------------------ Mitarbeiter (nur Admin; der Server prüft jede Route selbst)
+  var STATUS = { aktiv: ['g', 'Aktiv'], einmal: ['y', 'Erstanmeldung offen'], gesperrt: ['r', 'Inaktiv'] };
+  function ladeTeam() {
     if (!S.user || S.user.rolle !== 'admin') return;
-    api('GET', '/api/benutzer').then(function (d) {
-      var st = { aktiv: ['g', 'Aktiv'], einmal: ['y', 'Erstanmeldung offen'], gesperrt: ['r', 'Gesperrt'] };
-      $('users-tbody').innerHTML = d.benutzer.map(function (u) {
-        var s = st[u.status] || ['', u.status];
-        var selbst = u.id === S.user.id;
-        var aktion = '<button class="btn-link" data-otp="' + u.id + '">Neues Einmal-Passwort</button>' +
-          (selbst || u.status === 'einmal' ? '' : ' · <button class="btn-link" data-status="' + u.id + '" data-neu="' + (u.status === 'gesperrt' ? 'aktiv' : 'gesperrt') + '">' + (u.status === 'gesperrt' ? 'Entsperren' : 'Sperren') + '</button>');
-        return '<tr><td data-l="Name" style="font-weight:500">' + esc(u.name) + (selbst ? ' <span class="cap">(du)</span>' : '') + '</td><td data-l="E-Mail" class="muted">' + esc(u.email) + '</td><td data-l="Rolle">' + (u.rolle === 'admin' ? 'Admin' : 'Mitglied') + '</td><td data-l="Status"><span class="tick"><span class="dot ' + s[0] + '"></span>' + s[1] + '</span></td><td data-l="Aktion">' + aktion + '</td></tr>';
-      }).join('');
-      $$('[data-otp]').forEach(function (b) { b.addEventListener('click', function () {
-        api('POST', '/api/benutzer/' + b.dataset.otp + '/einmal-passwort').then(function (r) { zeigeOtp('Neues Einmal-Passwort. Alle Sitzungen dieser Person wurden beendet.', r.einmalPasswort); ladeBenutzer(); }).catch(function (err) { showToast(err.message); });
-      }); });
-      $$('[data-status]').forEach(function (b) { b.addEventListener('click', function () {
-        api('PATCH', '/api/benutzer/' + b.dataset.status, { status: b.dataset.neu }).then(ladeBenutzer).catch(function (err) { showToast(err.message); });
-      }); });
+    api('GET', '/api/benutzer' + (S.team.geloeschte ? '?geloeschte=1' : '')).then(function (d) {
+      S.team.liste = d.benutzer; S.team.admins = d.aktiveAdmins || 0; renderTeam();
     }).catch(function (err) { showToast(err.message); });
+    api('GET', '/api/protokoll').then(function (d) { renderProtokoll(d.protokoll); }).catch(function () {});
   }
+  function renderTeam() {
+    var q = S.team.suche.trim().toLowerCase();
+    var liste = S.team.liste.filter(function (u) { return !q || (u.name + ' ' + u.email).toLowerCase().indexOf(q) >= 0; });
+    $('team-count').textContent = liste.length + ' von ' + S.team.liste.length + (S.team.admins ? ' · ' + S.team.admins + ' aktive Admins' : '');
+    $('team-tbody').innerHTML = liste.map(function (u) {
+      var weg = !!u.geloeschtAm;
+      var st = weg ? ['', 'Gelöscht ' + fmtDatum(u.geloeschtAm)] : (STATUS[u.status] || ['', u.status]);
+      var selbst = u.id === S.user.id;
+      return '<tr' + (weg ? ' class="weg"' : '') + ' data-uid="' + u.id + '"><td data-l="Name"><span class="name" style="font-weight:500">' + esc(u.name) + '</span>' + (selbst ? ' <span class="cap">(du)</span>' : '') + '</td>' +
+        '<td data-l="E-Mail" class="muted">' + esc(u.email) + '</td><td data-l="Rolle">' + esc(ROLLE[u.rolle] || u.rolle) + '</td>' +
+        '<td data-l="Status"><span class="status-pill">' + (st[0] ? '<span class="dot ' + st[0] + '"></span>' : '') + esc(st[1]) + '</span></td>' +
+        '<td class="act"><button type="button" class="rowbtn" data-row="' + u.id + '" aria-label="Aktionen für ' + esc(u.name) + '" aria-haspopup="menu">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></td></tr>';
+    }).join('') || '<tr><td colspan="5" class="muted">' + (q ? 'Niemand passt zur Suche.' : 'Noch keine Mitarbeiter.') + '</td></tr>';
+    $$('[data-row]').forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); oeffneRowMenu(+b.dataset.row, b); }); });
+  }
+  function renderProtokoll(liste) {
+    $('protokoll-tbody').innerHTML = (liste || []).slice(0, 100).map(function (e) {
+      var det = Object.keys(e.details || {}).map(function (k) { return k + ': ' + String(e.details[k]); }).join(', ');
+      var zeit = e.zeit ? new Date(e.zeit) : null;
+      var zt = zeit && !isNaN(zeit) ? zeit.toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : e.zeit;
+      return '<tr><td data-l="Zeit" class="mono">' + esc(zt) + '</td><td data-l="Wer" class="muted">' + esc(e.akteur.email) + '</td><td data-l="Aktion">' + esc(e.aktionText) + '</td><td data-l="Konto" class="muted">' + esc(e.ziel.email) + '</td><td data-l="Details" class="muted">' + esc(det) + '</td></tr>';
+    }).join('') || '<tr><td colspan="5" class="muted">Noch keine Einträge.</td></tr>';
+  }
+  function schliesseRowMenu() { S.team.rowMenu = null; $('rowmenu').hidden = true; $$('.rowbtn.on').forEach(function (b) { b.classList.remove('on'); }); }
+  function oeffneRowMenu(uid, knopf) {
+    if (S.team.rowMenu === uid) { schliesseRowMenu(); return; }
+    schliesseRowMenu();
+    var u = S.team.liste.filter(function (x) { return x.id === uid; })[0]; if (!u) return;
+    S.team.rowMenu = uid; knopf.classList.add('on');
+    var selbst = u.id === S.user.id, weg = !!u.geloeschtAm;
+    var items = [];
+    if (weg) { items.push(['wieder', 'Wiederherstellen']); }
+    else {
+      items.push(['edit', 'Bearbeiten'], ['otp', 'Neues Einmal-Passwort']);
+      if (!selbst) {
+        items.push([u.status === 'gesperrt' ? 'aktiv' : 'inaktiv', u.status === 'gesperrt' ? 'Aktivieren' : 'Deaktivieren']);
+        items.push(['hr'], ['del', 'Löschen', 'danger']);
+      }
+    }
+    var m = $('rowmenu');
+    m.innerHTML = items.map(function (it) { return it[0] === 'hr' ? '<div class="hr"></div>' : '<button type="button" role="menuitem" data-act="' + it[0] + '"' + (it[2] ? ' class="' + it[2] + '"' : '') + '>' + esc(it[1]) + '</button>'; }).join('');
+    var r = knopf.getBoundingClientRect(); m.hidden = false;
+    var w = m.offsetWidth, h = m.offsetHeight;
+    var left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8));
+    var top = r.bottom + 4 + h > window.innerHeight ? r.top - h - 4 : r.bottom + 4;
+    m.style.left = left + 'px'; m.style.top = top + 'px';
+    $$('[data-act]', m).forEach(function (b) { b.addEventListener('click', function () { teamAktion(u, b.dataset.act); }); });
+    m.querySelector('button') && m.querySelector('button').focus();
+  }
+  function teamAktion(u, act) {
+    schliesseRowMenu();
+    if (act === 'edit') { S.team.bearbeite = u; $('f-edit').reset(); $('e-name').value = u.name; $('e-rolle').value = u.rolle; $('e-rolle').disabled = u.id === S.user.id; $('edit-sub').textContent = u.email + (u.id === S.user.id ? ' · Deine eigene Rolle änderst du nicht selbst.' : ''); zeigeFehler('edit-err', ''); $('modal-edit').hidden = false; $('e-name').focus(); return; }
+    if (act === 'otp') { api('POST', '/api/benutzer/' + u.id + '/einmal-passwort').then(function (r) { zeigeOtp('Neues Einmal-Passwort für ' + u.name + '. Alle Sitzungen dieser Person wurden beendet. Es gilt ' + r.gueltigTage + ' Tage:', r.einmalPasswort); ladeTeam(); }).catch(function (err) { showToast(err.message); }); return; }
+    if (act === 'inaktiv') { bestaetigen('Mitarbeiter deaktivieren', u.name + ' kann sich danach nicht mehr anmelden, laufende Sitzungen enden sofort. Prüfungen und Berichte bleiben erhalten. Du kannst das Konto jederzeit wieder aktivieren.', null, 'Deaktivieren', function () { return api('PATCH', '/api/benutzer/' + u.id, { status: 'gesperrt' }).then(function () { showToast(u.name + ' deaktiviert'); }); }); return; }
+    if (act === 'aktiv') { api('PATCH', '/api/benutzer/' + u.id, { status: 'aktiv' }).then(function (r) { showToast(u.name + (r.benutzer.status === 'einmal' ? ' aktiviert, Erstanmeldung mit neuem Einmal-Passwort nötig' : ' aktiviert')); ladeTeam(); }).catch(function (err) { showToast(err.message); }); return; }
+    if (act === 'del') { bestaetigen('Mitarbeiter löschen', 'Willst du ' + u.name + ' wirklich löschen? Das Konto wird deaktiviert und aus der Liste genommen. Prüfungen und Protokoll bleiben erhalten; ein Admin kann das Konto unter „Gelöschte anzeigen“ wiederherstellen.', u.email, 'Löschen', function (eingabe) { return api('DELETE', '/api/benutzer/' + u.id, { bestaetigung: eingabe }).then(function () { showToast(u.name + ' gelöscht'); }); }, true); return; }
+    if (act === 'wieder') { api('POST', '/api/benutzer/' + u.id + '/wiederherstellen').then(function () { showToast(u.name + ' wiederhergestellt, Konto ist inaktiv'); ladeTeam(); }).catch(function (err) { showToast(err.message); }); }
+  }
+  var confirmAktion = null;
+  function bestaetigen(titel, text, mussEingabe, knopf, aktion, gefaehrlich) {
+    $('confirm-title').textContent = titel; $('confirm-text').textContent = text;
+    $('confirm-field').hidden = !mussEingabe; $('confirm-input').value = ''; $('confirm-input').required = !!mussEingabe;
+    $('confirm-label').textContent = mussEingabe ? 'Zur Bestätigung ' + mussEingabe + ' eingeben' : '';
+    $('confirm-ok').textContent = knopf; $('confirm-ok').classList.toggle('danger', !!gefaehrlich); $('confirm-ok').disabled = !!mussEingabe;
+    zeigeFehler('confirm-err', ''); confirmAktion = { aktion: aktion, muss: mussEingabe };
+    $('modal-confirm').hidden = false; (mussEingabe ? $('confirm-input') : $('confirm-ok')).focus();
+  }
+  $('confirm-input').addEventListener('input', function () { $('confirm-ok').disabled = !!(confirmAktion && confirmAktion.muss) && this.value.trim().toLowerCase() !== String(confirmAktion.muss).toLowerCase(); });
+  $('confirm-close').addEventListener('click', function () { $('modal-confirm').hidden = true; confirmAktion = null; });
+  $('f-confirm').addEventListener('submit', function (e) {
+    e.preventDefault(); if (!confirmAktion || $('confirm-ok').disabled) return;
+    $('confirm-ok').disabled = true; zeigeFehler('confirm-err', '');
+    confirmAktion.aktion($('confirm-input').value.trim()).then(function () { $('modal-confirm').hidden = true; confirmAktion = null; ladeTeam(); })
+      .catch(function (err) { zeigeFehler('confirm-err', err.message); $('confirm-ok').disabled = false; });
+  });
+  $('edit-close').addEventListener('click', function () { $('modal-edit').hidden = true; S.team.bearbeite = null; });
+  $('f-edit').addEventListener('submit', function (e) {
+    e.preventDefault(); var u = S.team.bearbeite; if (!u) return; zeigeFehler('edit-err', '');
+    var daten = { name: $('e-name').value.trim() };
+    if (!$('e-rolle').disabled && $('e-rolle').value !== u.rolle) daten.rolle = $('e-rolle').value;
+    $('edit-save').disabled = true;
+    api('PATCH', '/api/benutzer/' + u.id, daten).then(function (r) {
+      $('modal-edit').hidden = true; S.team.bearbeite = null; showToast('Gespeichert'); ladeTeam();
+      if (r.benutzer.id === S.user.id) { S.user = r.benutzer; S.saved.name = r.benutzer.name; S.draft.name = r.benutzer.name; render(); }
+    }).catch(function (err) { zeigeFehler('edit-err', err.message); }).then(function () { $('edit-save').disabled = false; });
+  });
+  $('team-search').addEventListener('input', function () { S.team.suche = this.value; renderTeam(); });
+  $('team-geloeschte').addEventListener('click', function () { S.team.geloeschte = !S.team.geloeschte; render(); ladeTeam(); });
   function zeigeOtp(text, otp) { $('user-form').hidden = true; $('user-done').hidden = false; $('user-save').hidden = true; $('user-done-text').textContent = text; $('user-otp').textContent = otp; $('modal-user').hidden = false; }
   $('user-new').addEventListener('click', function () { $('f-user').reset(); zeigeFehler('user-err', ''); $('user-form').hidden = false; $('user-done').hidden = true; $('user-save').hidden = false; $('modal-user').hidden = false; $('u-name').focus(); });
   $('user-close').addEventListener('click', function () { $('modal-user').hidden = true; });
@@ -351,7 +464,7 @@
   $('f-user').addEventListener('submit', function (e) {
     e.preventDefault(); zeigeFehler('user-err', '');
     api('POST', '/api/benutzer', { name: $('u-name').value.trim(), email: $('u-email').value.trim(), rolle: $('u-rolle').value })
-      .then(function (r) { zeigeOtp('Konto für ' + r.benutzer.name + ' angelegt. Das Einmal-Passwort gilt ' + r.gueltigTage + ' Tage:', r.einmalPasswort); ladeBenutzer(); })
+      .then(function (r) { zeigeOtp('Konto für ' + r.benutzer.name + ' angelegt. Das Einmal-Passwort gilt ' + r.gueltigTage + ' Tage:', r.einmalPasswort); ladeTeam(); })
       .catch(function (err) { zeigeFehler('user-err', err.message); });
   });
 
@@ -481,7 +594,7 @@
         var a = AMPEL[p.ampel] || ['', p.ampel];
         return '<tr><td data-l="Datum" class="mono">' + esc(fmtDatum(p.erstellt)) + '</td><td data-l="Dokument">' + esc(p.dateiname) + '</td><td data-l="Score" class="mono">' + p.score + ' %</td><td data-l="Ampel"><span class="tick"><span class="dot ' + a[0] + '"></span>' + esc(a[1]) + '</span></td><td data-l="Berichte"><button class="btn-link" data-open="' + esc(p.id) + '">Öffnen</button></td></tr>';
       }).join('') || '<tr><td colspan="5" class="muted">Noch keine Prüfung.</td></tr>';
-      $$('[data-open]').forEach(function (b) { b.addEventListener('click', function () { api('GET', '/api/pruefung/' + b.dataset.open).then(function (r) { S.result = r; zeigeErgebnis(r); }).catch(function (err) { showToast(err.message); }); }); });
+      $$('[data-open]').forEach(function (b) { b.addEventListener('click', function () { api('GET', '/api/pruefung/' + b.dataset.open).then(function (r) { S.result = r; if (S.screen !== 'main') go('main'); zeigeErgebnis(r); }).catch(function (err) { showToast(err.message); }); }); });
     }).catch(function () {});
   }
   $('pop-close').addEventListener('click', hidePop);
@@ -499,8 +612,12 @@
   });
   $('mail-copy').addEventListener('click', function () { var t = $('mail-text').textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { showToast('Kopiert'); }, function () { showToast('Bitte markieren und kopieren'); }); });
 
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { S.langMenu = false; S.help = false; S.sheet = false; $('modal-pwd').hidden = true; $('modal-user').hidden = true; $('modal-mail').hidden = true; render(); } });
-  document.addEventListener('click', function (e) { if (S.langMenu && !e.target.closest('.menu-wrap')) { S.langMenu = false; render(); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { S.langMenu = false; S.userMenu = false; S.sbOpen = false; S.help = false; S.sheet = false; schliesseRowMenu(); $('modal-pwd').hidden = true; $('modal-user').hidden = true; $('modal-mail').hidden = true; $('modal-edit').hidden = true; $('modal-confirm').hidden = true; render(); } });
+  document.addEventListener('click', function (e) {
+    if ((S.langMenu || S.userMenu) && !e.target.closest('.menu-wrap')) { S.langMenu = false; S.userMenu = false; render(); }
+    if (S.team.rowMenu !== null && !e.target.closest('#rowmenu')) schliesseRowMenu();
+  });
+  window.addEventListener('resize', schliesseRowMenu);
 
   boot();
 })();
