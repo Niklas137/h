@@ -8,7 +8,11 @@ Verlauf liegen unter `wocheneinkauf/`. Budget 60 € pro Woche ist fest, nicht n
 
 ## Dokumentenprüfer
 
-`app.py` ist eine Streamlit-App (lokaler Dokumentenprüfer, Regeln in `normlogik_82079.json`).
+Schreibt der Nutzer „Dokumentenprüfer" oder „Prüftool" (auch „starten", „testen", „prüfen", „Übergabe"),
+den Skill `.claude/skills/dokumentenpruefer/SKILL.md` ausführen. Die Web-App liegt unter
+`dokumentenpruefer/` (FastAPI, Konten, PDF-Berichte), Anleitung in `dokumentenpruefer/README.md`,
+Ablage und Entscheidungen in `.claude/skills/dokumentenpruefer/references/ablage.md`.
+`app.py` im Stamm ist die alte Streamlit-App (Regeln in `normlogik_82079.json`) und bleibt als Rückfall.
 Sie hat nichts mit dem Wocheneinkauf zu tun.
 
 ## SEO-Audit (FSH-Documentation)

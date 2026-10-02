@@ -1,0 +1,4 @@
+IBM Plex Sans (Regular, SemiBold)
+Copyright © 2017 IBM Corp. with Reserved Font Name "Plex"
+Lizenz: SIL Open Font License, Version 1.1 (https://openfontlicense.org)
+Bezug: Google Fonts, 2026-10-01. Die Schrift wird unverändert in den PDF-Berichten eingebettet.

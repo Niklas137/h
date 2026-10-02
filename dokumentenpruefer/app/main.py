@@ -1,0 +1,709 @@
+"""Web-Dienst des Dokumentenprüfers: Seiten, Anmeldung, Konten, Einstellungen, Prüfung, Berichte."""
+from __future__ import annotations
+
+import asyncio
+import hashlib
+import io
+import json
+import logging
+import platform
+import re
+import shutil
+import subprocess
+import uuid
+import zipfile
+from pathlib import Path
+from typing import Any, Callable
+
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, Response, UploadFile
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
+from starlette.concurrency import run_in_threadpool
+
+from . import ablage, auth, config, db, einstellungen, mail, team
+from .pruefer import berichte, lesen, pruefung, regeln, texte
+
+log = logging.getLogger("dokumentenpruefer")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+
+app = FastAPI(title="Dokumentenprüfer", docs_url=None, redoc_url=None, openapi_url=None)
+app.mount("/static", StaticFiles(directory=str(config.STATIC)), name="static")
+
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+@app.on_event("startup")
+def start() -> None:
+    db.init_db()
+    with db.transaktion() as con:
+        n = con.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+    if n == 0:
+        log.warning("Noch kein Konto vorhanden. Admin anlegen: python -m app.verwaltung admin --email ... --name ...")
+    fehlend = [k for k, v in regeln.vorhanden().items() if not v]
+    if fehlend:
+        log.warning("Regeldateien fehlen oder sind ungültig in %s: %s", config.REGELN, ", ".join(regeln.DATEIEN[k] for k in fehlend))
+
+
+# ---------------------------------------------------------------- Hilfen
+
+
+def _fehler(status: int, meldung: str, **extra: Any) -> JSONResponse:
+    return JSONResponse({"fehler": meldung, **extra}, status_code=status)
+
+
+def _cookie_setzen(antwort: Response, token: str, merken: bool) -> None:
+    antwort.set_cookie(
+        config.COOKIE_NAME,
+        token,
+        max_age=config.SITZUNG_TAGE * 86400 if merken else None,
+        httponly=True,
+        samesite="lax",
+        secure=config.COOKIE_SECURE,
+        path="/",
+    )
+
+
+def _cookie_loeschen(antwort: Response) -> None:
+    antwort.delete_cookie(config.COOKIE_NAME, path="/")
+
+
+def aktueller_benutzer(request: Request) -> dict[str, Any]:
+    token = request.cookies.get(config.COOKIE_NAME)
+    with db.transaktion() as con:
+        user = auth.sitzung_pruefen(con, token)
+    if user is None:
+        raise HTTPException(status_code=401, detail="Bitte zuerst anmelden.")
+    return user
+
+
+def admin_benutzer(user: dict[str, Any] = Depends(aktueller_benutzer)) -> dict[str, Any]:
+    if user["rolle"] != "admin":
+        raise HTTPException(status_code=403, detail="Nur für Admins")
+    return user
+
+
+async def _json(request: Request) -> dict[str, Any]:
+    try:
+        daten = await request.json()
+    except Exception:
+        return {}
+    return daten if isinstance(daten, dict) else {}
+
+
+def _text(daten: dict[str, Any], feld: str) -> str:
+    """Ein Textfeld aus dem Body; alles, was kein Text ist, zählt als leer (nie str() auf Listen oder Zahlen)."""
+    wert = daten.get(feld, "")
+    return wert.strip() if isinstance(wert, str) else ""
+
+
+def _geraet(request: Request) -> str:
+    ua = request.headers.get("user-agent", "")
+    teile = []
+    for name in ("iPhone", "iPad", "Android", "Macintosh", "Windows", "Linux"):
+        if name in ua:
+            teile.append("Mac" if name == "Macintosh" else name)
+            break
+    for name in ("Safari", "Chrome", "Firefox", "Edg"):
+        if name in ua and not (name == "Safari" and "Chrome" in ua):
+            teile.append("Edge" if name == "Edg" else name)
+            break
+    return " · ".join(teile) or "Unbekanntes Gerät"
+
+
+@app.exception_handler(HTTPException)
+async def http_fehler(request: Request, exc: HTTPException):
+    return JSONResponse({"fehler": exc.detail}, status_code=exc.status_code)
+
+
+# ---------------------------------------------------------------- Seite
+
+
+@app.get("/", response_class=HTMLResponse)
+def startseite() -> HTMLResponse:
+    html = (config.STATIC / "index.html").read_text(encoding="utf-8")
+    return HTMLResponse(html, headers={"Cache-Control": "no-store"})
+
+
+@app.get("/api/status")
+def status() -> dict[str, Any]:
+    return {
+        "version": "1.1.0",
+        "anwendung": "fsh-dokumentenpruefer",
+        "installation": hashlib.sha256(str(config.DATEN.resolve()).encode()).hexdigest()[:16],
+        "verifizierung": config.VERIFIZIERUNG,
+        "regeln": regeln.vorhanden(),
+        "sprachen": config.SPRACHEN,
+        "support": {"adresse": config.SUPPORT_ADRESSE, "telefon": config.SUPPORT_TELEFON, "zeiten": config.SUPPORT_ZEITEN},
+        "berichtKopf": config.BERICHT_KOPF,
+    }
+
+
+# ---------------------------------------------------------------- Anmeldung
+
+
+@app.post("/api/anmelden")
+async def anmelden(request: Request, antwort: Response):
+    daten = await _json(request)
+    email = str(daten.get("email", "")).strip().lower()
+    passwort = str(daten.get("passwort", ""))
+    merken = bool(daten.get("merken", False))
+    with db.transaktion() as con:
+        user = auth.benutzer_per_email(con, email)
+        if user is None or not passwort:
+            return _fehler(401, "E-Mail-Adresse oder Passwort stimmt nicht.")
+        if auth.gesperrt(user):
+            return _fehler(423, f"Zu viele Fehlversuche. Bitte in {config.SPERRE_MINUTEN} Minuten erneut versuchen.")
+        if user["status"] == "einmal":
+            return _fehler(409, "Dieses Konto ist noch nicht eingerichtet. Bitte die Erstanmeldung mit dem Einmal-Passwort nutzen.", erstanmeldung=True)
+        if not auth.passwort_stimmt(user["passwort_hash"], passwort):
+            auth.fehlversuch(con, user)
+            return _fehler(401, "E-Mail-Adresse oder Passwort stimmt nicht.")
+        if user["status"] != "aktiv" or user.get("geloescht_am"):
+            # Passwort stimmt, aber das Konto wurde von einem Admin deaktiviert oder gelöscht.
+            return _fehler(403, "Dieses Konto ist deaktiviert. Bitte an einen Admin wenden.")
+        auth.erfolg(con, user["id"])
+        token = auth.sitzung_anlegen(con, user["id"], _geraet(request))
+        einst = einstellungen.lesen(con, user["id"])
+    antwort = JSONResponse({"benutzer": auth.oeffentlich(user), "einstellungen": einst})
+    _cookie_setzen(antwort, token, merken)
+    return antwort
+
+
+@app.post("/api/abmelden")
+def abmelden(request: Request):
+    with db.transaktion() as con:
+        auth.sitzung_beenden(con, request.cookies.get(config.COOKIE_NAME))
+    antwort = JSONResponse({"ok": True})
+    _cookie_loeschen(antwort)
+    return antwort
+
+
+@app.get("/api/ich")
+def ich(request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    with db.transaktion() as con:
+        einst = einstellungen.lesen(con, user["id"])
+    return {"benutzer": auth.oeffentlich(user), "einstellungen": einst}
+
+
+@app.patch("/api/ich")
+async def ich_aendern(request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    daten = await _json(request)
+    name = _text(daten, "name")
+    if len(name) < 2 or len(name) > 80:
+        return _fehler(400, "Der Name braucht 2 bis 80 Zeichen.")
+    with db.transaktion() as con:
+        con.execute("UPDATE users SET name = ? WHERE id = ?", (name, user["id"]))
+        neu = auth.benutzer_per_id(con, user["id"])
+    return {"benutzer": auth.oeffentlich(neu)}
+
+
+# ---------------------------------------------------------------- Erstanmeldung
+
+
+@app.post("/api/erstanmeldung/start")
+async def erst_start(request: Request):
+    daten = await _json(request)
+    email = str(daten.get("email", "")).strip().lower()
+    einmal = str(daten.get("einmalPasswort", "")).strip()
+    with db.transaktion() as con:
+        user = auth.benutzer_per_email(con, email)
+        if user is not None and auth.gesperrt(user):
+            return _fehler(423, f"Zu viele Fehlversuche. Bitte in {config.SPERRE_MINUTEN} Minuten erneut versuchen, oder der Admin vergibt ein neues Einmal-Passwort.")
+        if user is None or not auth.einmal_passwort_stimmt(user, einmal):
+            if user is not None:
+                auth.fehlversuch(con, user)
+            return _fehler(401, "E-Mail-Adresse oder Einmal-Passwort stimmt nicht, oder das Einmal-Passwort ist abgelaufen.")
+        if config.VERIFIZIERUNG == "code":
+            if not mail.smtp_konfiguriert() and not config.ENTWICKLUNG:
+                return _fehler(503, "Der E-Mail-Versand ist nicht eingerichtet. Bitte den Admin kontaktieren. Für einen lokalen Test kann der Admin mit DP_DEV=1 starten.")
+            code = auth.code_setzen(con, user["id"])
+            try:
+                gesendet = mail.code_senden(user["email"], code, user["name"])
+            except (OSError, mail.smtplib.SMTPException):
+                log.warning("Der Verifizierungscode konnte nicht versendet werden.")
+                return _fehler(503, "Der Verifizierungscode konnte nicht versendet werden. Bitte später erneut versuchen oder den Admin kontaktieren.")
+            ergebnis: dict[str, Any] = {"verifizierung": True, "gesendet": gesendet, "minuten": config.CODE_MINUTEN}
+            if config.ENTWICKLUNG:
+                ergebnis["code"] = code
+            return ergebnis
+    return {"verifizierung": False}
+
+
+@app.post("/api/erstanmeldung/code")
+async def erst_code(request: Request):
+    daten = await _json(request)
+    email = str(daten.get("email", "")).strip().lower()
+    code = str(daten.get("code", "")).strip()
+    with db.transaktion() as con:
+        user = auth.benutzer_per_email(con, email)
+        if user is None or not auth.code_stimmt(con, user, code):
+            return _fehler(401, "Der Code stimmt nicht oder ist abgelaufen.")
+    return {"ok": True}
+
+
+@app.post("/api/erstanmeldung/abschluss")
+async def erst_abschluss(request: Request):
+    daten = await _json(request)
+    email = str(daten.get("email", "")).strip().lower()
+    einmal = str(daten.get("einmalPasswort", "")).strip()
+    code = str(daten.get("code", "")).strip()
+    name = str(daten.get("name", "")).strip()
+    passwort = str(daten.get("passwort", ""))
+    passwort2 = str(daten.get("passwort2", ""))
+    if len(name) < 2:
+        return _fehler(400, "Bitte einen Namen eingeben.", feld="name")
+    verletzt = auth.passwort_regel(passwort)
+    if verletzt:
+        return _fehler(400, "Das Passwort erfüllt die Regel nicht.", regel=verletzt)
+    if passwort != passwort2:
+        return _fehler(400, "Die beiden Passwörter stimmen nicht überein.", regel=["wiederholung"])
+    with db.transaktion() as con:
+        user = auth.benutzer_per_email(con, email)
+        if user is not None and auth.gesperrt(user):
+            return _fehler(423, f"Zu viele Fehlversuche. Bitte in {config.SPERRE_MINUTEN} Minuten erneut versuchen, oder der Admin vergibt ein neues Einmal-Passwort.")
+        if user is None or not auth.einmal_passwort_stimmt(user, einmal):
+            return _fehler(401, "E-Mail-Adresse oder Einmal-Passwort stimmt nicht, oder das Einmal-Passwort ist abgelaufen.")
+        if config.VERIFIZIERUNG == "code" and not auth.code_stimmt(con, user, code):
+            return _fehler(401, "Der Code stimmt nicht oder ist abgelaufen.")
+        auth.konto_abschliessen(con, user["id"], name, passwort)
+        einstellungen.anlegen(con, user["id"])
+        token = auth.sitzung_anlegen(con, user["id"], _geraet(request))
+        neu = auth.benutzer_per_id(con, user["id"])
+        einst = einstellungen.lesen(con, user["id"])
+    antwort = JSONResponse({"benutzer": auth.oeffentlich(neu), "einstellungen": einst})
+    _cookie_setzen(antwort, token, True)
+    return antwort
+
+
+# ---------------------------------------------------------------- Einstellungen, Passwort, Sitzungen
+
+
+@app.patch("/api/ich/einstellungen")
+async def einstellungen_aendern(request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    daten = await _json(request)
+    gueltig, fehler = einstellungen.pruefen(daten)
+    if fehler:
+        return _fehler(400, "Diese Einstellung gibt es nicht oder der Wert ist nicht erlaubt.", felder=fehler)
+    if not gueltig:
+        return _fehler(400, "Keine Einstellung übergeben. Erwartet wird ein Objekt mit mindestens einem bekannten Feld.")
+    with db.transaktion() as con:
+        einst = einstellungen.schreiben(con, user["id"], gueltig)
+    return {"einstellungen": einst}
+
+
+@app.post("/api/ich/passwort")
+async def passwort_aendern(request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    daten = await _json(request)
+    alt = str(daten.get("alt", ""))
+    neu = str(daten.get("neu", ""))
+    neu2 = str(daten.get("neu2", ""))
+    if not auth.passwort_stimmt(user["passwort_hash"], alt):
+        return _fehler(401, "Das bisherige Passwort stimmt nicht.")
+    verletzt = auth.passwort_regel(neu)
+    if verletzt:
+        return _fehler(400, "Das neue Passwort erfüllt die Regel nicht.", regel=verletzt)
+    if neu != neu2:
+        return _fehler(400, "Die beiden Passwörter stimmen nicht überein.", regel=["wiederholung"])
+    with db.transaktion() as con:
+        auth.passwort_setzen(con, user["id"], neu)
+        auth.alle_sitzungen_beenden(con, user["id"], ausser_hash=user.get("sitzung_hash"))
+    return {"ok": True}
+
+
+@app.get("/api/ich/sitzungen")
+def sitzungen(user: dict[str, Any] = Depends(aktueller_benutzer)):
+    with db.transaktion() as con:
+        liste = auth.sitzungen_des_benutzers(con, user["id"], user.get("sitzung_hash"))
+    return {"sitzungen": liste}
+
+
+@app.delete("/api/ich/sitzungen/{kurz_id}")
+def sitzung_beenden(kurz_id: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    if not re.fullmatch(r"[0-9a-f]{8,64}", kurz_id):
+        return _fehler(404, "Sitzung nicht gefunden.")
+    with db.transaktion() as con:
+        n = auth.sitzung_loeschen_per_kurz_id(con, user["id"], kurz_id)
+    return {"beendet": n}
+
+
+# ---------------------------------------------------------------- Mitarbeiter (nur Admin)
+# Jede Route hängt an admin_benutzer: ohne Sitzung 401, als Mitglied 403, auch bei direktem Aufruf.
+
+
+def _team_fehler(e: team.TeamFehler) -> JSONResponse:
+    return _fehler(e.status, str(e), **({"feld": e.feld} if e.feld else {}))
+
+
+@app.get("/api/benutzer")
+def benutzer_liste(geloeschte: str = "", user: dict[str, Any] = Depends(admin_benutzer)):
+    with db.transaktion() as con:
+        liste = team.liste(con, mit_geloeschten=geloeschte == "1")
+        admins = team.aktive_admins(con)
+    return {"benutzer": liste, "aktiveAdmins": admins}
+
+
+@app.post("/api/benutzer")
+async def benutzer_anlegen(request: Request, user: dict[str, Any] = Depends(admin_benutzer)):
+    daten = await _json(request)
+    email = _text(daten, "email").lower()
+    name = _text(daten, "name")
+    rolle = daten.get("rolle", "mitglied")
+    if not EMAIL_RE.match(email):
+        return _fehler(400, "Bitte eine gültige E-Mail-Adresse eingeben.", feld="email")
+    if len(name) < 2 or len(name) > 80:
+        return _fehler(400, "Der Name braucht 2 bis 80 Zeichen.", feld="name")
+    try:
+        with db.transaktion() as con:
+            neu, einmal = team.anlegen(con, user, email, name, rolle)
+    except team.TeamFehler as e:
+        return _team_fehler(e)
+    return {"benutzer": auth.oeffentlich(neu), "einmalPasswort": einmal, "gueltigTage": config.EINMAL_PASSWORT_TAGE}
+
+
+@app.post("/api/benutzer/{user_id}/einmal-passwort")
+def einmal_neu(user_id: int, user: dict[str, Any] = Depends(admin_benutzer)):
+    try:
+        with db.transaktion() as con:
+            einmal = team.einmal_passwort(con, user, user_id)
+    except team.TeamFehler as e:
+        return _team_fehler(e)
+    return {"einmalPasswort": einmal, "gueltigTage": config.EINMAL_PASSWORT_TAGE}
+
+
+@app.patch("/api/benutzer/{user_id}")
+async def benutzer_aendern(user_id: int, request: Request, user: dict[str, Any] = Depends(admin_benutzer)):
+    daten = await _json(request)
+    erlaubt = {k: v for k, v in daten.items() if k in ("name", "rolle", "status")}
+    if not erlaubt:
+        return _fehler(400, "Nichts zu ändern. Erlaubt sind name, rolle und status.")
+    if any(not isinstance(v, str) for v in erlaubt.values()):
+        return _fehler(400, "Name, Rolle und Status müssen Text sein.")
+    try:
+        with db.transaktion() as con:
+            neu = team.aendern(con, user, user_id, erlaubt)
+    except team.TeamFehler as e:
+        return _team_fehler(e)
+    return {"benutzer": auth.oeffentlich(neu)}
+
+
+@app.delete("/api/benutzer/{user_id}")
+async def benutzer_loeschen(user_id: int, request: Request, user: dict[str, Any] = Depends(admin_benutzer)):
+    daten = await _json(request)
+    try:
+        with db.transaktion() as con:
+            neu = team.loeschen(con, user, user_id, _text(daten, "bestaetigung"))
+    except team.TeamFehler as e:
+        return _team_fehler(e)
+    return {"benutzer": auth.oeffentlich(neu)}
+
+
+@app.post("/api/benutzer/{user_id}/wiederherstellen")
+def benutzer_wiederherstellen(user_id: int, user: dict[str, Any] = Depends(admin_benutzer)):
+    try:
+        with db.transaktion() as con:
+            neu = team.wiederherstellen(con, user, user_id)
+    except team.TeamFehler as e:
+        return _team_fehler(e)
+    return {"benutzer": auth.oeffentlich(neu)}
+
+
+@app.get("/api/protokoll")
+def protokoll(user: dict[str, Any] = Depends(admin_benutzer)):
+    with db.transaktion() as con:
+        eintraege = team.protokoll(con)
+    return {"protokoll": eintraege}
+
+
+# ---------------------------------------------------------------- Prüfung
+
+
+def _sprachen(user_einst: dict[str, Any], zusatz: str | None) -> list[str]:
+    basis = user_einst.get("language") if user_einst.get("language") in config.SPRACHEN else "de"
+    liste = [basis]
+    if zusatz and zusatz in config.SPRACHEN and zusatz != basis:
+        liste.append(zusatz)
+    return liste
+
+
+def _pruefung_laden(con, user: dict[str, Any], pruef_id: str) -> dict[str, Any]:
+    row = db.zeile(con.execute("SELECT * FROM pruefungen WHERE id = ? AND user_id = ?", (pruef_id, user["id"])).fetchone())
+    if row is None:
+        raise HTTPException(status_code=404, detail="Prüfung nicht gefunden.")
+    return row
+
+
+def _pdf_pfad(row: dict[str, Any], art: str, sprache: str) -> Path:
+    ordner = Path(row["ordner"])
+    ordner.mkdir(parents=True, exist_ok=True)
+    pfad = ordner / berichte.dateiname(art, row["dateiname"], sprache, row["erstellt"])
+    if not pfad.exists():
+        ergebnis = db.json_laden(row["ergebnis"], {})
+        meta = {"dateiname": row["dateiname"], "erstellt": row["erstellt"], "pruefer": ergebnis.get("pruefer", row.get("pruefer_name", ""))}
+        try:
+            ablage.schreiben_neu(pfad, berichte.erzeugen(art, ergebnis, meta, sprache))
+        except FileExistsError:
+            pass  # Ein zeitgleicher Download hat den vollständigen Bericht schon erzeugt.
+    return pfad
+
+
+def _pdf_liste(row: dict[str, Any]) -> list[dict[str, str]]:
+    sprachen = db.json_laden(row["sprachen"], ["de"])
+    liste = []
+    for art in ("pruef", "fach"):
+        for sp in sprachen:
+            liste.append({"bericht": art, "sprache": sp, "url": f"/api/pruefung/{row['id']}/pdf/{art}/{sp}", "dateiname": berichte.dateiname(art, row["dateiname"], sp, row["erstellt"])})
+    return liste
+
+
+def _pruefung_antwort(row: dict[str, Any]) -> dict[str, Any]:
+    ergebnis = db.json_laden(row["ergebnis"], {})
+    return {
+        "id": row["id"],
+        "dateiname": row["dateiname"],
+        "erstellt": row["erstellt"],
+        "score": row["score"],
+        "ampel": row["ampel"],
+        "stunden": row["stunden"],
+        "fundeAnzahl": row["funde"],
+        "sprachen": db.json_laden(row["sprachen"], ["de"]),
+        "regelsaetze": db.json_laden(row["regelsaetze"], []),
+        "fazit": ergebnis.get("fazit", ""),
+        "klassen": ergebnis.get("klassen", {}),
+        "funde": ergebnis.get("funde", []),
+        "todos": ergebnis.get("todos", []),
+        "regelnVorhanden": ergebnis.get("regelnVorhanden", {}),
+        "lesehinweise": [texte.lesehinweis("de", h) for h in ergebnis.get("lesehinweise", [])],
+        "pruefstatus": ergebnis.get("pruefstatus", "altbestand"),
+        "freigabe": False,
+        "suchtrefferAnzahl": ergebnis.get("suchtrefferAnzahl", 0),
+        "regelpruefungen": ergebnis.get("regelpruefungen", []),
+        "bewertungsart": ergebnis.get("bewertungsart", "altbestand"),
+        "pdfs": _pdf_liste(row),
+        "zip": f"/api/pruefung/{row['id']}/zip",
+    }
+
+
+def _pruefung_durchfuehren(
+    name: str,
+    inhalt: bytes,
+    gewaehlt: list[str],
+    zusatz: str | None,
+    user: dict[str, Any],
+    melden: Callable[[str, dict[str, Any]], None],
+) -> dict[str, Any]:
+    """Läuft in einem Arbeitsfaden, damit der Server währenddessen bedienbar bleibt.
+
+    melden(phase, daten) berichtet den Fortschritt: lesen, pruefen, berichte (mit n von N).
+    Erst vollständige PDFs erzeugen, dann die fertige Prüfung kurz in SQLite veröffentlichen.
+    """
+    with db.transaktion() as con:
+        einst = einstellungen.lesen(con, user["id"])
+    sprachen = _sprachen(einst, zusatz)
+    melden("lesen", {})
+    struktur, lesehinweise = lesen.lesen_mit_hinweisen(name, inhalt)
+    melden("pruefen", {})
+    ergebnis = pruefung.pruefen(struktur, gewaehlt)
+    ergebnis["pruefer"] = user["name"]
+    ergebnis["lesehinweise"] = lesehinweise
+    pruef_id = uuid.uuid4().hex[:12]
+    ordner = config.PRUEFUNGEN / pruef_id
+    ordner.mkdir(mode=0o700, parents=True, exist_ok=False)
+    erstellt = db.jetzt()
+    row = {"id": pruef_id, "user_id": user["id"], "dateiname": name,
+           "score": ergebnis["score"], "ampel": ergebnis["ampel"], "stunden": ergebnis["stunden"],
+           "funde": len(ergebnis["funde"]), "sprachen": json.dumps(sprachen),
+           "regelsaetze": json.dumps(gewaehlt), "erstellt": erstellt,
+           "ergebnis": json.dumps(ergebnis, ensure_ascii=False), "ordner": str(ordner),
+           "pruefer_name": user["name"]}
+    try:
+        auftraege = [(art, sp) for art in ("pruef", "fach") for sp in sprachen]
+        for i, (art, sp) in enumerate(auftraege, 1):
+            melden("berichte", {"n": i, "von": len(auftraege)})
+            _pdf_pfad(row, art, sp)
+        with db.transaktion() as con:
+            con.execute(
+                "INSERT INTO pruefungen (id, user_id, dateiname, score, ampel, stunden, funde, sprachen, regelsaetze, erstellt, ergebnis, ordner)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                tuple(row[k] for k in ("id", "user_id", "dateiname", "score", "ampel", "stunden", "funde", "sprachen", "regelsaetze", "erstellt", "ergebnis", "ordner")),
+            )
+    except BaseException:
+        shutil.rmtree(ordner)
+        raise
+    return _pruefung_antwort(row)
+
+
+@app.post("/api/pruefung")
+async def pruefung_starten(
+    request: Request,
+    datei: UploadFile = File(...),
+    regelsaetze: str = Form("basis,din,ce"),
+    zusatzsprache: str = Form(""),
+    fortschritt: str = Form(""),
+    user: dict[str, Any] = Depends(aktueller_benutzer),
+):
+    name = Path(datei.filename or "dokument").name
+    if not name.lower().endswith((".docx", ".pdf")):
+        return _fehler(400, "Nur Word (.docx) und PDF (.pdf) werden geprüft.")
+    inhalt = await datei.read(config.UPLOAD_MAX_BYTES + 1)
+    if len(inhalt) > config.UPLOAD_MAX_BYTES:
+        return _fehler(413, "Die Datei ist größer als 25 MB.")
+    gewaehlt = list(dict.fromkeys(r.strip() for r in regelsaetze.split(",") if r.strip()))
+    if not gewaehlt or any(r not in config.REGELSAETZE for r in gewaehlt):
+        return _fehler(400, "Bitte gültige Regelsätze wählen: basis, din oder ce.")
+    zusatz = zusatzsprache.strip() or None
+    if zusatz and zusatz not in config.SPRACHEN:
+        return _fehler(400, "Ungültige Zusatzsprache. Erlaubt sind de, en, uk und ru.")
+
+    if fortschritt != "1":
+        try:
+            return await run_in_threadpool(_pruefung_durchfuehren, name, inhalt, gewaehlt, zusatz, user, lambda phase, daten: None)
+        except lesen.LeseFehler as e:
+            return _fehler(422, str(e))
+        except regeln.RegelFehler as e:
+            return _fehler(503, str(e))
+        except Exception:
+            log.exception("Prüfung von %s fehlgeschlagen", name)
+            return _fehler(500, "Die Prüfung ist fehlgeschlagen. Bitte noch einmal versuchen.")
+
+    # Fortschritt als Zeilenstrom (NDJSON): eine Zeile je Phase, zuletzt das Ergebnis oder der Fehler.
+    loop = asyncio.get_running_loop()
+    ereignisse: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
+
+    def melden(phase: str, daten: dict[str, Any]) -> None:
+        loop.call_soon_threadsafe(ereignisse.put_nowait, {"phase": phase, **daten})
+
+    async def arbeiten() -> None:
+        try:
+            antwort = await run_in_threadpool(_pruefung_durchfuehren, name, inhalt, gewaehlt, zusatz, user, melden)
+            await ereignisse.put({"phase": "fertig", "ergebnis": antwort})
+        except lesen.LeseFehler as e:
+            await ereignisse.put({"fehler": str(e), "status": 422})
+        except regeln.RegelFehler as e:
+            await ereignisse.put({"fehler": str(e), "status": 503})
+        except Exception:
+            log.exception("Prüfung von %s fehlgeschlagen", name)
+            await ereignisse.put({"fehler": "Die Prüfung ist fehlgeschlagen. Bitte noch einmal versuchen.", "status": 500})
+
+    async def zeilen():
+        aufgabe = asyncio.create_task(arbeiten())
+        try:
+            while True:
+                ereignis = await ereignisse.get()
+                yield json.dumps(ereignis, ensure_ascii=False) + "\n"
+                if "fehler" in ereignis or ereignis.get("phase") == "fertig":
+                    break
+        finally:
+            await aufgabe
+
+    return StreamingResponse(zeilen(), media_type="application/x-ndjson", headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"})
+
+
+@app.get("/api/pruefungen")
+def pruefungen(user: dict[str, Any] = Depends(aktueller_benutzer)):
+    with db.transaktion() as con:
+        rows = db.zeilen(
+            con.execute(
+                "SELECT id, dateiname, score, ampel, stunden, funde, sprachen, erstellt FROM pruefungen WHERE user_id = ? ORDER BY erstellt DESC LIMIT 20",
+                (user["id"],),
+            ).fetchall()
+        )
+    return {"pruefungen": [dict(r, sprachen=db.json_laden(r["sprachen"], ["de"])) for r in rows]}
+
+
+@app.get("/api/pruefung/{pruef_id}")
+def pruefung_lesen(pruef_id: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    with db.transaktion() as con:
+        row = _pruefung_laden(con, user, pruef_id)
+    return _pruefung_antwort(row)
+
+
+@app.get("/api/pruefung/{pruef_id}/pdf/{art}/{sprache}")
+def pruefung_pdf(pruef_id: str, art: str, sprache: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    if art not in ("pruef", "fach") or sprache not in config.SPRACHEN:
+        raise HTTPException(status_code=404, detail="Bericht nicht gefunden.")
+    with db.transaktion() as con:
+        row = _pruefung_laden(con, user, pruef_id)
+    if sprache not in db.json_laden(row["sprachen"], ["de"]):
+        raise HTTPException(status_code=404, detail="Für diese Sprache wurde bei der Prüfung kein Bericht gewählt.")
+    row["pruefer_name"] = user["name"]
+    pfad = _pdf_pfad(row, art, sprache)
+    return FileResponse(str(pfad), media_type="application/pdf", filename=pfad.name)
+
+
+@app.get("/api/pruefung/{pruef_id}/zip")
+def pruefung_zip(pruef_id: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    with db.transaktion() as con:
+        row = _pruefung_laden(con, user, pruef_id)
+    row["pruefer_name"] = user["name"]
+    puffer = io.BytesIO()
+    with zipfile.ZipFile(puffer, "w", zipfile.ZIP_DEFLATED) as z:
+        for eintrag in _pdf_liste(row):
+            pfad = _pdf_pfad(row, eintrag["bericht"], eintrag["sprache"])
+            z.write(pfad, pfad.name)
+    puffer.seek(0)
+    name = berichte.dateiname("pruef", row["dateiname"], "de", row["erstellt"]).replace("_Pruefbericht_DE_v01.pdf", "_Berichte.zip")
+    return Response(puffer.getvalue(), media_type="application/zip", headers={"Content-Disposition": f'attachment; filename="{name}"'})
+
+
+@app.post("/api/pruefung/{pruef_id}/ablegen")
+def pruefung_ablegen(pruef_id: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    with db.transaktion() as con:
+        row = _pruefung_laden(con, user, pruef_id)
+    row["pruefer_name"] = user["name"]
+    abgelegt = []
+    try:
+        config.OUTPUT.mkdir(parents=True, exist_ok=True)
+        for eintrag in _pdf_liste(row):
+            quelle = _pdf_pfad(row, eintrag["bericht"], eintrag["sprache"])
+            ziel = berichte.ablegen(config.OUTPUT, eintrag["bericht"], row["dateiname"], eintrag["sprache"], row["erstellt"], quelle.read_bytes())
+            abgelegt.append(str(ziel))
+    except OSError:
+        log.warning("Berichtsablage fehlgeschlagen. Zielordner und Schreibrechte prüfen.")
+        return _fehler(500, "Berichte konnten nicht abgelegt werden. Bitte Zielordner, Schreibrechte und freien Speicher prüfen.")
+    return {"abgelegt": abgelegt, "ordner": str(config.OUTPUT)}
+
+
+@app.post("/api/pruefung/{pruef_id}/mail-entwurf")
+async def pruefung_mail(pruef_id: str, request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    """Legt auf dem Mac einen Entwurf in Apple Mail an (Fachbericht angehängt). Sendet nie."""
+    daten = await _json(request)
+    with db.transaktion() as con:
+        row = _pruefung_laden(con, user, pruef_id)
+    row["pruefer_name"] = user["name"]
+    sprachen = db.json_laden(row["sprachen"], ["de"])
+    anhaenge = [_pdf_pfad(row, "fach", sp) for sp in sprachen]
+    betreff = f"Fachbericht Dokumentenprüfung: {Path(row['dateiname']).stem}"
+    empfaenger = str(daten.get("an", "")).strip()
+    text = (
+        "Guten Tag,\n\n"
+        f"anbei der Fachbericht zur Prüfung des Dokuments {row['dateiname']} "
+        f"({', '.join(config.SPRACHNAMEN_DE.get(s, s) for s in sprachen)}).\n\n"
+        f"Ergebnis: {row['score']} %, {texte.ampel('de', row['ampel'])}.\n"
+        f"{texte.t('de', 'hinweis_vorpruefung', firma=config.BERICHT_KOPF)}\n\n"
+        "Bei Fragen melden Sie sich gern.\n\n"
+        f"Mit freundlichen Grüßen\n{user['name']}\n{config.BERICHT_KOPF}"
+    )
+    if platform.system() == "Darwin":
+        skript = _applescript_entwurf(betreff, text, empfaenger, anhaenge)
+        try:
+            subprocess.run(["osascript", "-e", skript], check=True, capture_output=True, timeout=30)
+            return {"entwurf": "mail", "betreff": betreff, "anhaenge": [a.name for a in anhaenge]}
+        except Exception as e:  # pragma: no cover (nur auf dem Mac)
+            log.warning("Apple Mail Entwurf fehlgeschlagen: %s", e)
+    return {"entwurf": "text", "betreff": betreff, "text": text, "anhaenge": [a.name for a in anhaenge]}
+
+
+def _applescript_entwurf(betreff: str, text: str, empfaenger: str, anhaenge: list[Path]) -> str:
+    def q(s: str) -> str:
+        return s.replace("\\", "\\\\").replace('"', '\\"')
+
+    zeilen = [
+        'tell application "Mail"',
+        f'set neu to make new outgoing message with properties {{subject:"{q(betreff)}", content:"{q(text)}" & return & return, visible:true}}',
+    ]
+    if empfaenger:
+        zeilen.append(f'tell neu to make new to recipient at end of to recipients with properties {{address:"{q(empfaenger)}"}}')
+    for a in anhaenge:
+        zeilen.append(f'tell neu to make new attachment with properties {{file name:(POSIX file "{q(str(a))}")}} at after the last paragraph')
+    zeilen.append("end tell")
+    return "\n".join(zeilen)

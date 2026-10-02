@@ -1,0 +1,135 @@
+[
+  {
+    "id": "DIN-001",
+    "keywords": [
+      "zielgruppe",
+      "benutzer",
+      "nutzer",
+      "endnutzer"
+    ],
+    "bereich": "Zielgruppe",
+    "pflicht": true,
+    "fehlerklasse": "Schwer",
+    "empfehlung": "Die Zielgruppe/Benutzer müssen deutlich definiert werden",
+    "gewichtung": 3,
+    "empfehlung_en": "The target group and the users must be clearly defined",
+    "empfehlung_uk": "Цільову групу та користувачів необхідно чітко визначити",
+    "empfehlung_ru": "Целевую группу и пользователей необходимо чётко определить"
+  },
+  {
+    "id": "DIN-002",
+    "keywords": [
+      "inhaltsverzeichnis",
+      "gliederung"
+    ],
+    "bereich": "Gliederung",
+    "pflicht": true,
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Logische Gliederung und Inhaltsverzeichnis erforderlich",
+    "gewichtung": 2,
+    "empfehlung_en": "A logical structure and a table of contents are required",
+    "empfehlung_uk": "Потрібні логічна структура та зміст",
+    "empfehlung_ru": "Требуются логическая структура и оглавление"
+  },
+  {
+    "id": "DIN-003",
+    "keywords": [
+      "warnung",
+      "achtung",
+      "vorsicht",
+      "sicherheit",
+      "gefahr"
+    ],
+    "bereich": "Sicherheit",
+    "pflicht": true,
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "Alle Sicherheitsinformationen müssen deutlich gekennzeichnet sein",
+    "gewichtung": 5,
+    "empfehlung_en": "All safety information must be clearly marked",
+    "empfehlung_uk": "Уся інформація з безпеки має бути чітко позначена",
+    "empfehlung_ru": "Вся информация по безопасности должна быть чётко обозначена"
+  },
+  {
+    "id": "DIN-004",
+    "keywords": [
+      "symbole",
+      "piktogramme",
+      "zeichen"
+    ],
+    "bereich": "Symbole",
+    "pflicht": false,
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Verwendete Symbole und Piktogramme müssen erläutert werden",
+    "gewichtung": 2,
+    "empfehlung_en": "Symbols and pictograms used must be explained",
+    "empfehlung_uk": "Використані символи та піктограми потрібно пояснити",
+    "empfehlung_ru": "Используемые символы и пиктограммы необходимо пояснить"
+  },
+  {
+    "id": "DIN-005",
+    "keywords": [
+      "abbildung",
+      "abbildungen",
+      "bilder",
+      "grafik",
+      "grafiken"
+    ],
+    "bereich": "Illustrationen",
+    "pflicht": true,
+    "fehlerklasse": "Schwer",
+    "empfehlung": "Aussagekräftige Illustrationen und Abbildungen sind notwendig",
+    "gewichtung": 3,
+    "empfehlung_en": "Meaningful illustrations and figures are necessary",
+    "empfehlung_uk": "Потрібні змістовні ілюстрації та рисунки",
+    "empfehlung_ru": "Необходимы содержательные иллюстрации и рисунки"
+  },
+  {
+    "id": "DIN-006",
+    "keywords": [
+      "sprache",
+      "deutsch",
+      "verständlich",
+      "klar"
+    ],
+    "bereich": "Sprache",
+    "pflicht": true,
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Die Sprache muss klar und zielgruppengerecht sein",
+    "gewichtung": 3,
+    "empfehlung_en": "The language must be clear and appropriate for the target group",
+    "empfehlung_uk": "Мова має бути зрозумілою та відповідати цільовій групі",
+    "empfehlung_ru": "Язык должен быть понятным и соответствовать целевой группе"
+  },
+  {
+    "id": "DIN-007",
+    "keywords": [
+      "schrift",
+      "schriftgröße",
+      "lesbarkeit"
+    ],
+    "bereich": "Formatierung",
+    "pflicht": false,
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Angemessene Schriftgröße und Formatierung für Lesbarkeit",
+    "gewichtung": 2,
+    "empfehlung_en": "Appropriate font size and formatting for readability",
+    "empfehlung_uk": "Належний розмір шрифту та форматування для читабельності",
+    "empfehlung_ru": "Надлежащий размер шрифта и форматирование для читаемости"
+  },
+  {
+    "id": "DIN-008",
+    "keywords": [
+      "papierformat",
+      "din a4",
+      "a4"
+    ],
+    "bereich": "Format",
+    "pflicht": false,
+    "fehlerklasse": "Gering",
+    "empfehlung": "Standardisiertes Papierformat empfohlen",
+    "gewichtung": 1,
+    "empfehlung_en": "A standardised paper format is recommended",
+    "empfehlung_uk": "Рекомендовано стандартизований формат паперу",
+    "empfehlung_ru": "Рекомендуется стандартизированный формат бумаги"
+  }
+]
