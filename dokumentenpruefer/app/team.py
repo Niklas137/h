@@ -113,7 +113,7 @@ def protokoll(con, limit: int = 200) -> list[dict[str, Any]]:
 
 
 def anlegen(con, akteur: dict[str, Any], email: str, name: str, rolle: str) -> tuple[dict[str, Any], str]:
-    if rolle not in ROLLEN:
+    if not isinstance(rolle, str) or rolle not in ROLLEN:
         raise TeamFehler(400, "Rolle muss admin oder mitglied sein.", "rolle")
     bestehend = auth.benutzer_per_email(con, email)
     if bestehend is not None:

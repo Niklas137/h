@@ -176,6 +176,9 @@ Zugangsdaten gehören nicht ins Projekt. SMTP-Daten nur als Umgebungsvariable se
 ./.venv/bin/python -m pytest tests -q
 ```
 
+Die Qualitätsvorgaben nach ISO 25010 stehen in `QUALITAET.md`, je Merkmal mit Messwert und dem Test,
+der sie prüft (`tests/test_qualitaet.py`). Neue Funktionen bringen dort ihre Vorgabe und ihren Test mit.
+
 Die Bestandstests prüfen Erstanmeldung, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
 Word-Prüfung, PDFs in vier Sprachen, ZIP, Ablage, Mail-Entwurf, CLI und Fortschritts-Zeilenstrom.
 `tests/test_team.py` deckt die Mitarbeiterverwaltung ab: 401 ohne Sitzung und 403 als Mitglied auf
@@ -221,6 +224,7 @@ die oben genannte Phase-1-Abnahme bezieht sich auf den vorherigen Programmstand.
 
 ```
 app/main.py            FastAPI: Seiten, API, Prüfung, Berichte
+app/config.py          Konfiguration aus Umgebungsvariablen (Präfix DP_), Pfade, Grenzwerte
 app/auth.py            Passwörter (argon2), Einmal-Passwort, Code, Sitzungen, Sperre
 app/db.py              SQLite-Schema, nachträgliche Spalten und Verbindung
 app/einstellungen.py   Einstellungen je Benutzer

@@ -11,7 +11,8 @@ Du arbeitest an der Web-App unter `dokumentenpruefer/` im Repo h. Sie prüft Wor
 gegen die Regelsätze Basisprüfung, DIN 82079-1 und CE und erzeugt Prüfbericht (intern) und
 Fachbericht (Kunde) als PDF. Die alte Streamlit-App `app.py` im Repo-Stamm bleibt unberührt als Rückfall.
 
-Lies zuerst `dokumentenpruefer/README.md` (Aufbau, Konfiguration, Befehle) und bei Fragen zu Ablage,
+Lies zuerst `dokumentenpruefer/README.md` (Aufbau, Konfiguration, Befehle) und `dokumentenpruefer/QUALITAET.md`
+(messbare Vorgaben nach ISO 25010: jede neue Funktion bekommt dort erst ihre Vorgabe und ihren Test, dann den Code) und bei Fragen zu Ablage,
 Entscheidungen oder offenen Punkten `references/ablage.md` in diesem Skill-Ordner.
 
 ## Was der Auftrag meint

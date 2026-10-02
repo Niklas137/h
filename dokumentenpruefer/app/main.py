@@ -90,6 +90,12 @@ async def _json(request: Request) -> dict[str, Any]:
     return daten if isinstance(daten, dict) else {}
 
 
+def _text(daten: dict[str, Any], feld: str) -> str:
+    """Ein Textfeld aus dem Body; alles, was kein Text ist, zählt als leer (nie str() auf Listen oder Zahlen)."""
+    wert = daten.get(feld, "")
+    return wert.strip() if isinstance(wert, str) else ""
+
+
 def _geraet(request: Request) -> str:
     ua = request.headers.get("user-agent", "")
     teile = []
@@ -182,7 +188,7 @@ def ich(request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
 @app.patch("/api/ich")
 async def ich_aendern(request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
     daten = await _json(request)
-    name = str(daten.get("name", "")).strip()
+    name = _text(daten, "name")
     if len(name) < 2 or len(name) > 80:
         return _fehler(400, "Der Name braucht 2 bis 80 Zeichen.")
     with db.transaktion() as con:
@@ -278,6 +284,8 @@ async def einstellungen_aendern(request: Request, user: dict[str, Any] = Depends
     gueltig, fehler = einstellungen.pruefen(daten)
     if fehler:
         return _fehler(400, "Diese Einstellung gibt es nicht oder der Wert ist nicht erlaubt.", felder=fehler)
+    if not gueltig:
+        return _fehler(400, "Keine Einstellung übergeben. Erwartet wird ein Objekt mit mindestens einem bekannten Feld.")
     with db.transaktion() as con:
         einst = einstellungen.schreiben(con, user["id"], gueltig)
     return {"einstellungen": einst}
@@ -335,9 +343,9 @@ def benutzer_liste(geloeschte: str = "", user: dict[str, Any] = Depends(admin_be
 @app.post("/api/benutzer")
 async def benutzer_anlegen(request: Request, user: dict[str, Any] = Depends(admin_benutzer)):
     daten = await _json(request)
-    email = str(daten.get("email", "")).strip().lower()
-    name = str(daten.get("name", "")).strip()
-    rolle = str(daten.get("rolle", "mitglied"))
+    email = _text(daten, "email").lower()
+    name = _text(daten, "name")
+    rolle = daten.get("rolle", "mitglied")
     if not EMAIL_RE.match(email):
         return _fehler(400, "Bitte eine gültige E-Mail-Adresse eingeben.", feld="email")
     if len(name) < 2 or len(name) > 80:
@@ -366,6 +374,8 @@ async def benutzer_aendern(user_id: int, request: Request, user: dict[str, Any] 
     erlaubt = {k: v for k, v in daten.items() if k in ("name", "rolle", "status")}
     if not erlaubt:
         return _fehler(400, "Nichts zu ändern. Erlaubt sind name, rolle und status.")
+    if any(not isinstance(v, str) for v in erlaubt.values()):
+        return _fehler(400, "Name, Rolle und Status müssen Text sein.")
     try:
         with db.transaktion() as con:
             neu = team.aendern(con, user, user_id, erlaubt)
@@ -379,7 +389,7 @@ async def benutzer_loeschen(user_id: int, request: Request, user: dict[str, Any]
     daten = await _json(request)
     try:
         with db.transaktion() as con:
-            neu = team.loeschen(con, user, user_id, str(daten.get("bestaetigung", "")))
+            neu = team.loeschen(con, user, user_id, _text(daten, "bestaetigung"))
     except team.TeamFehler as e:
         return _team_fehler(e)
     return {"benutzer": auth.oeffentlich(neu)}
