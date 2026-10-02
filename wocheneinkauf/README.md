@@ -98,7 +98,11 @@ Aufbau der Automatisierung, Stand 19.09.2026:
   zuverlässig in der Routine-Session an.
 
 Test des Geschäftsreise-Modus am 19.09.2026: Reise 22.09. bis 02.10. durchgespielt, danach als Test
-zurückgesetzt. Die Routine läuft regulär weiter, nächster Lauf Fr 25.09. für Woche 2.
+zurückgesetzt.
+
+Pause seit Do 01.10.2026: Niklas ist in der Ukraine (Floorball, Lutsk), Rückkehr offen. Die Routine
+ist abgeschaltet, Woche 3 entfällt. Meldet er sich aus dem Bus zurück, wird die Routine wieder
+eingeschaltet und die nächste Woche neu geplant (Vorrat vorher im Chat abfragen).
 
 Warum keine frische Session pro Lauf: Über die API angelegte Routinen starten ohne
 Repository-Quelle. Eine dauerhafte Session bringt Repo, Branch und Push-Rechte mit.

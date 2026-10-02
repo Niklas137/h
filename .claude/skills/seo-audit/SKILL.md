@@ -17,6 +17,10 @@ wird mit dem vorherigen verglichen. Alle Parameter stehen fest. Nicht nachfragen
   `fsh-documentation.de` (E-Mail-Domain der Firma, Stand 19.09.2026 ohne indexierte Inhalte).
 - Plattform (Stand 19.09.2026): Canva-Website, Einseiter, Inhalt entsteht erst per JavaScript (Roh-HTML ohne
   Text), kein eigener Head-Code, keine robots.txt. fsh-documentation.de zeigt eine STRATO-Platzhalterseite.
+  Nach dem Relaunch (statische Website aus `website/`, GitHub Pages): Roh-HTML mit Text, zwölf Seiten,
+  Sitemap mit elf URLs. Erkennbar daran, dass `onpage_check.py` auf dem Roh-HTML Wörter und eine h1
+  liefert; dann Technik und On-Page für Startseite und alle Sitemap-URLs prüfen und im Bericht als
+  Veränderung „Relaunch live“ führen (B3, B7, B8, B9, B10, B11 neu bewerten).
 - Firma: FSH-Documentation UG (haftungsbeschränkt), Bäckerstraße 2 D, 14513 Teltow. Technische
   Dokumentation, CE-/UKCA-Konformität, Risikobeurteilung, Normenmanagement, ST4.
 - Zielmarkt: Deutschland, regional Teltow, Potsdam, Berlin, Brandenburg.
@@ -38,6 +42,7 @@ wird mit dem vorherigen verglichen. Alle Parameter stehen fest. Nicht nachfragen
 | `seo-audit/tools/onpage_check.py` | liest eine gespeicherte HTML-Seite und gibt die On-Page-Merkmale als JSON aus |
 | `seo-audit/tools/browser_setup.sh` | einmal je Container: Proxy-Zertifikat für Chromium einrichten |
 | `seo-audit/tools/fetch_rendered.js` | lädt eine Seite im Browser und speichert den gerenderten DOM, Ladezeiten und Screenshot |
+| `seo-audit/tools/mail_dns_check.py` | prüft SPF, DMARC, DKIM und MX beider Domains gegen die Sollwerte (Befund B12) |
 
 ## Ablauf
 
@@ -134,7 +139,8 @@ for n in fsh-documentation.de _dmarc.fsh-documentation.de fsh-documentation.com 
 done
 ```
 
-Gelesen wird das Feld `Answer` → `data` der Antwort. Sollwerte (Herleitung in
+Kurzform: `python3 seo-audit/tools/mail_dns_check.py` prüft alle Einträge gegen die Sollwerte (Exit 0 =
+alle gesetzt). Gelesen wird das Feld `Answer` → `data` der Antwort. Sollwerte (Herleitung in
 `website/google-und-email-dns.md`): `fsh-documentation.de` TXT mit `v=spf1 include:_spf.strato.com`
 (`~all` oder `-all`); `_dmarc.fsh-documentation.de` mit `p=reject` und `rua=`; `fsh-documentation.com`
 TXT `v=spf1 -all`; `_dmarc.fsh-documentation.com` mit `p=reject`. Fehlt ein Wert, bleibt der Befund
@@ -163,8 +169,9 @@ von jeder Seite verlinkt; mehrsprachige Seiten mit `hreflang`.
 6. `Technische Dokumentation Potsdam Berlin Dienstleister`
 7. `Technische Redaktion CE-Konformität Betriebsanleitung Dienstleister Berlin Brandenburg`
 8. `Betriebsanleitung erstellen lassen Maschinenbau CE`
-9. der exakte Seitentitel der Startseite in Anführungszeichen (Stand 19.09.2026:
-   `"Technische Dokumentation auf Premium-Niveau"`)
+9. der exakte Seitentitel der Startseite in Anführungszeichen, so wie ihn `onpage_check.py` in diesem
+   Lauf liefert (Canva-Seite: `"Technische Dokumentation auf Premium-Niveau"`; nach dem Relaunch
+   `"FSH-Documentation – Technische Dokumentation Teltow"`)
 10. `FSH documentation` (Markenkollision beobachten)
 
 Je Abfrage zählen: Treffer von fsh-documentation.com oder .de (ja/nein, URL, Position, sofern
