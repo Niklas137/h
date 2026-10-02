@@ -5,6 +5,7 @@ import zipfile
 
 import pytest
 from docx import Document
+from PyPDF2 import PdfReader
 
 from app.pruefer import berichte, pruefung, texte
 
@@ -140,6 +141,10 @@ def test_berichte_direkt_alle_sprachen():
         for art in ("pruef", "fach"):
             pdf = berichte.erzeugen(art, erg, meta, sp)
             assert pdf[:5] == b"%PDF-", (art, sp)
+            # Der Fuß trägt nur die fertige Seitenzahl, keinen Platzhalter aus dem Zähldurchlauf.
+            text = " ".join(" ".join(s.extract_text().split()) for s in PdfReader(io.BytesIO(pdf)).pages)
+            assert "{m}" not in text, (art, sp)
+            assert texte.t(sp, "seite", n=1, m=len(PdfReader(io.BytesIO(pdf)).pages)) in text, (art, sp)
     assert berichte.dateiname("fach", "Doku.docx", "uk", "2026-10-01T09:00:00") == "2026-10-01_Doku_Fachbericht_UK_v01.pdf"
     assert texte.t("uk", "pruefbericht")
 

@@ -38,7 +38,7 @@ def deduplicate_findings(findings: list[Fund]) -> list[Fund]:
     if txt_findings:
         agg = txt_findings[0].copy()
         agg["Bewertung"] = f"Sätze zu lang ({len(txt_findings)} gefunden)"
-        agg["Empfehlung"] = f"{len(txt_findings)} Sätze mit mehr als 25 Wörtern gefunden"
+        agg["Empfehlung"] = texte.empfehlung("de", {"Schluessel": "satz_zu_lang", "Anzahl": len(txt_findings)})
         agg["Anzahl"] = len(txt_findings)
         agg["Schluessel"] = "satz_zu_lang"
         deduped.append(agg)
