@@ -55,6 +55,7 @@ def main():
     ap.add_argument("markdown")
     ap.add_argument("--out", help="Ziel-PDF (Standard: gleicher Name mit .pdf)")
     ap.add_argument("--fusszeile", help="Text links in der Fußzeile")
+    ap.add_argument("--label", default="FSH-Documentation · SEO", help="Kleine Zeile über dem Titel")
     a = ap.parse_args()
     src = open(a.markdown, encoding="utf-8").read()
     m = re.search(r"^#\s+(.+)$", src, flags=re.M)
@@ -63,7 +64,7 @@ def main():
     body = markdown.markdown(body_md, extensions=["tables", "fenced_code", "sane_lists"], output_format="html5")
     page = f"""<!doctype html><html lang="de"><head><meta charset="utf-8"><title>{html.escape(titel)}</title>
 <style>{rr.font_css()}{rr.BASE_CSS}{MD_CSS}</style></head><body>
-<div class="kopf"><div class="label">FSH-Documentation · SEO</div><h1>{html.escape(titel)}</h1></div>
+<div class="kopf"><div class="label">{html.escape(a.label)}</div><h1>{html.escape(titel)}</h1></div>
 {body}</body></html>"""
     out = a.out or os.path.splitext(a.markdown)[0] + ".pdf"
     with tempfile.TemporaryDirectory() as tmp:

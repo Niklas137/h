@@ -284,10 +284,10 @@ Finder-Doppelklick bleiben Bestandteil der Mac-Abnahme.
 ## Installationseinstellungen und Phase 2
 
 - Regeldateien `pruefkatalog.json` und `ce_logik.json`: deutscher Regelinhalt vom 21. Mai 2026. Neuere lokale Kataloge vor einem Update sichern und fachlich vergleichen; nicht durch einen älteren Stand ersetzen. Ergänzte Übersetzungen ändern keine Prüfregel.
-- Impressum und Datenschutz unter Einstellungen → Rechtliches mit den eigenen Texten füllen
-  (`app/static/index.html`, Bereich `data-pane="recht"`).
-  Impressum nach DDG: Firma, Anschrift, vertretungsberechtigte Person, E-Mail, Telefon, Registereintrag, Umsatzsteuer-ID.
-  Datenschutzerklärung: Verantwortlicher, Zwecke und Rechtsgrundlagen, gespeicherte Daten (Konto, Einstellungen, Prüfergebnisse), Speicherdauer, Rechte der Betroffenen, Kontakt.
+- Impressum und Datenschutz unter Einstellungen → Rechtliches sind gefüllt (aus den Website-Texten,
+  auf die lokale App zugeschnitten); vor der Übergabe vom Rechtsprüfer gegenlesen lassen, keine Rechtsberatung.
+- Vorführung und Übergabe: `VORFUEHRUNG.md` (Ablauf für Niklas) und `HANDZETTEL_FALK.md` (eine Seite für Falk),
+  beide auch als PDF (`python3 ../seo-audit/tools/md_to_pdf.py <datei>.md --label "FSH-Documentation · Dokumentenprüfer"`).
 - Kontaktangaben für die Hilfe setzen (`DP_SUPPORT`, `DP_TELEFON`, `DP_ZEITEN`).
 - SMTP für den Code einrichten oder `DP_VERIFIZIERUNG=aus` setzen.
 - Oberfläche in Englisch, Ukrainisch und Russisch (Phase 2).
