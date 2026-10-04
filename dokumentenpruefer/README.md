@@ -7,9 +7,10 @@ Look von FSH-Documentation, Berichte als PDF in Deutsch, Englisch, Ukrainisch un
 Phase-1-Prüfstand 1.1.0: eigener Branch `codex/dokumentenpruefer`, eigene Arbeitskopie.
 Der Claude-Branch bleibt unabhängig; Zusammenführen erst nach Prüfung.
 
-Die technische Abnahme ist in [ABNAHME_PHASE1.md](ABNAHME_PHASE1.md) dokumentiert:
+Die ursprüngliche technische Abnahme ist in [ABNAHME_PHASE1.md](ABNAHME_PHASE1.md) dokumentiert:
 83 Python-Tests und sieben Browser-Ablaufgruppen sind auf Linux und macOS bestanden.
 Dort stehen auch die noch ausstehenden Schritte für die tatsächliche Mac-Installation.
+Der Nachtest der Satzlängenkorrektur vom 4. Oktober ist unten im Abschnitt „Tests“ dokumentiert.
 
 Die bisherige Streamlit-App `app.py` im Ordner darüber bleibt unverändert als Rückfall. Die
 Schlüsselwortregeln, Gewichtung, Score, Ampel, Fazit und CE-To-dos sind übernommen.
@@ -166,8 +167,31 @@ Berichtstypen und allen vier Sprachen.
 `tests/test_satzlaenge.py` ergänzt 30 Fälle zur Absatzkorrektur: Satzzeichen, Abkürzungen,
 Zahlen, die Grenze 25/26 Wörter, mehrere lange Sätze sowie Word-Absätze und Tabellenzellen.
 Vor der Korrektur schlugen elf dieser Fälle fehl. Nach der Korrektur bestehen unter Linux
-alle 113 Python-Tests. Für diese Korrektur wurde kein neuer macOS- oder Browserlauf ausgeführt;
-die oben genannte Phase-1-Abnahme bezieht sich auf den vorherigen Programmstand.
+alle 113 Python-Tests.
+
+### Nachtest Satzlänge, 4. Oktober 2026
+
+[GitHub-Actions-Lauf 37180806283](https://github.com/Niklas137/h/actions/runs/37180806283)
+prüft den Commit `5e91281f4ff94c4479dbbd4a2286c313d7a95661` auf dem separaten Branch
+`codex/dokumentenpruefer-satzlaenge`. Beide Jobs sind erfolgreich abgeschlossen.
+
+| Umgebung | Python-Tests | Browserabnahme | Ergebnis |
+|---|---|---|---|
+| Ubuntu 24.04.5, Python 3.12.14 | 113 bestanden, 8,42 Sekunden | Chromium, Playwright 1.62.1; 8 Ablaufgruppen | Bestanden |
+| macOS 26.6.2, Python 3.12.14 | 113 bestanden, 43,54 Sekunden | Chromium, Playwright 1.62.1; 8 Ablaufgruppen | Bestanden |
+
+Die Browserprüfung umfasst Anmeldung, Word/PDF, Berichte/ZIP/Ablage, Einstellungen,
+320/390 Pixel und Querformat, Fehlerfälle, Benutzerverwaltung und Kontentrennung nach Logout.
+Zusätzlich werden drei kurze Sätze in einem Absatz ohne Fehlalarm und zwei lange Sätze mit
+korrekter Anzahl geprüft. Beide Läufe melden keine JavaScript-Ausnahmen.
+Screenshots und `browser-ergebnis.json` liegen in den Prüfartefakten des verlinkten Laufs.
+
+Je vier Hinweise auf veraltete Schnittstellen wurden protokolliert: Starlette-TestClient mit
+httpx, PyPDF2 und zweimal FastAPI `on_event`. Sie verursachten keine Testfehler.
+Es wurden ausschließlich erzeugte Testdaten genutzt und keine E-Mails versendet.
+Die macOS-Prüfung lief auf einem GitHub-Runner. Finder-Doppelklick, Apple Mail auf Niklas' Mac
+und Safari waren nicht Teil dieses Nachtests. Die Grenzen der PDF-Satzrekonstruktion unten
+bleiben bestehen. PR #13 bleibt zur Prüfung offen; es wurde nichts zusammengeführt.
 
 ## Vorprüfung und Regelprüfung
 
