@@ -1,5 +1,7 @@
 """Satzlänge innerhalb eines Textabschnitts statt Länge des ganzen Absatzes."""
 import io
+import subprocess
+import sys
 
 import pytest
 from docx import Document
@@ -72,3 +74,26 @@ def test_word_absatz_und_tabellenzelle_mit_mehreren_saetzen():
     assert len(struktur) == 2
     ergebnis = pruefung.pruefen(struktur, ["basis"])
     assert not any(f["ID"] == "TXT-001" for f in ergebnis["funde"])
+
+
+@pytest.mark.parametrize("folge", [".", "a."])
+def test_lange_punktfolgen_blockieren_die_pruefung_nicht(folge):
+    # Eigener Prozess: Ein Rückfall wird beendet und blockiert nicht den Testlauf.
+    # 50.000 Wiederholungen dauern linear deutlich unter einer Sekunde; der alte
+    # quadratische Ausdruck überschreitet das großzügige Zehn-Sekunden-Limit.
+    code = (
+        "import sys; from app.pruefer.pruefung import _saetze; "
+        "text = sys.argv[1] * 50000 + 'X'; assert _saetze(text) == [text]"
+    )
+    subprocess.run([sys.executable, "-c", code, folge], check=True, timeout=10,
+                   capture_output=True, text=True)
+
+
+@pytest.mark.parametrize("text,erwartet", [
+    ("z. B. Dieses Beispiel.", ["z. B. Dieses Beispiel."]),
+    ("a. b. c.X", ["a. b. c.X"]),
+    ("a.b.X", ["a.b.X"]),
+    ('Erster Satz.!\" Zweiter Satz.', ['Erster Satz.!\"', 'Zweiter Satz.']),
+])
+def test_satzgrenzen_nach_punktfolgen_bleiben_erhalten(text, erwartet):
+    assert pruefung._saetze(text) == erwartet

@@ -24,12 +24,17 @@ def _saetze(text: str) -> list[str]:
     Tabellenzellen nicht versehentlich zu einem Satz zusammenlaufen.
     """
     geschuetzt: set[int] = set()
-    muster = (
-        r"\b(?:(?:[a-zäöü]\.\s*)+[a-zäöü]\.|"
-        r"(?:abs|abb|art|bzw|ca|dr|prof|nr|kap|pos|tab|vgl)\.)(?=\s|$)"
-    )
+    # Ganze Folgen einmal lesen, erst danach den Anschluss prüfen. Ein Anschluss-
+    # Lookahead im Wiederholungsmuster würde lange Punktfolgen quadratisch ablaufen.
+    for treffer in re.finditer(r"\b(?:[a-zäöü]\.\s*){2,}", text, flags=re.IGNORECASE):
+        punkte = [i for i in range(treffer.start(), treffer.end()) if text[i] == "."]
+        for punkt in reversed(punkte[1:]):
+            if punkt + 1 == len(text) or text[punkt + 1].isspace():
+                geschuetzt.update(i for i in punkte if i <= punkt)
+                break
+    muster = r"\b(?:abs|abb|art|bzw|ca|dr|prof|nr|kap|pos|tab|vgl)\.(?=\s|$)"
     for treffer in re.finditer(muster, text, flags=re.IGNORECASE):
-        geschuetzt.update(i for i in range(treffer.start(), treffer.end()) if text[i] == ".")
+        geschuetzt.add(treffer.end() - 1)
     # Beispielsweise „am 3. Oktober“ oder „im 2. Schritt“.
     ordinal = (
         r"\b\d+\.(?=\s+(?:[a-zäöüß]|(?:Januar|Februar|März|April|Mai|Juni|Juli|"
@@ -41,7 +46,9 @@ def _saetze(text: str) -> list[str]:
 
     saetze: list[str] = []
     start = 0
-    for grenze in re.finditer(r"[.!?]+[\"'”’»«“\)\]]*(?:\s+|$)", text):
+    for grenze in re.finditer(r"[.!?]+[\"'”’»«“\)\]]*", text):
+        if grenze.end() < len(text) and not text[grenze.end()].isspace():
+            continue
         if grenze.start() in geschuetzt:
             continue
         satz = text[start:grenze.end()].strip()
