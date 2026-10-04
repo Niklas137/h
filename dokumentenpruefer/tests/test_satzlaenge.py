@@ -47,6 +47,7 @@ def test_zwei_lange_saetze_werden_als_zwei_gezaehlt():
     "z. B.", "z.B.", "d. h.", "u. a.", "i. d. R.", "ca.", "bzw.",
     "Nr. 3", "Abb. 2", "Abs. 1", "Dr. Müller", "e. g.",
     "1.5 bar", "Version 1.2.3", "am 3. Oktober", "im 2. Schritt",
+    "z. B.,", "d. h.,",
 ])
 def test_abkuerzungen_und_zahlen_zerlegen_keinen_langen_satz(einlage):
     text = " ".join(["Wort"] * 13) + " " + einlage + " " + " ".join(["Wort"] * 13) + "."

@@ -29,7 +29,8 @@ def _saetze(text: str) -> list[str]:
     for treffer in re.finditer(r"\b(?:[a-zäöü]\.\s*){2,}", text, flags=re.IGNORECASE):
         punkte = [i for i in range(treffer.start(), treffer.end()) if text[i] == "."]
         for punkt in reversed(punkte[1:]):
-            if punkt + 1 == len(text) or text[punkt + 1].isspace():
+            if (punkt + 1 == len(text) or text[punkt + 1].isspace()
+                    or text[punkt + 1] in ",;:"):
                 geschuetzt.update(i for i in punkte if i <= punkt)
                 break
     muster = r"\b(?:abs|abb|art|bzw|ca|dr|prof|nr|kap|pos|tab|vgl)\.(?=\s|$)"
