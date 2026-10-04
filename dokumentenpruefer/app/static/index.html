@@ -314,12 +314,54 @@
       </div>
 
 <div class="sec legal" data-pane="recht" hidden>
-        <div class="card stack" style="gap:10px"><h2>Impressum</h2><p>Impressum folgt.</p></div>
-        <div class="card stack" style="gap:10px"><h2>Datenschutzerklärung</h2><p>Datenschutzerklärung folgt.</p><span class="cap">Hochgeladene Dokumente werden nur für die Prüfung gelesen und nicht gespeichert. Gespeichert werden Ergebnis und Berichte.</span></div>
+        <div class="card stack" style="gap:10px">
+          <h2>Impressum</h2>
+          <h3>Angaben gemäß § 5 DDG</h3>
+          <p>FSH-Documentation UG (haftungsbeschränkt)<br>Bäckerstraße 2 D<br>14513 Teltow<br>Deutschland</p>
+          <p>Vertreten durch den Geschäftsführer: Sascha Falk Heinzmann</p>
+          <h3>Kontakt</h3>
+          <p>Telefon: <a href="tel:+491729795939">+49 172 9795939</a><br>E-Mail: <a href="mailto:Falk.Heinzmann@fsh-documentation.de">Falk.Heinzmann@fsh-documentation.de</a></p>
+          <h3>Registereintrag</h3>
+          <p>Registergericht: Amtsgericht Potsdam<br>Registernummer: HRB 37959 P</p>
+          <h3>Umsatzsteuer-Identifikationsnummer</h3>
+          <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz: DE 360111007</p>
+          <h3>Verantwortlich für den Inhalt</h3>
+          <p>Sascha Falk Heinzmann, Bäckerstraße 2 D, 14513 Teltow, Deutschland</p>
+          <p class="cap">Der Dokumentenprüfer ist ein internes Werkzeug von FSH-Documentation für das eigene Team. Er wird nicht öffentlich angeboten.</p>
+        </div>
+        <div class="card stack" style="gap:10px">
+          <h2>Datenschutzerklärung</h2>
+          <p class="cap">Stand: Oktober 2026. Gilt für die Anwendung „Dokumentenprüfer“, die lokal auf einem Rechner von FSH-Documentation läuft.</p>
+          <h3>1. Verantwortlicher</h3>
+          <p>FSH-Documentation UG (haftungsbeschränkt), Bäckerstraße 2 D, 14513 Teltow, Deutschland. Telefon <a href="tel:+491729795939">+49 172 9795939</a>, E-Mail <a href="mailto:Falk.Heinzmann@fsh-documentation.de">Falk.Heinzmann@fsh-documentation.de</a>. Vertreten durch den Geschäftsführer Sascha Falk Heinzmann. Ein Datenschutzbeauftragter ist nicht bestellt, weil die Voraussetzungen des § 38 BDSG nicht erfüllt sind.</p>
+          <h3>2. Was die Anwendung verarbeitet</h3>
+          <p><strong>Konto:</strong> Name, E-Mail-Adresse, Rolle, Status, Zeitpunkt der Anmeldungen, ein Hash des Passworts (argon2). Das Passwort selbst wird nie gespeichert.</p>
+          <p><strong>Sitzungen:</strong> ein Hash des Sitzungsschlüssels, Gerätetyp und Browser in Kurzform, Beginn und Ablauf.</p>
+          <p><strong>Prüfungen:</strong> Dateiname, Datum, Prüfergebnis mit Funden, die erzeugten Berichte als PDF und der Name der prüfenden Person im Bericht.</p>
+          <p><strong>Protokoll:</strong> Zeitpunkt, handelndes Konto und betroffenes Konto bei Verwaltungsaktionen wie Anlegen, Ändern, Deaktivieren und Löschen von Konten.</p>
+          <p><strong>Einstellungen:</strong> Sprache, Helligkeit, Textgröße, Dichte und Benachrichtigungen je Konto.</p>
+          <p>Zweck ist der Zugang zur Anwendung, die Durchführung und Nachvollziehbarkeit von Dokumentprüfungen und die Sicherheit der Konten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Beschäftigungs- oder Auftragsverhältnis mit FSH-Documentation) und Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer nachvollziehbaren, sicheren Prüfung).</p>
+          <h3>3. Wo die Daten liegen</h3>
+          <p>Alle Daten liegen ausschließlich auf dem Rechner, auf dem die Anwendung läuft, im Datenordner der Anwendung. Es gibt keine Cloud, keine Übermittlung an Dritte, keine Analyse- oder Marketingdienste und keine externen Schriften oder Skripte. Die Verbindung zwischen Browser und Anwendung bleibt auf dem Rechner (localhost).</p>
+          <h3>4. Hochgeladene Dokumente</h3>
+          <p>Ein zur Prüfung hochgeladenes Dokument wird nur im Arbeitsspeicher gelesen und nicht gespeichert. Gespeichert werden das Ergebnis und die daraus erzeugten Berichte. Dokumente können personenbezogene Daten Dritter enthalten, zum Beispiel Namen von Ansprechpartnern. Für die Zulässigkeit der Prüfung solcher Dokumente ist das jeweilige Auftragsverhältnis mit dem Kunden maßgeblich.</p>
+          <h3>5. Cookie und lokale Speicherung</h3>
+          <p>Die Anwendung setzt ein technisch notwendiges Sitzungs-Cookie (<code>dp_sitzung</code>), damit die Anmeldung erhalten bleibt. Es ist für Skripte nicht lesbar (HttpOnly) und gilt bei „Angemeldet bleiben“ 14 Tage, sonst bis zum Schließen des Browsers. Im Browser wird außerdem die zuletzt gewählte zusätzliche Berichtssprache gespeichert (localStorage, Eintrag <code>fsh-lang2</code>). Beides dient allein der Bedienung; ein Einwilligungsbanner ist deshalb nicht erforderlich.</p>
+          <h3>6. E-Mails</h3>
+          <p>Bei der Erstanmeldung kann ein Verifizierungscode an die eigene E-Mail-Adresse geschickt werden, sofern ein Mailserver eingerichtet ist. Weitere E-Mails versendet die Anwendung nicht. Der Entwurf einer Kundenmail wird nur in Apple Mail angelegt; ob und wann er versendet wird, entscheidet die prüfende Person.</p>
+          <h3>7. Speicherdauer</h3>
+          <p>Kontodaten bleiben, solange das Konto besteht. Beim Löschen eines Kontos wird es deaktiviert und aus der Liste genommen; Prüfungen und Protokoll bleiben dem Konto zuordenbar, damit Prüfungen nachvollziehbar bleiben. Prüfungen und Berichte werden aufbewahrt, solange sie für die Nachweisführung gegenüber Kunden benötigt werden, längstens entsprechend den handels- und steuerrechtlichen Fristen (§ 257 HGB, § 147 AO). Sicherungen verwaltet FSH-Documentation lokal.</p>
+          <h3>8. Ihre Rechte</h3>
+          <p>Sie haben die Rechte auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18) und Datenübertragbarkeit (Art. 20) sowie das Widerspruchsrecht nach Art. 21 DSGVO gegen Verarbeitungen auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Wenden Sie sich dafür an die in Abschnitt 1 genannten Kontaktdaten. Beschwerden nimmt die Landesbeauftragte für den Datenschutz und für das Recht auf Akteneinsicht Brandenburg entgegen, Stahnsdorfer Damm 77, 14532 Kleinmachnow, <a href="mailto:poststelle@lda.brandenburg.de">poststelle@lda.brandenburg.de</a>.</p>
+          <h3>9. Datensicherheit</h3>
+          <p>Passwörter werden mit argon2 gehasht, Sitzungen nur als SHA-256-Hash gespeichert, Konten nach acht Fehlversuchen für 15 Minuten gesperrt. Verwaltungsaktionen werden protokolliert. Die Anwendung ist nur vom Rechner aus erreichbar, auf dem sie läuft.</p>
+          <h3>10. Änderungen</h3>
+          <p>Diese Erklärung wird angepasst, wenn sich Funktionen der Anwendung oder die Rechtslage ändern. Die aktuelle Fassung steht in der Anwendung unter Einstellungen → Rechtliches.</p>
+        </div>
         <div class="card stack" style="gap:10px"><h2>Lizenzen</h2><p class="sm">Schrift IBM Plex Sans: SIL Open Font License. Bibliotheken: FastAPI, Uvicorn, SQLite, python-docx, PyPDF2, pdfplumber, reportlab, argon2-cffi, Open-Source-Lizenzen laut requirements.txt.</p></div>
       </div>
 
-<div class="sec" data-pane="info" hidden>
+      <div class="sec" data-pane="info" hidden>
         <div class="card"><h2 style="margin-bottom:8px">Info</h2>
           <div class="info-row"><span class="sm">Version</span><span class="mono sm" id="version-info">1.0.0</span></div>
           <div class="info-row"><span class="sm">Regelsätze</span><span class="sm" id="info-regeln">Basisprüfung, DIN 82079-1, CE / EU-Konformität</span></div>
