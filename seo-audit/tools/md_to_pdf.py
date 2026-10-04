@@ -64,7 +64,7 @@ def main():
     body = markdown.markdown(body_md, extensions=["tables", "fenced_code", "sane_lists"], output_format="html5")
     page = f"""<!doctype html><html lang="de"><head><meta charset="utf-8"><title>{html.escape(titel)}</title>
 <style>{rr.font_css()}{rr.BASE_CSS}{MD_CSS}</style></head><body>
-<div class="kopf"><div class="label">{html.escape(args.label)}</div><h1>{html.escape(titel)}</h1></div>
+<div class="kopf"><div class="label">{html.escape(a.label)}</div><h1>{html.escape(titel)}</h1></div>
 {body}</body></html>"""
     out = a.out or os.path.splitext(a.markdown)[0] + ".pdf"
     with tempfile.TemporaryDirectory() as tmp:
