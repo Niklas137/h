@@ -1,7 +1,7 @@
 """Die Prüfung selbst: drei Regelsätze, Score, Ampel, Fazit, To-do-Liste.
 
-Die Rechenlogik (Score, Ampel, Fazit) ist 1:1 aus app.py übernommen, damit alte und neue
-Ergebnisse vergleichbar bleiben. Die Regelsätze werden vor der Prüfung vollständig validiert.
+Score, Ampel und Fazit folgen app.py. Die Satzlänge wird je Satz innerhalb eines eingelesenen
+Textabschnitts geprüft. Die Regelsätze werden vor der Prüfung vollständig validiert.
 Die Schlüsselwortsuche ist eine automatische Vorprüfung; die fachliche Freigabe bleibt bei FSH.
 """
 from __future__ import annotations
@@ -13,6 +13,53 @@ from . import regeln as regelmodul
 from . import texte
 
 Fund = dict[str, Any]
+
+
+def _saetze(text: str) -> list[str]:
+    """Heuristische Satzgrenzen im Textabschnitt; kein sprachliches Vollmodell.
+
+    Punkte in üblichen Abkürzungen und deutschen Ordinalzahlen bleiben im Satz.
+    Dezimalzahlen, Versionen und URLs werden ohne folgendes Leerzeichen nicht getrennt.
+    Eingelesene Abschnitte werden nicht verbunden, damit Überschriften, Listen und
+    Tabellenzellen nicht versehentlich zu einem Satz zusammenlaufen.
+    """
+    geschuetzt: set[int] = set()
+    # Ganze Folgen einmal lesen, erst danach den Anschluss prüfen. Ein Anschluss-
+    # Lookahead im Wiederholungsmuster würde lange Punktfolgen quadratisch ablaufen.
+    for treffer in re.finditer(r"\b(?:[a-zäöü]\.\s*){2,}", text, flags=re.IGNORECASE):
+        punkte = [i for i in range(treffer.start(), treffer.end()) if text[i] == "."]
+        for punkt in reversed(punkte[1:]):
+            if (punkt + 1 == len(text) or text[punkt + 1].isspace()
+                    or text[punkt + 1] in ",;:"):
+                geschuetzt.update(i for i in punkte if i <= punkt)
+                break
+    muster = r"\b(?:abs|abb|art|bzw|ca|dr|prof|nr|kap|pos|tab|vgl)\.(?=\s|$)"
+    for treffer in re.finditer(muster, text, flags=re.IGNORECASE):
+        geschuetzt.add(treffer.end() - 1)
+    # Beispielsweise „am 3. Oktober“ oder „im 2. Schritt“.
+    ordinal = (
+        r"\b\d+\.(?=\s+(?:[a-zäöüß]|(?:Januar|Februar|März|April|Mai|Juni|Juli|"
+        r"August|September|Oktober|November|Dezember|Schritt|Abschnitt|Kapitel|"
+        r"Seite|Stufe|Teil|Quartal)\b))"
+    )
+    for treffer in re.finditer(ordinal, text):
+        geschuetzt.add(treffer.end() - 1)
+
+    saetze: list[str] = []
+    start = 0
+    for grenze in re.finditer(r"[.!?]+[\"'”’»«“\)\]]*", text):
+        if grenze.end() < len(text) and not text[grenze.end()].isspace():
+            continue
+        if grenze.start() in geschuetzt:
+            continue
+        satz = text[start:grenze.end()].strip()
+        if satz:
+            saetze.append(satz)
+        start = grenze.end()
+    rest = text[start:].strip()
+    if rest:
+        saetze.append(rest)
+    return saetze
 
 
 def keyword_found(full_text: str, keywords: list[str]) -> bool:
@@ -82,22 +129,22 @@ def check_document(structured_text: list[dict[str, str]], checklist: list[dict[s
             )
 
     for item in structured_text:
-        sentence = item["text"]
-        if len(sentence.split()) > 25:
-            findings.append(
-                {
-                    "ID": "TXT-001",
-                    "Normlogik": "Basisprüfung",
-                    "Bereich": "Lesbarkeit",
-                    "Pflicht": "-",
-                    "Fehlerklasse": "Mittel",
-                    "Bewertung": "Satz zu lang",
-                    "Fundstelle": item.get("heading", ""),
-                    "Empfehlung": sentence[:150],
-                    "Gewichtung": 2,
-                    "Zeitaufwand_min": 15,
-                }
-            )
+        for sentence in _saetze(item["text"]):
+            if len(sentence.split()) > 25:
+                findings.append(
+                    {
+                        "ID": "TXT-001",
+                        "Normlogik": "Basisprüfung",
+                        "Bereich": "Lesbarkeit",
+                        "Pflicht": "-",
+                        "Fehlerklasse": "Mittel",
+                        "Bewertung": "Satz zu lang",
+                        "Fundstelle": item.get("heading", ""),
+                        "Empfehlung": sentence[:150],
+                        "Gewichtung": 2,
+                        "Zeitaufwand_min": 15,
+                    }
+                )
     return findings
 
 

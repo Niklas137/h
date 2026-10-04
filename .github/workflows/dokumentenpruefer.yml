@@ -2,7 +2,7 @@ name: Dokumentenpruefer Phase 1
 
 on:
   push:
-    branches: [codex/dokumentenpruefer]
+    branches: [codex/dokumentenpruefer, codex/dokumentenpruefer-satzlaenge]
     paths: ['dokumentenpruefer/**', '.github/workflows/dokumentenpruefer.yml']
   workflow_dispatch:
 

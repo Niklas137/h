@@ -29,7 +29,11 @@ with db.transaktion() as con:
 root=Path(os.environ['DP_TEST_ROOT'])
 d=Document(); d.add_heading('Wartung',1); d.add_paragraph('Die Installation erfolgt durch die Zielgruppe der Fachkraefte.')
 d.add_table(rows=1,cols=1).cell(0,0).text='Sicherheitshinweise und technische Daten'
+kurz='Vor dem Start muss der Bediener alle vorhandenen Schutzeinrichtungen kontrollieren.'
+d.add_paragraph(' '.join([kurz]*3))
 d.save(root/'Testanleitung.docx')
+lang=' '.join(['Pruefwort']*26)+'.'
+d=Document(); d.add_heading('Satzlaenge',1); d.add_paragraph(lang+' '+lang); d.save(root/'Langsaetze.docx')
 (root/'kaputt.docx').write_bytes(b'kein Word')
 c=canvas.Canvas(str(root/'gemischt.pdf')); c.drawString(72,750,'Installation und Wartung'); c.showPage(); c.rect(72,72,100,100); c.showPage(); c.save()
 print(json.dumps({'otp':otp}))
@@ -97,6 +101,8 @@ async function checkFile(file) {
   assert.equal(await page.locator('#pdf-pruef a').count(), 2);
   assert.equal(await page.locator('#pdf-fach a').count(), 2);
   const result = await (await context.request.get(url + '/api/pruefung/' + pid)).json();
+  assert.equal(result.funde.some(f => f.ID === 'TXT-001'), false,
+    'Drei kurze Saetze im Absatz duerfen keinen Satzlaengenhinweis ausloesen');
   for (const p of result.pdfs) {
     const pdf = await context.request.get(url + p.url);
     assert.equal(pdf.status(), 200); assert.equal((await pdf.body()).subarray(0, 5).toString(), '%PDF-');
@@ -105,6 +111,15 @@ async function checkFile(file) {
   assert.equal(zip.status(), 200); assert.equal((await zip.body()).subarray(0, 2).toString(), 'PK');
   await response(`/api/pruefung/${pid}/ablegen`, () => page.locator('#act-store').click());
   checks.push('Word-Pruefung, vier PDFs, ZIP und Ablage');
+
+  await checkFile('Langsaetze.docx');
+  const langListe = await (await context.request.get(url + '/api/pruefungen')).json();
+  const langId = langListe.pruefungen.find(p => p.dateiname === 'Langsaetze.docx').id;
+  const langErgebnis = await (await context.request.get(url + '/api/pruefung/' + langId)).json();
+  const langFunde = langErgebnis.funde.filter(f => f.ID === 'TXT-001');
+  assert.equal(langFunde.length, 1);
+  assert.equal(langFunde[0].Anzahl, 2, 'Zwei lange Saetze im Absatz muessen als zwei gezaehlt werden');
+  checks.push('Satzlaenge: drei kurze Saetze ohne Fehlalarm und zwei lange Saetze richtig gezaehlt');
 
   await page.locator('#b-help').click(); await visible('#drawer');
   await page.locator('#drawer-close').click();

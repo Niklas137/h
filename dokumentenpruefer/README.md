@@ -7,12 +7,15 @@ Look von FSH-Documentation, Berichte als PDF in Deutsch, Englisch, Ukrainisch un
 Phase-1-Prüfstand 1.1.0: eigener Branch `codex/dokumentenpruefer`, eigene Arbeitskopie.
 Der Claude-Branch bleibt unabhängig; Zusammenführen erst nach Prüfung.
 
-Die technische Abnahme ist in [ABNAHME_PHASE1.md](ABNAHME_PHASE1.md) dokumentiert:
+Die ursprüngliche technische Abnahme ist in [ABNAHME_PHASE1.md](ABNAHME_PHASE1.md) dokumentiert:
 83 Python-Tests und sieben Browser-Ablaufgruppen sind auf Linux und macOS bestanden.
 Dort stehen auch die noch ausstehenden Schritte für die tatsächliche Mac-Installation.
+Der Nachtest der Satzlängenkorrektur vom 4. Oktober ist unten im Abschnitt „Tests“ dokumentiert.
 
 Die bisherige Streamlit-App `app.py` im Ordner darüber bleibt unverändert als Rückfall. Die
-Prüflogik ist 1:1 übernommen (Schlüsselwörter, Gewichtung, Score, Ampel, Fazit, CE-To-dos).
+Schlüsselwortregeln, Gewichtung, Score, Ampel, Fazit und CE-To-dos sind übernommen.
+Die Satzlängenprüfung wurde korrigiert: Sie zählt einzelne Sätze im Textabschnitt statt den
+ganzen Absatz. Dadurch können neue Ergebnisse von früheren Fehlalarmen abweichen.
 Die Prüfung ist eine automatische Vorprüfung per Schlüsselwortsuche. Die fachliche Prüfung und
 Freigabe bleibt bei FSH-Documentation; jeder Bericht und die Kundenmail sagen das in einem Satz.
 
@@ -161,8 +164,67 @@ Word-Prüfung, PDFs in vier Sprachen, ZIP, Ablage, Mail-Entwurf, CLI und Fortsch
 Ladung), ungültige Regelsatz-Auswahl, Sperrumgehung und den Vorprüfungssatz in beiden
 Berichtstypen und allen vier Sprachen.
 
+`tests/test_satzlaenge.py` ergänzte zunächst 30 Fälle zur Absatzkorrektur: Satzzeichen, Abkürzungen,
+Zahlen, die Grenze 25/26 Wörter, mehrere lange Sätze sowie Word-Absätze und Tabellenzellen.
+Vor der Korrektur schlugen elf dieser Fälle fehl. Nach der Korrektur bestehen unter Linux
+alle 113 Python-Tests. Die Abschlussprüfung ergänzt acht Regressionstests für lange
+Punktfolgen und unveränderte Satzgrenzen (insgesamt 121 Python-Tests).
+
+### Nachtest Satzlänge, 4. Oktober 2026
+
+[GitHub-Actions-Lauf 37180806283](https://github.com/Niklas137/h/actions/runs/37180806283)
+prüft den Commit `5e91281f4ff94c4479dbbd4a2286c313d7a95661` auf dem separaten Branch
+`codex/dokumentenpruefer-satzlaenge`. Beide Jobs sind erfolgreich abgeschlossen.
+
+| Umgebung | Python-Tests | Browserabnahme | Ergebnis |
+|---|---|---|---|
+| Ubuntu 24.04.5, Python 3.12.14 | 113 bestanden, 8,42 Sekunden | Chromium, Playwright 1.62.1; 8 Ablaufgruppen | Bestanden |
+| macOS 26.6.2, Python 3.12.14 | 113 bestanden, 43,54 Sekunden | Chromium, Playwright 1.62.1; 8 Ablaufgruppen | Bestanden |
+
+Die Browserprüfung umfasst Anmeldung, Word/PDF, Berichte/ZIP/Ablage, Einstellungen,
+320/390 Pixel und Querformat, Fehlerfälle, Benutzerverwaltung und Kontentrennung nach Logout.
+Zusätzlich werden drei kurze Sätze in einem Absatz ohne Fehlalarm und zwei lange Sätze mit
+korrekter Anzahl geprüft. Beide Läufe melden keine JavaScript-Ausnahmen.
+Screenshots und `browser-ergebnis.json` liegen in den Prüfartefakten des verlinkten Laufs.
+
+Je vier Hinweise auf veraltete Schnittstellen wurden protokolliert: Starlette-TestClient mit
+httpx, PyPDF2 und zweimal FastAPI `on_event`. Sie verursachten keine Testfehler.
+Es wurden ausschließlich erzeugte Testdaten genutzt und keine E-Mails versendet.
+Die macOS-Prüfung lief auf einem GitHub-Runner. Finder-Doppelklick, Apple Mail auf Niklas' Mac
+und Safari waren nicht Teil dieses Nachtests. Die Grenzen der PDF-Satzrekonstruktion unten
+bleiben bestehen. Zum Zeitpunkt dieses Laufs war PR #13 noch nicht zusammengeführt.
+
+### Abschlussprüfung PR #13, 4. Oktober 2026
+
+Die Review-Prüfung fand zwei zusätzliche Fehler: quadratische Laufzeit bei langen Punktfolgen
+und übersehene lange Sätze mit Abkürzungen wie `z. B.,`. Beide sind korrigiert und durch
+Regressionstests abgesichert. Punktfolgen werden vollständig gelesen und ihr Anschluss danach
+geprüft; Komma, Semikolon und Doppelpunkt erhalten mehrteilige Abkürzungen.
+
+[Abschließender Testlauf 37183103991](https://github.com/Niklas137/h/actions/runs/37183103991)
+prüft Programmstand `9ded511bd7784f7c92574d16b74008cb60b5b9fd`:
+
+| Umgebung | Python-Tests | Browserabnahme |
+|---|---|---|
+| Ubuntu, Python 3.12 | 121 bestanden, 10,33 Sekunden | Chromium; 8 Ablaufgruppen bestanden, keine JavaScript-Ausnahmen |
+| macOS, Python 3.12 | 121 bestanden, 43,64 Sekunden | Chromium; 8 Ablaufgruppen bestanden, keine JavaScript-Ausnahmen |
+
+Die jeweils vier Python-Deprecation-Warnungen bleiben bestehen. Die anschließende Änderung
+betrifft nur diese Dokumentation. Die Prüfung belegt die technische Funktion des Teststands;
+fachliche Zuverlässigkeit an echten Unterlagen und eine Prüfung auf dem Nutzer-Mac sind damit
+nicht nachgewiesen. Die unten genannten heuristischen Grenzen bleiben offen.
+
 ## Vorprüfung und Regelprüfung
 
+- Die Lesbarkeitsregel `TXT-001` meldet Sätze mit mehr als 25 durch Leerraum getrennten Wörtern.
+  Mehrere kurze Sätze in einem Absatz lösen den Hinweis nicht aus. Die Trennung berücksichtigt
+  Punkt, Frage- und Ausrufezeichen, schließende Anführungszeichen sowie übliche Abkürzungen
+  (z. B. `z. B.`, `Nr.`, `ca.`) und deutsche Ordinalzahlen. Anzahl und Textauszug beziehen sich
+  auf die erkannten Sätze; die bisherige Sammelgewichtung und Aufwandsschätzung bleiben gleich.
+  Die Erkennung bleibt heuristisch und verbindet keine getrennt eingelesenen Abschnitte.
+  Mehrdeutige Abkürzungen wie `usw.` und `etc.` können innerhalb eines Satzes eine falsche
+  Satzgrenze erzeugen. Eine pauschale Ausnahme würde dagegen echte Satzenden verschlucken.
+  Insbesondere über mehrere PDF-Zeilen oder Seiten verteilte Sätze werden noch nicht rekonstruiert.
 - Score, Ampel und Fazit folgen der Vorgabe von Niklas und der alten App: Grün ab 80 %, Gelb ab
   60 %, sonst Rot. Score = 100 minus Summe der Gewichtungen aller Funde, mindestens 0.
 - Die Schlüsselwortsuche ist eine Vorprüfung. Jeder Bericht trägt unter dem Kopf einen Satz,
