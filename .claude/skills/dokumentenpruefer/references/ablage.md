@@ -69,7 +69,9 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 
 - Name, E-Mail-Adresse und Rolle für die Konten von Niklas und Falk.
 - Regeldateien Basis und CE: prüfen, ob auf dem Mac eine neuere Fassung als vom 21. Mai liegt; Übersetzungen der Empfehlungen (en, uk, ru) fehlen noch.
-- Impressum und Datenschutz (Bereich `data-pane="recht"` in `app/static/index.html`).
+- Impressum und Datenschutz: am 4. Oktober aus den Website-Texten übernommen und auf die lokale App zugeschnitten
+  (Bereich `data-pane="recht"` in `app/static/index.html`). Keine Rechtsberatung; vor der Übergabe an Falk vom Rechtsprüfer
+  gegenlesen lassen, zusammen mit den Website-Texten.
 - Telefonnummer, Zeiten und Support-Adresse für die Hilfe (`DP_SUPPORT`, `DP_TELEFON`, `DP_ZEITEN`).
 - SMTP für den Code (nur als Umgebungsvariable) oder `DP_VERIFIZIERUNG=aus`.
 - Merge des Branches nach `main`.
