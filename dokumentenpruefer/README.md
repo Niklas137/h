@@ -92,6 +92,11 @@ Lesehinweise) in dieser Sprache. Ohne Kopf bleibt alles deutsch, so laufen Tests
 unverändert. Auf der Anmeldeseite wählen vier Knöpfe die Sprache; nach der Anmeldung gilt die
 Kontosprache. Ukrainisch und Russisch sind von Niklas fachlich gegenzulesen.
 
+Übersetzungsgüte messen: `./.venv/bin/python werkzeuge/uebersetzung_pruefen.py` prüft je Sprache
+Abdeckung, Platzhalter, deutsche und lateinische Reste und das Glossar (Prüfbericht, Fachbericht)
+über PDF-Texte, API-Meldungen, Regeldateien und Oberfläche; `tests/test_uebersetzung.py` verlangt
+mindestens 98,9 % je Sprache (Stand 5. Oktober: 100 %).
+
 ## Einstellungen je Benutzer
 
 Sprache (Deutsch, Englisch, Ukrainisch, Russisch) und Helligkeit sitzen in der Kopfleiste und
@@ -99,11 +104,14 @@ wirken sofort. Alles Weitere unter Einstellungen: Profil, Sicherheit (Passwort, 
 Erscheinungsbild (Textgröße, Dichte), Sprachen (nur zum Nachlesen), Benachrichtigungen (Pop-up,
 keine E-Mails), Verwaltung (Admin), Rechtliches (Impressum, Datenschutz), Info.
 
-Die Oberflächensprache ist die Basissprache der Berichte. Eine zusätzliche Berichtssprache wird
-je Prüfung auf der Prüfseite gewählt (eine oder keine). Je Sprache entstehen zwei PDFs:
-Prüfbericht (intern, mit Gewichtung und Aufwand) und Fachbericht (für den Kunden).
+Die Oberflächensprache (Schalter „Sprache“ oben) und die Berichtssprachen sind getrennt: Auf der
+Prüfseite wählst du je Prüfung ein bis zwei Berichtssprachen (de, en, uk, ru), unabhängig von der
+Oberfläche; die Wahl merkt sich der Browser. Je Sprache entstehen zwei PDFs: Prüfbericht (intern,
+mit Gewichtung und Aufwand) und Fachbericht (für den Kunden). Die API nimmt dafür das Feld
+`sprachen` (z. B. `uk,ru`); ohne das Feld gilt wie früher Oberflächensprache plus `zusatzsprache`.
 
-Die Oberfläche selbst ist in dieser Version deutsch; die Spracheinstellung steuert die Berichte.
+Oberflächendateien werden mit einer Versionsnummer eingebunden und ohne Browser-Cache
+ausgeliefert, damit nach `git pull` und Neustart sofort der neue Stand erscheint.
 
 ## Ablauf einer Prüfung
 

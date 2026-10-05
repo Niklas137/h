@@ -8,7 +8,7 @@ from __future__ import annotations
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT
@@ -114,16 +114,22 @@ def _kopf_fuss(sprache: str, art: str, gesamt: int | None):
     return zeichnen
 
 
-def _bauen(story: list, sprache: str, art: str) -> bytes:
-    """Zwei Durchläufe: erst nur Seiten zählen, dann mit Kopf, Fuß und Gesamtzahl setzen."""
+def _bauen(fabrik: Callable[[], list], sprache: str, art: str) -> bytes:
+    """Zwei Durchläufe: erst nur Seiten zählen, dann mit Kopf, Fuß und Gesamtzahl setzen.
+
+    Jeder Durchlauf baut die Story neu, denn reportlab merkt sich an den Objekten, ob ein Element
+    schon einmal auf die nächste Seite verschoben wurde; ein zweiter Lauf mit denselben Objekten
+    bricht sonst am Seitenende ab.
+    """
 
     def einmal(gesamt: int | None) -> tuple[bytes, int]:
         buffer = BytesIO()
         doc = SimpleDocTemplate(
             buffer,
             pagesize=A4,
-            leftMargin=RAND,
-            rightMargin=RAND,
+            # Der Rahmen hat innen 6 pt Abstand; so beginnt der Inhalt genau bei RAND und ist BREITE breit.
+            leftMargin=RAND - 6,
+            rightMargin=RAND - 6,
             topMargin=24 * mm,
             bottomMargin=22 * mm,
             title=texte.t(sprache, "titel_pruef" if art == "pruef" else "titel_fach"),
@@ -137,10 +143,9 @@ def _bauen(story: list, sprache: str, art: str) -> bytes:
             if gesamt is not None:
                 basis(canvas, d)
 
-        doc.build([*story], onFirstPage=seite, onLaterPages=seite)
+        doc.build(fabrik(), onFirstPage=seite, onLaterPages=seite)
         return buffer.getvalue(), zaehler["n"]
 
-    # Story-Objekte dürfen nicht zweimal gebaut werden, deshalb Fabrik über Kopie der Liste.
     _, seiten = einmal(None)
     daten, _ = einmal(seiten)
     return daten
@@ -315,20 +320,18 @@ def _tabellenstil() -> TableStyle:
 
 
 def pruefbericht(ergebnis: dict[str, Any], meta: dict[str, Any], sprache: str) -> bytes:
-    st = _stile()
-    story = _kopfblock(ergebnis, meta, sprache, "pruef", st)
-    story += _fazitblock(ergebnis, sprache, st)
-    story += _todoblock(ergebnis, sprache, st, mit_aufwand=True)
-    story += _fundeblock(ergebnis, sprache, st)
+    def story() -> list:
+        st = _stile()
+        return (_kopfblock(ergebnis, meta, sprache, "pruef", st) + _fazitblock(ergebnis, sprache, st)
+                + _todoblock(ergebnis, sprache, st, mit_aufwand=True) + _fundeblock(ergebnis, sprache, st))
     return _bauen(story, sprache, "pruef")
 
 
 def fachbericht(ergebnis: dict[str, Any], meta: dict[str, Any], sprache: str) -> bytes:
-    st = _stile()
-    story = _kopfblock(ergebnis, meta, sprache, "fach", st)
-    story += _fazitblock(ergebnis, sprache, st)
-    story += _todoblock(ergebnis, sprache, st, mit_aufwand=False)
-    story += _massnahmenblock(ergebnis, sprache, st)
+    def story() -> list:
+        st = _stile()
+        return (_kopfblock(ergebnis, meta, sprache, "fach", st) + _fazitblock(ergebnis, sprache, st)
+                + _todoblock(ergebnis, sprache, st, mit_aufwand=False) + _massnahmenblock(ergebnis, sprache, st))
     return _bauen(story, sprache, "fach")
 
 

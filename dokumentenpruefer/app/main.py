@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import io
 import json
 import logging
@@ -126,9 +127,31 @@ async def http_fehler(request: Request, exc: HTTPException):
 # ---------------------------------------------------------------- Seite
 
 
+def _static_version() -> str:
+    """Kurze Prüfsumme der Oberflächendateien: ändert sich mit jedem Stand, der Browser lädt dann neu."""
+    h = hashlib.sha256()
+    for name in ("index.html", "app.js", "i18n.js", "app.css"):
+        pfad = config.STATIC / name
+        if pfad.exists():
+            h.update(pfad.read_bytes())
+    return h.hexdigest()[:10]
+
+
+@app.middleware("http")
+async def static_ohne_cache(request: Request, call_next):
+    """Oberflächendateien immer beim Server nachfragen, damit nach einem Update kein alter Stand hängen bleibt."""
+    antwort = await call_next(request)
+    if request.url.path.startswith("/static/"):
+        antwort.headers["Cache-Control"] = "no-cache"
+    return antwort
+
+
 @app.get("/", response_class=HTMLResponse)
 def startseite() -> HTMLResponse:
     html = (config.STATIC / "index.html").read_text(encoding="utf-8")
+    v = _static_version()
+    for name in ("app.css", "i18n.js", "app.js"):
+        html = html.replace(f"/static/{name}\"", f"/static/{name}?v={v}\"")
     return HTMLResponse(html, headers={"Cache-Control": "no-store"})
 
 
@@ -538,7 +561,7 @@ def _pruefung_durchfuehren(
     name: str,
     inhalt: bytes,
     gewaehlt: list[str],
-    zusatz: str | None,
+    sprachen: list[str],
     user: dict[str, Any],
     melden: Callable[[str, dict[str, Any]], None],
     lauf_id: str | None = None,
@@ -557,8 +580,6 @@ def _pruefung_durchfuehren(
     ergebnis["pruefer"] = user["name"]
     ergebnis["lesehinweise"] = lesehinweise
     with db.transaktion() as con:
-        einst = einstellungen.lesen(con, user["id"])
-        sprachen = _sprachen(einst, zusatz)
         pruef_id = uuid.uuid4().hex[:12]
         ordner = config.PRUEFUNGEN / pruef_id
         ordner.mkdir(parents=True, exist_ok=True)
@@ -606,7 +627,7 @@ def _lauf_antwort(lauf_id: str, ergebnisse: list[dict[str, Any]], fehler: list[d
 def _lauf_durchfuehren(
     dateien: list[tuple[str, bytes]],
     gewaehlt: list[str],
-    zusatz: str | None,
+    sprachen: list[str],
     user: dict[str, Any],
     melden: Callable[[str, dict[str, Any]], None],
     ausgelassen: list[str] | None = None,
@@ -627,7 +648,7 @@ def _lauf_durchfuehren(
             melden(phase, {**_stand, **daten})
 
         try:
-            antwort = _pruefung_durchfuehren(name, inhalt, gewaehlt, zusatz, user, melden_dokument, lauf_id, ausgelassen, sprache)
+            antwort = _pruefung_durchfuehren(name, inhalt, gewaehlt, sprachen, user, melden_dokument, lauf_id, ausgelassen, sprache)
         except lesen.LeseFehler as e:
             fehler.append({**stand, "fehler": _lesefehler_text(sprache, e), "status": 422})
             melden("ergebnis", fehler[-1])
@@ -649,6 +670,7 @@ async def pruefung_starten(
     request: Request,
     datei: list[UploadFile] = File(...),
     regelsaetze: str = Form("basis,din,ce"),
+    sprachen: str = Form(""),
     zusatzsprache: str = Form(""),
     fortschritt: str = Form(""),
     ausgelassen: str = Form(""),
@@ -673,8 +695,17 @@ async def pruefung_starten(
     gewaehlt = list(dict.fromkeys(r.strip() for r in regelsaetze.split(",") if r.strip()))
     if not gewaehlt or any(r not in config.REGELSAETZE for r in gewaehlt):
         return _fehler(400, _m(request, "regelsaetze_ungueltig"))
-    zusatz = zusatzsprache.strip() or None
     sprache = _sprache(request)
+    # Berichtssprachen: ein bis zwei, frei gewählt und unabhängig von der Oberfläche. Ohne Angabe wie
+    # früher: Oberflächensprache als Basis plus optionale Zusatzsprache.
+    if sprachen.strip():
+        sprachen_liste = list(dict.fromkeys(s.strip().lower() for s in sprachen.split(",") if s.strip()))
+        if not 1 <= len(sprachen_liste) <= 2 or any(s not in config.SPRACHEN for s in sprachen_liste):
+            return _fehler(400, _m(request, "sprachen_ungueltig"))
+    else:
+        with db.transaktion() as con:
+            einst = einstellungen.lesen(con, user["id"])
+        sprachen_liste = _sprachen(einst, zusatzsprache.strip() or None)
     ohne = [x.strip() for x in ausgelassen.split(",") if x.strip()]
     # Auswahl vorab prüfen, damit ein Fehler als 400 kommt und nicht erst im Lauf je Dokument.
     try:
@@ -686,7 +717,7 @@ async def pruefung_starten(
 
     if fortschritt != "1":
         try:
-            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, lambda phase, daten: None, ohne, sprache)
+            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, sprachen_liste, user, lambda phase, daten: None, ohne, sprache)
         except regeln.RegelFehler as e:
             return _fehler(503, str(e))
         if len(dateien) == 1:
@@ -704,7 +735,7 @@ async def pruefung_starten(
 
     async def arbeiten() -> None:
         try:
-            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, melden, ohne, sprache)
+            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, sprachen_liste, user, melden, ohne, sprache)
             await ereignisse.put({"phase": "fertig", "lauf": lauf})
         except regeln.RegelFehler as e:
             await ereignisse.put({"fehler": str(e), "status": 503})

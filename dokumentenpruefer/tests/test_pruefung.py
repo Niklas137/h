@@ -364,3 +364,22 @@ def test_fremdsprachige_berichte_ohne_deutsche_regeltexte():
             if r[f"bereich_{sp}"] != r["bereich"]:
                 assert r["bereich"] not in text, (sp, r["id"], "deutscher Bereich im Bericht")
         assert "Sicherheit" not in text and "Garantie" not in text and "nachweisen" not in text, sp
+
+
+def test_berichtssprachen_unabhaengig_von_der_oberflaeche(client, admin):
+    """Die Prüfseite wählt ein bis zwei Berichtssprachen frei; die Oberflächensprache spielt keine Rolle."""
+    datei = {"datei": ("Sprachen.docx", _docx(LUECKENHAFT[:1]), "application/octet-stream")}
+    r = client.post("/api/pruefung", files=datei, data={"regelsaetze": "din", "sprachen": "uk,ru"}, headers={"X-Sprache": "de"})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["sprachen"] == ["uk", "ru"]
+    assert sorted(p["sprache"] for p in d["pdfs"]) == ["ru", "ru", "uk", "uk"]
+    assert client.get(f"/api/pruefung/{d['id']}/pdf/pruef/de").status_code == 404
+    r = client.post("/api/pruefung", files=datei, data={"regelsaetze": "din", "sprachen": "en"})
+    assert r.json()["sprachen"] == ["en"]
+    for falsch in ("de,en,uk", "xx", "de,xx"):
+        r = client.post("/api/pruefung", files=datei, data={"regelsaetze": "din", "sprachen": falsch})
+        assert r.status_code == 400 and "de, en, uk, ru" in r.json()["fehler"], falsch
+    # Ohne Angabe wie bisher: Oberflächensprache des Kontos plus Zusatzsprache
+    r = client.post("/api/pruefung", files=datei, data={"regelsaetze": "din", "zusatzsprache": "en"})
+    assert r.json()["sprachen"] == ["de", "en"]

@@ -13,7 +13,7 @@
     status: null, user: null, saved: null, draft: null,
     screen: 'start', step: 1, erst: { email: '', einmal: '', verifizierung: true },
     section: 'profil', help: false, langMenu: false, sheet: false, remember: false, showPwd: false,
-    run: { basis: true, din: true, ce: true }, lang2: 'none', files: [], result: null, laufErg: null, busy: false,
+    run: { basis: true, din: true, ce: true }, reportLangs: ['de'], files: [], result: null, laufErg: null, busy: false,
     punkte: null, ohne: {}, punkteOffen: false,
     toastTimer: null, popTimer: null,
     lauf: null, laufSichtbar: false, laufTimer: null,
@@ -158,13 +158,13 @@
 
     var nf = S.files.length;
     var baseLang = LANGS[d.language] ? d.language : 'de';
-    $('rl-hint').textContent = t('rl_hint', { lang: langName(baseLang) }); $('ui-side').textContent = langName(baseLang);
-    var extra = (S.lang2 !== 'none' && S.lang2 !== baseLang && LANGS[S.lang2]) ? S.lang2 : null;
-    $('rl-side').textContent = extra ? langName(extra) : t('keine');
-    var langs = extra ? [baseLang, extra] : [baseLang];
+    $('ui-side').textContent = langName(baseLang);
+    var langs = S.reportLangs.filter(function (l) { return LANGS[l]; });
+    if (!langs.length) { langs = [baseLang]; S.reportLangs = langs.slice(); }
+    $('rl-side').textContent = langs.map(langName).join(t('und'));
     var langsTxt = langs.map(langName).join(t('und'));
     $('report-plan').textContent = nf > 1 ? t('plan_mehr', { langs: langsTxt, n: langs.length * 2, gesamt: langs.length * 2 * nf }) : t('plan', { langs: langsTxt, n: langs.length * 2 });
-    $$('#seg-run-lang2 button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === S.lang2); });
+    $$('#seg-report-langs button').forEach(function (b) { var on = langs.indexOf(b.dataset.v) >= 0; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
     $$('[data-run]').forEach(function (el) { el.querySelector('.cb').classList.toggle('on', !!S.run[el.dataset.run]); });
     $('drop-text').textContent = nf === 0 ? t('drop_text') : nf === 1 ? S.files[0].name : t('drop_n', { n: nf });
     $('file-list').hidden = nf < 1;
@@ -215,7 +215,9 @@
 
   function anmeldungUebernehmen(d) {
     S.user = d.benutzer; S.saved = Object.assign({}, d.einstellungen, { name: d.benutzer.name }); S.draft = Object.assign({}, S.saved);
-    try { var l2 = localStorage.getItem('fsh-lang2'); if (l2 && (l2 === 'none' || LANGS[l2])) S.lang2 = l2; } catch (e) {}
+    // Berichtssprachen: zuletzt gewählte aus dem Browser, sonst die Kontosprache. Unabhängig von der Oberfläche.
+    S.reportLangs = [UI[S.saved.language] ? S.saved.language : 'de'];
+    try { var rl = JSON.parse(localStorage.getItem('fsh-report-langs') || 'null'); if (Array.isArray(rl)) { rl = rl.filter(function (l) { return LANGS[l]; }).slice(0, 2); if (rl.length) S.reportLangs = rl; } } catch (e) {}
     if (UI[S.saved.language]) { S.gateLang = S.saved.language; try { localStorage.setItem('fsh-ui-lang', S.gateLang); } catch (e) {} }
     ladePruefungen(); ladePunkte();
   }
@@ -450,7 +452,14 @@
   ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.style.borderColor = ''; }); });
   drop.addEventListener('drop', function (e) { if (e.dataTransfer.files) setFiles(e.dataTransfer.files); });
   $$('[data-run]').forEach(function (el) { el.addEventListener('click', function () { S.run[el.dataset.run] = !S.run[el.dataset.run]; render(); }); });
-  $$('#seg-run-lang2 button').forEach(function (b) { b.addEventListener('click', function () { S.lang2 = b.dataset.v; try { localStorage.setItem('fsh-lang2', S.lang2); } catch (e) {} render(); }); });
+  // Ein bis zwei Berichtssprachen: Klick schaltet um; bei zwei gewählten ersetzt die neue die ältere.
+  $$('#seg-report-langs button').forEach(function (b) { b.addEventListener('click', function () {
+    var v = b.dataset.v, i = S.reportLangs.indexOf(v);
+    if (i >= 0) { if (S.reportLangs.length > 1) S.reportLangs.splice(i, 1); }
+    else { S.reportLangs.push(v); if (S.reportLangs.length > 2) S.reportLangs.shift(); }
+    try { localStorage.setItem('fsh-report-langs', JSON.stringify(S.reportLangs)); } catch (e) {}
+    render();
+  }); });
 
   // Statuspanel: erscheint erst nach 400 ms, damit kurze Prüfungen nicht aufblitzen.
   var PHASEN = ['lesen', 'pruefen', 'berichte'];
@@ -523,7 +532,7 @@
     var runs = Object.keys(S.run).filter(function (k) { return S.run[k]; });
     fd.append('regelsaetze', runs.join(','));
     fd.append('ausgelassen', ohneListe(runs).join(','));
-    fd.append('zusatzsprache', S.lang2 === 'none' ? '' : S.lang2);
+    fd.append('sprachen', S.reportLangs.join(','));
     fd.append('fortschritt', '1');
     pruefungStreamen(fd).then(function (lauf) {
       laufEnde(); S.busy = false; render();

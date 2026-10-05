@@ -25,7 +25,7 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 - Kopfleiste: Sprache, Helligkeit, Einstellungen, Hilfe. Sprache und Helligkeit wirken sofort.
 - Einstellungen enthalten alles Weitere einschließlich Impressum, Datenschutz, Info. Speichern-Knopf oben, Zurück-Knopf.
 - Kein Register „Prüfer-Vorgaben" in den Einstellungen. Unter „Sprachen" nur Nachlesen.
-- Berichtssprache: Basis ist die Oberflächensprache; je Prüfung eine Zusatzsprache oder keine, Auswahl auf der Prüfseite.
+- Berichtssprachen: ein bis zwei je Prüfung, frei auf der Prüfseite gewählt (seit 5. Oktober), unabhängig von der Oberflächensprache. API-Feld `sprachen`.
   Je Sprache zwei PDFs: Prüfbericht (intern, mit Gewichtung und Aufwand) und Fachbericht (Kunde, ohne beides).
 - Ergebnis-Ansicht: ① Ergebnis, ② Berichte mit PDF je Sprache, ③ Weitergabe (E-Mail-Entwurf nie gesendet, ZIP,
   Ablage in output, Abschließen), Funde im Detail zum Aufklappen.
