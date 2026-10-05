@@ -298,7 +298,7 @@ def _fundeblock(ergebnis: dict[str, Any], sprache: str, st: dict) -> list:
                 Paragraph(str(f.get("Zeitaufwand_min", "")), st["tab"]),
             ]
         )
-    tab = Table(zeilen, colWidths=[15 * mm, 21 * mm, 32 * mm, 25.5 * mm, 23 * mm, BREITE - 134.5 * mm, 9.5 * mm, 8.5 * mm], repeatRows=1)
+    tab = Table(zeilen, colWidths=[15 * mm, 21 * mm, 32 * mm, 25 * mm, 23 * mm, BREITE - 134.5 * mm, 9.5 * mm, 9 * mm], repeatRows=1)
     tab.setStyle(_tabellenstil())
     story.append(tab)
     return story
