@@ -3,8 +3,8 @@
 ## Status
 
 Die verfügbaren technischen Phase-1-Arbeiten sind umgesetzt. Die lokale Python-Abnahme
-besteht mit 231 Tests. Die erweiterte CI-Abnahme wird vor Abschluss dieses Arbeitsstands
-anhand ihrer Logs bestätigt. Eine vollständige Freigabe der Nutzerinstallation oder eine
+besteht mit 231 Tests. Die erweiterte CI-Abnahme auf Linux und macOS ist ebenfalls
+erfolgreich abgeschlossen und anhand beider Job-Logs bestätigt. Eine vollständige Freigabe der Nutzerinstallation oder eine
 fachliche Normkonformitätsfreigabe wird hiermit nicht erklärt.
 
 ## Abgleich mit dem ursprünglichen Dokumentenprüfer
@@ -54,3 +54,19 @@ von Phase 1.
 Diese Punkte können aus der Entwicklungsumgebung nicht als erledigt bestätigt werden.
 Die Anleitung benennt die konkreten Handlungen; Konten, Rechtstexte und Zugangsdaten
 wurden nicht erfunden. Der Claude-Branch, main und die ursprüngliche App bleiben unberührt.
+
+## Bestätigter Abschlusslauf
+
+Getesteter Programmstand: `47edac2e5752a236cac036108376bc1499dacb3d`.
+[Testlauf 37300923258](https://github.com/Niklas137/h/actions/runs/37300923258).
+
+| System | Python-Abnahme über abnahme.command | Chromium | WebKit |
+| --- | --- | --- | --- |
+| Linux | 231 bestanden | 9 Ablaufsgruppen bestanden | 9 Ablaufsgruppen bestanden |
+| macOS | 231 bestanden | 9 Ablaufsgruppen bestanden | 9 Ablaufsgruppen bestanden |
+
+Alle vier Browserläufe melden keine JavaScript-Ausnahmen. Die jeweils vier bekannten
+Python-Deprecation-Warnungen bleiben bestehen und haben den Lauf nicht beeinträchtigt.
+Es wurden ausschließlich erzeugte Testkonten und Testdokumente verwendet. Kein Mailversand.
+Screenshots und Browserprotokolle sind als Workflow-Artefakte nach Browser getrennt gespeichert.
+Die nachfolgende Dokumentationsänderung verändert den getesteten Programmcode nicht.
