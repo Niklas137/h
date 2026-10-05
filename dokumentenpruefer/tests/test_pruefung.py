@@ -295,3 +295,44 @@ def test_ablegen_ueberschreibt_nicht(client, admin, tmp_path, monkeypatch):
     dritte = client.post(f"/api/pruefung/{pid}/ablegen").json()["abgelegt"]
     assert fremd.read_bytes() == b"%PDF-fremd"
     assert dritte[0].endswith("_v02.pdf")
+
+
+def test_pruefpunkte_auswaehlen(client, admin):
+    """Einzelne Prüfpunkte lassen sich auslassen; das steht im Ergebnis und im Bericht, der Score zählt sie nicht."""
+    r = client.get("/api/regeln")
+    assert r.status_code == 200, r.text
+    saetze = r.json()["regelsaetze"]
+    assert set(saetze) == {"basis", "din", "ce"} and r.json()["ausgelassen"] == []
+    basis_ids = [p["id"] for p in saetze["basis"]["punkte"]]
+    assert "TXT-001" in basis_ids and "CHK-008" in basis_ids and len(basis_ids) == 9
+    assert len(saetze["din"]["punkte"]) == 8 and len(saetze["ce"]["punkte"]) == 8
+
+    r = client.put("/api/ich/pruefpunkte", json={"ausgelassen": ["DIN-008", "CHK-008", "TXT-001"]})
+    assert r.status_code == 200 and r.json()["ausgelassen"] == ["CHK-008", "DIN-008", "TXT-001"]
+    assert client.get("/api/regeln").json()["ausgelassen"] == ["CHK-008", "DIN-008", "TXT-001"]
+    assert client.put("/api/ich/pruefpunkte", json={"ausgelassen": ["NIX-1"]}).status_code == 400
+    assert client.put("/api/ich/pruefpunkte", json={"ausgelassen": "CHK-001"}).status_code == 400
+
+    datei = {"datei": ("Punkte.docx", _docx(LUECKENHAFT), "application/octet-stream")}
+    voll = client.post("/api/pruefung", files=datei, data={"regelsaetze": "basis,din,ce"}).json()
+    r = client.post("/api/pruefung", files=datei, data={"regelsaetze": "basis,din,ce", "zusatzsprache": "en", "ausgelassen": "CHK-008,DIN-008,TXT-001"})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    ids = {f["ID"] for f in d["funde"]}
+    assert not ids & {"CHK-008", "DIN-008", "TXT-001"}
+    assert {f["ID"] for f in voll["funde"]} >= {"CHK-008", "DIN-008", "TXT-001"}
+    assert [a["id"] for a in d["ausgelassen"]] == ["CHK-008", "TXT-001", "DIN-008"]
+    assert d["punkteGesamt"] == 25 and d["punkteGeprueft"] == 22
+    assert d["score"] == 100 - sum(f["Gewichtung"] for f in d["funde"]) and d["score"] > voll["score"]
+    for sp, erwartet in (("de", "22 von 25 geprüft. Bewusst ausgelassen: CHK-008 Garantie, TXT-001 Lesbarkeit, DIN-008 Format"), ("en", "22 of 25 checked. Deliberately left out: CHK-008 ")):
+        pdf = client.get(f"/api/pruefung/{d['id']}/pdf/pruef/{sp}").content
+        text = " ".join(" ".join(s.extract_text().split()) for s in PdfReader(io.BytesIO(pdf)).pages)
+        assert erwartet in text, (sp, text[:600])
+
+    # Unbekannter Punkt und leerer Regelsatz sind Fehler, bevor etwas geprüft wird
+    r = client.post("/api/pruefung", files=datei, data={"regelsaetze": "din", "ausgelassen": "CHK-001"})
+    assert r.status_code == 400 and "CHK-001" in r.json()["fehler"]
+    alle_din = ",".join(p["id"] for p in saetze["din"]["punkte"])
+    r = client.post("/api/pruefung", files=datei, data={"regelsaetze": "basis,din", "ausgelassen": alle_din})
+    assert r.status_code == 400 and "din" in r.json()["fehler"]
+    client.put("/api/ich/pruefpunkte", json={"ausgelassen": []})

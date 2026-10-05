@@ -15,6 +15,7 @@
     screen: 'start', step: 1, erst: { email: '', einmal: '', verifizierung: true },
     section: 'profil', help: false, langMenu: false, sheet: false, remember: false, showPwd: false,
     run: { basis: true, din: true, ce: true }, lang2: 'none', files: [], result: null, laufErg: null, busy: false,
+    punkte: null, ohne: {}, punkteOffen: false,
     toastTimer: null, popTimer: null,
     lauf: null, laufSichtbar: false, laufTimer: null
   };
@@ -126,7 +127,9 @@
     $('file-list').innerHTML = S.files.map(function (f, i) { return '<li><span class="t">' + esc(f.name) + '</span><span class="cap">' + fmtGroesse(f.size) + '</span>' + (S.busy ? '' : '<button type="button" class="btn-link" data-del="' + i + '">Entfernen</button>') + '</li>'; }).join('');
     $$('#file-list [data-del]').forEach(function (b) { b.addEventListener('click', function () { dateiEntfernen(+b.dataset.del); }); });
     var runs = Object.keys(S.run).filter(function (k) { return S.run[k]; });
-    $('start-check').disabled = !nf || !runs.length || S.busy;
+    renderPunkte(runs);
+    var leer = runs.filter(function (k) { return S.punkte && S.punkte[k] && S.punkte[k].punkte.length && S.punkte[k].punkte.every(function (p) { return S.ohne[p.id]; }); });
+    $('start-check').disabled = !nf || !runs.length || S.busy || leer.length > 0;
     $('start-check').innerHTML = S.busy ? '<span class="spinner"></span>Prüfung läuft' : (nf > 1 ? nf + ' Dokumente prüfen' : 'Prüfung starten');
 
     $$('.snav [data-sec]').forEach(function (el) { el.classList.toggle('on', el.dataset.sec === S.section); });
@@ -178,10 +181,10 @@
     S.user = d.benutzer; S.saved = Object.assign({}, d.einstellungen, { name: d.benutzer.name }); S.draft = Object.assign({}, S.saved);
     try { var l2 = localStorage.getItem('fsh-lang2'); if (l2 && (l2 === 'none' || LANGS[l2])) S.lang2 = l2; } catch (e) {}
     $('stand').textContent = 'Stand ' + new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
-    ladePruefungen();
+    ladePruefungen(); ladePunkte();
   }
   function abmelden(serverseitig) {
-    var fertig = function () { S.user = null; S.saved = null; S.draft = null; S.result = null; S.laufErg = null; S.files = []; $('result').hidden = true; $('f-login').reset(); go('start'); };
+    var fertig = function () { S.user = null; S.saved = null; S.draft = null; S.result = null; S.laufErg = null; S.files = []; S.punkte = null; S.ohne = {}; S.punkteOffen = false; $('result').hidden = true; $('f-login').reset(); go('start'); };
     if (serverseitig === false) { fertig(); return; }
     api('POST', '/api/abmelden').then(fertig, fertig);
   }
@@ -349,6 +352,45 @@
   });
 
   // ------------------------------------------------------------ Prüfung
+  var SATZ_NAMEN = { basis: 'Basisprüfung', din: 'DIN 82079-1', ce: 'CE / EU-Konformität' };
+  function ohneListe(runs) { return Object.keys(S.ohne).filter(function (id) { if (!S.ohne[id] || !S.punkte) return false; return runs.some(function (k) { return S.punkte[k] && S.punkte[k].punkte.some(function (p) { return p.id === id; }); }); }); }
+  function renderPunkte(runs) {
+    if (!S.punkte) return;
+    var gesamt = 0, aktiv = 0;
+    runs.forEach(function (k) { var ps = (S.punkte[k] || { punkte: [] }).punkte; gesamt += ps.length; aktiv += ps.filter(function (p) { return !S.ohne[p.id]; }).length; });
+    var leer = runs.filter(function (k) { var ps = (S.punkte[k] || { punkte: [] }).punkte; return ps.length && ps.every(function (p) { return S.ohne[p.id]; }); });
+    $('punkte-stand').textContent = leer.length ? 'Regelsatz ' + leer.map(function (k) { return SATZ_NAMEN[k]; }).join(', ') + ' hat keinen aktiven Prüfpunkt. Regelsatz abwählen oder Punkte einschalten.' : (aktiv === gesamt ? 'Alle ' + gesamt + ' Prüfpunkte aktiv' : aktiv + ' von ' + gesamt + ' Prüfpunkten aktiv, ' + (gesamt - aktiv) + ' bewusst ausgelassen');
+    $('punkte-stand').style.color = leer.length ? 'var(--danger)' : '';
+    $('punkte-toggle').textContent = S.punkteOffen ? 'Prüfpunkte einklappen' : 'Einzelne Prüfpunkte wählen';
+    $('punkte').hidden = !S.punkteOffen;
+    if (!S.punkteOffen) return;
+    $('punkte').innerHTML = Object.keys(SATZ_NAMEN).map(function (k) {
+      var satz = S.punkte[k] || { punkte: [], vorhanden: false };
+      var an = satz.punkte.filter(function (p) { return !S.ohne[p.id]; }).length;
+      var zeilen = satz.punkte.map(function (p) {
+        return '<button type="button" class="punkt" data-punkt="' + esc(p.id) + '" aria-pressed="' + (S.ohne[p.id] ? 'false' : 'true') + '"><span class="cb' + (S.ohne[p.id] ? '' : ' on') + '"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="t"><span class="mono">' + esc(p.id) + '</span> ' + esc(p.bereich) + ' <span class="cap">· ' + esc(p.fehlerklasse) + ', Gewicht ' + esc(p.gewichtung) + '</span><br><span class="cap">' + esc(p.empfehlung) + '</span></span></button>';
+      }).join('');
+      var kopf = '<div class="kopf"><b>' + esc(SATZ_NAMEN[k]) + '</b><span class="cap">' + (satz.vorhanden ? an + ' von ' + satz.punkte.length : 'Regeldatei fehlt') + '</span></div>';
+      var alle = satz.punkte.length ? '<div class="row" style="gap:8px"><button type="button" class="btn-link" data-alle="' + k + '" data-wert="1">Alle an</button><button type="button" class="btn-link" data-alle="' + k + '" data-wert="0">Alle aus</button></div>' : '';
+      return '<div class="satz' + (S.run[k] ? '' : ' aus') + '">' + kopf + zeilen + alle + '</div>';
+    }).join('');
+    $$('#punkte [data-punkt]').forEach(function (b) { b.addEventListener('click', function () { punktSetzen([b.dataset.punkt], !!S.ohne[b.dataset.punkt]); }); });
+    $$('#punkte [data-alle]').forEach(function (b) { b.addEventListener('click', function () { punktSetzen(S.punkte[b.dataset.alle].punkte.map(function (p) { return p.id; }), b.dataset.wert === '1'); }); });
+  }
+  function punktSetzen(ids, aktiv) {
+    ids.forEach(function (id) { if (aktiv) delete S.ohne[id]; else S.ohne[id] = true; });
+    render();
+    api('PUT', '/api/ich/pruefpunkte', { ausgelassen: Object.keys(S.ohne) }).catch(function (err) { showToast(err.message); });
+  }
+  function ladePunkte() {
+    api('GET', '/api/regeln').then(function (d) {
+      S.punkte = d.regelsaetze; S.ohne = {};
+      (d.ausgelassen || []).forEach(function (id) { S.ohne[id] = true; });
+      render();
+    }).catch(function () {});
+  }
+  $('punkte-toggle').addEventListener('click', function () { S.punkteOffen = !S.punkteOffen; render(); });
+
   var MAX_DATEIEN = 20;
   function setFiles(liste) {
     var neu = Array.prototype.slice.call(liste || []);
@@ -440,7 +482,9 @@
     zeigeFehler('check-err', ''); S.result = null; S.laufErg = null; $('result').hidden = true; S.busy = true; laufStart(S.files[0].name, S.files.length); render();
     var fd = new FormData();
     S.files.forEach(function (f) { fd.append('datei', f); });
-    fd.append('regelsaetze', Object.keys(S.run).filter(function (k) { return S.run[k]; }).join(','));
+    var runs = Object.keys(S.run).filter(function (k) { return S.run[k]; });
+    fd.append('regelsaetze', runs.join(','));
+    fd.append('ausgelassen', ohneListe(runs).join(','));
     fd.append('zusatzsprache', S.lang2 === 'none' ? '' : S.lang2);
     fd.append('fortschritt', '1');
     pruefungStreamen(fd).then(function (lauf) {
@@ -484,7 +528,9 @@
     $('res-meta').textContent = r.dateiname + ' · ' + fmtDatum(r.erstellt);
     $('res-score').textContent = r.score + ' %';
     $('res-ampel').innerHTML = '<span class="dot ' + a[0] + '"></span>' + esc(a[1]);
-    $('res-regeln').textContent = r.regelsaetze.map(function (k) { return namen[k] || k; }).join(', ');
+    $('res-regeln').textContent = r.regelsaetze.map(function (k) { return namen[k] || k; }).join(', ') + (r.punkteGesamt ? ' · ' + r.punkteGeprueft + ' von ' + r.punkteGesamt + ' Punkten' : '');
+    var weg = r.ausgelassen || [];
+    $('res-ausgelassen').hidden = !weg.length; $('res-ausgelassen').textContent = weg.length ? 'Bewusst ausgelassen: ' + weg.map(function (a) { return a.id + ' ' + a.bereich; }).join(', ') : '';
     var kl = r.klassen || {};
     var teile = [];
     if (kl.Kritisch) teile.push(kl.Kritisch + ' kritisch'); if (kl.Schwer) teile.push(kl.Schwer + ' schwer'); if (kl.Mittel) teile.push(kl.Mittel + ' mittel'); if (kl.Gering) teile.push(kl.Gering + ' gering');

@@ -135,6 +135,8 @@
             <button class="toggle-card" data-run="din"><span class="cb on"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="t"><b class="sm" style="font-weight:500">DIN 82079-1</b><span class="cap" id="hint-din">Nutzungsinformationen</span></span></button>
             <button class="toggle-card" data-run="ce"><span class="cb on"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="t"><b class="sm" style="font-weight:500">CE / EU-Konformität</b><span class="cap" id="hint-ce">Nachweise und To-do-Liste</span></span></button>
           </div>
+          <div class="row"><span class="cap" id="punkte-stand">Alle Prüfpunkte aktiv</span><button type="button" class="btn-link" id="punkte-toggle">Einzelne Prüfpunkte wählen</button></div>
+          <div class="punkte" id="punkte" hidden></div>
         </div>
         <div class="stack" style="gap:10px">
           <span class="label">Zusätzliche Berichtssprache für diese Prüfung</span>
@@ -199,6 +201,7 @@
         </div>
         <p class="sm"><b style="font-weight:500">Fazit:</b> <span id="res-fazit"></span></p>
         <p class="cap" id="res-hinweise" hidden></p>
+        <p class="cap" id="res-ausgelassen" hidden></p>
       </div>
       <div class="rep-grid">
         <div class="card stack" style="gap:10px"><div class="row"><h2><span class="stepnum">2</span>Prüfbericht</h2><span class="badge">intern</span></div><p class="muted sm">Für alle, die mit dem Tool arbeiten: jeder Fund mit Gewichtung, Fundstelle und Aufwand.</p><div class="pdfs" id="pdf-pruef"></div></div>

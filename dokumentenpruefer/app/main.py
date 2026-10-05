@@ -272,6 +272,37 @@ async def einstellungen_aendern(request: Request, user: dict[str, Any] = Depends
     return {"einstellungen": einst}
 
 
+@app.get("/api/regeln")
+def regeln_liste(user: dict[str, Any] = Depends(aktueller_benutzer)):
+    """Alle wählbaren Prüfpunkte je Regelsatz, dazu die vom Konto ausgelassenen."""
+    saetze: dict[str, Any] = {}
+    namen = {"basis": "Basisprüfung", "din": "DIN 82079-1", "ce": "CE / EU-Konformität"}
+    for k in config.REGELSAETZE:
+        try:
+            saetze[k] = {"name": namen[k], "vorhanden": True, "punkte": pruefung.punkte(k)}
+        except regeln.RegelFehler as e:
+            saetze[k] = {"name": namen[k], "vorhanden": False, "punkte": [], "fehler": str(e)}
+    with db.transaktion() as con:
+        ausgelassen = einstellungen.pruefpunkte_lesen(con, user["id"])
+    return {"regelsaetze": saetze, "ausgelassen": ausgelassen}
+
+
+@app.put("/api/ich/pruefpunkte")
+async def pruefpunkte_setzen(request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    """Merkt je Konto, welche Prüfpunkte bewusst ausgelassen werden (Liste von IDs)."""
+    daten = await _json(request)
+    ids = daten.get("ausgelassen")
+    if not isinstance(ids, list) or any(not isinstance(x, str) for x in ids):
+        return _fehler(400, "Bitte eine Liste von Prüfpunkt-IDs senden.")
+    bekannt = {p["id"] for k in config.REGELSAETZE if regeln.vorhanden().get(k) for p in pruefung.punkte(k)}
+    unbekannt = sorted(set(ids) - bekannt)
+    if unbekannt:
+        return _fehler(400, f"Unbekannter Prüfpunkt: {', '.join(unbekannt)}.")
+    with db.transaktion() as con:
+        gespeichert = einstellungen.pruefpunkte_schreiben(con, user["id"], ids)
+    return {"ausgelassen": gespeichert}
+
+
 @app.post("/api/ich/passwort")
 async def passwort_aendern(request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
     daten = await _json(request)
@@ -451,6 +482,9 @@ def _pruefung_antwort(row: dict[str, Any]) -> dict[str, Any]:
         "fundeAnzahl": row["funde"],
         "sprachen": db.json_laden(row["sprachen"], ["de"]),
         "regelsaetze": db.json_laden(row["regelsaetze"], []),
+        "ausgelassen": ergebnis.get("ausgelassen", []),
+        "punkteGesamt": ergebnis.get("punkteGesamt"),
+        "punkteGeprueft": ergebnis.get("punkteGeprueft"),
         "fazit": ergebnis.get("fazit", ""),
         "klassen": ergebnis.get("klassen", {}),
         "funde": ergebnis.get("funde", []),
@@ -475,6 +509,7 @@ def _pruefung_durchfuehren(
     user: dict[str, Any],
     melden: Callable[[str, dict[str, Any]], None],
     lauf_id: str | None = None,
+    ausgelassen: list[str] | None = None,
 ) -> dict[str, Any]:
     """Läuft in einem Arbeitsfaden, damit der Server währenddessen bedienbar bleibt.
 
@@ -484,7 +519,7 @@ def _pruefung_durchfuehren(
     melden("lesen", {})
     struktur, lesehinweise = lesen.lesen_mit_hinweisen(name, inhalt)
     melden("pruefen", {})
-    ergebnis = pruefung.pruefen(struktur, gewaehlt)
+    ergebnis = pruefung.pruefen(struktur, gewaehlt, ausgelassen)
     ergebnis["pruefer"] = user["name"]
     ergebnis["lesehinweise"] = lesehinweise
     with db.transaktion() as con:
@@ -540,6 +575,7 @@ def _lauf_durchfuehren(
     zusatz: str | None,
     user: dict[str, Any],
     melden: Callable[[str, dict[str, Any]], None],
+    ausgelassen: list[str] | None = None,
 ) -> dict[str, Any]:
     """Prüft alle Dateien eines Laufs nacheinander. Ein unlesbares Dokument stoppt die anderen nicht.
 
@@ -556,7 +592,7 @@ def _lauf_durchfuehren(
             melden(phase, {**_stand, **daten})
 
         try:
-            antwort = _pruefung_durchfuehren(name, inhalt, gewaehlt, zusatz, user, melden_dokument, lauf_id)
+            antwort = _pruefung_durchfuehren(name, inhalt, gewaehlt, zusatz, user, melden_dokument, lauf_id, ausgelassen)
         except lesen.LeseFehler as e:
             fehler.append({**stand, "fehler": str(e), "status": 422})
             melden("ergebnis", fehler[-1])
@@ -580,6 +616,7 @@ async def pruefung_starten(
     regelsaetze: str = Form("basis,din,ce"),
     zusatzsprache: str = Form(""),
     fortschritt: str = Form(""),
+    ausgelassen: str = Form(""),
     user: dict[str, Any] = Depends(aktueller_benutzer),
 ):
     """Eine oder mehrere Dateien (Feld „datei“ mehrfach) in einem Lauf prüfen.
@@ -602,10 +639,18 @@ async def pruefung_starten(
     if not gewaehlt or any(r not in config.REGELSAETZE for r in gewaehlt):
         return _fehler(400, "Bitte gültige Regelsätze wählen: basis, din oder ce.")
     zusatz = zusatzsprache.strip() or None
+    ohne = [x.strip() for x in ausgelassen.split(",") if x.strip()]
+    # Auswahl vorab prüfen, damit ein Fehler als 400 kommt und nicht erst im Lauf je Dokument.
+    try:
+        pruefung.pruefen([], gewaehlt, ohne)
+    except pruefung.AuswahlFehler as e:
+        return _fehler(400, str(e))
+    except regeln.RegelFehler:
+        pass  # meldet der Lauf selbst: 503 als JSON oder als letzte Zeile im Strom
 
     if fortschritt != "1":
         try:
-            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, lambda phase, daten: None)
+            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, lambda phase, daten: None, ohne)
         except regeln.RegelFehler as e:
             return _fehler(503, str(e))
         if len(dateien) == 1:
@@ -623,7 +668,7 @@ async def pruefung_starten(
 
     async def arbeiten() -> None:
         try:
-            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, melden)
+            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, melden, ohne)
             await ereignisse.put({"phase": "fertig", "lauf": lauf})
         except regeln.RegelFehler as e:
             await ereignisse.put({"fehler": str(e), "status": 503})

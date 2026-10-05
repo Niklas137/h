@@ -159,6 +159,13 @@ def _kopfblock(ergebnis: dict[str, Any], meta: dict[str, Any], sprache: str, art
         (texte.t(sprache, "geprueft_von"), meta.get("pruefer", "")),
         (texte.t(sprache, "regelsaetze"), regeln),
     ]
+    if ergebnis.get("punkteGesamt"):
+        satz = texte.t(sprache, "punkte_satz", n=ergebnis.get("punkteGeprueft", 0), von=ergebnis["punkteGesamt"])
+        weg = ergebnis.get("ausgelassen", [])
+        if weg:
+            liste = ", ".join(f"{a['id']} {texte.bereich(sprache, {'Bereich': a.get('bereich', ''), **a})}" for a in weg)
+            satz += ". " + texte.t(sprache, "punkte_ausgelassen", liste=liste)
+        zellen.append((texte.t(sprache, "pruefpunkte"), satz))
     daten = [[Paragraph(_esc(k), st["label"]), Paragraph(_esc(v), st["text"])] for k, v in zellen]
     tab = Table(daten, colWidths=[45 * mm, BREITE - 45 * mm])
     tab.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("BOTTOMPADDING", (0, 0), (-1, -1), 3), ("TOPPADDING", (0, 0), (-1, -1), 3)]))

@@ -59,7 +59,23 @@ def _regel_felder(rule: dict[str, Any]) -> dict[str, Any]:
     return felder
 
 
-def check_document(structured_text: list[dict[str, str]], checklist: list[dict[str, Any]]) -> list[Fund]:
+# Eingebauter Prüfpunkt der Basisprüfung: Satzlänge. Steht nicht in der Regeldatei, ist aber abwählbar.
+SATZ_PUNKT = {"id": "TXT-001", "bereich": "Lesbarkeit", "fehlerklasse": "Mittel", "gewichtung": 2,
+              "empfehlung": "Sätze mit mehr als 25 Wörtern vermeiden", "eingebaut": True}
+
+
+def punkte(regelsatz: str) -> list[dict[str, Any]]:
+    """Die wählbaren Prüfpunkte eines Regelsatzes (nur die Felder, die die Oberfläche braucht)."""
+    liste = [
+        {k: r.get(k) for k in ("id", "bereich", "fehlerklasse", "gewichtung", "empfehlung", "pflicht") if k in r}
+        for r in regelmodul.laden(regelsatz)
+    ]
+    if regelsatz == "basis":
+        liste.append(dict(SATZ_PUNKT))
+    return liste
+
+
+def check_document(structured_text: list[dict[str, str]], checklist: list[dict[str, Any]], satzlaenge: bool = True) -> list[Fund]:
     findings: list[Fund] = []
     full_text = _volltext(structured_text)
 
@@ -81,7 +97,7 @@ def check_document(structured_text: list[dict[str, str]], checklist: list[dict[s
                 }
             )
 
-    for item in structured_text:
+    for item in structured_text if satzlaenge else []:
         sentence = item["text"]
         if len(sentence.split()) > 25:
             findings.append(
@@ -199,8 +215,16 @@ def generate_todo_list(findings: list[Fund]) -> list[dict[str, Any]]:
     return sorted(todos, key=lambda x: x["Priorität"] == "Mittel")
 
 
-def pruefen(structured_text: list[dict[str, str]], regelsaetze: list[str] | None = None) -> dict[str, Any]:
-    """Führt die gewählten Regelsätze aus und liefert das vollständige Ergebnis."""
+class AuswahlFehler(ValueError):
+    """Die Auswahl der Prüfpunkte passt nicht zu den gewählten Regelsätzen."""
+
+
+def pruefen(structured_text: list[dict[str, str]], regelsaetze: list[str] | None = None, ausgelassen: list[str] | None = None) -> dict[str, Any]:
+    """Führt die gewählten Regelsätze aus und liefert das vollständige Ergebnis.
+
+    ausgelassen: IDs einzelner Prüfpunkte, die bewusst nicht geprüft werden. Sie stehen im Ergebnis
+    unter „ausgelassen“ und zählen nicht in den Score. Ein Regelsatz ohne aktiven Punkt ist ein Fehler.
+    """
     gewaehlt = set(["basis", "din", "ce"] if regelsaetze is None else regelsaetze)
     if not gewaehlt or not gewaehlt.issubset(regelmodul.DATEIEN):
         raise regelmodul.RegelFehler("Regelsatz-Auswahl ist leer oder ungültig.")
@@ -209,6 +233,22 @@ def pruefen(structured_text: list[dict[str, str]], regelsaetze: list[str] | None
     regel_ids = [r["id"] for rs in kataloge.values() for r in rs]
     if len(set(regel_ids)) != len(regel_ids):
         raise regelmodul.RegelFehler("Regelsatz-Auswahl enthält doppelte Regel-IDs. Prüfung abgebrochen.")
+
+    ohne = set(ausgelassen or [])
+    alle_punkte = {k: [dict(r) for r in rs] + ([dict(SATZ_PUNKT)] if k == "basis" else []) for k, rs in kataloge.items()}
+    bekannt = {p["id"] for ps in alle_punkte.values() for p in ps}
+    unbekannt = sorted(ohne - bekannt)
+    if unbekannt:
+        raise AuswahlFehler(f"Unbekannter Prüfpunkt für die gewählten Regelsätze: {', '.join(unbekannt)}.")
+    for k, ps in alle_punkte.items():
+        if all(p["id"] in ohne for p in ps):
+            raise AuswahlFehler(f"Regelsatz {k} hat keinen aktiven Prüfpunkt. Regelsatz abwählen oder Punkte einschalten.")
+    kataloge = {k: [r for r in rs if r["id"] not in ohne] for k, rs in kataloge.items()}
+    ausgelassen_liste = [
+        {"id": p["id"], "regelsatz": k, "bereich": p.get("bereich", ""), **_regel_felder(p)}
+        for k, ps in alle_punkte.items() for p in ps if p["id"] in ohne
+    ]
+    punkte_gesamt = sum(len(ps) for ps in alle_punkte.values())
     volltext = _volltext(structured_text)
     regelpruefungen = [
         {"id": r["id"], "regelsatz": k, "fachlich": "offen",
@@ -217,7 +257,7 @@ def pruefen(structured_text: list[dict[str, str]], regelsaetze: list[str] | None
     ]
     findings: list[Fund] = []
     if "basis" in gewaehlt:
-        findings.extend(check_document(structured_text, kataloge["basis"]))
+        findings.extend(check_document(structured_text, kataloge["basis"], satzlaenge="TXT-001" not in ohne))
     if "din" in gewaehlt:
         findings.extend(check_normlogik_82079(structured_text, kataloge["din"]))
     if "ce" in gewaehlt:
@@ -250,6 +290,9 @@ def pruefen(structured_text: list[dict[str, str]], regelsaetze: list[str] | None
         "todos": generate_todo_list(findings),
         "klassen": klassen,
         "regelsaetze": sorted(gewaehlt, key=["basis", "din", "ce"].index),
+        "ausgelassen": ausgelassen_liste,
+        "punkteGesamt": punkte_gesamt,
+        "punkteGeprueft": punkte_gesamt - len(ausgelassen_liste),
         "regelnVorhanden": regelmodul.vorhanden(),
         "zeilen": len(structured_text),
     }

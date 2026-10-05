@@ -1,6 +1,7 @@
 """Konto-Einstellungen je Benutzer: Standardwerte, erlaubte Werte, Lesen und Schreiben."""
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from . import config, db
@@ -89,6 +90,20 @@ def lesen(con, user_id: int) -> dict[str, Any]:
         "notifyWeekly": bool(row["notify_weekly"]),
         "updatedAt": row["updated_at"],
     }
+
+
+def pruefpunkte_lesen(con, user_id: int) -> list[str]:
+    """IDs der Prüfpunkte, die dieses Konto bewusst auslässt (Standard: keine)."""
+    row = db.zeile(con.execute("SELECT ausgelassen FROM user_settings WHERE user_id = ?", (user_id,)).fetchone())
+    liste = db.json_laden(row["ausgelassen"] if row else None, [])
+    return [str(x) for x in liste] if isinstance(liste, list) else []
+
+
+def pruefpunkte_schreiben(con, user_id: int, ids: list[str]) -> list[str]:
+    anlegen(con, user_id)
+    bereinigt = sorted({str(x).strip() for x in ids if str(x).strip()})
+    con.execute("UPDATE user_settings SET ausgelassen = ?, updated_at = ? WHERE user_id = ?", (json.dumps(bereinigt), db.jetzt(), user_id))
+    return bereinigt
 
 
 def schreiben(con, user_id: int, gueltig: dict[str, Any]) -> dict[str, Any]:

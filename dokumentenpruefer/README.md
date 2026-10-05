@@ -46,6 +46,14 @@ werden abgewiesen, auch zusammen mit gültigen Namen. Für
 Empfehlungen in anderen Sprachen kann jede Regel die Felder `empfehlung_en`, `empfehlung_uk`,
 `empfehlung_ru` (und `bereich_en` usw.) tragen. Ohne Übersetzung wird der deutsche Text genommen.
 
+Einzelne Prüfpunkte: `GET /api/regeln` liefert je Regelsatz alle Punkte (die Basisprüfung
+enthält zusätzlich den eingebauten Punkt `TXT-001` Satzlänge). Auf der Prüfseite lassen sich
+Punkte abwählen; die Auswahl wird je Konto gespeichert (`PUT /api/ich/pruefpunkte`) und bei der
+Prüfung als Feld `ausgelassen` (IDs, kommagetrennt) mitgeschickt, in der Kommandozeile mit
+`--ohne CHK-008,DIN-008`. Ausgelassene Punkte zählen nicht in den Score; Ergebnis und beide
+Berichte nennen „n von N geprüft“ und die ausgelassenen Punkte. Ein Regelsatz ohne aktiven Punkt
+und unbekannte IDs sind ein Fehler (400), bevor etwas geprüft wird.
+
 ## Konten und Rollen
 
 - Inhaber: das erste Konto (angelegt mit `app.verwaltung admin`). Nur der Inhaber löscht Konten;
@@ -159,7 +167,8 @@ Zugangsdaten gehören nicht ins Projekt. SMTP-Daten nur als Umgebungsvariable se
 
 Die Bestandstests prüfen Erstanmeldung, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
 Word-Prüfung, PDFs in vier Sprachen, ZIP, Ablage, Mail-Entwurf, CLI, Fortschritts-Zeilenstrom und
-Läufe mit mehreren Dateien (auch mit einer unlesbaren darunter, Höchstzahl, Lauf-ZIP und -Ablage).
+Läufe mit mehreren Dateien (auch mit einer unlesbaren darunter, Höchstzahl, Lauf-ZIP und -Ablage),
+Inhaber und Konto löschen, Auswahl einzelner Prüfpunkte bis in den Bericht.
 `tests/test_p0.py` ergänzt Gegenproben für ungültige Regeldateien (auch nach einer gültigen
 Ladung), ungültige Regelsatz-Auswahl, Sperrumgehung und den Vorprüfungssatz in beiden
 Berichtstypen und allen vier Sprachen.

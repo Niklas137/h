@@ -349,3 +349,15 @@ html { scroll-behavior: smooth; }
 .file-list li { display: flex; align-items: center; gap: 12px; padding: 8px 12px; font-size: calc(14px * var(--k)); border-top: 1px solid var(--bsub); }
 .file-list li:first-child { border-top: 0; }
 .file-list li .t { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+
+/* Einzelne Prüfpunkte je Regelsatz */
+.punkte { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--pad); }
+.punkte .satz { border: 1px solid var(--bsub); border-radius: 4px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.punkte .satz .kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.punkte .satz .kopf b { font-weight: 500; font-size: calc(13px * var(--k)); }
+.punkte .satz.aus { opacity: .55; }
+.punkt { display: flex; align-items: flex-start; gap: 8px; text-align: left; font-size: calc(13px * var(--k)); line-height: 1.35; padding: 3px 0; width: 100%; }
+.punkt .cb { width: 16px; height: 16px; margin-top: 1px; }
+.punkt .mono { color: var(--muted); font-size: calc(12px * var(--k)); }
+.punkt .t { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 1024px) { .punkte { grid-template-columns: 1fr; } }

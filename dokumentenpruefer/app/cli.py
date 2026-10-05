@@ -30,7 +30,7 @@ def _eine_datei(pfad: Path, sprachen: list[str], regelsaetze: list[str], args: a
         print(f"{pfad.name}: Kein Text gefunden. Bei PDF vermutlich ein Scan ohne Textebene.", file=sys.stderr)
         return 3, None
 
-    ergebnis = pruefung.pruefen(struktur, regelsaetze)
+    ergebnis = pruefung.pruefen(struktur, regelsaetze, [x.strip() for x in args.ohne.split(",") if x.strip()])
     ergebnis["pruefer"] = args.pruefer
     ergebnis["lesehinweise"] = lesehinweise
     erstellt = datetime.now().isoformat(timespec="seconds")
@@ -54,6 +54,7 @@ def _eine_datei(pfad: Path, sprachen: list[str], regelsaetze: list[str], args: a
         "klassen": ergebnis.get("klassen", {}),
         "stunden": ergebnis["stunden"],
         "regelsaetze": regelsaetze,
+        "ausgelassen": [a["id"] for a in ergebnis.get("ausgelassen", [])],
         "sprachen": sprachen,
         "fazit": ergebnis["fazit"],
         "lesehinweise": lesehinweise,
@@ -84,6 +85,14 @@ def _pruefen(args: argparse.Namespace) -> int:
     if not regelsaetze or any(r not in config.REGELSAETZE for r in regelsaetze):
         print(f"--regelsaetze: mindestens einer aus {', '.join(config.REGELSAETZE)}", file=sys.stderr)
         return 2
+    try:
+        pruefung.pruefen([], regelsaetze, [x.strip() for x in args.ohne.split(",") if x.strip()])
+    except pruefung.AuswahlFehler as e:
+        print(f"--ohne: {e}", file=sys.stderr)
+        return 2
+    except regeln.RegelFehler as e:
+        print(str(e), file=sys.stderr)
+        return 4
     pfade = [Path(d) for d in args.datei]
     schlechtester = 0
     ergebnisse: list[dict] = []
@@ -113,6 +122,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("datei", nargs="+", help="Word (.docx) oder PDF, auch mehrere")
     p.add_argument("--sprachen", default="de", help="Basissprache[,Zusatzsprache], z. B. de,en")
     p.add_argument("--regelsaetze", default="basis,din,ce")
+    p.add_argument("--ohne", default="", help="Prüfpunkte auslassen, z. B. CHK-008,DIN-008")
     p.add_argument("--ausgabe", default=str(config.OUTPUT), help="Zielordner für die PDFs")
     p.add_argument("--pruefer", default=config.BERICHT_KOPF, help="Name im Feld „Geprüft von“")
     p.add_argument("--json", action="store_true", help="Zusammenfassung als JSON")

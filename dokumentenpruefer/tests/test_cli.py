@@ -58,3 +58,14 @@ def test_cli_mehrere_dateien(tmp_path, capsys):
     assert rc == 0
     out = capsys.readouterr().out
     assert "2 von 2 Dokumenten geprüft." in out and out.count("Fazit:") == 2
+
+
+def test_cli_ohne_pruefpunkte(tmp_path, capsys):
+    datei = tmp_path / "Ohne.docx"
+    _docx(datei)
+    rc = cli.main(["pruefen", str(datei), "--regelsaetze", "din", "--ohne", "DIN-008,DIN-004", "--ausgabe", str(tmp_path / "o"), "--json"])
+    assert rc == 0
+    d = json.loads(capsys.readouterr().out)
+    assert d["ausgelassen"] == ["DIN-004", "DIN-008"]
+    assert cli.main(["pruefen", str(datei), "--regelsaetze", "din", "--ohne", "CHK-001"]) == 2
+    assert "--ohne" in capsys.readouterr().err
