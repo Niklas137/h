@@ -98,7 +98,7 @@ def test_nicht_gewaehlte_regeln_duerfen_fehlen(tmp_path, monkeypatch, katalog):
 def test_stichwortliste_ist_keine_freigabe(katalog):
     # Alle Suchwörter kommen vor, der Score ist 100. Die Ampel folgt dem Score (Grün),
     # die fachliche Freigabe bleibt trotzdem offen und wird als Daten mitgegeben.
-    woerter = [r["keywords"][0] + " fehlt." for rs in katalog.values() for r in rs]
+    woerter = [r["keywords"][0] + ": Angaben sind im Dokument enthalten." for rs in katalog.values() for r in rs]
     erg = pruefung.pruefen(struktur(*woerter))
     assert erg["score"] == 100 and erg["ampel"] == "gruen"
     assert erg["freigabe"] is False
@@ -109,7 +109,7 @@ def test_stichwortliste_ist_keine_freigabe(katalog):
 
 def test_kritischer_befund_steht_im_fazit(katalog):
     # Ampel nach Score wie in app.py; der kritische Fund wird im Fazit genannt.
-    woerter = [r["keywords"][0] for rs in katalog.values() for r in rs if r["id"] != "CE-001"]
+    woerter = [r["keywords"][0] + ": Angaben sind im Dokument enthalten." for rs in katalog.values() for r in rs if r["id"] != "CE-001"]
     erg = pruefung.pruefen(struktur(*woerter))
     assert erg["score"] == 95
     assert erg["klassen"]["Kritisch"] == 1

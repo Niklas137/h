@@ -34,6 +34,11 @@ d.add_paragraph(' '.join([kurz]*3))
 d.save(root/'Testanleitung.docx')
 lang=' '.join(['Pruefwort']*26)+'.'
 d=Document(); d.add_heading('Satzlaenge',1); d.add_paragraph(lang+' '+lang); d.save(root/'Langsaetze.docx')
+d=Document(); d.add_heading('Sicherheitshinweise',1); d.add_paragraph('Noch zu ergänzen.')
+d.save(root/'LeeresKapitel.docx')
+d=Document(); d.add_paragraph('Sicherheitshinweise fehlen vollständig.'); d.save(root/'FehlenderInhalt.docx')
+c=canvas.Canvas(str(root/'Zeilenumbruch.pdf')); c.setFont('Helvetica',11)
+c.drawString(72,750,' '.join(['Wort']*13)); c.drawString(72,736,' '.join(['Wort']*14)+'.'); c.save()
 (root/'kaputt.docx').write_bytes(b'kein Word')
 c=canvas.Canvas(str(root/'gemischt.pdf')); c.drawString(72,750,'Installation und Wartung'); c.showPage(); c.rect(72,72,100,100); c.showPage(); c.save()
 print(json.dumps({'otp':otp}))
@@ -121,6 +126,16 @@ async function checkFile(file) {
   assert.equal(langFunde[0].Anzahl, 2, 'Zwei lange Saetze im Absatz muessen als zwei gezaehlt werden');
   checks.push('Satzlaenge: drei kurze Saetze ohne Fehlalarm und zwei lange Saetze richtig gezaehlt');
 
+  for (const datei of ['LeeresKapitel.docx', 'FehlenderInhalt.docx', 'Zeilenumbruch.pdf']) {
+    await checkFile(datei);
+    const liste = await (await context.request.get(url + '/api/pruefungen')).json();
+    const id = liste.pruefungen.find(p => p.dateiname === datei).id;
+    const ergebnis = await (await context.request.get(url + '/api/pruefung/' + id)).json();
+    const erwartet = datei.endsWith('.pdf') ? 'TXT-001' : 'CHK-002';
+    assert.ok(ergebnis.funde.some(f => f.ID === erwartet), datei + ': Befund fehlt');
+  }
+  checks.push('Leere Kapitel, fehlende Inhalte und PDF-Satz ueber zwei Zeilen');
+
   await page.locator('#b-help').click(); await visible('#drawer');
   await page.locator('#drawer-close').click();
   await response('/api/ich/einstellungen', () => page.locator('#b-theme').click());
@@ -172,6 +187,16 @@ async function checkFile(file) {
   await page.locator('#file').setInputFiles(path.join(root, 'Testanleitung.docx'));
   await page.locator('#start-check').click(); await visible('#lauf');
   assert.equal(await page.locator('#start-check').isEnabled(), false);
+  for (const datei of ['LeeresKapitel.docx', 'FehlenderInhalt.docx', 'Zeilenumbruch.pdf']) {
+    await checkFile(datei);
+    const liste = await (await context.request.get(url + '/api/pruefungen')).json();
+    const id = liste.pruefungen.find(p => p.dateiname === datei).id;
+    const ergebnis = await (await context.request.get(url + '/api/pruefung/' + id)).json();
+    const erwartet = datei.endsWith('.pdf') ? 'TXT-001' : 'CHK-002';
+    assert.ok(ergebnis.funde.some(f => f.ID === erwartet), datei + ': Befund fehlt');
+  }
+  checks.push('Leere Kapitel, fehlende Inhalte und PDF-Satz ueber zwei Zeilen');
+
   await page.locator('#b-help').click(); await visible('#drawer'); await page.locator('#drawer-close').click();
   await page.locator('#b-settings').click();
   await page.locator('[data-sec=profil]').click();

@@ -309,3 +309,28 @@ Finder-Doppelklick bleiben Bestandteil der Mac-Abnahme.
 - SMTP für den Code einrichten oder `DP_VERIFIZIERUNG=aus` setzen.
 - Oberfläche in Englisch, Ukrainisch und Russisch (Phase 2).
 - Passwortanfrage per E-Mail, besonderer Admin-Passwortworkflow und Zwei-Faktor-Anmeldung (Phase 2).
+
+## Inhaltsnachweise und PDF-Satzgrenzen (5. Oktober 2026)
+
+Die Suchprüfung wertet Abschnitte statt eines zusammengeklebten Volltexts aus. Leere
+Word-Überschriften, erkannte PDF-Überschriften und Inhaltsverzeichniszeilen zählen allein
+nicht als Inhalt. Eine Überschrift kann einen gefüllten Folgeabsatz einordnen. Word-Tabellen
+werden für Suchnachweise nur innerhalb derselben Zeile verbunden; Satzlängen bleiben je Absatz.
+Häufige Aussagen wie „Sicherheitshinweise fehlen“ und Platzhalter werden ausgeschlossen.
+Verbote wie „Vorsicht: Nicht berühren“ bleiben Suchtreffer.
+
+PDF-Zeilen werden anhand von Position, Abstand und Schriftgröße zusammengeführt. Spalten,
+Listenanfänge, Formatwechsel und Seitenwechsel begrenzen das Zusammenführen. Auch eng
+positionierte Wörter ohne gespeicherte Leerzeichen sind getestet. Bei einem Layout-Lesefehler
+bleibt der bisherige zeilenweise Textleser als Rückfall erhalten.
+
+Grenzen: Das ist weiterhin eine deutschsprachige Schlüsselwort-Heuristik, keine semantische
+oder normative Freigabe. Ungewöhnliche Verneinungen, komplexe Tabellen, Trennstriche,
+Seitenwechsel mitten im Satz und mehrdeutige Abkürzungen brauchen eine Sichtprüfung.
+Ein passendes Kapitel mit beliebigem Fließtext beweist noch keine fachliche Vollständigkeit.
+Score-Gewichte, Ampelschwellen und Freigabestatus sind unverändert.
+
+`tests/test_nachweise.py` enthält 35 gezielte Gegenproben. Der Browserlauf ergänzt leere
+Kapitel, fehlende Inhalte und einen über PDF-Zeilen verteilten langen Satz. Zwei ältere
+Score-Tests verwenden jetzt affirmative Testtexte; sie hatten zuvor absichtlich auch
+fehlende Inhalte als Treffer erwartet. Kundendokumente sind keine Repository-Testdaten.

@@ -36,6 +36,10 @@ def _saetze(text: str) -> list[str]:
     muster = r"\b(?:abs|abb|art|bzw|ca|dr|prof|nr|kap|pos|tab|vgl)\.(?=\s|$)"
     for treffer in re.finditer(muster, text, flags=re.IGNORECASE):
         geschuetzt.add(treffer.end() - 1)
+    for treffer in re.finditer(r"\b(?:usw|etc)\.(?=\s+[a-zäöüß])", text, re.IGNORECASE):
+        anschluss = text[treffer.end():].lstrip()
+        if anschluss and anschluss[0].islower():
+            geschuetzt.add(treffer.end() - 1)
     # Beispielsweise „am 3. Oktober“ oder „im 2. Schritt“.
     ordinal = (
         r"\b\d+\.(?=\s+(?:[a-zäöüß]|(?:Januar|Februar|März|April|Mai|Juni|Juli|"
@@ -93,8 +97,53 @@ def deduplicate_findings(findings: list[Fund]) -> list[Fund]:
     return deduped
 
 
-def _volltext(structured_text: list[dict[str, str]]) -> str:
-    return " ".join(item["text"] for item in structured_text).lower()
+def _inhalt(text: str) -> bool:
+    """Leere Kapitel und Arbeitsvermerke sind keine Inhaltsnachweise."""
+    t = text.strip().lower().strip(" .:;!–-")
+    return bool(t) and not re.fullmatch(
+        r"(?:todo|tbd|folgt|wird ergänzt|noch zu ergänzen|nicht vorhanden)", t)
+
+
+def _positiver_treffer(text: str, keywords: list[str]) -> bool:
+    for satz in _saetze(text.lower()):
+        for teil in re.split(r"[,;]|\b(?:aber|jedoch)\b", satz):
+            for keyword in keywords:
+                for hit in re.finditer(r"\b" + re.escape(keyword.lower()) + r"\b", teil):
+                    davor, danach = teil[:hit.start()], teil[hit.end():]
+                    if re.search(r"\b(?:keine?[nmr]?|ohne)\s+(?:die\s+)?$", davor):
+                        continue
+                    if re.search(r"\bfehl(?:t|en)\s+(?:(?:die|der|das|ein|eine)\s+)?$", davor):
+                        continue
+                    if re.match(r"[\s:–-]*(?:(?:ist|sind|wurde|wurden)\s+)?"
+                                r"(?:fehl(?:t|en)\b|nicht\s+(?:vorhanden|enthalten|beschrieben|dokumentiert)\b|"
+                                r"(?:noch\s+)?zu ergänzen\b|folgt\b|wird ergänzt\b)", danach):
+                        continue
+                    # Ein einzelnes Stichwort, auch mit Kapitelnummer, ist nur eine Beschriftung.
+                    rest = (davor + danach).strip(" .:;–-")
+                    if not rest or re.fullmatch(r"[\d.\s]+", rest):
+                        continue
+                    return True
+    return False
+
+
+def _nachweis(structured: list[dict[str, str]], keywords: list[str]) -> bool:
+    zeilen: dict[str, list[str]] = {}
+    for item in structured:
+        if item.get("typ") in {"ueberschrift", "verzeichnis"}:
+            continue
+        text = item["text"]
+        if not _inhalt(text):
+            continue
+        if item.get("gruppe"):
+            zeilen.setdefault(item["gruppe"], []).append(text)
+        if _positiver_treffer(text, keywords):
+            return True
+        kontext = item.get("kontext", "")
+        if kontext and keyword_found(kontext.lower(), keywords):
+            # Die Kapitelüberschrift darf nur einen tatsächlich gefüllten Absatz stützen.
+            if not re.search(r"\b(?:fehlt|fehlen|nicht vorhanden|zu ergänzen)\b", text.lower()):
+                return True
+    return any(_positiver_treffer(" ".join(teile), keywords) for teile in zeilen.values())
 
 
 def _regel_felder(rule: dict[str, Any]) -> dict[str, Any]:
@@ -108,10 +157,9 @@ def _regel_felder(rule: dict[str, Any]) -> dict[str, Any]:
 
 def check_document(structured_text: list[dict[str, str]], checklist: list[dict[str, Any]]) -> list[Fund]:
     findings: list[Fund] = []
-    full_text = _volltext(structured_text)
 
     for rule in checklist:
-        if not keyword_found(full_text, rule.get("keywords", [])):
+        if not _nachweis(structured_text, rule.get("keywords", [])):
             findings.append(
                 {
                     "ID": rule.get("id"),
@@ -150,9 +198,8 @@ def check_document(structured_text: list[dict[str, str]], checklist: list[dict[s
 
 def check_normlogik_82079(structured_text: list[dict[str, str]], rules: list[dict[str, Any]]) -> list[Fund]:
     findings: list[Fund] = []
-    full_text = _volltext(structured_text)
     for rule in rules:
-        if not keyword_found(full_text, rule.get("keywords", [])):
+        if not _nachweis(structured_text, rule.get("keywords", [])):
             findings.append(
                 {
                     "ID": rule.get("id"),
@@ -173,9 +220,8 @@ def check_normlogik_82079(structured_text: list[dict[str, str]], rules: list[dic
 
 def check_ce_logik(structured_text: list[dict[str, str]], rules: list[dict[str, Any]]) -> list[Fund]:
     findings: list[Fund] = []
-    full_text = _volltext(structured_text)
     for rule in rules:
-        if not keyword_found(full_text, rule.get("keywords", [])):
+        if not _nachweis(structured_text, rule.get("keywords", [])):
             findings.append(
                 {
                     "ID": rule.get("id"),
@@ -256,10 +302,9 @@ def pruefen(structured_text: list[dict[str, str]], regelsaetze: list[str] | None
     regel_ids = [r["id"] for rs in kataloge.values() for r in rs]
     if len(set(regel_ids)) != len(regel_ids):
         raise regelmodul.RegelFehler("Regelsatz-Auswahl enthält doppelte Regel-IDs. Prüfung abgebrochen.")
-    volltext = _volltext(structured_text)
     regelpruefungen = [
         {"id": r["id"], "regelsatz": k, "fachlich": "offen",
-         "suchstatus": "treffer" if keyword_found(volltext, r["keywords"]) else "nicht_gefunden"}
+         "suchstatus": "treffer" if _nachweis(structured_text, r["keywords"]) else "nicht_gefunden"}
         for k, rs in kataloge.items() for r in rs
     ]
     findings: list[Fund] = []
