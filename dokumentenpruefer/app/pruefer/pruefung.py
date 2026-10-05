@@ -61,13 +61,17 @@ def _regel_felder(rule: dict[str, Any]) -> dict[str, Any]:
 
 # Eingebauter Prüfpunkt der Basisprüfung: Satzlänge. Steht nicht in der Regeldatei, ist aber abwählbar.
 SATZ_PUNKT = {"id": "TXT-001", "bereich": "Lesbarkeit", "fehlerklasse": "Mittel", "gewichtung": 2,
-              "empfehlung": "Sätze mit mehr als 25 Wörtern vermeiden", "eingebaut": True}
+              "empfehlung": "Sätze mit mehr als 25 Wörtern vermeiden", "eingebaut": True,
+              "bereich_en": "Readability", "bereich_uk": "Читабельність", "bereich_ru": "Читаемость",
+              "empfehlung_en": "Avoid sentences with more than 25 words",
+              "empfehlung_uk": "Уникайте речень довших за 25 слів",
+              "empfehlung_ru": "Избегайте предложений длиннее 25 слов"}
 
 
 def punkte(regelsatz: str) -> list[dict[str, Any]]:
     """Die wählbaren Prüfpunkte eines Regelsatzes (nur die Felder, die die Oberfläche braucht)."""
     liste = [
-        {k: r.get(k) for k in ("id", "bereich", "fehlerklasse", "gewichtung", "empfehlung", "pflicht") if k in r}
+        {k: v for k, v in r.items() if k in ("id", "bereich", "fehlerklasse", "gewichtung", "empfehlung", "pflicht") or k.startswith(("bereich_", "empfehlung_"))}
         for r in regelmodul.laden(regelsatz)
     ]
     if regelsatz == "basis":
@@ -218,6 +222,11 @@ def generate_todo_list(findings: list[Fund]) -> list[dict[str, Any]]:
 class AuswahlFehler(ValueError):
     """Die Auswahl der Prüfpunkte passt nicht zu den gewählten Regelsätzen."""
 
+    def __init__(self, meldung: str, schluessel: str, **werte: object) -> None:
+        super().__init__(meldung)
+        self.schluessel = schluessel
+        self.werte = werte
+
 
 def pruefen(structured_text: list[dict[str, str]], regelsaetze: list[str] | None = None, ausgelassen: list[str] | None = None) -> dict[str, Any]:
     """Führt die gewählten Regelsätze aus und liefert das vollständige Ergebnis.
@@ -239,10 +248,10 @@ def pruefen(structured_text: list[dict[str, str]], regelsaetze: list[str] | None
     bekannt = {p["id"] for ps in alle_punkte.values() for p in ps}
     unbekannt = sorted(ohne - bekannt)
     if unbekannt:
-        raise AuswahlFehler(f"Unbekannter Prüfpunkt für die gewählten Regelsätze: {', '.join(unbekannt)}.")
+        raise AuswahlFehler(f"Unbekannter Prüfpunkt für die gewählten Regelsätze: {', '.join(unbekannt)}.", "punkt_unbekannt_satz", ids=", ".join(unbekannt))
     for k, ps in alle_punkte.items():
         if all(p["id"] in ohne for p in ps):
-            raise AuswahlFehler(f"Regelsatz {k} hat keinen aktiven Prüfpunkt. Regelsatz abwählen oder Punkte einschalten.")
+            raise AuswahlFehler(f"Regelsatz {k} hat keinen aktiven Prüfpunkt. Regelsatz abwählen oder Punkte einschalten.", "satz_leer", satz=k)
     kataloge = {k: [r for r in rs if r["id"] not in ohne] for k, rs in kataloge.items()}
     ausgelassen_liste = [
         {"id": p["id"], "regelsatz": k, "bereich": p.get("bereich", ""), **_regel_felder(p)}

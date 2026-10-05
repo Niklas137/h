@@ -32,7 +32,7 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 - Benachrichtigung: Pop-up „Prüfbericht fertig … Der Bericht liegt bereit.", keine Bestätigungs-E-Mails.
 - Kontakttext in der Hilfe: Fassung A mit „Antwort innerhalb von 24 Stunden"; derselbe Text als Autoantwort des
   Support-Postfachs mit „Danke, deine Anfrage ist angekommen." davor. Für Kundenvorlagen die Sie-Fassung.
-- Oberfläche vorerst deutsch; Berichte in de, en, uk, ru. Oberfläche in den anderen Sprachen ist Phase 2.
+- Oberfläche und Berichte in de, en, uk, ru (seit 5. Oktober). Texte der Oberfläche in `app/static/i18n.js`, API-Meldungen in `app/meldungen.py`, Sprachkopf `X-Sprache`. Zitate aus dem Dokument bleiben in dessen Sprache; uk und ru von Niklas gegenlesen lassen.
 - In Kundenkommunikation den Wohnsitz in der Ukraine nicht erwähnen.
 
 ## Phasen laut Plan

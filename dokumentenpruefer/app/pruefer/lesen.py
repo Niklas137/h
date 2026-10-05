@@ -28,7 +28,15 @@ except Exception:  # pragma: no cover
 
 
 class LeseFehler(Exception):
-    """Die Datei konnte nicht gelesen werden oder enthält keinen Text."""
+    """Die Datei konnte nicht gelesen werden oder enthält keinen Text.
+
+    schluessel benennt die Meldung sprachneutral (siehe app/meldungen.py), die Oberfläche
+    bekommt sie in ihrer Sprache; der Text hier bleibt Deutsch für Protokoll und Kommandozeile.
+    """
+
+    def __init__(self, meldung: str, schluessel: str | None = None) -> None:
+        super().__init__(meldung)
+        self.schluessel = schluessel
 
 
 Struktur = list[dict[str, str]]
@@ -46,7 +54,7 @@ def docx_lesen(daten: bytes | IO[bytes]) -> Struktur:
     try:
         doc = Document(_bytesio(daten))
     except Exception as e:
-        raise LeseFehler("Die Word-Datei lässt sich nicht öffnen. Vermutlich beschädigt oder kein echtes .docx.") from e
+        raise LeseFehler("Die Word-Datei lässt sich nicht öffnen. Vermutlich beschädigt oder kein echtes .docx.", "lesen_docx_oeffnen") from e
     structured: Struktur = []
     current_heading = "Unbekannt"
 
@@ -80,9 +88,9 @@ def docx_lesen(daten: bytes | IO[bytes]) -> Struktur:
             elif tag == "tbl":
                 tabelle_lesen(Table(child, doc), current_heading)
     except Exception as e:
-        raise LeseFehler("Der Inhalt der Word-Datei lässt sich nicht lesen. Vermutlich beschädigt.") from e
+        raise LeseFehler("Der Inhalt der Word-Datei lässt sich nicht lesen. Vermutlich beschädigt.", "lesen_docx_inhalt") from e
     if not structured:
-        raise LeseFehler("Keine Textinhalte erkannt.")
+        raise LeseFehler("Keine Textinhalte erkannt.", "lesen_kein_text")
     return structured
 
 
@@ -111,7 +119,7 @@ def pdf_lesen_mit_hinweisen(daten: bytes | IO[bytes]) -> tuple[Struktur, list[Hi
         try:
             seiten = _seitentexte_pdfplumber(f)
         except Exception as e:
-            raise LeseFehler("Die PDF-Datei lässt sich nicht öffnen. Vermutlich beschädigt oder verschlüsselt.") from e
+            raise LeseFehler("Die PDF-Datei lässt sich nicht öffnen. Vermutlich beschädigt oder verschlüsselt.", "lesen_pdf_oeffnen") from e
     elif HAS_PDFPLUMBER and any(not s.strip() for s in seiten):
         # Gemischte PDFs: leere Seiten noch einmal mit dem zweiten Leser versuchen.
         try:
@@ -120,7 +128,7 @@ def pdf_lesen_mit_hinweisen(daten: bytes | IO[bytes]) -> tuple[Struktur, list[Hi
         except Exception:
             pass
     if not seiten and fehler is not None:
-        raise LeseFehler("Die PDF-Datei lässt sich nicht öffnen. Vermutlich beschädigt oder verschlüsselt.") from fehler
+        raise LeseFehler("Die PDF-Datei lässt sich nicht öffnen. Vermutlich beschädigt oder verschlüsselt.", "lesen_pdf_oeffnen") from fehler
     structured: Struktur = []
     leer: list[int] = []
     for i, text in enumerate(seiten, start=1):
@@ -130,7 +138,7 @@ def pdf_lesen_mit_hinweisen(daten: bytes | IO[bytes]) -> tuple[Struktur, list[Hi
             continue
         structured.extend({"text": z, "heading": f"Seite {i}"} for z in zeilen)
     if not structured:
-        raise LeseFehler("Keine Textinhalte erkannt. Vermutlich ein Scan ohne Textebene.")
+        raise LeseFehler("Keine Textinhalte erkannt. Vermutlich ein Scan ohne Textebene.", "lesen_kein_text_scan")
     hinweise: list[Hinweis] = []
     if leer:
         hinweise.append({"art": "scan_seiten", "seiten": leer, "gesamt": len(seiten)})
@@ -148,7 +156,7 @@ def lesen_mit_hinweisen(dateiname: str, daten: bytes | IO[bytes]) -> tuple[Struk
         return pdf_lesen_mit_hinweisen(daten)
     if name.endswith(".docx"):
         return docx_lesen(daten), []
-    raise LeseFehler("Nur Word (.docx) und PDF (.pdf) werden geprüft.")
+    raise LeseFehler("Nur Word (.docx) und PDF (.pdf) werden geprüft.", "lesen_dateityp")
 
 
 def lesen(dateiname: str, daten: bytes | IO[bytes]) -> Struktur:

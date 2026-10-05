@@ -19,7 +19,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Streamin
 from fastapi.staticfiles import StaticFiles
 from starlette.concurrency import run_in_threadpool
 
-from . import auth, config, db, einstellungen, mail
+from . import auth, config, db, einstellungen, mail, meldungen
 from .pruefer import berichte, lesen, pruefung, regeln, texte
 
 log = logging.getLogger("dokumentenpruefer")
@@ -44,6 +44,19 @@ def start() -> None:
 
 
 # ---------------------------------------------------------------- Hilfen
+
+
+def _sprache(request: Request) -> str:
+    """Sprache der Oberfläche aus dem Kopf X-Sprache; ohne Kopf Deutsch."""
+    return meldungen.sprache_aus(request.headers.get("x-sprache"))
+
+
+def _m(request: Request, schluessel: str, **werte: Any) -> str:
+    return meldungen.t(_sprache(request), schluessel, **werte)
+
+
+def _lesefehler_text(sprache: str, e: lesen.LeseFehler) -> str:
+    return meldungen.t(sprache, e.schluessel) if e.schluessel else str(e)
 
 
 def _fehler(status: int, meldung: str, **extra: Any) -> JSONResponse:
@@ -71,13 +84,13 @@ def aktueller_benutzer(request: Request) -> dict[str, Any]:
     with db.transaktion() as con:
         user = auth.sitzung_pruefen(con, token)
     if user is None:
-        raise HTTPException(status_code=401, detail="Bitte zuerst anmelden.")
+        raise HTTPException(status_code=401, detail="anmelden_fehlt")
     return user
 
 
 def admin_benutzer(user: dict[str, Any] = Depends(aktueller_benutzer)) -> dict[str, Any]:
     if user["rolle"] != "admin":
-        raise HTTPException(status_code=403, detail="Nur für Admins")
+        raise HTTPException(status_code=403, detail="nur_admin")
     return user
 
 
@@ -105,7 +118,9 @@ def _geraet(request: Request) -> str:
 
 @app.exception_handler(HTTPException)
 async def http_fehler(request: Request, exc: HTTPException):
-    return JSONResponse({"fehler": exc.detail}, status_code=exc.status_code)
+    # Ein bekannter Schlüssel wird in der Sprache der Oberfläche ausgegeben, sonst der Text selbst.
+    text = exc.detail if not isinstance(exc.detail, str) or exc.detail not in meldungen.TEXTE["de"] else _m(request, exc.detail)
+    return JSONResponse({"fehler": text}, status_code=exc.status_code)
 
 
 # ---------------------------------------------------------------- Seite
@@ -142,14 +157,14 @@ async def anmelden(request: Request, antwort: Response):
     with db.transaktion() as con:
         user = auth.benutzer_per_email(con, email)
         if user is None or not passwort:
-            return _fehler(401, "E-Mail-Adresse oder Passwort stimmt nicht.")
+            return _fehler(401, _m(request, "login_falsch"))
         if auth.gesperrt(user):
-            return _fehler(423, f"Zu viele Fehlversuche. Bitte in {config.SPERRE_MINUTEN} Minuten erneut versuchen.")
+            return _fehler(423, _m(request, "gesperrt", min=config.SPERRE_MINUTEN))
         if user["status"] == "einmal":
-            return _fehler(409, "Dieses Konto ist noch nicht eingerichtet. Bitte die Erstanmeldung mit dem Einmal-Passwort nutzen.", erstanmeldung=True)
+            return _fehler(409, _m(request, "erst_noetig"), erstanmeldung=True)
         if user["status"] != "aktiv" or not auth.passwort_stimmt(user["passwort_hash"], passwort):
             auth.fehlversuch(con, user)
-            return _fehler(401, "E-Mail-Adresse oder Passwort stimmt nicht.")
+            return _fehler(401, _m(request, "login_falsch"))
         auth.erfolg(con, user["id"])
         token = auth.sitzung_anlegen(con, user["id"], _geraet(request))
         einst = einstellungen.lesen(con, user["id"])
@@ -179,7 +194,7 @@ async def ich_aendern(request: Request, user: dict[str, Any] = Depends(aktueller
     daten = await _json(request)
     name = str(daten.get("name", "")).strip()
     if len(name) < 2 or len(name) > 80:
-        return _fehler(400, "Der Name braucht 2 bis 80 Zeichen.")
+        return _fehler(400, _m(request, "name_laenge"))
     with db.transaktion() as con:
         con.execute("UPDATE users SET name = ? WHERE id = ?", (name, user["id"]))
         neu = auth.benutzer_per_id(con, user["id"])
@@ -197,11 +212,11 @@ async def erst_start(request: Request):
     with db.transaktion() as con:
         user = auth.benutzer_per_email(con, email)
         if user is not None and auth.gesperrt(user):
-            return _fehler(423, f"Zu viele Fehlversuche. Bitte in {config.SPERRE_MINUTEN} Minuten erneut versuchen, oder der Admin vergibt ein neues Einmal-Passwort.")
+            return _fehler(423, _m(request, "gesperrt_einmal", min=config.SPERRE_MINUTEN))
         if user is None or not auth.einmal_passwort_stimmt(user, einmal):
             if user is not None:
                 auth.fehlversuch(con, user)
-            return _fehler(401, "E-Mail-Adresse oder Einmal-Passwort stimmt nicht, oder das Einmal-Passwort ist abgelaufen.")
+            return _fehler(401, _m(request, "einmal_falsch"))
         if config.VERIFIZIERUNG == "code":
             code = auth.code_setzen(con, user["id"])
             gesendet = mail.code_senden(user["email"], code, user["name"])
@@ -220,7 +235,7 @@ async def erst_code(request: Request):
     with db.transaktion() as con:
         user = auth.benutzer_per_email(con, email)
         if user is None or not auth.code_stimmt(con, user, code):
-            return _fehler(401, "Der Code stimmt nicht oder ist abgelaufen.")
+            return _fehler(401, _m(request, "code_falsch"))
     return {"ok": True}
 
 
@@ -234,20 +249,20 @@ async def erst_abschluss(request: Request):
     passwort = str(daten.get("passwort", ""))
     passwort2 = str(daten.get("passwort2", ""))
     if len(name) < 2:
-        return _fehler(400, "Bitte einen Namen eingeben.", feld="name")
+        return _fehler(400, _m(request, "name_fehlt"), feld="name")
     verletzt = auth.passwort_regel(passwort)
     if verletzt:
-        return _fehler(400, "Das Passwort erfüllt die Regel nicht.", regel=verletzt)
+        return _fehler(400, _m(request, "pwd_regel"), regel=verletzt)
     if passwort != passwort2:
-        return _fehler(400, "Die beiden Passwörter stimmen nicht überein.", regel=["wiederholung"])
+        return _fehler(400, _m(request, "pwd_ungleich"), regel=["wiederholung"])
     with db.transaktion() as con:
         user = auth.benutzer_per_email(con, email)
         if user is not None and auth.gesperrt(user):
-            return _fehler(423, f"Zu viele Fehlversuche. Bitte in {config.SPERRE_MINUTEN} Minuten erneut versuchen, oder der Admin vergibt ein neues Einmal-Passwort.")
+            return _fehler(423, _m(request, "gesperrt_einmal", min=config.SPERRE_MINUTEN))
         if user is None or not auth.einmal_passwort_stimmt(user, einmal):
-            return _fehler(401, "E-Mail-Adresse oder Einmal-Passwort stimmt nicht, oder das Einmal-Passwort ist abgelaufen.")
+            return _fehler(401, _m(request, "einmal_falsch"))
         if config.VERIFIZIERUNG == "code" and not auth.code_stimmt(con, user, code):
-            return _fehler(401, "Der Code stimmt nicht oder ist abgelaufen.")
+            return _fehler(401, _m(request, "code_falsch"))
         auth.konto_abschliessen(con, user["id"], name, passwort)
         einstellungen.anlegen(con, user["id"])
         token = auth.sitzung_anlegen(con, user["id"], _geraet(request))
@@ -266,22 +281,28 @@ async def einstellungen_aendern(request: Request, user: dict[str, Any] = Depends
     daten = await _json(request)
     gueltig, fehler = einstellungen.pruefen(daten)
     if fehler:
-        return _fehler(400, "Diese Einstellung gibt es nicht oder der Wert ist nicht erlaubt.", felder=fehler)
+        return _fehler(400, _m(request, "einstellung_ungueltig"), felder=fehler)
     with db.transaktion() as con:
         einst = einstellungen.schreiben(con, user["id"], gueltig)
     return {"einstellungen": einst}
 
 
 @app.get("/api/regeln")
-def regeln_liste(user: dict[str, Any] = Depends(aktueller_benutzer)):
+def regeln_liste(request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
     """Alle wählbaren Prüfpunkte je Regelsatz, dazu die vom Konto ausgelassenen."""
     saetze: dict[str, Any] = {}
+    sprache = _sprache(request)
     namen = {"basis": "Basisprüfung", "din": "DIN 82079-1", "ce": "CE / EU-Konformität"}
     for k in config.REGELSAETZE:
+        name_anzeige = texte.normlogik(sprache, namen[k])
         try:
-            saetze[k] = {"name": namen[k], "vorhanden": True, "punkte": pruefung.punkte(k)}
+            punkte = [
+                dict(p, bereichAnzeige=texte.bereich(sprache, {"Bereich": p["bereich"], **p}), empfehlungAnzeige=texte.empfehlung(sprache, {"Empfehlung": p["empfehlung"], **p}), klasseAnzeige=texte.klasse(sprache, p["fehlerklasse"]))
+                for p in pruefung.punkte(k)
+            ]
+            saetze[k] = {"name": namen[k], "nameAnzeige": name_anzeige, "vorhanden": True, "punkte": punkte}
         except regeln.RegelFehler as e:
-            saetze[k] = {"name": namen[k], "vorhanden": False, "punkte": [], "fehler": str(e)}
+            saetze[k] = {"name": namen[k], "nameAnzeige": name_anzeige, "vorhanden": False, "punkte": [], "fehler": str(e)}
     with db.transaktion() as con:
         ausgelassen = einstellungen.pruefpunkte_lesen(con, user["id"])
     return {"regelsaetze": saetze, "ausgelassen": ausgelassen}
@@ -293,11 +314,11 @@ async def pruefpunkte_setzen(request: Request, user: dict[str, Any] = Depends(ak
     daten = await _json(request)
     ids = daten.get("ausgelassen")
     if not isinstance(ids, list) or any(not isinstance(x, str) for x in ids):
-        return _fehler(400, "Bitte eine Liste von Prüfpunkt-IDs senden.")
+        return _fehler(400, _m(request, "punkte_liste"))
     bekannt = {p["id"] for k in config.REGELSAETZE if regeln.vorhanden().get(k) for p in pruefung.punkte(k)}
     unbekannt = sorted(set(ids) - bekannt)
     if unbekannt:
-        return _fehler(400, f"Unbekannter Prüfpunkt: {', '.join(unbekannt)}.")
+        return _fehler(400, _m(request, "punkt_unbekannt", ids=", ".join(unbekannt)))
     with db.transaktion() as con:
         gespeichert = einstellungen.pruefpunkte_schreiben(con, user["id"], ids)
     return {"ausgelassen": gespeichert}
@@ -310,12 +331,12 @@ async def passwort_aendern(request: Request, user: dict[str, Any] = Depends(aktu
     neu = str(daten.get("neu", ""))
     neu2 = str(daten.get("neu2", ""))
     if not auth.passwort_stimmt(user["passwort_hash"], alt):
-        return _fehler(401, "Das bisherige Passwort stimmt nicht.")
+        return _fehler(401, _m(request, "pwd_alt_falsch"))
     verletzt = auth.passwort_regel(neu)
     if verletzt:
-        return _fehler(400, "Das neue Passwort erfüllt die Regel nicht.", regel=verletzt)
+        return _fehler(400, _m(request, "pwd_neu_regel"), regel=verletzt)
     if neu != neu2:
-        return _fehler(400, "Die beiden Passwörter stimmen nicht überein.", regel=["wiederholung"])
+        return _fehler(400, _m(request, "pwd_ungleich"), regel=["wiederholung"])
     with db.transaktion() as con:
         auth.passwort_setzen(con, user["id"], neu)
         auth.alle_sitzungen_beenden(con, user["id"], ausser_hash=user.get("sitzung_hash"))
@@ -346,10 +367,10 @@ def benutzer_liste(user: dict[str, Any] = Depends(admin_benutzer)):
     return {"benutzer": [dict(auth.oeffentlich(r), pruefungen=r["pruefungen"]) for r in rows]}
 
 
-def _inhaber_geschuetzt(ziel: dict[str, Any], user: dict[str, Any]) -> JSONResponse | None:
+def _inhaber_geschuetzt(request: Request, ziel: dict[str, Any], user: dict[str, Any]) -> JSONResponse | None:
     """Das Inhaber-Konto darf nur der Inhaber selbst anfassen."""
     if ziel.get("inhaber") and ziel["id"] != user["id"]:
-        return _fehler(403, "Das Inhaber-Konto kann nur der Inhaber selbst ändern.")
+        return _fehler(403, _m(request, "inhaber_schutz"))
     return None
 
 
@@ -360,25 +381,25 @@ async def benutzer_anlegen(request: Request, user: dict[str, Any] = Depends(admi
     name = str(daten.get("name", "")).strip()
     rolle = str(daten.get("rolle", "mitglied"))
     if not EMAIL_RE.match(email):
-        return _fehler(400, "Bitte eine gültige E-Mail-Adresse eingeben.", feld="email")
+        return _fehler(400, _m(request, "email_ungueltig"), feld="email")
     if len(name) < 2:
-        return _fehler(400, "Bitte einen Namen eingeben.", feld="name")
+        return _fehler(400, _m(request, "name_fehlt"), feld="name")
     if rolle not in ("admin", "mitglied"):
-        return _fehler(400, "Rolle muss admin oder mitglied sein.", feld="rolle")
+        return _fehler(400, _m(request, "rolle_ungueltig"), feld="rolle")
     with db.transaktion() as con:
         if auth.benutzer_per_email(con, email):
-            return _fehler(409, "Diese E-Mail-Adresse hat schon ein Konto.")
+            return _fehler(409, _m(request, "email_vergeben"))
         neu, einmal = auth.benutzer_anlegen(con, email, name, rolle)
     return {"benutzer": auth.oeffentlich(neu), "einmalPasswort": einmal, "gueltigTage": config.EINMAL_PASSWORT_TAGE}
 
 
 @app.post("/api/benutzer/{user_id}/einmal-passwort")
-def einmal_neu(user_id: int, user: dict[str, Any] = Depends(admin_benutzer)):
+def einmal_neu(user_id: int, request: Request, user: dict[str, Any] = Depends(admin_benutzer)):
     with db.transaktion() as con:
         ziel = auth.benutzer_per_id(con, user_id)
         if ziel is None:
-            return _fehler(404, "Konto nicht gefunden.")
-        if (schutz := _inhaber_geschuetzt(ziel, user)) is not None:
+            return _fehler(404, _m(request, "konto_fehlt"))
+        if (schutz := _inhaber_geschuetzt(request, ziel, user)) is not None:
             return schutz
         einmal = auth.einmal_passwort_erneuern(con, user_id)
         auth.alle_sitzungen_beenden(con, user_id)
@@ -391,18 +412,18 @@ async def benutzer_aendern(user_id: int, request: Request, user: dict[str, Any] 
     with db.transaktion() as con:
         ziel = auth.benutzer_per_id(con, user_id)
         if ziel is None:
-            return _fehler(404, "Konto nicht gefunden.")
-        if (schutz := _inhaber_geschuetzt(ziel, user)) is not None:
+            return _fehler(404, _m(request, "konto_fehlt"))
+        if (schutz := _inhaber_geschuetzt(request, ziel, user)) is not None:
             return schutz
         if "rolle" in daten:
             if daten["rolle"] not in ("admin", "mitglied"):
-                return _fehler(400, "Rolle muss admin oder mitglied sein.")
+                return _fehler(400, _m(request, "rolle_ungueltig"))
             if ziel["id"] == user["id"] and daten["rolle"] != "admin":
-                return _fehler(400, "Du kannst dir selbst die Admin-Rolle nicht entziehen.")
+                return _fehler(400, _m(request, "admin_selbst"))
             con.execute("UPDATE users SET rolle = ? WHERE id = ?", (daten["rolle"], user_id))
         if "status" in daten and daten["status"] in ("aktiv", "gesperrt") and ziel["status"] != "einmal":
             if ziel["id"] == user["id"]:
-                return _fehler(400, "Du kannst dich nicht selbst sperren.")
+                return _fehler(400, _m(request, "sperren_selbst"))
             con.execute("UPDATE users SET status = ? WHERE id = ?", (daten["status"], user_id))
             if daten["status"] == "gesperrt":
                 auth.alle_sitzungen_beenden(con, user_id)
@@ -411,19 +432,19 @@ async def benutzer_aendern(user_id: int, request: Request, user: dict[str, Any] 
 
 
 @app.delete("/api/benutzer/{user_id}")
-def benutzer_loeschen(user_id: int, user: dict[str, Any] = Depends(admin_benutzer)):
+def benutzer_loeschen(user_id: int, request: Request, user: dict[str, Any] = Depends(admin_benutzer)):
     """Nur der Inhaber. Löscht Konto, Sitzungen, Einstellungen und die Prüfungen samt Berichten.
 
     Abgelegte Berichte im Ordner output bleiben liegen.
     """
     if not user.get("inhaber"):
-        return _fehler(403, "Konten löschen darf nur der Inhaber.")
+        return _fehler(403, _m(request, "loeschen_inhaber"))
     with db.transaktion() as con:
         ziel = auth.benutzer_per_id(con, user_id)
         if ziel is None:
-            return _fehler(404, "Konto nicht gefunden.")
+            return _fehler(404, _m(request, "konto_fehlt"))
         if ziel["id"] == user["id"]:
-            return _fehler(400, "Du kannst dein eigenes Konto nicht löschen.")
+            return _fehler(400, _m(request, "loeschen_selbst"))
         ordner = [r["ordner"] for r in db.zeilen(con.execute("SELECT ordner FROM pruefungen WHERE user_id = ?", (user_id,)).fetchall())]
         con.execute("DELETE FROM users WHERE id = ?", (user_id,))  # Sitzungen, Einstellungen, Prüfungen hängen daran
     for pfad in ordner:
@@ -446,7 +467,7 @@ def _sprachen(user_einst: dict[str, Any], zusatz: str | None) -> list[str]:
 def _pruefung_laden(con, user: dict[str, Any], pruef_id: str) -> dict[str, Any]:
     row = db.zeile(con.execute("SELECT * FROM pruefungen WHERE id = ? AND user_id = ?", (pruef_id, user["id"])).fetchone())
     if row is None:
-        raise HTTPException(status_code=404, detail="Prüfung nicht gefunden.")
+        raise HTTPException(status_code=404, detail="pruefung_fehlt")
     return row
 
 
@@ -470,8 +491,20 @@ def _pdf_liste(row: dict[str, Any]) -> list[dict[str, str]]:
     return liste
 
 
-def _pruefung_antwort(row: dict[str, Any]) -> dict[str, Any]:
+def _anzeige(fund: dict[str, Any], sprache: str) -> dict[str, Any]:
+    """Fund plus Anzeigetexte in der Oberflächensprache (die Rohfelder bleiben deutsch)."""
+    return dict(
+        fund,
+        bereichAnzeige=texte.bereich(sprache, fund),
+        empfehlungAnzeige=texte.empfehlung(sprache, fund),
+        klasseAnzeige=texte.klasse(sprache, fund.get("Fehlerklasse")),
+        bewertungAnzeige=texte.bewertung(sprache, fund),
+    )
+
+
+def _pruefung_antwort(row: dict[str, Any], sprache: str = "de") -> dict[str, Any]:
     ergebnis = db.json_laden(row["ergebnis"], {})
+    fazit = texte.fazit(sprache, [tuple(x) for x in ergebnis.get("fazitTeile", [])]) if ergebnis.get("fazitTeile") else ""
     return {
         "id": row["id"],
         "dateiname": row["dateiname"],
@@ -482,15 +515,15 @@ def _pruefung_antwort(row: dict[str, Any]) -> dict[str, Any]:
         "fundeAnzahl": row["funde"],
         "sprachen": db.json_laden(row["sprachen"], ["de"]),
         "regelsaetze": db.json_laden(row["regelsaetze"], []),
-        "ausgelassen": ergebnis.get("ausgelassen", []),
+        "ausgelassen": [dict(a, bereich=texte.bereich(sprache, {"Bereich": a.get("bereich", ""), **a})) for a in ergebnis.get("ausgelassen", [])],
         "punkteGesamt": ergebnis.get("punkteGesamt"),
         "punkteGeprueft": ergebnis.get("punkteGeprueft"),
-        "fazit": ergebnis.get("fazit", ""),
+        "fazit": fazit or ergebnis.get("fazit", ""),
         "klassen": ergebnis.get("klassen", {}),
-        "funde": ergebnis.get("funde", []),
+        "funde": [_anzeige(f, sprache) for f in ergebnis.get("funde", [])],
         "todos": ergebnis.get("todos", []),
         "regelnVorhanden": ergebnis.get("regelnVorhanden", {}),
-        "lesehinweise": [texte.lesehinweis("de", h) for h in ergebnis.get("lesehinweise", [])],
+        "lesehinweise": [texte.lesehinweis(sprache, h) for h in ergebnis.get("lesehinweise", [])],
         "pruefstatus": ergebnis.get("pruefstatus", "altbestand"),
         "freigabe": False,
         "suchtrefferAnzahl": ergebnis.get("suchtrefferAnzahl", 0),
@@ -510,6 +543,7 @@ def _pruefung_durchfuehren(
     melden: Callable[[str, dict[str, Any]], None],
     lauf_id: str | None = None,
     ausgelassen: list[str] | None = None,
+    sprache: str = "de",
 ) -> dict[str, Any]:
     """Läuft in einem Arbeitsfaden, damit der Server währenddessen bedienbar bleibt.
 
@@ -554,7 +588,7 @@ def _pruefung_durchfuehren(
     for i, (art, sp) in enumerate(auftraege, 1):
         melden("berichte", {"n": i, "von": len(auftraege)})
         _pdf_pfad(row, art, sp)
-    return _pruefung_antwort(row)
+    return _pruefung_antwort(row, sprache)
 
 
 def _lauf_antwort(lauf_id: str, ergebnisse: list[dict[str, Any]], fehler: list[dict[str, Any]]) -> dict[str, Any]:
@@ -576,6 +610,7 @@ def _lauf_durchfuehren(
     user: dict[str, Any],
     melden: Callable[[str, dict[str, Any]], None],
     ausgelassen: list[str] | None = None,
+    sprache: str = "de",
 ) -> dict[str, Any]:
     """Prüft alle Dateien eines Laufs nacheinander. Ein unlesbares Dokument stoppt die anderen nicht.
 
@@ -592,16 +627,16 @@ def _lauf_durchfuehren(
             melden(phase, {**_stand, **daten})
 
         try:
-            antwort = _pruefung_durchfuehren(name, inhalt, gewaehlt, zusatz, user, melden_dokument, lauf_id, ausgelassen)
+            antwort = _pruefung_durchfuehren(name, inhalt, gewaehlt, zusatz, user, melden_dokument, lauf_id, ausgelassen, sprache)
         except lesen.LeseFehler as e:
-            fehler.append({**stand, "fehler": str(e), "status": 422})
+            fehler.append({**stand, "fehler": _lesefehler_text(sprache, e), "status": 422})
             melden("ergebnis", fehler[-1])
             continue
         except regeln.RegelFehler:
             raise
         except Exception:
             log.exception("Prüfung von %s fehlgeschlagen", name)
-            fehler.append({**stand, "fehler": "Die Prüfung ist fehlgeschlagen. Bitte noch einmal versuchen.", "status": 500})
+            fehler.append({**stand, "fehler": meldungen.t(sprache, "pruefung_fehlgeschlagen"), "status": 500})
             melden("ergebnis", fehler[-1])
             continue
         ergebnisse.append(antwort)
@@ -625,32 +660,33 @@ async def pruefung_starten(
     Mit fortschritt=1 kommt ein Zeilenstrom (NDJSON): Phasen je Dokument, ein „ergebnis“ je Dokument, zuletzt „fertig“.
     """
     if len(datei) > config.MAX_DATEIEN:
-        return _fehler(400, f"Höchstens {config.MAX_DATEIEN} Dateien je Prüfung.")
+        return _fehler(400, _m(request, "zu_viele_dateien", n=config.MAX_DATEIEN))
     dateien: list[tuple[str, bytes]] = []
     for d in datei:
         name = Path(d.filename or "dokument").name
         if not name.lower().endswith((".docx", ".pdf")):
-            return _fehler(400, f"{name}: Nur Word (.docx) und PDF (.pdf) werden geprüft.")
+            return _fehler(400, _m(request, "dateityp", name=name))
         inhalt = await d.read()
         if len(inhalt) > config.UPLOAD_MAX_BYTES:
-            return _fehler(413, f"{name} ist größer als 25 MB.")
+            return _fehler(413, _m(request, "zu_gross", name=name))
         dateien.append((name, inhalt))
     gewaehlt = list(dict.fromkeys(r.strip() for r in regelsaetze.split(",") if r.strip()))
     if not gewaehlt or any(r not in config.REGELSAETZE for r in gewaehlt):
-        return _fehler(400, "Bitte gültige Regelsätze wählen: basis, din oder ce.")
+        return _fehler(400, _m(request, "regelsaetze_ungueltig"))
     zusatz = zusatzsprache.strip() or None
+    sprache = _sprache(request)
     ohne = [x.strip() for x in ausgelassen.split(",") if x.strip()]
     # Auswahl vorab prüfen, damit ein Fehler als 400 kommt und nicht erst im Lauf je Dokument.
     try:
         pruefung.pruefen([], gewaehlt, ohne)
     except pruefung.AuswahlFehler as e:
-        return _fehler(400, str(e))
+        return _fehler(400, meldungen.t(sprache, e.schluessel, **e.werte))
     except regeln.RegelFehler:
         pass  # meldet der Lauf selbst: 503 als JSON oder als letzte Zeile im Strom
 
     if fortschritt != "1":
         try:
-            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, lambda phase, daten: None, ohne)
+            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, lambda phase, daten: None, ohne, sprache)
         except regeln.RegelFehler as e:
             return _fehler(503, str(e))
         if len(dateien) == 1:
@@ -668,13 +704,13 @@ async def pruefung_starten(
 
     async def arbeiten() -> None:
         try:
-            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, melden, ohne)
+            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, melden, ohne, sprache)
             await ereignisse.put({"phase": "fertig", "lauf": lauf})
         except regeln.RegelFehler as e:
             await ereignisse.put({"fehler": str(e), "status": 503})
         except Exception:
             log.exception("Prüflauf fehlgeschlagen")
-            await ereignisse.put({"fehler": "Die Prüfung ist fehlgeschlagen. Bitte noch einmal versuchen.", "status": 500})
+            await ereignisse.put({"fehler": meldungen.t(sprache, "pruefung_fehlgeschlagen"), "status": 500})
 
     async def zeilen():
         aufgabe = asyncio.create_task(arbeiten())
@@ -693,7 +729,7 @@ async def pruefung_starten(
 def _lauf_laden(con, user: dict[str, Any], lauf_id: str) -> list[dict[str, Any]]:
     rows = db.zeilen(con.execute("SELECT * FROM pruefungen WHERE lauf = ? AND user_id = ? ORDER BY erstellt, rowid", (lauf_id, user["id"])).fetchall())
     if not rows:
-        raise HTTPException(status_code=404, detail="Prüflauf nicht gefunden.")
+        raise HTTPException(status_code=404, detail="lauf_fehlt")
     for row in rows:
         row["pruefer_name"] = user["name"]
     return rows
@@ -729,10 +765,10 @@ def _zip_bauen(rows: list[dict[str, Any]]) -> bytes:
 
 
 @app.get("/api/lauf/{lauf_id}")
-def lauf_lesen(lauf_id: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
+def lauf_lesen(lauf_id: str, request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
     with db.transaktion() as con:
         rows = _lauf_laden(con, user, lauf_id)
-    return _lauf_antwort(lauf_id, [_pruefung_antwort(r) for r in rows], [])
+    return _lauf_antwort(lauf_id, [_pruefung_antwort(r, _sprache(request)) for r in rows], [])
 
 
 @app.get("/api/lauf/{lauf_id}/zip")
@@ -765,20 +801,20 @@ def pruefungen(user: dict[str, Any] = Depends(aktueller_benutzer)):
 
 
 @app.get("/api/pruefung/{pruef_id}")
-def pruefung_lesen(pruef_id: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
+def pruefung_lesen(pruef_id: str, request: Request, user: dict[str, Any] = Depends(aktueller_benutzer)):
     with db.transaktion() as con:
         row = _pruefung_laden(con, user, pruef_id)
-    return _pruefung_antwort(row)
+    return _pruefung_antwort(row, _sprache(request))
 
 
 @app.get("/api/pruefung/{pruef_id}/pdf/{art}/{sprache}")
 def pruefung_pdf(pruef_id: str, art: str, sprache: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
     if art not in ("pruef", "fach") or sprache not in config.SPRACHEN:
-        raise HTTPException(status_code=404, detail="Bericht nicht gefunden.")
+        raise HTTPException(status_code=404, detail="bericht_fehlt")
     with db.transaktion() as con:
         row = _pruefung_laden(con, user, pruef_id)
     if sprache not in db.json_laden(row["sprachen"], ["de"]):
-        raise HTTPException(status_code=404, detail="Für diese Sprache wurde bei der Prüfung kein Bericht gewählt.")
+        raise HTTPException(status_code=404, detail="bericht_sprache")
     row["pruefer_name"] = user["name"]
     pfad = _pdf_pfad(row, art, sprache)
     return FileResponse(str(pfad), media_type="application/pdf", filename=pfad.name)

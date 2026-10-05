@@ -80,6 +80,18 @@ Befehle im Terminal (im Ordner `dokumentenpruefer`):
 ./.venv/bin/python -m app.verwaltung liste                          # alle Konten
 ```
 
+## Oberfläche in vier Sprachen
+
+Der Schalter „Sprache“ in der Kopfzeile stellt die ganze Oberfläche um (Deutsch, Englisch,
+Ukrainisch, Russisch) und ist zugleich die Basissprache der Berichte. Die Texte liegen in
+`app/static/i18n.js` (ein Schlüssel je Text, Deutsch als Quelle); Elemente in `index.html` tragen
+`data-i18n`, dynamische Texte laufen in `app.js` über `t(schluessel, werte)`. Die Oberfläche
+schickt ihre Sprache als Kopf `X-Sprache` mit; die API antwortet dann mit Meldungen
+(`app/meldungen.py`) und Anzeigetexten (Fazit, Bereiche, Empfehlungen, Klassen, Bewertungen,
+Lesehinweise) in dieser Sprache. Ohne Kopf bleibt alles deutsch, so laufen Tests und Skripte
+unverändert. Auf der Anmeldeseite wählen vier Knöpfe die Sprache; nach der Anmeldung gilt die
+Kontosprache. Ukrainisch und Russisch sind von Niklas fachlich gegenzulesen.
+
 ## Einstellungen je Benutzer
 
 Sprache (Deutsch, Englisch, Ukrainisch, Russisch) und Helligkeit sitzen in der Kopfleiste und
@@ -172,7 +184,8 @@ Zugangsdaten gehören nicht ins Projekt. SMTP-Daten nur als Umgebungsvariable se
 Die Bestandstests prüfen Erstanmeldung, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
 Word-Prüfung, PDFs in vier Sprachen, ZIP, Ablage, Mail-Entwurf, CLI, Fortschritts-Zeilenstrom und
 Läufe mit mehreren Dateien (auch mit einer unlesbaren darunter, Höchstzahl, Lauf-ZIP und -Ablage),
-Inhaber und Konto löschen, Auswahl einzelner Prüfpunkte bis in den Bericht.
+Inhaber und Konto löschen, Auswahl einzelner Prüfpunkte bis in den Bericht, fremdsprachige Berichte
+ohne deutschen Regeltext, API-Meldungen und Anzeigetexte je Sprachkopf.
 `tests/test_p0.py` ergänzt Gegenproben für ungültige Regeldateien (auch nach einer gültigen
 Ladung), ungültige Regelsatz-Auswahl, Sperrumgehung und den Vorprüfungssatz in beiden
 Berichtstypen und allen vier Sprachen.
@@ -208,7 +221,8 @@ app/pruefer/regeln.py  Regeldateien laden
 app/pruefer/pruefung.py Prüflogik (aus app.py übernommen), Regelsätze vorher validiert
 app/pruefer/texte.py   Berichtstexte in de, en, uk, ru
 app/pruefer/berichte.py PDF-Erzeugung (reportlab, IBM Plex Sans)
-app/static/            Oberfläche: index.html, app.js, app.css, Schriften, Marke
+app/static/            Oberfläche: index.html, app.js, i18n.js (Texte in vier Sprachen), app.css, Schriften, Marke
+app/meldungen.py       API-Meldungen in vier Sprachen
 regeln/                Regeldateien
 tests/                 pytest
 daten/, output/        werden zur Laufzeit angelegt, nicht versioniert
@@ -216,11 +230,11 @@ daten/, output/        werden zur Laufzeit angelegt, nicht versioniert
 
 ## Offen
 
-- Regeldateien `pruefkatalog.json` und `ce_logik.json`: Stand vom 21. Mai 2026 aus der Git-Historie. Gibt es auf dem Mac eine neuere Fassung, diese hierher kopieren. Übersetzungen (`empfehlung_en/uk/ru`) fehlen noch, Berichte in anderen Sprachen zeigen dort die deutsche Empfehlung.
+- Regeldateien `pruefkatalog.json` und `ce_logik.json`: Stand vom 21. Mai 2026 aus der Git-Historie. Gibt es auf dem Mac eine neuere Fassung, diese hierher kopieren (die Übersetzungen vom 5. Oktober dann übernehmen).
+- Ukrainische und russische Texte in Regeldateien, `texte.py`, `meldungen.py` und `i18n.js` fachlich gegenlesen (Niklas).
 - Impressum und Datenschutz unter Einstellungen → Rechtliches mit den eigenen Texten füllen
   (`app/static/index.html`, Bereich `data-pane="recht"`).
   Impressum nach DDG: Firma, Anschrift, vertretungsberechtigte Person, E-Mail, Telefon, Registereintrag, Umsatzsteuer-ID.
   Datenschutzerklärung: Verantwortlicher, Zwecke und Rechtsgrundlagen, gespeicherte Daten (Konto, Einstellungen, Prüfergebnisse), Speicherdauer, Rechte der Betroffenen, Kontakt.
 - Kontaktangaben für die Hilfe setzen (`DP_SUPPORT`, `DP_TELEFON`, `DP_ZEITEN`).
 - SMTP für den Code einrichten oder `DP_VERIFIZIERUNG=aus` setzen.
-- Oberfläche in Englisch, Ukrainisch und Russisch (Phase 2).
