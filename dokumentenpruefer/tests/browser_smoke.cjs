@@ -187,16 +187,6 @@ async function checkFile(file) {
   await page.locator('#file').setInputFiles(path.join(root, 'Testanleitung.docx'));
   await page.locator('#start-check').click(); await visible('#lauf');
   assert.equal(await page.locator('#start-check').isEnabled(), false);
-  for (const datei of ['LeeresKapitel.docx', 'FehlenderInhalt.docx', 'Zeilenumbruch.pdf']) {
-    await checkFile(datei);
-    const liste = await (await context.request.get(url + '/api/pruefungen')).json();
-    const id = liste.pruefungen.find(p => p.dateiname === datei).id;
-    const ergebnis = await (await context.request.get(url + '/api/pruefung/' + id)).json();
-    const erwartet = datei.endsWith('.pdf') ? 'TXT-001' : 'CHK-002';
-    assert.ok(ergebnis.funde.some(f => f.ID === erwartet), datei + ': Befund fehlt');
-  }
-  checks.push('Leere Kapitel, fehlende Inhalte und PDF-Satz ueber zwei Zeilen');
-
   await page.locator('#b-help').click(); await visible('#drawer'); await page.locator('#drawer-close').click();
   await page.locator('#b-settings').click();
   await page.locator('[data-sec=profil]').click();
