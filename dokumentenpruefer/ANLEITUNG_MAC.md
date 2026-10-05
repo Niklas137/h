@@ -1,6 +1,6 @@
 # Dokumentenprüfer auf dem Mac: Schritt für Schritt im Terminal
 
-Stand: 1. Oktober 2026 (UTC), Phase-1-Prüfstand 1.1.0. Jeder Schritt hat eine Kontrolle.
+Stand: 5. Oktober 2026, Phase-1-Prüfstand. Jeder Schritt hat eine Kontrolle.
 Bei einer abweichenden Ausgabe stoppen und die Fehlermeldung weitergeben.
 
 ## 1. Terminal öffnen
@@ -37,7 +37,8 @@ python3 -m venv .venv
 ```
 
 Benötigt wird Python ab 3.10; die Abnahme läuft mit Python 3.12.
-Kontrolle: `./.venv/bin/python -m pytest tests -q -p no:warnings` meldet ausschließlich bestandene Tests.
+Kontrolle: `./abnahme.command` führt die vollständige Python-Abnahme mit Testdaten aus.
+Die Ausgabe nennt den Protokollpfad und die noch persönlich zu prüfenden Punkte.
 
 Fragt macOS nach den „Command Line Tools", mit „Installieren" bestätigen und Schritt 4 danach wiederholen.
 
@@ -120,3 +121,14 @@ SMTP-Konfiguration separat sichern. Alte Sitzungen werden bei der Wiederherstell
 
 Dies ist die lokale Bedienabnahme. Ein automatischer Test ersetzt weder die Kontrolle von
 Finder/Apple Mail noch die fachliche Freigabe des konkreten Kundendokuments.
+
+## Freigabe eindeutig festhalten
+
+Nach dem letzten Schritt Datum, getesteten Commit (`git rev-parse HEAD`) und Ergebnis
+der neun Bedienprüfungen dokumentieren. Offene oder fehlgeschlagene Punkte bleiben offen.
+Chromium- und WebKit-Tests im GitHub-Runner ersetzen weder die installierte Safari-Version
+noch Finder und Apple Mail. Die fachliche Prüfung der Kundendokumente bleibt eigenständig.
+
+Für einen produktiven Wechsel zuerst die bisherige Installation sichern. Diese Anleitung
+installiert bewusst einen separaten Prüfstand; sie übernimmt keine bestehenden Benutzerkonten,
+überschreibt keine lokalen Regeln und führt die Entwicklungszweige nicht zusammen.

@@ -7,10 +7,10 @@ Look von FSH-Documentation, Berichte als PDF in Deutsch, Englisch, Ukrainisch un
 Phase-1-Prüfstand 1.1.0: eigener Branch `codex/dokumentenpruefer`, eigene Arbeitskopie.
 Der Claude-Branch bleibt unabhängig; Zusammenführen erst nach Prüfung.
 
-Die ursprüngliche technische Abnahme ist in [ABNAHME_PHASE1.md](ABNAHME_PHASE1.md) dokumentiert:
-83 Python-Tests und sieben Browser-Ablaufgruppen sind auf Linux und macOS bestanden.
-Dort stehen auch die noch ausstehenden Schritte für die tatsächliche Mac-Installation.
-Der Nachtest der Satzlängenkorrektur vom 4. Oktober ist unten im Abschnitt „Tests“ dokumentiert.
+Der aktuelle Abschlussstand steht in [PHASE1_ABSCHLUSS.md](PHASE1_ABSCHLUSS.md).
+Die früheren Protokolle dokumentieren historische Zwischenstände. Für die automatische
+lokale Abnahme steht `abnahme.command` bereit. Es verwendet ausschließlich Testdaten und
+listet danach die noch persönlich zu prüfenden Punkte auf.
 
 Die bisherige Streamlit-App `app.py` im Ordner darüber bleibt unverändert als Rückfall. Die
 Schlüsselwortregeln, Gewichtung, Score, Ampel, Fazit und CE-To-dos sind übernommen.
@@ -221,10 +221,10 @@ nicht nachgewiesen. Die unten genannten heuristischen Grenzen bleiben offen.
   Punkt, Frage- und Ausrufezeichen, schließende Anführungszeichen sowie übliche Abkürzungen
   (z. B. `z. B.`, `Nr.`, `ca.`) und deutsche Ordinalzahlen. Anzahl und Textauszug beziehen sich
   auf die erkannten Sätze; die bisherige Sammelgewichtung und Aufwandsschätzung bleiben gleich.
-  Die Erkennung bleibt heuristisch und verbindet keine getrennt eingelesenen Abschnitte.
-  Mehrdeutige Abkürzungen wie `usw.` und `etc.` können innerhalb eines Satzes eine falsche
-  Satzgrenze erzeugen. Eine pauschale Ausnahme würde dagegen echte Satzenden verschlucken.
-  Insbesondere über mehrere PDF-Zeilen oder Seiten verteilte Sätze werden noch nicht rekonstruiert.
+  Die Erkennung bleibt heuristisch. Die PDF-Aufbereitung verbindet passende Druckzeilen bereits vor der Satzprüfung.
+  Bei `usw.` und `etc.` wird eine kleingeschriebene Fortsetzung berücksichtigt; mehrdeutige
+  großgeschriebene Fortsetzungen bleiben eine Grenze.
+  Nahe, gleich formatierte PDF-Zeilen werden inzwischen verbunden; Seitenwechsel bleiben eine Grenze.
 - Score, Ampel und Fazit folgen der Vorgabe von Niklas und der alten App: Grün ab 80 %, Gelb ab
   60 %, sonst Rot. Score = 100 minus Summe der Gewichtungen aller Funde, mindestens 0.
 - Die Schlüsselwortsuche ist eine Vorprüfung. Jeder Bericht trägt unter dem Kopf einen Satz,

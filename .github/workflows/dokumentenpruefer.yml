@@ -33,15 +33,23 @@ jobs:
       - name: Python-Abhaengigkeiten installieren
         run: python -m pip install -r requirements.txt
       - name: Gesamtpruefung einschliesslich Neustart und Wiederherstellung
-        run: python -m pytest tests -q --tb=short --show-capture=no
+        env:
+          DP_TEST_PYTHON: python
+        run: bash abnahme.command
       - name: Browser installieren
         run: |
           npm install --prefix "$RUNNER_TEMP/dp-browser" playwright@1.62.1
-          node "$RUNNER_TEMP/dp-browser/node_modules/playwright/cli.js" install --with-deps chromium
+          node "$RUNNER_TEMP/dp-browser/node_modules/playwright/cli.js" install --with-deps chromium webkit
       - name: Browser-Abnahme
         env:
           NODE_PATH: ${{ runner.temp }}/dp-browser/node_modules
           DP_TEST_PYTHON: python
+        run: node tests/browser_smoke.cjs
+      - name: WebKit-Abnahme
+        env:
+          NODE_PATH: ${{ runner.temp }}/dp-browser/node_modules
+          DP_TEST_PYTHON: python
+          DP_TEST_BROWSER: webkit
         run: node tests/browser_smoke.cjs
       - name: Pruefnachweise
         if: always()

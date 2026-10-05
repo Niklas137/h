@@ -1,0 +1,314 @@
+{
+  "quelle": "Niklas137/h",
+  "commit": "15c06f4b2b53395aaf02fce15f7b44b7d5ea52c2",
+  "kataloge": {
+    "pruefkatalog.json": [
+      {
+        "id": "CHK-001",
+        "keywords": [
+          "inhaltsverzeichnis",
+          "table of contents"
+        ],
+        "bereich": "Struktur",
+        "fehlerklasse": "Mittel",
+        "empfehlung": "Ein vollständiges Inhaltsverzeichnis ist erforderlich",
+        "gewichtung": 3
+      },
+      {
+        "id": "CHK-002",
+        "keywords": [
+          "sicherheitshinweise",
+          "sicherheit",
+          "warnung",
+          "vorsicht"
+        ],
+        "bereich": "Sicherheit",
+        "fehlerklasse": "Kritisch",
+        "empfehlung": "Sicherheitshinweise müssen prominent dargestellt werden",
+        "gewichtung": 5
+      },
+      {
+        "id": "CHK-003",
+        "keywords": [
+          "montage",
+          "installation",
+          "aufbau"
+        ],
+        "bereich": "Montage",
+        "fehlerklasse": "Schwer",
+        "empfehlung": "Montage-/Installationsanleitung mit Schritt-für-Schritt-Anweisung",
+        "gewichtung": 4
+      },
+      {
+        "id": "CHK-004",
+        "keywords": [
+          "wartung",
+          "reinigung",
+          "pflege"
+        ],
+        "bereich": "Wartung",
+        "fehlerklasse": "Mittel",
+        "empfehlung": "Wartungs- und Reinigungsanleitung erforderlich",
+        "gewichtung": 3
+      },
+      {
+        "id": "CHK-005",
+        "keywords": [
+          "fehlerbehandlung",
+          "troubleshooting",
+          "problem",
+          "störung"
+        ],
+        "bereich": "Fehlerbehandlung",
+        "fehlerklasse": "Schwer",
+        "empfehlung": "Troubleshooting-Guide für häufige Probleme",
+        "gewichtung": 3
+      },
+      {
+        "id": "CHK-006",
+        "keywords": [
+          "technische daten",
+          "spezifikation",
+          "specs"
+        ],
+        "bereich": "Technische Daten",
+        "fehlerklasse": "Mittel",
+        "empfehlung": "Technische Daten und Spezifikationen müssen vollständig sein",
+        "gewichtung": 2
+      },
+      {
+        "id": "CHK-007",
+        "keywords": [
+          "kontakt",
+          "support",
+          "kundenservice",
+          "servicestelle"
+        ],
+        "bereich": "Kontakt",
+        "fehlerklasse": "Schwer",
+        "empfehlung": "Kontaktinformationen für Service und Support angeben",
+        "gewichtung": 2
+      },
+      {
+        "id": "CHK-008",
+        "keywords": [
+          "garantie",
+          "gewährleistung"
+        ],
+        "bereich": "Garantie",
+        "fehlerklasse": "Mittel",
+        "empfehlung": "Garantie- und Gewährleistungsbedingungen klar darstellen",
+        "gewichtung": 2
+      }
+    ],
+    "normlogik_82079.json": [
+      {
+        "id": "DIN-001",
+        "keywords": [
+          "zielgruppe",
+          "benutzer",
+          "nutzer",
+          "endnutzer"
+        ],
+        "bereich": "Zielgruppe",
+        "pflicht": true,
+        "fehlerklasse": "Schwer",
+        "empfehlung": "Die Zielgruppe/Benutzer müssen deutlich definiert werden",
+        "gewichtung": 3
+      },
+      {
+        "id": "DIN-002",
+        "keywords": [
+          "inhaltsverzeichnis",
+          "gliederung"
+        ],
+        "bereich": "Gliederung",
+        "pflicht": true,
+        "fehlerklasse": "Mittel",
+        "empfehlung": "Logische Gliederung und Inhaltsverzeichnis erforderlich",
+        "gewichtung": 2
+      },
+      {
+        "id": "DIN-003",
+        "keywords": [
+          "warnung",
+          "achtung",
+          "vorsicht",
+          "sicherheit",
+          "gefahr"
+        ],
+        "bereich": "Sicherheit",
+        "pflicht": true,
+        "fehlerklasse": "Kritisch",
+        "empfehlung": "Alle Sicherheitsinformationen müssen deutlich gekennzeichnet sein",
+        "gewichtung": 5
+      },
+      {
+        "id": "DIN-004",
+        "keywords": [
+          "symbole",
+          "piktogramme",
+          "zeichen"
+        ],
+        "bereich": "Symbole",
+        "pflicht": false,
+        "fehlerklasse": "Mittel",
+        "empfehlung": "Verwendete Symbole und Piktogramme müssen erläutert werden",
+        "gewichtung": 2
+      },
+      {
+        "id": "DIN-005",
+        "keywords": [
+          "abbildung",
+          "abbildungen",
+          "bilder",
+          "grafik",
+          "grafiken"
+        ],
+        "bereich": "Illustrationen",
+        "pflicht": true,
+        "fehlerklasse": "Schwer",
+        "empfehlung": "Aussagekräftige Illustrationen und Abbildungen sind notwendig",
+        "gewichtung": 3
+      },
+      {
+        "id": "DIN-006",
+        "keywords": [
+          "sprache",
+          "deutsch",
+          "verständlich",
+          "klar"
+        ],
+        "bereich": "Sprache",
+        "pflicht": true,
+        "fehlerklasse": "Mittel",
+        "empfehlung": "Die Sprache muss klar und zielgruppengerecht sein",
+        "gewichtung": 3
+      },
+      {
+        "id": "DIN-007",
+        "keywords": [
+          "schrift",
+          "schriftgröße",
+          "lesbarkeit"
+        ],
+        "bereich": "Formatierung",
+        "pflicht": false,
+        "fehlerklasse": "Mittel",
+        "empfehlung": "Angemessene Schriftgröße und Formatierung für Lesbarkeit",
+        "gewichtung": 2
+      },
+      {
+        "id": "DIN-008",
+        "keywords": [
+          "papierformat",
+          "din a4",
+          "a4"
+        ],
+        "bereich": "Format",
+        "pflicht": false,
+        "fehlerklasse": "Gering",
+        "empfehlung": "Standardisiertes Papierformat empfohlen",
+        "gewichtung": 1
+      }
+    ],
+    "ce_logik.json": [
+      {
+        "id": "CE-001",
+        "keywords": [
+          "ce-kennzeichnung",
+          "ce-mark",
+          "ce-markierung"
+        ],
+        "bereich": "CE-Kennzeichnung",
+        "fehlerklasse": "Kritisch",
+        "empfehlung": "CE-Kennzeichnung muss deutlich sichtbar und erläutert sein",
+        "gewichtung": 5
+      },
+      {
+        "id": "CE-002",
+        "keywords": [
+          "konformität",
+          "konform",
+          "eu-richtlinie",
+          "richtlinie"
+        ],
+        "bereich": "Konformitätserklärung",
+        "fehlerklasse": "Kritisch",
+        "empfehlung": "Konformitätserklärung muss vollständig vorhanden sein",
+        "gewichtung": 5
+      },
+      {
+        "id": "CE-003",
+        "keywords": [
+          "hersteller",
+          "herstellerangaben"
+        ],
+        "bereich": "Herstellerangaben",
+        "fehlerklasse": "Kritisch",
+        "empfehlung": "Vollständige Herstellerangaben (Name, Adresse) sind erforderlich",
+        "gewichtung": 4
+      },
+      {
+        "id": "CE-004",
+        "keywords": [
+          "notifizierte stelle",
+          "benannte stelle",
+          "notified body"
+        ],
+        "bereich": "Notifizierte Stelle",
+        "fehlerklasse": "Schwer",
+        "empfehlung": "Identifikation der notifizierten Stelle muss vorhanden sein",
+        "gewichtung": 3
+      },
+      {
+        "id": "CE-005",
+        "keywords": [
+          "gefahren",
+          "risiken",
+          "risikobewertung"
+        ],
+        "bereich": "Gefahren & Risiken",
+        "fehlerklasse": "Kritisch",
+        "empfehlung": "Identifizierte Gefahren und Risiken müssen dokumentiert sein",
+        "gewichtung": 4
+      },
+      {
+        "id": "CE-006",
+        "keywords": [
+          "persönliche schutzausrüstung",
+          "psa",
+          "schutzausrüstung"
+        ],
+        "bereich": "PSA",
+        "fehlerklasse": "Schwer",
+        "empfehlung": "Erforderliche PSA muss klar angegeben werden",
+        "gewichtung": 3
+      },
+      {
+        "id": "CE-007",
+        "keywords": [
+          "entsorgung",
+          "recycling",
+          "rückgabe"
+        ],
+        "bereich": "Entsorgung",
+        "fehlerklasse": "Mittel",
+        "empfehlung": "Korrekte Entsorgungs- und Recyclingvorgaben sind erforderlich",
+        "gewichtung": 2
+      },
+      {
+        "id": "CE-008",
+        "keywords": [
+          "maschinenrichtlinie",
+          "elektromagnetische verträglichkeit",
+          "emv"
+        ],
+        "bereich": "Richtlinien-Konformität",
+        "fehlerklasse": "Kritisch",
+        "empfehlung": "Compliance mit anwendbaren EU-Richtlinien nachweisen",
+        "gewichtung": 4
+      }
+    ]
+  }
+}

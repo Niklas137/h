@@ -1,5 +1,7 @@
 # Phase 1: Umsetzung und Abnahme
 
+Historischer Stand vom 1. Oktober. Aktueller Status: [PHASE1_ABSCHLUSS.md](PHASE1_ABSCHLUSS.md).
+
 Stand: 1. Oktober 2026, 23:07 UTC. Version 1.1.0.
 
 **Die technische Abnahme des hier beschriebenen lokalen Funktionsumfangs ist bestanden.**

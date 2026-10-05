@@ -139,9 +139,10 @@ def _nachweis(structured: list[dict[str, str]], keywords: list[str]) -> bool:
         if _positiver_treffer(text, keywords):
             return True
         kontext = item.get("kontext", "")
-        if kontext and keyword_found(kontext.lower(), keywords):
+        if (kontext and keyword_found(kontext.lower(), keywords)
+                and not keyword_found(text.lower(), keywords)):
             # Die Kapitelüberschrift darf nur einen tatsächlich gefüllten Absatz stützen.
-            if not re.search(r"\b(?:fehlt|fehlen|nicht vorhanden|zu ergänzen)\b", text.lower()):
+            if not re.search(r"\b(?:fehlt|fehlen|nicht (?:vorhanden|enthalten|beschrieben|dokumentiert)|zu ergänzen)\b", text.lower()):
                 return True
     return any(_positiver_treffer(" ".join(teile), keywords) for teile in zeilen.values())
 

@@ -6,10 +6,12 @@ const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { spawn, spawnSync } = require('node:child_process');
-const { chromium } = require('playwright');
+const { chromium, webkit } = require('playwright');
+const browserName = process.env.DP_TEST_BROWSER || 'chromium';
+assert.ok(['chromium', 'webkit'].includes(browserName), 'Unbekannter Testbrowser');
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'dp-browser-'));
-const out = path.resolve('test-artifacts');
+const out = path.resolve('test-artifacts', browserName);
 fs.mkdirSync(out, { recursive: true });
 const python = process.env.DP_TEST_PYTHON || '.venv/bin/python';
 const env = { ...process.env, DP_DATEN: path.join(root, 'daten'), DP_OUTPUT: path.join(root, 'output'),
@@ -74,7 +76,7 @@ async function checkFile(file) {
     if (server.exitCode !== null) throw new Error('Testserver beendet');
     await sleep(100);
   }
-  browser = await chromium.launch({ headless: true });
+  browser = await ({ chromium, webkit }[browserName]).launch({ headless: true });
   const context = await browser.newContext({ viewport: { width: 1365, height: 900 }, reducedMotion: 'reduce' });
   page = await context.newPage();
   page.on('pageerror', err => errors.push(err.message));
@@ -204,7 +206,7 @@ async function checkFile(file) {
   await checkFile('Testanleitung.docx');
   checks.push('Langer Lauf, bedienbarer Header, Logout, spaete Antwort, Mitglied und Rechte');
   assert.deepEqual(errors, []);
-  fs.writeFileSync(path.join(out, 'browser-ergebnis.json'), JSON.stringify({status:'bestanden', platform:process.platform, checks, javascriptErrors:errors}, null, 2));
+  fs.writeFileSync(path.join(out, 'browser-ergebnis.json'), JSON.stringify({status:'bestanden', platform:process.platform, browser:browserName, checks, javascriptErrors:errors}, null, 2));
   console.log(`Browser-Abnahme bestanden: ${checks.length} Ablaufsgruppen, keine JavaScript-Ausnahmen.`);
 })().catch(async err => {
   if (page) await page.screenshot({ path: path.join(out, 'fehler.png'), fullPage: true }).catch(() => {});
