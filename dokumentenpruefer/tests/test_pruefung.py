@@ -336,3 +336,31 @@ def test_pruefpunkte_auswaehlen(client, admin):
     r = client.post("/api/pruefung", files=datei, data={"regelsaetze": "basis,din", "ausgelassen": alle_din})
     assert r.status_code == 400 and "din" in r.json()["fehler"]
     client.put("/api/ich/pruefpunkte", json={"ausgelassen": []})
+
+
+def test_fremdsprachige_berichte_ohne_deutsche_regeltexte():
+    """In en, uk und ru steht kein deutscher Regeltext mehr: Bereiche und Empfehlungen aller drei Regelsätze sind übersetzt."""
+    import json
+
+    from app import config
+
+    struktur = [{"text": LUECKENHAFT[0], "heading": ""}]
+    erg = pruefung.pruefen(struktur, ["basis", "din", "ce"], ["CHK-002"])
+    erg["pruefer"] = "Test"
+    assert len(erg["funde"]) >= 20
+    meta = {"dateiname": "Doku.docx", "erstellt": "2026-10-05T09:00:00", "pruefer": "Test"}
+    regeln_alle = [r for datei in ("pruefkatalog.json", "normlogik_82079.json", "ce_logik.json") for r in json.loads((config.REGELN / datei).read_text(encoding="utf-8"))]
+    for sp in ("en", "uk", "ru"):
+        text = ""
+        for art in ("pruef", "fach"):
+            pdf = berichte.erzeugen(art, erg, meta, sp)
+            text += " " + " ".join(" ".join(s.extract_text().split()) for s in PdfReader(io.BytesIO(pdf)).pages)
+        eng = "".join(text.split())  # Zeilenumbrüche und Trennstriche stören den Vergleich nicht
+        funde_ids = {f["ID"] for f in erg["funde"]}
+        for r in regeln_alle:
+            if r["id"] in funde_ids:
+                assert "".join(r[f"empfehlung_{sp}"].split()) in eng, (sp, r["id"], "Übersetzung fehlt im Bericht")
+            assert "".join(r["empfehlung"].split()) not in eng, (sp, r["id"], "deutsche Empfehlung im Bericht")
+            if r[f"bereich_{sp}"] != r["bereich"]:
+                assert r["bereich"] not in text, (sp, r["id"], "deutscher Bereich im Bericht")
+        assert "Sicherheit" not in text and "Garantie" not in text and "nachweisen" not in text, sp

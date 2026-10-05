@@ -58,7 +58,7 @@ Stand: 1. Oktober 2026. Bei Änderungen diese Datei mitpflegen.
 ## Offen, braucht Niklas
 
 - Name, E-Mail-Adresse und Rolle für die Konten von Niklas und Falk.
-- Regeldateien Basis und CE: prüfen, ob auf dem Mac eine neuere Fassung als vom 21. Mai liegt; Übersetzungen der Empfehlungen (en, uk, ru) fehlen noch.
+- Regeldateien Basis und CE: prüfen, ob auf dem Mac eine neuere Fassung als vom 21. Mai liegt. Übersetzungen (en, uk, ru) seit 5. Oktober in allen drei Dateien; uk und ru von Niklas gegenlesen lassen.
 - Impressum und Datenschutz (Bereich `data-pane="recht"` in `app/static/index.html`).
 - Telefonnummer, Zeiten und Support-Adresse für die Hilfe (`DP_SUPPORT`, `DP_TELEFON`, `DP_ZEITEN`).
 - SMTP für den Code (nur als Umgebungsvariable) oder `DP_VERIFIZIERUNG=aus`.

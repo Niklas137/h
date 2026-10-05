@@ -14,7 +14,10 @@
     "gewichtung": 3,
     "empfehlung_en": "The target group and the users must be clearly defined",
     "empfehlung_uk": "Цільову групу та користувачів необхідно чітко визначити",
-    "empfehlung_ru": "Целевую группу и пользователей необходимо чётко определить"
+    "empfehlung_ru": "Целевую группу и пользователей необходимо чётко определить",
+    "bereich_en": "Target group",
+    "bereich_uk": "Цільова група",
+    "bereich_ru": "Целевая группа"
   },
   {
     "id": "DIN-002",
@@ -29,7 +32,10 @@
     "gewichtung": 2,
     "empfehlung_en": "A logical structure and a table of contents are required",
     "empfehlung_uk": "Потрібні логічна структура та зміст",
-    "empfehlung_ru": "Требуются логическая структура и оглавление"
+    "empfehlung_ru": "Требуются логическая структура и оглавление",
+    "bereich_en": "Structure",
+    "bereich_uk": "Структура",
+    "bereich_ru": "Структура"
   },
   {
     "id": "DIN-003",
@@ -47,7 +53,10 @@
     "gewichtung": 5,
     "empfehlung_en": "All safety information must be clearly marked",
     "empfehlung_uk": "Уся інформація з безпеки має бути чітко позначена",
-    "empfehlung_ru": "Вся информация по безопасности должна быть чётко обозначена"
+    "empfehlung_ru": "Вся информация по безопасности должна быть чётко обозначена",
+    "bereich_en": "Safety",
+    "bereich_uk": "Безпека",
+    "bereich_ru": "Безопасность"
   },
   {
     "id": "DIN-004",
@@ -63,7 +72,10 @@
     "gewichtung": 2,
     "empfehlung_en": "Symbols and pictograms used must be explained",
     "empfehlung_uk": "Використані символи та піктограми потрібно пояснити",
-    "empfehlung_ru": "Используемые символы и пиктограммы необходимо пояснить"
+    "empfehlung_ru": "Используемые символы и пиктограммы необходимо пояснить",
+    "bereich_en": "Symbols",
+    "bereich_uk": "Символи",
+    "bereich_ru": "Символы"
   },
   {
     "id": "DIN-005",
@@ -81,7 +93,10 @@
     "gewichtung": 3,
     "empfehlung_en": "Meaningful illustrations and figures are necessary",
     "empfehlung_uk": "Потрібні змістовні ілюстрації та рисунки",
-    "empfehlung_ru": "Необходимы содержательные иллюстрации и рисунки"
+    "empfehlung_ru": "Необходимы содержательные иллюстрации и рисунки",
+    "bereich_en": "Illustrations",
+    "bereich_uk": "Ілюстрації",
+    "bereich_ru": "Иллюстрации"
   },
   {
     "id": "DIN-006",
@@ -98,7 +113,10 @@
     "gewichtung": 3,
     "empfehlung_en": "The language must be clear and appropriate for the target group",
     "empfehlung_uk": "Мова має бути зрозумілою та відповідати цільовій групі",
-    "empfehlung_ru": "Язык должен быть понятным и соответствовать целевой группе"
+    "empfehlung_ru": "Язык должен быть понятным и соответствовать целевой группе",
+    "bereich_en": "Language",
+    "bereich_uk": "Мова",
+    "bereich_ru": "Язык"
   },
   {
     "id": "DIN-007",
@@ -114,7 +132,10 @@
     "gewichtung": 2,
     "empfehlung_en": "Appropriate font size and formatting for readability",
     "empfehlung_uk": "Належний розмір шрифту та форматування для читабельності",
-    "empfehlung_ru": "Надлежащий размер шрифта и форматирование для читаемости"
+    "empfehlung_ru": "Надлежащий размер шрифта и форматирование для читаемости",
+    "bereich_en": "Formatting",
+    "bereich_uk": "Форматування",
+    "bereich_ru": "Форматирование"
   },
   {
     "id": "DIN-008",
@@ -130,6 +151,9 @@
     "gewichtung": 1,
     "empfehlung_en": "A standardised paper format is recommended",
     "empfehlung_uk": "Рекомендовано стандартизований формат паперу",
-    "empfehlung_ru": "Рекомендуется стандартизированный формат бумаги"
+    "empfehlung_ru": "Рекомендуется стандартизированный формат бумаги",
+    "bereich_en": "Format",
+    "bereich_uk": "Формат",
+    "bereich_ru": "Формат"
   }
 ]

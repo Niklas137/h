@@ -35,9 +35,9 @@ Die Regelsätze liegen im Ordner `regeln/`:
 
 | Datei                 | Regelsatz          | Status                              |
 |-----------------------|--------------------|-------------------------------------|
-| `pruefkatalog.json`   | Basisprüfung       | enthalten (Stand 21. Mai 2026), nur deutsch |
+| `pruefkatalog.json`   | Basisprüfung       | enthalten (Stand 21. Mai 2026), Übersetzungen en/uk/ru seit 5. Oktober |
 | `normlogik_82079.json`| DIN 82079-1        | enthalten, mit Übersetzungen        |
-| `ce_logik.json`       | CE / EU-Konformität| enthalten (Stand 21. Mai 2026), nur deutsch |
+| `ce_logik.json`       | CE / EU-Konformität| enthalten (Stand 21. Mai 2026), Übersetzungen en/uk/ru seit 5. Oktober |
 
 Fehlt eine gewählte Regeldatei oder ist sie ungültig, bricht die Prüfung ohne Ergebnis und ohne
 Berichte ab. Validiert werden JSON, nicht leere Regellisten, eindeutige IDs, Suchwörter, Pflichtfelder,
@@ -45,6 +45,10 @@ Fehlerklassen und Gewichtungen. Nicht ausgewählte Regelsätze dürfen fehlen. U
 werden abgewiesen, auch zusammen mit gültigen Namen. Für
 Empfehlungen in anderen Sprachen kann jede Regel die Felder `empfehlung_en`, `empfehlung_uk`,
 `empfehlung_ru` (und `bereich_en` usw.) tragen. Ohne Übersetzung wird der deutsche Text genommen.
+Seit dem 5. Oktober tragen alle 24 Regeln Bereich und Empfehlung in en, uk und ru; ein Test stellt
+sicher, dass in fremdsprachigen Berichten kein deutscher Regeltext steht. Zitate aus dem geprüften
+Dokument (Fundstellen, zu lange Sätze) bleiben in der Sprache des Dokuments. Die ukrainischen und
+russischen Fassungen sind von Niklas fachlich gegenzulesen.
 
 Einzelne Prüfpunkte: `GET /api/regeln` liefert je Regelsatz alle Punkte (die Basisprüfung
 enthält zusätzlich den eingebauten Punkt `TXT-001` Satzlänge). Auf der Prüfseite lassen sich
