@@ -150,7 +150,7 @@ def test_berichte_direkt_alle_sprachen():
 
 
 def test_pruefung_mit_fortschritt(client, admin):
-    """Der Zeilenstrom meldet die Phasen und zuletzt das Ergebnis."""
+    """Der Zeilenstrom meldet die Phasen je Dokument, ein Ergebnis je Dokument und zuletzt den Lauf."""
     with client.stream(
         "POST",
         "/api/pruefung",
@@ -163,11 +163,13 @@ def test_pruefung_mit_fortschritt(client, admin):
     phasen = [z.get("phase") for z in zeilen]
     assert phasen[:2] == ["lesen", "pruefen"]
     assert phasen.count("berichte") == 4
-    assert [z for z in zeilen if z.get("phase") == "berichte"][-1] == {"phase": "berichte", "n": 4, "von": 4}
-    assert phasen[-1] == "fertig"
-    erg = zeilen[-1]["ergebnis"]
+    assert [z for z in zeilen if z.get("phase") == "berichte"][-1] == {"phase": "berichte", "n": 4, "von": 4, "dokument": 1, "dokumente": 1, "datei": "Strom.docx"}
+    assert phasen[-2:] == ["ergebnis", "fertig"]
+    assert zeilen[-2]["ergebnis"]["id"] == zeilen[-1]["lauf"]["ergebnisse"][0]["id"]
+    erg = zeilen[-1]["lauf"]["ergebnisse"][0]
     assert len(erg["pdfs"]) == 4 and erg["fundeAnzahl"] >= 1
 
+    # Eine unlesbare Datei ist ein Ergebnis mit Fehler, der Lauf endet trotzdem ordentlich.
     with client.stream(
         "POST",
         "/api/pruefung",
@@ -175,7 +177,55 @@ def test_pruefung_mit_fortschritt(client, admin):
         data={"fortschritt": "1"},
     ) as r:
         zeilen = [json.loads(z) for z in r.iter_lines() if z.strip()]
-    assert zeilen[-1]["status"] == 422 and "fehler" in zeilen[-1]
+    assert zeilen[-2]["phase"] == "ergebnis" and zeilen[-2]["status"] == 422 and "fehler" in zeilen[-2]
+    assert zeilen[-1]["phase"] == "fertig" and zeilen[-1]["lauf"]["ergebnisse"] == [] and len(zeilen[-1]["lauf"]["fehler"]) == 1
+
+
+def test_mehrere_dateien_in_einem_lauf(client, admin, tmp_path, monkeypatch):
+    """Bis zu 20 Dateien je Prüfung: jede bekommt ihre Berichte, eine kaputte stoppt die anderen nicht."""
+    from app import config
+
+    monkeypatch.setattr(config, "OUTPUT", tmp_path / "output")
+    dateien = [
+        ("datei", ("Eins.docx", _docx(LUECKENHAFT), "application/octet-stream")),
+        ("datei", ("Zwei.docx", _docx(LUECKENHAFT[:1]), "application/octet-stream")),
+        ("datei", ("Kaputt.docx", b"kein zip", "application/octet-stream")),
+    ]
+    r = client.post("/api/pruefung", files=dateien, data={"regelsaetze": "basis,din", "zusatzsprache": "en"})
+    assert r.status_code == 200, r.text
+    lauf = r.json()
+    assert lauf["dateien"] == 3 and len(lauf["ergebnisse"]) == 2 and len(lauf["fehler"]) == 1
+    assert lauf["fehler"][0]["datei"] == "Kaputt.docx" and lauf["fehler"][0]["status"] == 422
+    assert [e["dateiname"] for e in lauf["ergebnisse"]] == ["Eins.docx", "Zwei.docx"]
+    assert lauf["pdfAnzahl"] == 8
+    assert all(e["sprachen"] == ["de", "en"] for e in lauf["ergebnisse"])
+
+    r = client.get(f"/api/lauf/{lauf['lauf']}")
+    assert r.status_code == 200 and len(r.json()["ergebnisse"]) == 2
+    z = client.get(lauf["zip"])
+    assert z.status_code == 200
+    namen = zipfile.ZipFile(io.BytesIO(z.content)).namelist()
+    assert len(namen) == 8 and any("Eins_" in n for n in namen) and any("Zwei_" in n for n in namen)
+    r = client.post(lauf["ablegen"])
+    assert r.status_code == 200 and len(r.json()["abgelegt"]) == 8 and r.json()["dokumente"] == 2
+
+    liste = client.get("/api/pruefungen").json()["pruefungen"]
+    assert [p["lauf"] for p in liste[:2]] == [lauf["lauf"], lauf["lauf"]]
+    assert client.get(f"/api/lauf/{lauf['lauf']}x").status_code == 404
+
+    # Mehrfachlauf mit Fortschritt: Dokumentzähler und ein Ergebnis je Datei.
+    with client.stream("POST", "/api/pruefung", files=dateien[:2], data={"regelsaetze": "din", "fortschritt": "1"}) as r:
+        zeilen = [json.loads(x) for x in r.iter_lines() if x.strip()]
+    ergebnisse = [x for x in zeilen if x.get("phase") == "ergebnis"]
+    assert [(x["dokument"], x["dokumente"], x["datei"]) for x in ergebnisse] == [(1, 2, "Eins.docx"), (2, 2, "Zwei.docx")]
+    assert zeilen[0] == {"phase": "lesen", "dokument": 1, "dokumente": 2, "datei": "Eins.docx"}
+    assert zeilen[-1]["phase"] == "fertig" and len(zeilen[-1]["lauf"]["ergebnisse"]) == 2
+
+    zu_viele = [("datei", (f"D{i}.docx", _docx(["a"]), "application/octet-stream")) for i in range(config.MAX_DATEIEN + 1)]
+    r = client.post("/api/pruefung", files=zu_viele, data={"regelsaetze": "din"})
+    assert r.status_code == 400 and str(config.MAX_DATEIEN) in r.json()["fehler"]
+    r = client.post("/api/pruefung", files=dateien[:1] + [("datei", ("x.txt", b"hallo", "text/plain"))], data={})
+    assert r.status_code == 400 and r.json()["fehler"].startswith("x.txt")
 
 
 def test_word_tabellen_werden_gelesen():

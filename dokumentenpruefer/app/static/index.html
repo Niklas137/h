@@ -124,9 +124,10 @@
         <div class="drop" id="drop">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
           <b style="font-weight:500" id="drop-text">Word (.docx) oder PDF hierher ziehen</b>
-          <span class="muted sm">Eine Datei je Prüfung, bis 25 MB</span>
-          <label class="btn" for="file" style="margin-top:4px">Datei auswählen</label><input type="file" id="file" accept=".docx,.pdf" hidden>
+          <span class="muted sm" id="drop-hint">Bis zu 20 Dateien je Prüfung, je bis 25 MB</span>
+          <label class="btn" for="file" style="margin-top:4px">Dateien auswählen</label><input type="file" id="file" accept=".docx,.pdf" multiple hidden>
         </div>
+        <ul class="file-list" id="file-list" hidden></ul>
         <div class="stack" style="gap:10px">
           <span class="label">Regelsätze für diese Prüfung</span>
           <div class="rule-row">
@@ -142,7 +143,7 @@
         </div>
         <div class="err" id="check-err" hidden></div>
         <div class="lauf" id="lauf" role="status" aria-live="polite" hidden>
-          <div class="lauf-kopf"><b>Dokument wird geprüft</b><span class="cap" id="lauf-datei"></span></div>
+          <div class="lauf-kopf"><b id="lauf-titel">Dokument wird geprüft</b><span class="cap" id="lauf-datei"></span></div>
           <ol class="lauf-phasen">
             <li data-phase="lesen"><span class="ldot"></span>Dokument lesen</li>
             <li data-phase="pruefen"><span class="ldot"></span>Regeln prüfen</li>
@@ -173,7 +174,19 @@
     </div>
 
     <div id="result" class="stack" hidden style="gap:var(--gap)">
-      <div class="card stack">
+      <div class="card stack" id="lauf-ergebnis" hidden>
+        <div class="row"><h2>Ergebnis des Laufs</h2><span class="cap" id="lauf-meta"></span></div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Dokument</th><th>Score</th><th>Ampel</th><th>Funde</th><th>Aufwand</th><th>Berichte</th></tr></thead>
+          <tbody id="lauf-tbody"></tbody>
+        </table></div>
+        <div class="actions-row">
+          <a class="btn" id="lauf-zip" href="#" download>Alle PDFs des Laufs als ZIP</a>
+          <button class="btn" id="lauf-store">Alle Berichte im Ordner output ablegen</button>
+        </div>
+        <span class="cap">Darunter die Einzelheiten zum ausgewählten Dokument. „Ansehen“ wechselt das Dokument.</span>
+      </div>
+      <div class="card stack" id="res-detail">
         <div class="row"><h2><span class="stepnum">1</span>Ergebnis</h2><span class="cap" id="res-meta"></span></div>
         <div class="res-grid">
           <div class="score"><b class="mono" id="res-score">–</b><span class="tick" id="res-ampel"></span></div>

@@ -14,7 +14,7 @@
     status: null, user: null, saved: null, draft: null,
     screen: 'start', step: 1, erst: { email: '', einmal: '', verifizierung: true },
     section: 'profil', help: false, langMenu: false, sheet: false, remember: false, showPwd: false,
-    run: { basis: true, din: true, ce: true }, lang2: 'none', file: null, result: null, busy: false,
+    run: { basis: true, din: true, ce: true }, lang2: 'none', files: [], result: null, laufErg: null, busy: false,
     toastTimer: null, popTimer: null,
     lauf: null, laufSichtbar: false, laufTimer: null
   };
@@ -40,6 +40,7 @@
   // ------------------------------------------------------------ Hilfen
   function initials(n) { var p = (n || '').trim().split(/\s+/); return ((p[0] ? p[0].charAt(0) : '') + (p[1] ? p[1].charAt(0) : '')).toUpperCase() || '–'; }
   function esc(s) { return String(s === null || s === undefined ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function fmtGroesse(b) { return b < 1024 * 1024 ? Math.max(1, Math.round(b / 1024)) + ' KB' : (b / 1024 / 1024).toFixed(1).replace('.', ',') + ' MB'; }
   function fmtDatum(iso) { if (!iso) return ''; var d = new Date(iso); if (isNaN(d)) return iso; return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
   function fmt(key, v) {
     if (typeof v === 'boolean') { if (key === 'dark') return v ? 'Dunkel' : 'Hell'; return v ? 'An' : 'Aus'; }
@@ -110,18 +111,22 @@
     $('s-email').value = u.email;
     $('grp-team').hidden = u.rolle !== 'admin'; $('nav-verwaltung').hidden = u.rolle !== 'admin';
 
+    var nf = S.files.length;
     var baseLang = LANGS[d.language] ? d.language : 'de';
     $('rl-main').textContent = LANGS_DE[baseLang]; $('ui-side').textContent = LANGS_DE[baseLang];
     var extra = (S.lang2 !== 'none' && S.lang2 !== baseLang && LANGS[S.lang2]) ? S.lang2 : null;
     $('rl-side').textContent = extra ? LANGS_DE[extra] : 'Keine';
     var langs = extra ? [baseLang, extra] : [baseLang];
-    $('report-plan').textContent = 'Erzeugt: Prüfbericht und Fachbericht in ' + langs.map(function (l) { return LANGS_DE[l]; }).join(' und ') + ' (' + (langs.length * 2) + ' PDFs)';
+    $('report-plan').textContent = 'Erzeugt: Prüfbericht und Fachbericht in ' + langs.map(function (l) { return LANGS_DE[l]; }).join(' und ') + ' (' + (langs.length * 2) + ' PDFs' + (nf > 1 ? ' je Dokument, ' + (langs.length * 2 * nf) + ' insgesamt' : '') + ')';
     $$('#seg-run-lang2 button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === S.lang2); });
     $$('[data-run]').forEach(function (el) { el.querySelector('.cb').classList.toggle('on', !!S.run[el.dataset.run]); });
-    $('drop-text').textContent = S.file ? S.file.name : 'Word (.docx) oder PDF hierher ziehen';
+    $('drop-text').textContent = nf === 0 ? 'Word (.docx) oder PDF hierher ziehen' : nf === 1 ? S.files[0].name : nf + ' Dateien ausgewählt';
+    $('file-list').hidden = nf < 1;
+    $('file-list').innerHTML = S.files.map(function (f, i) { return '<li><span class="t">' + esc(f.name) + '</span><span class="cap">' + fmtGroesse(f.size) + '</span>' + (S.busy ? '' : '<button type="button" class="btn-link" data-del="' + i + '">Entfernen</button>') + '</li>'; }).join('');
+    $$('#file-list [data-del]').forEach(function (b) { b.addEventListener('click', function () { dateiEntfernen(+b.dataset.del); }); });
     var runs = Object.keys(S.run).filter(function (k) { return S.run[k]; });
-    $('start-check').disabled = !S.file || !runs.length || S.busy;
-    $('start-check').innerHTML = S.busy ? '<span class="spinner"></span>Prüfung läuft' : 'Prüfung starten';
+    $('start-check').disabled = !nf || !runs.length || S.busy;
+    $('start-check').innerHTML = S.busy ? '<span class="spinner"></span>Prüfung läuft' : (nf > 1 ? nf + ' Dokumente prüfen' : 'Prüfung starten');
 
     $$('.snav [data-sec]').forEach(function (el) { el.classList.toggle('on', el.dataset.sec === S.section); });
     $$('[data-pane]').forEach(function (el) { el.hidden = el.dataset.pane !== S.section; });
@@ -154,6 +159,7 @@
       ['version-foot', 'version-main'].forEach(function (id) { $(id).textContent = 'v' + st.version; });
       $('version-info').textContent = st.version;
       $('kopf-side').textContent = st.berichtKopf || 'FSH-Documentation';
+      if (st.maxDateien) { MAX_DATEIEN = st.maxDateien; $('drop-hint').textContent = 'Bis zu ' + MAX_DATEIEN + ' Dateien je Prüfung, je bis 25 MB'; }
       $('info-verif').textContent = st.verifizierung === 'code' ? 'Code per E-Mail' : 'Nur Einmal-Passwort';
       if (st.support && st.support.adresse) $('help-adresse').textContent = st.support.adresse;
       if (st.support && (st.support.telefon || st.support.zeiten)) {
@@ -174,7 +180,7 @@
     ladePruefungen();
   }
   function abmelden(serverseitig) {
-    var fertig = function () { S.user = null; S.saved = null; S.draft = null; S.result = null; S.file = null; $('result').hidden = true; $('f-login').reset(); go('start'); };
+    var fertig = function () { S.user = null; S.saved = null; S.draft = null; S.result = null; S.laufErg = null; S.files = []; $('result').hidden = true; $('f-login').reset(); go('start'); };
     if (serverseitig === false) { fertig(); return; }
     api('POST', '/api/abmelden').then(fertig, fertig);
   }
@@ -326,12 +332,26 @@
   });
 
   // ------------------------------------------------------------ Prüfung
-  function setFile(f) { if (!f) return; S.file = f; zeigeFehler('check-err', ''); render(); }
-  $('file').addEventListener('change', function () { setFile(this.files[0]); });
+  var MAX_DATEIEN = 20;
+  function setFiles(liste) {
+    var neu = Array.prototype.slice.call(liste || []);
+    if (!neu.length || S.busy) return;
+    var abgelehnt = [];
+    neu.forEach(function (f) {
+      if (!/\.(docx|pdf)$/i.test(f.name)) { abgelehnt.push(f.name); return; }
+      if (S.files.some(function (x) { return x.name === f.name && x.size === f.size; })) return;
+      S.files.push(f);
+    });
+    if (abgelehnt.length) showToast('Nur Word (.docx) und PDF: ' + abgelehnt.join(', '));
+    if (S.files.length > MAX_DATEIEN) { S.files = S.files.slice(0, MAX_DATEIEN); showToast('Höchstens ' + MAX_DATEIEN + ' Dateien je Prüfung'); }
+    zeigeFehler('check-err', ''); render();
+  }
+  function dateiEntfernen(i) { if (S.busy) return; S.files.splice(i, 1); render(); }
+  $('file').addEventListener('change', function () { setFiles(this.files); this.value = ''; });
   var drop = $('drop');
   ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.style.borderColor = 'var(--accent)'; }); });
   ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.style.borderColor = ''; }); });
-  drop.addEventListener('drop', function (e) { if (e.dataTransfer.files && e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
+  drop.addEventListener('drop', function (e) { if (e.dataTransfer.files) setFiles(e.dataTransfer.files); });
   $$('[data-run]').forEach(function (el) { el.addEventListener('click', function () { S.run[el.dataset.run] = !S.run[el.dataset.run]; render(); }); });
   $$('#seg-run-lang2 button').forEach(function (b) { b.addEventListener('click', function () { S.lang2 = b.dataset.v; try { localStorage.setItem('fsh-lang2', S.lang2); } catch (e) {} render(); }); });
 
@@ -341,6 +361,7 @@
     var l = S.lauf;
     $('lauf').hidden = !(S.busy && S.laufSichtbar && l);
     if (!l) return;
+    $('lauf-titel').textContent = l.dokumente > 1 ? 'Dokument ' + l.dokument + ' von ' + l.dokumente + ' wird geprüft' : 'Dokument wird geprüft';
     $('lauf-datei').textContent = l.datei || '';
     var idx = PHASEN.indexOf(l.phase);
     $$('.lauf-phasen li').forEach(function (li, i) {
@@ -349,8 +370,8 @@
     });
     $('lauf-berichte').textContent = (l.phase === 'berichte' && l.von) ? 'Bericht ' + l.n + ' von ' + l.von : '';
   }
-  function laufStart(datei) {
-    S.lauf = { phase: 'lesen', datei: datei, n: 0, von: 0 }; S.laufSichtbar = false;
+  function laufStart(datei, anzahl) {
+    S.lauf = { phase: 'lesen', datei: datei, dokument: 1, dokumente: anzahl || 1, n: 0, von: 0 }; S.laufSichtbar = false;
     clearTimeout(S.laufTimer);
     S.laufTimer = setTimeout(function () { S.laufSichtbar = true; renderLauf(); }, 400);
   }
@@ -366,10 +387,11 @@
       var verarbeiten = function (zeile) {
         if (!zeile.trim()) return null;
         var e; try { e = JSON.parse(zeile); } catch (err) { return null; }
+        if (e.phase === 'ergebnis') return null; // Ergebnis oder Fehler eines einzelnen Dokuments, der Lauf geht weiter
         if (e.fehler) { var fehler = new Error(e.fehler); fehler.status = e.status; throw fehler; }
-        if (e.phase === 'fertig') return e.ergebnis;
-        if (e.id && e.pdfs) return e; // Antwort ohne Phasen, etwa von einem älteren Server
-        S.lauf = { phase: e.phase, datei: S.lauf ? S.lauf.datei : '', n: e.n || 0, von: e.von || 0 }; renderLauf();
+        if (e.phase === 'fertig') return e.lauf;
+        if (e.id && e.pdfs) return { lauf: null, dateien: 1, ergebnisse: [e], fehler: [], pdfAnzahl: e.pdfs.length, zip: e.zip, ablegen: null }; // älterer Server
+        S.lauf = { phase: e.phase, datei: e.datei || (S.lauf ? S.lauf.datei : ''), dokument: e.dokument || 1, dokumente: e.dokumente || (S.lauf ? S.lauf.dokumente : 1), n: e.n || 0, von: e.von || 0 }; renderLauf();
         return null;
       };
       if (!r.body || !r.body.getReader) {
@@ -397,18 +419,46 @@
   }
 
   $('start-check').addEventListener('click', function () {
-    if (!S.file || S.busy) return;
-    zeigeFehler('check-err', ''); S.result = null; $('result').hidden = true; S.busy = true; laufStart(S.file.name); render();
+    if (!S.files.length || S.busy) return;
+    zeigeFehler('check-err', ''); S.result = null; S.laufErg = null; $('result').hidden = true; S.busy = true; laufStart(S.files[0].name, S.files.length); render();
     var fd = new FormData();
-    fd.append('datei', S.file);
+    S.files.forEach(function (f) { fd.append('datei', f); });
     fd.append('regelsaetze', Object.keys(S.run).filter(function (k) { return S.run[k]; }).join(','));
     fd.append('zusatzsprache', S.lang2 === 'none' ? '' : S.lang2);
     fd.append('fortschritt', '1');
-    pruefungStreamen(fd).then(function (r) {
-      laufEnde(); S.busy = false; S.result = r; render(); zeigeErgebnis(r); ladePruefungen();
-      var a = AMPEL[r.ampel] || ['', r.ampel];
-      showPop(r.dateiname + ': ' + r.score + ' %, ' + a[1].split(' · ')[0] + '. ' + r.pdfs.length + ' PDFs liegen bereit.');
+    pruefungStreamen(fd).then(function (lauf) {
+      laufEnde(); S.busy = false; render();
+      if (!lauf.ergebnisse.length) { zeigeFehler('check-err', (lauf.fehler[0] && lauf.fehler[0].fehler) || 'Die Prüfung ist fehlgeschlagen. Bitte noch einmal versuchen.'); return; }
+      S.laufErg = lauf; S.result = lauf.ergebnisse[0];
+      zeigeLauf(lauf); zeigeErgebnis(S.result); ladePruefungen();
+      showPop(laufSatz(lauf));
     }).catch(function (err) { laufEnde(); S.busy = false; render(); zeigeFehler('check-err', err.message); });
+  });
+  function laufSatz(lauf) {
+    if (lauf.dateien === 1) { var r = lauf.ergebnisse[0]; var a = AMPEL[r.ampel] || ['', r.ampel]; return r.dateiname + ': ' + r.score + ' %, ' + a[1].split(' · ')[0] + '. ' + r.pdfs.length + ' PDFs liegen bereit.'; }
+    var z = { gruen: 0, gelb: 0, rot: 0 }; lauf.ergebnisse.forEach(function (r) { if (z[r.ampel] !== undefined) z[r.ampel]++; });
+    var s = lauf.ergebnisse.length + ' Dokumente geprüft: ' + z.gruen + ' Grün, ' + z.gelb + ' Gelb, ' + z.rot + ' Rot.';
+    if (lauf.fehler.length) s += ' ' + lauf.fehler.length + (lauf.fehler.length === 1 ? ' Datei' : ' Dateien') + ' nicht lesbar.';
+    return s + ' ' + lauf.pdfAnzahl + ' PDFs liegen bereit.';
+  }
+  function zeigeLauf(lauf) {
+    var mehrere = lauf.dateien > 1;
+    $('lauf-ergebnis').hidden = !mehrere;
+    if (!mehrere) return;
+    $('lauf-meta').textContent = lauf.ergebnisse.length + ' von ' + lauf.dateien + ' Dokumenten geprüft · ' + lauf.pdfAnzahl + ' PDFs';
+    var zeilen = lauf.ergebnisse.map(function (r) {
+      var a = AMPEL[r.ampel] || ['', r.ampel];
+      return '<tr><td data-l="Dokument" style="font-weight:500">' + esc(r.dateiname) + '</td><td data-l="Score" class="mono">' + r.score + ' %</td><td data-l="Ampel"><span class="tick"><span class="dot ' + a[0] + '"></span>' + esc(a[1]) + '</span></td><td data-l="Funde">' + r.fundeAnzahl + '</td><td data-l="Aufwand" class="mono">' + String(r.stunden).replace('.', ',') + ' h</td><td data-l="Berichte"><button class="btn-link" data-zeige="' + esc(r.id) + '">Ansehen</button></td></tr>';
+    }).concat(lauf.fehler.map(function (f) {
+      return '<tr><td data-l="Dokument" style="font-weight:500">' + esc(f.datei) + '</td><td colspan="5" class="muted" data-l="Hinweis">Nicht geprüft: ' + esc(f.fehler) + '</td></tr>';
+    }));
+    $('lauf-tbody').innerHTML = zeilen.join('');
+    $$('#lauf-tbody [data-zeige]').forEach(function (b) { b.addEventListener('click', function () { var r = lauf.ergebnisse.filter(function (x) { return x.id === b.dataset.zeige; })[0]; if (r) { S.result = r; zeigeErgebnis(r); } }); });
+    $('lauf-zip').href = lauf.zip;
+  }
+  $('lauf-store').addEventListener('click', function () {
+    if (!S.laufErg || !S.laufErg.ablegen) return;
+    api('POST', S.laufErg.ablegen).then(function (r) { showToast(r.abgelegt.length + ' PDFs aus ' + r.dokumente + ' Dokumenten im Ordner ' + (String(r.ordner).split('/').pop() || 'output') + ' abgelegt'); }).catch(function (err) { showToast(err.message); });
   });
 
   function zeigeErgebnis(r) {
@@ -437,7 +487,7 @@
       return '<tr><td data-l="ID" class="mono">' + esc(f.ID) + '</td><td data-l="Bereich">' + esc(f.Bereich) + '</td><td data-l="Klasse">' + kz + '</td><td data-l="Bewertung">' + esc(f.Bewertung) + '</td><td data-l="Empfehlung">' + esc(f.Empfehlung) + '</td></tr>';
     }).join('') || '<tr><td colspan="5" class="muted">Keine Abweichungen festgestellt.</td></tr>';
     $('result').hidden = false;
-    $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    (S.laufErg && S.laufErg.dateien > 1 ? $('res-detail') : $('result')).scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   function ladePruefungen() {
     api('GET', '/api/pruefungen').then(function (d) {
@@ -445,14 +495,14 @@
         var a = AMPEL[p.ampel] || ['', p.ampel];
         return '<tr><td data-l="Datum" class="mono">' + esc(fmtDatum(p.erstellt)) + '</td><td data-l="Dokument">' + esc(p.dateiname) + '</td><td data-l="Score" class="mono">' + p.score + ' %</td><td data-l="Ampel"><span class="tick"><span class="dot ' + a[0] + '"></span>' + esc(a[1]) + '</span></td><td data-l="Berichte"><button class="btn-link" data-open="' + esc(p.id) + '">Öffnen</button></td></tr>';
       }).join('') || '<tr><td colspan="5" class="muted">Noch keine Prüfung.</td></tr>';
-      $$('[data-open]').forEach(function (b) { b.addEventListener('click', function () { api('GET', '/api/pruefung/' + b.dataset.open).then(function (r) { S.result = r; zeigeErgebnis(r); }).catch(function (err) { showToast(err.message); }); }); });
+      $$('[data-open]').forEach(function (b) { b.addEventListener('click', function () { api('GET', '/api/pruefung/' + b.dataset.open).then(function (r) { S.result = r; S.laufErg = null; $('lauf-ergebnis').hidden = true; zeigeErgebnis(r); }).catch(function (err) { showToast(err.message); }); }); });
     }).catch(function () {});
   }
   $('pop-close').addEventListener('click', hidePop);
   $('pop-open').addEventListener('click', function () { hidePop(); if (S.result) { $('result').hidden = false; $('result').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
   $('pop-demo').addEventListener('click', function () { showPop('Beispiel.docx: 82 %, Grün. 4 PDFs liegen bereit.', true); });
   $('act-store').addEventListener('click', function () { if (!S.result) return; api('POST', '/api/pruefung/' + S.result.id + '/ablegen').then(function (r) { showToast(r.abgelegt.length + ' PDFs im Ordner ' + (String(r.ordner).split('/').pop() || 'output') + ' abgelegt'); }).catch(function (err) { showToast(err.message); }); });
-  $('act-done').addEventListener('click', function () { S.result = null; S.file = null; $('file').value = ''; $('result').hidden = true; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); showToast('Prüfung abgeschlossen'); });
+  $('act-done').addEventListener('click', function () { S.result = null; S.laufErg = null; S.files = []; $('file').value = ''; $('result').hidden = true; $('lauf-ergebnis').hidden = true; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); showToast('Prüfung abgeschlossen'); });
   $('act-mail').addEventListener('click', function () { if (!S.result) return; $('mail-sub').textContent = 'Fachbericht zu ' + S.result.dateiname + ' in ' + S.result.sprachen.map(function (l) { return LANGS_DE[l] || l; }).join(' und '); $('mail-text').hidden = true; $('mail-copy').hidden = true; zeigeFehler('mail-err', ''); $('modal-mail').hidden = false; });
   $('mail-close').addEventListener('click', function () { $('modal-mail').hidden = true; });
   $('mail-go').addEventListener('click', function () {

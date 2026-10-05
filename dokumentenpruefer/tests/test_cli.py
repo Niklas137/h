@@ -38,3 +38,23 @@ def test_cli_fehler(tmp_path, capsys):
     kaputt = tmp_path / "kaputt.docx"
     kaputt.write_bytes(b"kein zip")
     assert cli.main(["pruefen", str(kaputt), "--ausgabe", str(tmp_path)]) == 3
+
+
+def test_cli_mehrere_dateien(tmp_path, capsys):
+    """Mehrere Dateien in einem Aufruf: jede bekommt Berichte, eine kaputte ändert nur den Exit-Code."""
+    a, b, kaputt = tmp_path / "A.docx", tmp_path / "B.docx", tmp_path / "Kaputt.docx"
+    _docx(a)
+    _docx(b)
+    kaputt.write_bytes(b"kein zip")
+    ziel = tmp_path / "out"
+    rc = cli.main(["pruefen", str(a), str(b), str(kaputt), "--regelsaetze", "din", "--ausgabe", str(ziel), "--json"])
+    assert rc == 3
+    out, err = capsys.readouterr()
+    liste = json.loads(out)
+    assert [d["datei"] for d in liste] == ["A.docx", "B.docx"]
+    assert "Kaputt.docx" in err
+    assert len(list(ziel.glob("*.pdf"))) == 4
+    rc = cli.main(["pruefen", str(a), str(b), "--regelsaetze", "din", "--ausgabe", str(ziel)])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "2 von 2 Dokumenten geprüft." in out and out.count("Fazit:") == 2

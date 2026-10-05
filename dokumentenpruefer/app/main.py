@@ -126,6 +126,7 @@ def status() -> dict[str, Any]:
         "sprachen": config.SPRACHEN,
         "support": {"adresse": config.SUPPORT_ADRESSE, "telefon": config.SUPPORT_TELEFON, "zeiten": config.SUPPORT_ZEITEN},
         "berichtKopf": config.BERICHT_KOPF,
+        "maxDateien": config.MAX_DATEIEN,
     }
 
 
@@ -440,6 +441,7 @@ def _pruefung_durchfuehren(
     zusatz: str | None,
     user: dict[str, Any],
     melden: Callable[[str, dict[str, Any]], None],
+    lauf_id: str | None = None,
 ) -> dict[str, Any]:
     """Läuft in einem Arbeitsfaden, damit der Server währenddessen bedienbar bleibt.
 
@@ -459,8 +461,8 @@ def _pruefung_durchfuehren(
         ordner = config.PRUEFUNGEN / pruef_id
         ordner.mkdir(parents=True, exist_ok=True)
         con.execute(
-            "INSERT INTO pruefungen (id, user_id, dateiname, score, ampel, stunden, funde, sprachen, regelsaetze, erstellt, ergebnis, ordner)"
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO pruefungen (id, user_id, dateiname, score, ampel, stunden, funde, sprachen, regelsaetze, erstellt, ergebnis, ordner, lauf)"
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 pruef_id,
                 user["id"],
@@ -474,6 +476,7 @@ def _pruefung_durchfuehren(
                 db.jetzt(),
                 json.dumps(ergebnis, ensure_ascii=False),
                 str(ordner),
+                lauf_id,
             ),
         )
         row = _pruefung_laden(con, user, pruef_id)
@@ -486,21 +489,82 @@ def _pruefung_durchfuehren(
     return _pruefung_antwort(row)
 
 
+def _lauf_antwort(lauf_id: str, ergebnisse: list[dict[str, Any]], fehler: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "lauf": lauf_id,
+        "dateien": len(ergebnisse) + len(fehler),
+        "ergebnisse": ergebnisse,
+        "fehler": fehler,
+        "pdfAnzahl": sum(len(e["pdfs"]) for e in ergebnisse),
+        "zip": f"/api/lauf/{lauf_id}/zip",
+        "ablegen": f"/api/lauf/{lauf_id}/ablegen",
+    }
+
+
+def _lauf_durchfuehren(
+    dateien: list[tuple[str, bytes]],
+    gewaehlt: list[str],
+    zusatz: str | None,
+    user: dict[str, Any],
+    melden: Callable[[str, dict[str, Any]], None],
+) -> dict[str, Any]:
+    """Prüft alle Dateien eines Laufs nacheinander. Ein unlesbares Dokument stoppt die anderen nicht.
+
+    Nur defekte Regeldateien brechen den ganzen Lauf ab, weil dann kein Ergebnis verlässlich wäre.
+    """
+    lauf_id = uuid.uuid4().hex[:12]
+    ergebnisse: list[dict[str, Any]] = []
+    fehler: list[dict[str, Any]] = []
+    anzahl = len(dateien)
+    for i, (name, inhalt) in enumerate(dateien, 1):
+        stand = {"dokument": i, "dokumente": anzahl, "datei": name}
+
+        def melden_dokument(phase: str, daten: dict[str, Any], _stand: dict[str, Any] = stand) -> None:
+            melden(phase, {**_stand, **daten})
+
+        try:
+            antwort = _pruefung_durchfuehren(name, inhalt, gewaehlt, zusatz, user, melden_dokument, lauf_id)
+        except lesen.LeseFehler as e:
+            fehler.append({**stand, "fehler": str(e), "status": 422})
+            melden("ergebnis", fehler[-1])
+            continue
+        except regeln.RegelFehler:
+            raise
+        except Exception:
+            log.exception("Prüfung von %s fehlgeschlagen", name)
+            fehler.append({**stand, "fehler": "Die Prüfung ist fehlgeschlagen. Bitte noch einmal versuchen.", "status": 500})
+            melden("ergebnis", fehler[-1])
+            continue
+        ergebnisse.append(antwort)
+        melden("ergebnis", {**stand, "ergebnis": antwort})
+    return _lauf_antwort(lauf_id, ergebnisse, fehler)
+
+
 @app.post("/api/pruefung")
 async def pruefung_starten(
     request: Request,
-    datei: UploadFile = File(...),
+    datei: list[UploadFile] = File(...),
     regelsaetze: str = Form("basis,din,ce"),
     zusatzsprache: str = Form(""),
     fortschritt: str = Form(""),
     user: dict[str, Any] = Depends(aktueller_benutzer),
 ):
-    name = Path(datei.filename or "dokument").name
-    if not name.lower().endswith((".docx", ".pdf")):
-        return _fehler(400, "Nur Word (.docx) und PDF (.pdf) werden geprüft.")
-    inhalt = await datei.read()
-    if len(inhalt) > config.UPLOAD_MAX_BYTES:
-        return _fehler(413, "Die Datei ist größer als 25 MB.")
+    """Eine oder mehrere Dateien (Feld „datei“ mehrfach) in einem Lauf prüfen.
+
+    Antwort bei einer Datei: die Prüfung selbst. Bei mehreren: der Lauf mit Ergebnissen und Fehlern je Datei.
+    Mit fortschritt=1 kommt ein Zeilenstrom (NDJSON): Phasen je Dokument, ein „ergebnis“ je Dokument, zuletzt „fertig“.
+    """
+    if len(datei) > config.MAX_DATEIEN:
+        return _fehler(400, f"Höchstens {config.MAX_DATEIEN} Dateien je Prüfung.")
+    dateien: list[tuple[str, bytes]] = []
+    for d in datei:
+        name = Path(d.filename or "dokument").name
+        if not name.lower().endswith((".docx", ".pdf")):
+            return _fehler(400, f"{name}: Nur Word (.docx) und PDF (.pdf) werden geprüft.")
+        inhalt = await d.read()
+        if len(inhalt) > config.UPLOAD_MAX_BYTES:
+            return _fehler(413, f"{name} ist größer als 25 MB.")
+        dateien.append((name, inhalt))
     gewaehlt = list(dict.fromkeys(r.strip() for r in regelsaetze.split(",") if r.strip()))
     if not gewaehlt or any(r not in config.REGELSAETZE for r in gewaehlt):
         return _fehler(400, "Bitte gültige Regelsätze wählen: basis, din oder ce.")
@@ -508,13 +572,16 @@ async def pruefung_starten(
 
     if fortschritt != "1":
         try:
-            return await run_in_threadpool(_pruefung_durchfuehren, name, inhalt, gewaehlt, zusatz, user, lambda phase, daten: None)
-        except lesen.LeseFehler as e:
-            return _fehler(422, str(e))
+            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, lambda phase, daten: None)
         except regeln.RegelFehler as e:
             return _fehler(503, str(e))
+        if len(dateien) == 1:
+            if lauf["fehler"]:
+                return _fehler(lauf["fehler"][0]["status"], lauf["fehler"][0]["fehler"])
+            return dict(lauf["ergebnisse"][0], lauf=lauf["lauf"])
+        return lauf
 
-    # Fortschritt als Zeilenstrom (NDJSON): eine Zeile je Phase, zuletzt das Ergebnis oder der Fehler.
+    # Fortschritt als Zeilenstrom (NDJSON): Phasen je Dokument, ein „ergebnis“ je Dokument, zuletzt „fertig“ oder ein Fehler.
     loop = asyncio.get_running_loop()
     ereignisse: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
 
@@ -523,14 +590,12 @@ async def pruefung_starten(
 
     async def arbeiten() -> None:
         try:
-            antwort = await run_in_threadpool(_pruefung_durchfuehren, name, inhalt, gewaehlt, zusatz, user, melden)
-            await ereignisse.put({"phase": "fertig", "ergebnis": antwort})
-        except lesen.LeseFehler as e:
-            await ereignisse.put({"fehler": str(e), "status": 422})
+            lauf = await run_in_threadpool(_lauf_durchfuehren, dateien, gewaehlt, zusatz, user, melden)
+            await ereignisse.put({"phase": "fertig", "lauf": lauf})
         except regeln.RegelFehler as e:
             await ereignisse.put({"fehler": str(e), "status": 503})
         except Exception:
-            log.exception("Prüfung von %s fehlgeschlagen", name)
+            log.exception("Prüflauf fehlgeschlagen")
             await ereignisse.put({"fehler": "Die Prüfung ist fehlgeschlagen. Bitte noch einmal versuchen.", "status": 500})
 
     async def zeilen():
@@ -539,7 +604,7 @@ async def pruefung_starten(
             while True:
                 ereignis = await ereignisse.get()
                 yield json.dumps(ereignis, ensure_ascii=False) + "\n"
-                if "fehler" in ereignis or ereignis.get("phase") == "fertig":
+                if ereignis.get("phase") == "fertig" or "phase" not in ereignis:
                     break
         finally:
             await aufgabe
@@ -547,12 +612,74 @@ async def pruefung_starten(
     return StreamingResponse(zeilen(), media_type="application/x-ndjson", headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"})
 
 
+def _lauf_laden(con, user: dict[str, Any], lauf_id: str) -> list[dict[str, Any]]:
+    rows = db.zeilen(con.execute("SELECT * FROM pruefungen WHERE lauf = ? AND user_id = ? ORDER BY erstellt, rowid", (lauf_id, user["id"])).fetchall())
+    if not rows:
+        raise HTTPException(status_code=404, detail="Prüflauf nicht gefunden.")
+    for row in rows:
+        row["pruefer_name"] = user["name"]
+    return rows
+
+
+def _ablegen(row: dict[str, Any]) -> list[str]:
+    """Kopiert alle Berichte einer Prüfung nach output; nie überschreiben, gleicher Inhalt wird wiederverwendet."""
+    config.OUTPUT.mkdir(parents=True, exist_ok=True)
+    abgelegt = []
+    for eintrag in _pdf_liste(row):
+        quelle = _pdf_pfad(row, eintrag["bericht"], eintrag["sprache"])
+        ziel = berichte.freier_dateiname(config.OUTPUT, eintrag["bericht"], row["dateiname"], eintrag["sprache"], row["erstellt"], quelle.read_bytes())
+        if not ziel.exists():
+            shutil.copy2(quelle, ziel)
+        abgelegt.append(str(ziel))
+    return abgelegt
+
+
+def _zip_bauen(rows: list[dict[str, Any]]) -> bytes:
+    puffer = io.BytesIO()
+    vergeben: set[str] = set()
+    with zipfile.ZipFile(puffer, "w", zipfile.ZIP_DEFLATED) as z:
+        for row in rows:
+            for eintrag in _pdf_liste(row):
+                pfad = _pdf_pfad(row, eintrag["bericht"], eintrag["sprache"])
+                name, n = pfad.name, 1
+                while name in vergeben:  # gleiche Datei zweimal im Lauf
+                    n += 1
+                    name = f"{pfad.stem}_{n}{pfad.suffix}"
+                vergeben.add(name)
+                z.write(pfad, name)
+    return puffer.getvalue()
+
+
+@app.get("/api/lauf/{lauf_id}")
+def lauf_lesen(lauf_id: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    with db.transaktion() as con:
+        rows = _lauf_laden(con, user, lauf_id)
+    return _lauf_antwort(lauf_id, [_pruefung_antwort(r) for r in rows], [])
+
+
+@app.get("/api/lauf/{lauf_id}/zip")
+def lauf_zip(lauf_id: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    with db.transaktion() as con:
+        rows = _lauf_laden(con, user, lauf_id)
+    datum = rows[0]["erstellt"][:10]
+    name = f"{datum}_Prueflauf_{len(rows)}_Dokumente_Berichte.zip"
+    return Response(_zip_bauen(rows), media_type="application/zip", headers={"Content-Disposition": f'attachment; filename="{name}"'})
+
+
+@app.post("/api/lauf/{lauf_id}/ablegen")
+def lauf_ablegen(lauf_id: str, user: dict[str, Any] = Depends(aktueller_benutzer)):
+    with db.transaktion() as con:
+        rows = _lauf_laden(con, user, lauf_id)
+    abgelegt = [pfad for row in rows for pfad in _ablegen(row)]
+    return {"abgelegt": abgelegt, "ordner": str(config.OUTPUT), "dokumente": len(rows)}
+
+
 @app.get("/api/pruefungen")
 def pruefungen(user: dict[str, Any] = Depends(aktueller_benutzer)):
     with db.transaktion() as con:
         rows = db.zeilen(
             con.execute(
-                "SELECT id, dateiname, score, ampel, stunden, funde, sprachen, erstellt FROM pruefungen WHERE user_id = ? ORDER BY erstellt DESC LIMIT 20",
+                "SELECT id, dateiname, score, ampel, stunden, funde, sprachen, erstellt, lauf FROM pruefungen WHERE user_id = ? ORDER BY erstellt DESC, rowid DESC LIMIT 20",
                 (user["id"],),
             ).fetchall()
         )
@@ -584,14 +711,8 @@ def pruefung_zip(pruef_id: str, user: dict[str, Any] = Depends(aktueller_benutze
     with db.transaktion() as con:
         row = _pruefung_laden(con, user, pruef_id)
     row["pruefer_name"] = user["name"]
-    puffer = io.BytesIO()
-    with zipfile.ZipFile(puffer, "w", zipfile.ZIP_DEFLATED) as z:
-        for eintrag in _pdf_liste(row):
-            pfad = _pdf_pfad(row, eintrag["bericht"], eintrag["sprache"])
-            z.write(pfad, pfad.name)
-    puffer.seek(0)
     name = berichte.dateiname("pruef", row["dateiname"], "de", row["erstellt"]).replace("_Pruefbericht_DE_v01.pdf", "_Berichte.zip")
-    return Response(puffer.getvalue(), media_type="application/zip", headers={"Content-Disposition": f'attachment; filename="{name}"'})
+    return Response(_zip_bauen([row]), media_type="application/zip", headers={"Content-Disposition": f'attachment; filename="{name}"'})
 
 
 @app.post("/api/pruefung/{pruef_id}/ablegen")
@@ -599,16 +720,7 @@ def pruefung_ablegen(pruef_id: str, user: dict[str, Any] = Depends(aktueller_ben
     with db.transaktion() as con:
         row = _pruefung_laden(con, user, pruef_id)
     row["pruefer_name"] = user["name"]
-    config.OUTPUT.mkdir(parents=True, exist_ok=True)
-    abgelegt = []
-    for eintrag in _pdf_liste(row):
-        quelle = _pdf_pfad(row, eintrag["bericht"], eintrag["sprache"])
-        # Nie überschreiben: gleicher Inhalt wird wiederverwendet, sonst nächste Version v02, v03, ...
-        ziel = berichte.freier_dateiname(config.OUTPUT, eintrag["bericht"], row["dateiname"], eintrag["sprache"], row["erstellt"], quelle.read_bytes())
-        if not ziel.exists():
-            shutil.copy2(quelle, ziel)
-        abgelegt.append(str(ziel))
-    return {"abgelegt": abgelegt, "ordner": str(config.OUTPUT)}
+    return {"abgelegt": _ablegen(row), "ordner": str(config.OUTPUT)}
 
 
 @app.post("/api/pruefung/{pruef_id}/mail-entwurf")

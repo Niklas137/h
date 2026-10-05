@@ -343,3 +343,9 @@ html { scroll-behavior: smooth; }
 .lauf-phasen li.fertig .ldot { background: var(--success); }
 @keyframes lauf-puls { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
 @media (prefers-reduced-motion: reduce) { .lauf-phasen li.aktiv .ldot { animation: none; } }
+
+/* Dateiliste unter der Ablagefläche (mehrere Dokumente je Prüfung) */
+.file-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--bsub); border-radius: 4px; }
+.file-list li { display: flex; align-items: center; gap: 12px; padding: 8px 12px; font-size: calc(14px * var(--k)); border-top: 1px solid var(--bsub); }
+.file-list li:first-child { border-top: 0; }
+.file-list li .t { flex: 1; min-width: 0; overflow-wrap: anywhere; }

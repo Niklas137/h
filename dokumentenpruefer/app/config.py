@@ -59,6 +59,8 @@ COOKIE_NAME = "dp_sitzung"
 COOKIE_SECURE = os.environ.get("DP_COOKIE_SECURE", "0") == "1"
 
 UPLOAD_MAX_BYTES = 25 * 1024 * 1024
+# Höchstzahl Dateien je Prüfung (ein Lauf); jede Datei bekommt eigene Berichte.
+MAX_DATEIEN = int(os.environ.get("DP_MAX_DATEIEN", "20"))
 
 
 def geheimnis() -> str:

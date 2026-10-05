@@ -58,9 +58,11 @@ CREATE TABLE IF NOT EXISTS pruefungen (
     regelsaetze TEXT NOT NULL,
     erstellt TEXT NOT NULL,
     ergebnis TEXT NOT NULL,
-    ordner TEXT NOT NULL
+    ordner TEXT NOT NULL,
+    lauf TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_pruefungen_user ON pruefungen(user_id, erstellt DESC);
+CREATE INDEX IF NOT EXISTS idx_pruefungen_lauf ON pruefungen(lauf);
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
 """
 
@@ -77,9 +79,26 @@ def verbinden(pfad: Path | None = None) -> sqlite3.Connection:
     return con
 
 
+# Spalten, die nach der ersten Fassung dazukamen: (Tabelle, Spalte, Definition).
+NACHTRAEGE = [
+    ("pruefungen", "lauf", "TEXT"),
+]
+
+
+def _nachtragen(con: sqlite3.Connection) -> None:
+    """Ergänzt fehlende Spalten in bestehenden Datenbanken, ohne Daten anzufassen."""
+    for tabelle, spalte, definition in NACHTRAEGE:
+        vorhanden = {r[1] for r in con.execute(f"PRAGMA table_info({tabelle})").fetchall()}
+        if spalte not in vorhanden:
+            con.execute(f"ALTER TABLE {tabelle} ADD COLUMN {spalte} {definition}")
+
+
 def init_db(pfad: Path | None = None) -> None:
     with verbinden(pfad) as con:
-        con.executescript(SCHEMA)
+        # CREATE TABLE IF NOT EXISTS legt neue Datenbanken vollständig an; bei alten fehlt eventuell eine Spalte.
+        con.executescript(SCHEMA.split("CREATE INDEX", 1)[0])
+        _nachtragen(con)
+        con.executescript("CREATE INDEX" + SCHEMA.split("CREATE INDEX", 1)[1])
 
 
 @contextmanager

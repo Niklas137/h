@@ -78,12 +78,25 @@ Die Oberfläche selbst ist in dieser Version deutsch; die Spracheinstellung steu
 
 ## Ablauf einer Prüfung
 
+Eine Prüfung nimmt eine oder mehrere Dateien, bis zu 20 (`DP_MAX_DATEIEN`), je bis 25 MB. Die
+Dateien eines Aufrufs bilden einen Lauf: Jedes Dokument wird einzeln gelesen, geprüft und bekommt
+seine eigenen Berichte; ein unlesbares Dokument wird mit Fehlermeldung übersprungen, die anderen
+laufen weiter. Nur defekte Regeldateien brechen den ganzen Lauf ab.
+
 Lesen, Prüfen und PDF-Erzeugung laufen in einem Arbeitsfaden, der Server bleibt währenddessen
-bedienbar. Die Datenbanktransaktion ist kurz, die PDFs entstehen danach. Die Oberfläche fragt die
-Prüfung mit `fortschritt=1` an und bekommt einen Zeilenstrom (NDJSON): je eine Zeile für die Phasen
-`lesen`, `pruefen`, `berichte` (mit `n` von `von`), zuletzt `fertig` mit dem Ergebnis oder `fehler`.
-Das Statuspanel zeigt diese Phasen; es erscheint erst, wenn die Prüfung länger als 400 ms dauert,
-und nennt keinen erfundenen Prozentwert. Ohne `fortschritt` antwortet die Route wie bisher mit JSON.
+bedienbar. Die Datenbanktransaktion je Dokument ist kurz, die PDFs entstehen danach. Die
+Oberfläche fragt die Prüfung mit `fortschritt=1` an und bekommt einen Zeilenstrom (NDJSON): je
+Dokument Zeilen für die Phasen `lesen`, `pruefen`, `berichte` (mit `n` von `von`), jeweils mit
+`dokument`, `dokumente` und `datei`; nach jedem Dokument eine Zeile `ergebnis` (mit `ergebnis` oder
+`fehler`); zuletzt `fertig` mit dem Lauf. Das Statuspanel zeigt „Dokument n von N“ und die Phasen;
+es erscheint erst, wenn die Prüfung länger als 400 ms dauert, und nennt keinen erfundenen
+Prozentwert. Ohne `fortschritt` antwortet die Route mit JSON: bei einer Datei die Prüfung selbst,
+bei mehreren der Lauf (`ergebnisse`, `fehler`, `pdfAnzahl`, `zip`, `ablegen`).
+
+Lauf-Routen: `GET /api/lauf/{id}` (alle Prüfungen des Laufs), `GET /api/lauf/{id}/zip` (alle PDFs),
+`POST /api/lauf/{id}/ablegen` (alle Berichte nach `output/`). Die Oberfläche zeigt bei mehreren
+Dokumenten zuerst die Tabelle des Laufs (Dokument, Score, Ampel, Funde, Aufwand), darunter die
+Einzelheiten des gewählten Dokuments; „Ansehen“ wechselt.
 
 ## Was gelesen wird
 
@@ -106,14 +119,18 @@ Dateinamen: `JJJJ-MM-TT_Dokument_Pruefbericht_DE_v01.pdf`.
 
 ## Prüfung ohne Browser
 
-Für Claude Code oder Skripte prüft `app/cli.py` ein Dokument direkt und legt die PDFs ab:
+Für Claude Code oder Skripte prüft `app/cli.py` Dokumente direkt und legt die PDFs ab:
 
 ```bash
 ./.venv/bin/python -m app.cli pruefen ../inbox/Anleitung.docx --sprachen de,en --ausgabe ../output
+./.venv/bin/python -m app.cli pruefen ../inbox/*.docx --regelsaetze basis,din
 ```
 
+Mehrere Dateien werden nacheinander geprüft; eine unlesbare Datei wird gemeldet, die anderen laufen
+weiter. Der Exitcode ist der schlechteste je Datei (0 gut, 2 Aufruf, 3 Datei, 4 Regeldateien).
 `--sprachen` nimmt die Basissprache und höchstens eine Zusatzsprache, `--regelsaetze` standardmäßig
-`basis,din,ce`, `--json` gibt die Zusammenfassung maschinenlesbar aus.
+`basis,din,ce`, `--json` gibt die Zusammenfassung maschinenlesbar aus (eine Datei: Objekt, mehrere:
+Liste).
 
 ## Konfiguration (Umgebungsvariablen, alle optional)
 
@@ -136,7 +153,8 @@ Zugangsdaten gehören nicht ins Projekt. SMTP-Daten nur als Umgebungsvariable se
 ```
 
 Die Bestandstests prüfen Erstanmeldung, Passwortregel, Sperre, Einstellungen, Verwaltung, Rechte,
-Word-Prüfung, PDFs in vier Sprachen, ZIP, Ablage, Mail-Entwurf, CLI und Fortschritts-Zeilenstrom.
+Word-Prüfung, PDFs in vier Sprachen, ZIP, Ablage, Mail-Entwurf, CLI, Fortschritts-Zeilenstrom und
+Läufe mit mehreren Dateien (auch mit einer unlesbaren darunter, Höchstzahl, Lauf-ZIP und -Ablage).
 `tests/test_p0.py` ergänzt Gegenproben für ungültige Regeldateien (auch nach einer gültigen
 Ladung), ungültige Regelsatz-Auswahl, Sperrumgehung und den Vorprüfungssatz in beiden
 Berichtstypen und allen vier Sprachen.
@@ -166,7 +184,7 @@ app/db.py              SQLite-Schema und Verbindung
 app/einstellungen.py   Einstellungen je Benutzer
 app/mail.py            Versand des Codes (SMTP oder Protokoll)
 app/verwaltung.py      Kommandozeile für Konten
-app/cli.py             Kommandozeile: Dokument prüfen, PDFs ablegen
+app/cli.py             Kommandozeile: Dokumente prüfen, PDFs ablegen
 app/pruefer/lesen.py   Word und PDF einlesen
 app/pruefer/regeln.py  Regeldateien laden
 app/pruefer/pruefung.py Prüflogik (aus app.py übernommen), Regelsätze vorher validiert
