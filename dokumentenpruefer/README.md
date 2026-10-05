@@ -48,6 +48,11 @@ Empfehlungen in anderen Sprachen kann jede Regel die Felder `empfehlung_en`, `em
 
 ## Konten und Rollen
 
+- Inhaber: das erste Konto (angelegt mit `app.verwaltung admin`). Nur der Inhaber löscht Konten;
+  dabei gehen Sitzungen, Einstellungen und die Prüfungen samt Berichten der Person mit, abgelegte
+  Berichte in `output/` bleiben. Niemand außer dem Inhaber selbst kann sein Konto ändern, sperren
+  oder ihm ein neues Einmal-Passwort geben; sich selbst löschen kann er nicht. In bestehenden
+  Datenbanken wird beim Start das älteste Admin-Konto Inhaber.
 - `admin`: legt Benutzer an, vergibt neue Einmal-Passwörter, ändert Rollen und Status.
 - `mitglied`: prüft Dokumente, verwaltet nur das eigene Konto.
 - Neue Benutzer legt ein Admin unter Einstellungen → Verwaltung an. Er bekommt ein Einmal-Passwort

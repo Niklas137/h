@@ -171,3 +171,61 @@ def test_neues_einmal_passwort_hebt_sperre_auf(client, admin):
             neu = auth.einmal_passwort_erneuern(con, u["id"])
         r = c.post("/api/erstanmeldung/start", json={"email": "sperre2@test.local", "einmalPasswort": neu})
         assert r.status_code == 200, r.text
+
+
+def test_inhaber_loescht_konten(client, admin):
+    """Das erste Konto ist Inhaber. Nur er löscht Konten, nie sich selbst; andere Admins können ihn nicht anfassen."""
+    from fastapi.testclient import TestClient
+    from app import config, db
+    from app.main import app
+
+    assert client.get("/api/ich").json()["benutzer"]["inhaber"] is True
+
+    # Mitglied anlegen, einrichten, eine Prüfung machen
+    r = client.post("/api/benutzer", json={"email": "weg@test.local", "name": "Bald Weg", "rolle": "mitglied"})
+    assert r.status_code == 200, r.text
+    uid, einmal = r.json()["benutzer"]["id"], r.json()["einmalPasswort"]
+    with TestClient(app) as c:
+        code = c.post("/api/erstanmeldung/start", json={"email": "weg@test.local", "einmalPasswort": einmal}).json()["code"]
+        r = c.post("/api/erstanmeldung/abschluss", json={"email": "weg@test.local", "einmalPasswort": einmal, "code": code, "name": "Bald Weg", "passwort": PASSWORT, "passwort2": PASSWORT})
+        assert r.status_code == 200, r.text
+        assert r.json()["benutzer"]["inhaber"] is False
+        from tests.test_pruefung import LUECKENHAFT, _docx
+        r = c.post("/api/pruefung", files={"datei": ("Weg.docx", _docx(LUECKENHAFT[:1]), "application/octet-stream")}, data={"regelsaetze": "din"})
+        assert r.status_code == 200, r.text
+        ordner = config.PRUEFUNGEN / r.json()["id"]
+        assert ordner.is_dir()
+
+        liste = client.get("/api/benutzer").json()["benutzer"]
+        eintrag = [b for b in liste if b["id"] == uid][0]
+        assert eintrag["pruefungen"] == 1 and eintrag["inhaber"] is False
+
+        # Sich selbst löschen geht nicht
+        me = client.get("/api/ich").json()["benutzer"]["id"]
+        assert client.delete(f"/api/benutzer/{me}").status_code == 400
+        assert client.delete("/api/benutzer/999999").status_code == 404
+
+        # Inhaber löscht das Mitglied: Konto, Sitzung und Prüfung samt Ordner weg
+        r = client.delete(f"/api/benutzer/{uid}")
+        assert r.status_code == 200, r.text
+        assert r.json()["pruefungen"] == 1 and r.json()["geloescht"]["email"] == "weg@test.local"
+        assert not ordner.exists()
+        assert c.get("/api/ich").status_code == 401
+        assert client.post("/api/anmelden", json={"email": "weg@test.local", "passwort": PASSWORT}).status_code == 401
+        with db.transaktion() as con:
+            assert con.execute("SELECT COUNT(*) FROM pruefungen WHERE user_id = ?", (uid,)).fetchone()[0] == 0
+            assert con.execute("SELECT COUNT(*) FROM user_settings WHERE user_id = ?", (uid,)).fetchone()[0] == 0
+
+    # Ein zweiter Admin darf weder löschen noch den Inhaber anfassen
+    r = client.post("/api/benutzer", json={"email": "admin2@test.local", "name": "Zweiter Admin", "rolle": "admin"})
+    einmal2 = r.json()["einmalPasswort"]
+    with TestClient(app) as c:
+        code = c.post("/api/erstanmeldung/start", json={"email": "admin2@test.local", "einmalPasswort": einmal2}).json()["code"]
+        r = c.post("/api/erstanmeldung/abschluss", json={"email": "admin2@test.local", "einmalPasswort": einmal2, "code": code, "name": "Zweiter Admin", "passwort": PASSWORT, "passwort2": PASSWORT})
+        assert r.status_code == 200 and r.json()["benutzer"]["inhaber"] is False
+        me = client.get("/api/ich").json()["benutzer"]["id"]
+        assert c.delete(f"/api/benutzer/{me}").status_code == 403
+        assert c.patch(f"/api/benutzer/{me}", json={"rolle": "mitglied"}).status_code == 403
+        assert c.patch(f"/api/benutzer/{me}", json={"status": "gesperrt"}).status_code == 403
+        assert c.post(f"/api/benutzer/{me}/einmal-passwort").status_code == 403
+        assert client.get("/api/ich").json()["benutzer"]["rolle"] == "admin"

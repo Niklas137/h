@@ -307,7 +307,7 @@
 
       <div class="sec" data-pane="verwaltung" hidden>
         <div class="card flush">
-          <div class="head"><div class="kv"><h2>Benutzer</h2><span class="cap">Nur für Admins. Neue Konten bekommen ein Einmal-Passwort, das du persönlich weitergibst.</span></div><button class="btn" id="user-new">Benutzer anlegen</button></div>
+          <div class="head"><div class="kv"><h2>Benutzer</h2><span class="cap" id="users-hint">Nur für Admins. Neue Konten bekommen ein Einmal-Passwort, das du persönlich weitergibst.</span></div><button class="btn" id="user-new">Benutzer anlegen</button></div>
           <div class="tbl-wrap"><table>
             <thead><tr><th>Name</th><th>E-Mail</th><th>Rolle</th><th>Status</th><th>Aktion</th></tr></thead>
             <tbody id="users-tbody"></tbody>
@@ -384,6 +384,14 @@
       </div>
       <div class="actions"><button type="button" class="btn" id="user-close">Schließen</button><button type="submit" class="btn-p" id="user-save">Anlegen</button></div>
     </form>
+  </div>
+
+  <div class="modal" id="modal-del" hidden>
+    <div class="dialog" role="dialog" aria-labelledby="del-title">
+      <div class="kv"><h2 id="del-title">Konto löschen</h2><p class="muted sm" id="del-text"></p></div>
+      <div class="err" id="del-err" hidden></div>
+      <div class="actions"><button type="button" class="btn" id="del-close">Abbrechen</button><button type="button" class="btn-p" id="del-go">Konto löschen</button></div>
+    </div>
   </div>
 
   <div class="modal" id="modal-mail" hidden>

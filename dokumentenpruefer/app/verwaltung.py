@@ -43,11 +43,12 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Neues Einmal-Passwort für {user['email']}: {einmal}")
             return 0
         if args.befehl == "liste":
-            rows = db.zeilen(con.execute("SELECT email, name, rolle, status, angelegt_am FROM users ORDER BY angelegt_am").fetchall())
+            rows = db.zeilen(con.execute("SELECT email, name, rolle, status, angelegt_am, inhaber FROM users ORDER BY angelegt_am").fetchall())
             if not rows:
                 print("Keine Konten vorhanden.")
             for r in rows:
-                print(f"{r['email']:40} {r['name']:28} {r['rolle']:9} {r['status']:9} {r['angelegt_am'][:10]}")
+                rolle = "inhaber" if r["inhaber"] else r["rolle"]
+                print(f"{r['email']:40} {r['name']:28} {rolle:9} {r['status']:9} {r['angelegt_am'][:10]}")
             return 0
     return 1
 

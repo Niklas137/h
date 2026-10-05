@@ -311,8 +311,15 @@ def sitzung_beenden(kurz_id: str, user: dict[str, Any] = Depends(aktueller_benut
 @app.get("/api/benutzer")
 def benutzer_liste(user: dict[str, Any] = Depends(admin_benutzer)):
     with db.transaktion() as con:
-        rows = db.zeilen(con.execute("SELECT * FROM users ORDER BY angelegt_am").fetchall())
-    return {"benutzer": [auth.oeffentlich(r) for r in rows]}
+        rows = db.zeilen(con.execute("SELECT u.*, (SELECT COUNT(*) FROM pruefungen p WHERE p.user_id = u.id) AS pruefungen FROM users u ORDER BY angelegt_am").fetchall())
+    return {"benutzer": [dict(auth.oeffentlich(r), pruefungen=r["pruefungen"]) for r in rows]}
+
+
+def _inhaber_geschuetzt(ziel: dict[str, Any], user: dict[str, Any]) -> JSONResponse | None:
+    """Das Inhaber-Konto darf nur der Inhaber selbst anfassen."""
+    if ziel.get("inhaber") and ziel["id"] != user["id"]:
+        return _fehler(403, "Das Inhaber-Konto kann nur der Inhaber selbst ändern.")
+    return None
 
 
 @app.post("/api/benutzer")
@@ -340,6 +347,8 @@ def einmal_neu(user_id: int, user: dict[str, Any] = Depends(admin_benutzer)):
         ziel = auth.benutzer_per_id(con, user_id)
         if ziel is None:
             return _fehler(404, "Konto nicht gefunden.")
+        if (schutz := _inhaber_geschuetzt(ziel, user)) is not None:
+            return schutz
         einmal = auth.einmal_passwort_erneuern(con, user_id)
         auth.alle_sitzungen_beenden(con, user_id)
     return {"einmalPasswort": einmal, "gueltigTage": config.EINMAL_PASSWORT_TAGE}
@@ -352,6 +361,8 @@ async def benutzer_aendern(user_id: int, request: Request, user: dict[str, Any] 
         ziel = auth.benutzer_per_id(con, user_id)
         if ziel is None:
             return _fehler(404, "Konto nicht gefunden.")
+        if (schutz := _inhaber_geschuetzt(ziel, user)) is not None:
+            return schutz
         if "rolle" in daten:
             if daten["rolle"] not in ("admin", "mitglied"):
                 return _fehler(400, "Rolle muss admin oder mitglied sein.")
@@ -366,6 +377,28 @@ async def benutzer_aendern(user_id: int, request: Request, user: dict[str, Any] 
                 auth.alle_sitzungen_beenden(con, user_id)
         neu = auth.benutzer_per_id(con, user_id)
     return {"benutzer": auth.oeffentlich(neu)}
+
+
+@app.delete("/api/benutzer/{user_id}")
+def benutzer_loeschen(user_id: int, user: dict[str, Any] = Depends(admin_benutzer)):
+    """Nur der Inhaber. Löscht Konto, Sitzungen, Einstellungen und die Prüfungen samt Berichten.
+
+    Abgelegte Berichte im Ordner output bleiben liegen.
+    """
+    if not user.get("inhaber"):
+        return _fehler(403, "Konten löschen darf nur der Inhaber.")
+    with db.transaktion() as con:
+        ziel = auth.benutzer_per_id(con, user_id)
+        if ziel is None:
+            return _fehler(404, "Konto nicht gefunden.")
+        if ziel["id"] == user["id"]:
+            return _fehler(400, "Du kannst dein eigenes Konto nicht löschen.")
+        ordner = [r["ordner"] for r in db.zeilen(con.execute("SELECT ordner FROM pruefungen WHERE user_id = ?", (user_id,)).fetchall())]
+        con.execute("DELETE FROM users WHERE id = ?", (user_id,))  # Sitzungen, Einstellungen, Prüfungen hängen daran
+    for pfad in ordner:
+        shutil.rmtree(pfad, ignore_errors=True)
+    log.info("Konto %s gelöscht durch %s, %d Prüfungen entfernt", ziel["email"], user["email"], len(ordner))
+    return {"geloescht": auth.oeffentlich(ziel), "pruefungen": len(ordner)}
 
 
 # ---------------------------------------------------------------- Prüfung

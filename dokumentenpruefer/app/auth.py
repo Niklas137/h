@@ -89,10 +89,12 @@ def benutzer_anlegen(con, email: str, name: str, rolle: str = "mitglied") -> tup
     email = email.strip().lower()
     einmal = einmal_passwort_erzeugen()
     ablauf = _iso(_utc() + timedelta(days=config.EINMAL_PASSWORT_TAGE))
+    # Das allererste Konto ist der Inhaber: nur er darf Konten löschen, niemand kann ihm die Rechte nehmen.
+    inhaber = 1 if rolle == "admin" and con.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0 else 0
     con.execute(
-        "INSERT INTO users (email, name, rolle, status, einmal_hash, einmal_ablauf, angelegt_am)"
-        " VALUES (?, ?, ?, 'einmal', ?, ?, ?)",
-        (email, name.strip(), rolle, hash_passwort(einmal), ablauf, db.jetzt()),
+        "INSERT INTO users (email, name, rolle, status, einmal_hash, einmal_ablauf, angelegt_am, inhaber)"
+        " VALUES (?, ?, ?, 'einmal', ?, ?, ?, ?)",
+        (email, name.strip(), rolle, hash_passwort(einmal), ablauf, db.jetzt(), inhaber),
     )
     user = db.zeile(con.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone())
     assert user is not None
@@ -125,6 +127,7 @@ def oeffentlich(user: dict[str, Any]) -> dict[str, Any]:
         "email": user["email"],
         "name": user["name"],
         "rolle": user["rolle"],
+        "inhaber": bool(user.get("inhaber")),
         "status": user["status"],
         "angelegtAm": user["angelegt_am"],
         "letzteAnmeldung": user["letzte_anmeldung"],

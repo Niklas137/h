@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS users (
     fehlversuche INTEGER NOT NULL DEFAULT 0,
     gesperrt_bis TEXT,
     angelegt_am TEXT NOT NULL,
-    letzte_anmeldung TEXT
+    letzte_anmeldung TEXT,
+    inhaber INTEGER NOT NULL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS user_settings (
     user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
@@ -82,6 +83,7 @@ def verbinden(pfad: Path | None = None) -> sqlite3.Connection:
 # Spalten, die nach der ersten Fassung dazukamen: (Tabelle, Spalte, Definition).
 NACHTRAEGE = [
     ("pruefungen", "lauf", "TEXT"),
+    ("users", "inhaber", "INTEGER NOT NULL DEFAULT 0"),
 ]
 
 
@@ -91,6 +93,9 @@ def _nachtragen(con: sqlite3.Connection) -> None:
         vorhanden = {r[1] for r in con.execute(f"PRAGMA table_info({tabelle})").fetchall()}
         if spalte not in vorhanden:
             con.execute(f"ALTER TABLE {tabelle} ADD COLUMN {spalte} {definition}")
+    # Genau ein Konto ist Inhaber: das älteste Admin-Konto, falls noch keines markiert ist.
+    if con.execute("SELECT COUNT(*) FROM users WHERE inhaber = 1").fetchone()[0] == 0:
+        con.execute("UPDATE users SET inhaber = 1 WHERE id = (SELECT id FROM users WHERE rolle = 'admin' ORDER BY angelegt_am, id LIMIT 1)")
 
 
 def init_db(pfad: Path | None = None) -> None:

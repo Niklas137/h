@@ -105,7 +105,8 @@
     $('ic-sun').hidden = !d.dark; $('ic-moon').hidden = d.dark;
     var nm = d.name || u.name || '–', ini = initials(nm);
     $('user-name').textContent = nm; $('user-name2').textContent = nm; $('user-name3').textContent = nm;
-    $('user-rolle').textContent = u.rolle === 'admin' ? 'Admin' : 'Mitglied'; $('rolle-badge').textContent = u.rolle === 'admin' ? 'Admin' : 'Mitglied';
+    var rolleTxt = u.inhaber ? 'Admin · Inhaber' : (u.rolle === 'admin' ? 'Admin' : 'Mitglied');
+    $('user-rolle').textContent = rolleTxt; $('rolle-badge').textContent = rolleTxt;
     $('avatar').textContent = ini; $('avatar2').textContent = ini;
     $('hello').textContent = 'Hallo ' + nm.trim().split(/\s+/)[0];
     $('s-email').value = u.email;
@@ -308,10 +309,19 @@
       $('users-tbody').innerHTML = d.benutzer.map(function (u) {
         var s = st[u.status] || ['', u.status];
         var selbst = u.id === S.user.id;
-        var aktion = '<button class="btn-link" data-otp="' + u.id + '">Neues Einmal-Passwort</button>' +
-          (selbst || u.status === 'einmal' ? '' : ' · <button class="btn-link" data-status="' + u.id + '" data-neu="' + (u.status === 'gesperrt' ? 'aktiv' : 'gesperrt') + '">' + (u.status === 'gesperrt' ? 'Entsperren' : 'Sperren') + '</button>');
-        return '<tr><td data-l="Name" style="font-weight:500">' + esc(u.name) + (selbst ? ' <span class="cap">(du)</span>' : '') + '</td><td data-l="E-Mail" class="muted">' + esc(u.email) + '</td><td data-l="Rolle">' + (u.rolle === 'admin' ? 'Admin' : 'Mitglied') + '</td><td data-l="Status"><span class="tick"><span class="dot ' + s[0] + '"></span>' + s[1] + '</span></td><td data-l="Aktion">' + aktion + '</td></tr>';
+        var fremderInhaber = u.inhaber && !selbst;
+        var aktion = fremderInhaber ? '<span class="cap">Nur der Inhaber selbst</span>' : '<button class="btn-link" data-otp="' + u.id + '">Neues Einmal-Passwort</button>' +
+          (selbst || u.status === 'einmal' ? '' : ' · <button class="btn-link" data-status="' + u.id + '" data-neu="' + (u.status === 'gesperrt' ? 'aktiv' : 'gesperrt') + '">' + (u.status === 'gesperrt' ? 'Entsperren' : 'Sperren') + '</button>') +
+          (S.user.inhaber && !selbst ? ' · <button class="btn-link" data-del-user="' + u.id + '" data-name="' + esc(u.name) + '" data-email="' + esc(u.email) + '" data-n="' + (u.pruefungen || 0) + '">Löschen</button>' : '');
+        return '<tr><td data-l="Name" style="font-weight:500">' + esc(u.name) + (selbst ? ' <span class="cap">(du)</span>' : '') + '</td><td data-l="E-Mail" class="muted">' + esc(u.email) + '</td><td data-l="Rolle">' + (u.inhaber ? 'Admin · Inhaber' : u.rolle === 'admin' ? 'Admin' : 'Mitglied') + '</td><td data-l="Status"><span class="tick"><span class="dot ' + s[0] + '"></span>' + s[1] + '</span></td><td data-l="Aktion">' + aktion + '</td></tr>';
       }).join('');
+      $('users-hint').textContent = S.user.inhaber ? 'Neue Konten bekommen ein Einmal-Passwort, das du persönlich weitergibst. Löschen kann nur der Inhaber, also du.' : 'Nur für Admins. Neue Konten bekommen ein Einmal-Passwort, das du persönlich weitergibst. Löschen kann nur der Inhaber.';
+      $$('[data-del-user]').forEach(function (b) { b.addEventListener('click', function () {
+        S.delUser = b.dataset.delUser; zeigeFehler('del-err', '');
+        var n = +b.dataset.n;
+        $('del-text').textContent = 'Konto von ' + b.dataset.name + ' (' + b.dataset.email + ') löschen? Sitzungen, Einstellungen und ' + (n === 1 ? '1 Prüfung' : n + ' Prüfungen') + ' mit Berichten werden gelöscht. Abgelegte Berichte im Ordner output bleiben. Das lässt sich nicht rückgängig machen.';
+        $('modal-del').hidden = false;
+      }); });
       $$('[data-otp]').forEach(function (b) { b.addEventListener('click', function () {
         api('POST', '/api/benutzer/' + b.dataset.otp + '/einmal-passwort').then(function (r) { zeigeOtp('Neues Einmal-Passwort. Alle Sitzungen dieser Person wurden beendet.', r.einmalPasswort); ladeBenutzer(); }).catch(function (err) { showToast(err.message); });
       }); });
@@ -323,6 +333,13 @@
   function zeigeOtp(text, otp) { $('user-form').hidden = true; $('user-done').hidden = false; $('user-save').hidden = true; $('user-done-text').textContent = text; $('user-otp').textContent = otp; $('modal-user').hidden = false; }
   $('user-new').addEventListener('click', function () { $('f-user').reset(); zeigeFehler('user-err', ''); $('user-form').hidden = false; $('user-done').hidden = true; $('user-save').hidden = false; $('modal-user').hidden = false; $('u-name').focus(); });
   $('user-close').addEventListener('click', function () { $('modal-user').hidden = true; });
+  $('del-close').addEventListener('click', function () { $('modal-del').hidden = true; });
+  $('del-go').addEventListener('click', function () {
+    if (!S.delUser) return; $('del-go').disabled = true;
+    api('DELETE', '/api/benutzer/' + S.delUser).then(function (r) { $('modal-del').hidden = true; showToast('Konto von ' + r.geloescht.name + ' gelöscht'); ladeBenutzer(); })
+      .catch(function (err) { zeigeFehler('del-err', err.message); })
+      .then(function () { $('del-go').disabled = false; });
+  });
   $('user-copy').addEventListener('click', function () { var t = $('user-otp').textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { showToast('Kopiert'); }, function () { showToast('Bitte markieren und kopieren'); }); });
   $('f-user').addEventListener('submit', function (e) {
     e.preventDefault(); zeigeFehler('user-err', '');
@@ -513,7 +530,7 @@
   });
   $('mail-copy').addEventListener('click', function () { var t = $('mail-text').textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { showToast('Kopiert'); }, function () { showToast('Bitte markieren und kopieren'); }); });
 
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { S.langMenu = false; S.help = false; S.sheet = false; $('modal-pwd').hidden = true; $('modal-user').hidden = true; $('modal-mail').hidden = true; render(); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { S.langMenu = false; S.help = false; S.sheet = false; $('modal-pwd').hidden = true; $('modal-user').hidden = true; $('modal-del').hidden = true; $('modal-mail').hidden = true; render(); } });
   document.addEventListener('click', function (e) { if (S.langMenu && !e.target.closest('.menu-wrap')) { S.langMenu = false; render(); } });
 
   boot();
