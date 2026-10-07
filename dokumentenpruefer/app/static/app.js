@@ -556,9 +556,9 @@
     $('lauf-meta').textContent = t('lauf_meta', { n: lauf.ergebnisse.length, gesamt: lauf.dateien, pdfs: lauf.pdfAnzahl });
     var zeilen = lauf.ergebnisse.map(function (r) {
       var a = ampel(r.ampel);
-      return '<tr><td data-l="' + esc(t('th_dokument')) + '" style="font-weight:500">' + esc(r.dateiname) + '</td><td data-l="' + esc(t('th_score')) + '" class="mono">' + r.score + ' %</td><td data-l="' + esc(t('th_ampel')) + '"><span class="tick"><span class="dot ' + a[0] + '"></span>' + esc(a[1]) + '</span></td><td data-l="' + esc(t('th_funde')) + '">' + r.fundeAnzahl + '</td><td data-l="' + esc(t('th_aufwand')) + '" class="mono">' + String(r.stunden).replace('.', ',') + ' h</td><td data-l="' + esc(t('th_berichte')) + '"><button class="btn-link" data-zeige="' + esc(r.id) + '">' + esc(t('ansehen')) + '</button></td></tr>';
+      return '<tr><td data-l="' + esc(t('th_dokument')) + '" class="doc" style="font-weight:500">' + esc(r.dateiname) + '</td><td data-l="' + esc(t('th_score')) + '" class="mono">' + r.score + ' %</td><td data-l="' + esc(t('th_ampel')) + '"><span class="tick"><span class="dot ' + a[0] + '"></span>' + esc(a[1]) + '</span></td><td data-l="' + esc(t('th_funde')) + '">' + r.fundeAnzahl + '</td><td data-l="' + esc(t('th_aufwand')) + '" class="mono">' + String(r.stunden).replace('.', ',') + ' h</td><td data-l="' + esc(t('th_berichte')) + '"><button class="btn-link" data-zeige="' + esc(r.id) + '">' + esc(t('ansehen')) + '</button></td></tr>';
     }).concat(lauf.fehler.map(function (f) {
-      return '<tr><td data-l="' + esc(t('th_dokument')) + '" style="font-weight:500">' + esc(f.datei) + '</td><td colspan="5" class="muted" data-l="' + esc(t('th_hinweis')) + '">' + esc(t('nicht_geprueft', { grund: f.fehler })) + '</td></tr>';
+      return '<tr><td data-l="' + esc(t('th_dokument')) + '" class="doc" style="font-weight:500">' + esc(f.datei) + '</td><td colspan="5" class="muted" data-l="' + esc(t('th_hinweis')) + '">' + esc(t('nicht_geprueft', { grund: f.fehler })) + '</td></tr>';
     }));
     $('lauf-tbody').innerHTML = zeilen.join('');
     $$('#lauf-tbody [data-zeige]').forEach(function (b) { b.addEventListener('click', function () { var r = lauf.ergebnisse.filter(function (x) { return x.id === b.dataset.zeige; })[0]; if (r) { S.result = r; zeigeErgebnis(r); } }); });
@@ -602,7 +602,7 @@
     api('GET', '/api/pruefungen').then(function (d) {
       $('list-tbody').innerHTML = d.pruefungen.map(function (p) {
         var a = ampel(p.ampel);
-        return '<tr><td data-l="' + esc(t('th_datum')) + '" class="mono">' + esc(fmtDatum(p.erstellt)) + '</td><td data-l="' + esc(t('th_dokument')) + '">' + esc(p.dateiname) + '</td><td data-l="' + esc(t('th_score')) + '" class="mono">' + p.score + ' %</td><td data-l="' + esc(t('th_ampel')) + '"><span class="tick"><span class="dot ' + a[0] + '"></span>' + esc(a[1]) + '</span></td><td data-l="' + esc(t('th_berichte')) + '"><button class="btn-link" data-open="' + esc(p.id) + '">' + esc(t('oeffnen')) + '</button></td></tr>';
+        return '<tr><td data-l="' + esc(t('th_datum')) + '" class="mono">' + esc(fmtDatum(p.erstellt)) + '</td><td data-l="' + esc(t('th_dokument')) + '" class="doc">' + esc(p.dateiname) + '</td><td data-l="' + esc(t('th_score')) + '" class="mono">' + p.score + ' %</td><td data-l="' + esc(t('th_ampel')) + '"><span class="tick"><span class="dot ' + a[0] + '"></span>' + esc(a[1]) + '</span></td><td data-l="' + esc(t('th_berichte')) + '"><button class="btn-link" data-open="' + esc(p.id) + '">' + esc(t('oeffnen')) + '</button></td></tr>';
       }).join('') || '<tr><td colspan="5" class="muted">' + esc(t('noch_keine')) + '</td></tr>';
       $$('[data-open]').forEach(function (b) { b.addEventListener('click', function () { api('GET', '/api/pruefung/' + b.dataset.open).then(function (r) { S.result = r; S.laufErg = null; $('lauf-ergebnis').hidden = true; zeigeErgebnis(r); }).catch(function (err) { showToast(err.message); }); }); });
     }).catch(function () {});

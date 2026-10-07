@@ -189,6 +189,8 @@ img { max-width: 100%; }
 table { width: 100%; border-collapse: collapse; font-size: calc(14px * var(--k)); }
 th { text-align: left; padding: 10px var(--pad); font-weight: 500; color: var(--muted); font-size: calc(13px * var(--k)); background: var(--s300); white-space: nowrap; }
 td { padding: 12px var(--pad); border-top: 1px solid var(--bsub); vertical-align: middle; }
+td .tick { white-space: normal; } /* lange Ampeltexte (uk, ru) umbrechen statt die Tabelle zu verbreitern */
+td.doc { overflow-wrap: anywhere; } /* lange Dateinamen ohne Leerzeichen dürfen umbrechen */
 .stepnum { display: inline-flex; width: 24px; height: 24px; border-radius: 2px; background: var(--gold); color: #16120a; font-size: 13px; font-weight: 600; align-items: center; justify-content: center; margin-right: 10px; vertical-align: middle; }
 .res-grid { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--gap); align-items: stretch; }
 .score { display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 16px 20px; background: var(--s300); border-radius: 4px; min-width: 140px; }
