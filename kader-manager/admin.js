@@ -362,11 +362,33 @@ async function bildLaden(datei) {
 const alsDataUrl = blob => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(new Error('Bild nicht lesbar.')); r.readAsDataURL(blob); });
 
 /* ---------- Export, Import, Veröffentlichen ---------- */
-document.getElementById('knopf-export').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(pruefen(daten), null, 2) + '\n'], { type: 'application/json' });
+document.getElementById('knopf-export').addEventListener('click', async () => {
+  let text;
+  try { text = JSON.stringify(pruefen(daten), null, 2) + '\n'; } catch (f) { melden(`Nicht exportiert: ${f.message}`, 'Export'); return; }
+  // In der claude.ai-Vorschau sind direkte Downloads gesperrt; dort läuft der Export über die Download-Schnittstelle der Einbettung.
+  const dl = window.claude?.use ? await window.claude.use('downloads').catch(() => null) : null;
+  if (dl) {
+    try { await dl.save({ filename: 'kader.json', data: text }); return; }
+    catch (f) { if (f?.code === 'declined' || f?.code === 'rate_limited') return; exportAnzeigen(text); return; }
+  }
+  if (window.top !== window) { exportAnzeigen(text); return; }     // eingebettet ohne Download-Schnittstelle: Text zum Kopieren
+  const blob = new Blob([text], { type: 'application/json' });
   const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'kader.json' });
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+/* Rückweg ohne Download: JSON zum Kopieren anzeigen */
+function exportAnzeigen(text) {
+  const d = document.getElementById('export-dialog');
+  const ta = document.getElementById('export-text');
+  ta.value = text;
+  d.showModal();
+  ta.select();
+}
+document.getElementById('export-kopieren').addEventListener('click', async () => {
+  const ta = document.getElementById('export-text');
+  try { await navigator.clipboard.writeText(ta.value); document.getElementById('export-meldung').textContent = 'In die Zwischenablage kopiert.'; }
+  catch { ta.select(); document.getElementById('export-meldung').textContent = 'Bitte mit Strg+C bzw. Cmd+C kopieren.'; }
 });
 
 document.getElementById('datei-import').addEventListener('change', async e => {

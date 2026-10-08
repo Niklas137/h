@@ -96,6 +96,19 @@
   </form>
 </dialog>
 
+<dialog class="admin-dialog" id="export-dialog">
+  <form method="dialog">
+    <h2>kader.json</h2>
+    <p class="klein muted">Ein Download ist hier nicht möglich. Text kopieren und als <code>daten/kader.json</code> speichern.</p>
+    <textarea id="export-text" rows="14" readonly style="width:100%;font:13px/1.4 ui-monospace,monospace;border:1px solid var(--line);border-radius:8px;padding:8px"></textarea>
+    <p class="klein muted" id="export-meldung"></p>
+    <div class="dialog-knoepfe">
+      <button type="button" class="knopf" id="export-kopieren">Kopieren</button>
+      <button type="submit" class="knopf primaer">Schließen</button>
+    </div>
+  </form>
+</dialog>
+
 <dialog class="admin-dialog" id="spieler-dialog">
   <form method="dialog" id="spieler-formular" novalidate>
     <h2 id="dialog-titel">Spieler</h2>
