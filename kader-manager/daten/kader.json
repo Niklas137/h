@@ -1,0 +1,224 @@
+{
+  "team": {
+    "name": "КФК",
+    "short": "KFK",
+    "season": "2026/27",
+    "language": "de",
+    "tilt": 50,
+    "colors": {
+      "primary": "#C9A24A",
+      "secondary": "#C9A24A",
+      "text": "#FFFFFF"
+    },
+    "jersey": {
+      "back": "fotos/trikot-kfk-schwarz.png",
+      "nameY": 102,
+      "numberY": 268,
+      "nameSize": 30,
+      "numberSize": 150,
+      "nameColor": "#B28A47",
+      "numberColor": "#B28A47"
+    },
+    "jerseyAlternatives": {
+      "weiss": {
+        "back": "fotos/trikot-kfk-weiss.png",
+        "nameY": 102,
+        "numberY": 268,
+        "nameSize": 30,
+        "numberSize": 150,
+        "nameColor": "#161616",
+        "numberColor": "#161616"
+      }
+    }
+  },
+  "players": [
+    {
+      "id": "jan-jenner",
+      "name": "Jan Jenner",
+      "number": 18,
+      "position": "Stürmer",
+      "status": "active",
+      "nationality": "DE",
+      "photo": "",
+      "birthYear": 1998,
+      "stats": {
+        "games": 14,
+        "goals": 9,
+        "assists": 6,
+        "penaltyMinutes": 4
+      },
+      "bio": "Kam 2024 aus Berlin nach Luzk und ist seither Stammkraft im Angriff. In der Saison 2025/26 bester Torschütze der Mannschaft."
+    },
+    {
+      "id": "oleh-tkachenko",
+      "name": "Oleh Tkachenko",
+      "number": 7,
+      "position": "Center",
+      "status": "active",
+      "nationality": "UA",
+      "photo": "",
+      "birthYear": 2001,
+      "stats": {
+        "games": 14,
+        "goals": 5,
+        "assists": 11,
+        "penaltyMinutes": 2
+      }
+    },
+    {
+      "id": "andrii-melnyk",
+      "name": "Andrii Melnyk",
+      "number": 4,
+      "position": "Verteidiger",
+      "status": "active",
+      "nationality": "UA",
+      "photo": "",
+      "stats": {
+        "games": 12,
+        "goals": 1,
+        "assists": 3,
+        "penaltyMinutes": 8
+      }
+    },
+    {
+      "id": "maksym-koval",
+      "name": "Maksym Koval",
+      "number": 31,
+      "position": "Torwart",
+      "status": "active",
+      "nationality": "UA",
+      "photo": "",
+      "birthYear": 1996,
+      "stats": {
+        "games": 13
+      }
+    },
+    {
+      "id": "dmytro-bondar",
+      "name": "Dmytro Bondar",
+      "number": 22,
+      "position": "Stürmer",
+      "status": "injured",
+      "nationality": "UA",
+      "photo": "",
+      "birthYear": 2003
+    },
+    {
+      "id": "petro-shevchuk",
+      "name": "Petro Shevchuk",
+      "number": 11,
+      "position": "Verteidiger",
+      "status": "inactive",
+      "nationality": "UA",
+      "photo": ""
+    },
+    {
+      "id": "taras-hrytsenko",
+      "name": "Taras Hrytsenko",
+      "number": 9,
+      "position": "Stürmer",
+      "status": "active",
+      "nationality": "UA",
+      "photo": "",
+      "birthYear": 2000,
+      "stats": {
+        "games": 14,
+        "goals": 7,
+        "assists": 4,
+        "penaltyMinutes": 6
+      }
+    },
+    {
+      "id": "yurii-lysenko",
+      "name": "Yurii Lysenko",
+      "number": 13,
+      "position": "Center",
+      "status": "active",
+      "nationality": "UA",
+      "photo": "",
+      "birthYear": 1999,
+      "stats": {
+        "games": 11,
+        "goals": 3,
+        "assists": 5,
+        "penaltyMinutes": 2
+      }
+    },
+    {
+      "id": "ihor-savchuk",
+      "name": "Ihor Savchuk",
+      "number": 27,
+      "position": "Verteidiger",
+      "status": "active",
+      "nationality": "UA",
+      "photo": "",
+      "birthYear": 2002,
+      "stats": {
+        "games": 14,
+        "goals": 2,
+        "assists": 2,
+        "penaltyMinutes": 10
+      }
+    },
+    {
+      "id": "roman-kravets",
+      "name": "Roman Kravets",
+      "number": 1,
+      "position": "Torwart",
+      "status": "active",
+      "nationality": "UA",
+      "photo": "",
+      "birthYear": 2004,
+      "stats": {
+        "games": 1
+      }
+    },
+    {
+      "id": "vasyl-horbach",
+      "name": "Vasyl Horbach",
+      "number": 15,
+      "position": "Stürmer",
+      "status": "active",
+      "nationality": "UA",
+      "photo": "",
+      "birthYear": 1997,
+      "stats": {
+        "games": 9,
+        "goals": 4,
+        "assists": 1
+      }
+    },
+    {
+      "id": "nazar-polishchuk",
+      "name": "Nazar Polishchuk",
+      "number": 6,
+      "position": "Verteidiger",
+      "status": "active",
+      "nationality": "UA",
+      "photo": "",
+      "birthYear": 2001,
+      "stats": {
+        "games": 13,
+        "goals": 0,
+        "assists": 4,
+        "penaltyMinutes": 4
+      }
+    },
+    {
+      "id": "serhii-datsiuk",
+      "name": "Serhii Datsiuk",
+      "number": 21,
+      "position": "Center",
+      "status": "active",
+      "nationality": "UA",
+      "photo": "",
+      "birthYear": 1995,
+      "stats": {
+        "games": 14,
+        "goals": 6,
+        "assists": 9,
+        "penaltyMinutes": 2
+      }
+    }
+  ]
+}
