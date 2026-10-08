@@ -202,6 +202,11 @@
 
   // ------------------------------------------------------------ Start
   function boot() {
+    var splash = $('splash');
+    setTimeout(function () {
+      if (splash) { splash.classList.add('out'); setTimeout(function () { splash.hidden = true; }, 600); }
+    }, 1200);
+
     api('GET', '/api/status').then(function (st) {
       S.status = st;
       ['version-foot', 'version-main'].forEach(function (id) { $(id).textContent = 'v' + st.version; });
