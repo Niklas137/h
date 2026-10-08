@@ -35,6 +35,7 @@
     {
       "id": "jan-jenner",
       "name": "Jan Jenner",
+      "nameUk": "Ян Єннер",
       "number": 18,
       "position": "Stürmer",
       "status": "active",
@@ -47,11 +48,13 @@
         "assists": 6,
         "penaltyMinutes": 4
       },
-      "bio": "Kam 2024 aus Berlin nach Luzk und ist seither Stammkraft im Angriff. In der Saison 2025/26 bester Torschütze der Mannschaft."
+      "bio": "Kam 2024 aus Berlin nach Luzk und ist seither Stammkraft im Angriff. In der Saison 2025/26 bester Torschütze der Mannschaft.",
+      "bioUk": "У 2024 році перейшов із Берліна до Луцька і відтоді є основним гравцем нападу. У сезоні 2025/26 найкращий бомбардир команди."
     },
     {
       "id": "oleh-tkachenko",
       "name": "Oleh Tkachenko",
+      "nameUk": "Олег Ткаченко",
       "number": 7,
       "position": "Center",
       "status": "active",
@@ -68,6 +71,7 @@
     {
       "id": "andrii-melnyk",
       "name": "Andrii Melnyk",
+      "nameUk": "Андрій Мельник",
       "number": 4,
       "position": "Verteidiger",
       "status": "active",
@@ -83,6 +87,7 @@
     {
       "id": "maksym-koval",
       "name": "Maksym Koval",
+      "nameUk": "Максим Коваль",
       "number": 31,
       "position": "Torwart",
       "status": "active",
@@ -96,6 +101,7 @@
     {
       "id": "dmytro-bondar",
       "name": "Dmytro Bondar",
+      "nameUk": "Дмитро Бондар",
       "number": 22,
       "position": "Stürmer",
       "status": "injured",
@@ -106,6 +112,7 @@
     {
       "id": "petro-shevchuk",
       "name": "Petro Shevchuk",
+      "nameUk": "Петро Шевчук",
       "number": 11,
       "position": "Verteidiger",
       "status": "inactive",
@@ -115,6 +122,7 @@
     {
       "id": "taras-hrytsenko",
       "name": "Taras Hrytsenko",
+      "nameUk": "Тарас Гриценко",
       "number": 9,
       "position": "Stürmer",
       "status": "active",
@@ -131,6 +139,7 @@
     {
       "id": "yurii-lysenko",
       "name": "Yurii Lysenko",
+      "nameUk": "Юрій Лисенко",
       "number": 13,
       "position": "Center",
       "status": "active",
@@ -147,6 +156,7 @@
     {
       "id": "ihor-savchuk",
       "name": "Ihor Savchuk",
+      "nameUk": "Ігор Савчук",
       "number": 27,
       "position": "Verteidiger",
       "status": "active",
@@ -163,6 +173,7 @@
     {
       "id": "roman-kravets",
       "name": "Roman Kravets",
+      "nameUk": "Роман Кравець",
       "number": 1,
       "position": "Torwart",
       "status": "active",
@@ -176,6 +187,7 @@
     {
       "id": "vasyl-horbach",
       "name": "Vasyl Horbach",
+      "nameUk": "Василь Горбач",
       "number": 15,
       "position": "Stürmer",
       "status": "active",
@@ -191,6 +203,7 @@
     {
       "id": "nazar-polishchuk",
       "name": "Nazar Polishchuk",
+      "nameUk": "Назар Поліщук",
       "number": 6,
       "position": "Verteidiger",
       "status": "active",
@@ -207,6 +220,7 @@
     {
       "id": "serhii-datsiuk",
       "name": "Serhii Datsiuk",
+      "nameUk": "Сергій Дацюк",
       "number": 21,
       "position": "Center",
       "status": "active",

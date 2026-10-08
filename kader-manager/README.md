@@ -46,6 +46,8 @@ Dann `http://localhost:8000/` (Kader) und `http://localhost:8000/admin.html` (Ad
 
 - Pflicht: `id`, `name`, `number` (0–99), `position`, `status` (`active`, `injured`, `inactive`).
 - Optional: `nationality` (Länderkürzel), `photo`, `birthYear`, `bio` (Profiltext), `stats` mit `games`, `goals`, `assists`, `penaltyMinutes`.
+- Zweisprachig: `nameUk` (Name in ukrainischer Schreibweise) und `bioUk` (Profiltext ukrainisch). In der ukrainischen
+  Ansicht stehen sie auf Trikot, Karte, Leiste und in den Vorlesetexten; fehlt `nameUk`, wird `name` gezeigt.
 - Es wird nur angezeigt, was vorhanden ist. Spieler mit `status: "inactive"` erscheinen nicht auf der Kaderseite.
 - `team.colors` steuert die Trikotfarben; Nummer und Name auf dem Trikot kommen aus `number` und `name`.
 
@@ -146,8 +148,23 @@ Für ein eigenes Backend genügt es, `laden()` und `lokalSchreiben()` in `kader-
 Veröffentlichen in `admin.js` auf die eigene API umzustellen.
 
 Weitere Funktionen der Kaderseite: Heim-/Auswärtstrikot-Umschalter (erscheint, wenn `jerseyAlternatives`
-gesetzt ist), „Link kopieren“ in der Spielerkarte (Direktlink `#spieler=<id>`), Sprache Deutsch oder
-Ukrainisch über `team.language` (`"de"` oder `"uk"`).
+gesetzt ist), „Link kopieren“ in der Spielerkarte (Direktlink `#spieler=<id>`).
+
+## Sprachen: Deutsch und Ukrainisch
+
+Der Schalter „DE | UK“ im Kopf der Kaderseite stellt die ganze Seite um: Oberflächentexte (`sprache.js`),
+die vier Standardpositionen (Torwart → Воротар, Verteidiger → Захисник, Center → Центральний,
+Stürmer → Нападник), Spielernamen aus `nameUk` auf Trikot, Karte und Leiste sowie der Profiltext aus `bioUk`.
+Reihenfolge der Sprachwahl: `?lang=uk|de` in der Adresse, dann die gemerkte Wahl im Browser, dann
+`team.language` aus `daten/kader.json`. Der Direktlink `#spieler=<id>` bleibt beim Umschalten erhalten.
+Andere Positionen als die vier Standardwerte erscheinen in beiden Sprachen so, wie sie eingetragen sind.
+Die ukrainische Schreibweise der Namen entsteht automatisch (`transliterieren()` in `sprache.js`): Umkehrung der
+amtlichen ukrainischen Romanisierung (Oleh → Олег, Yurii → Юрій, Polishchuk → Поліщук, Kravets → Кравець); bei
+Nationalität DE, AT oder CH gelten deutsche Leseregeln (Jan Jenner → Ян Єннер, Schmidt → Шмідт). Im Admin wird
+das Feld „Name ukrainisch“ beim Tippen vorausgefüllt, „Auto“ erzeugt es neu, eine Eingabe von Hand hat Vorrang.
+Bleibt das Feld leer, nutzt die Kaderseite die automatische Umschrift. Grenze: Aus der lateinischen Form ist
+nicht immer eindeutig, ob і oder и gemeint ist (Malinovskyi → Маліновський statt Малиновський); solche Fälle
+im Admin von Hand setzen. Profiltexte werden nicht automatisch übersetzt; ohne `bioUk` erscheint der deutsche Text.
 
 ## Einbau in die bestehende Website
 
