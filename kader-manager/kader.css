@@ -238,6 +238,7 @@ img{max-width:100%;display:block}
 .admin-formular textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-height:90px;resize:vertical}
 .fehlertext{color:#B3261E;font-size:14px;grid-column:1/-1}
 .admin-dialog [hidden],.admin-bereich[hidden],#admin-bereich[hidden],#server-bereich[hidden]{display:none!important}
+.feld-mit-knopf{display:flex;gap:6px}.feld-mit-knopf input{flex:1}.feld-mit-knopf .knopf{padding:6px 10px;font-size:13px}
 .admin-konto{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
 .admin-konto .knopf{padding:5px 10px;font-size:13px}
 .anmelde-dialog{max-width:420px}

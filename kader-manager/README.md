@@ -158,9 +158,13 @@ Stürmer → Нападник), Spielernamen aus `nameUk` auf Trikot, Karte und 
 Reihenfolge der Sprachwahl: `?lang=uk|de` in der Adresse, dann die gemerkte Wahl im Browser, dann
 `team.language` aus `daten/kader.json`. Der Direktlink `#spieler=<id>` bleibt beim Umschalten erhalten.
 Andere Positionen als die vier Standardwerte erscheinen in beiden Sprachen so, wie sie eingetragen sind.
-Die Admin-Seite ist auf Deutsch und hat je Spieler die Felder „Name (lateinisch, deutsch)“ und „Ім’я (українською)“.
-Die ukrainischen Beispielnamen in `daten/kader.json` sind Rückübertragungen der lateinischen Schreibweise und
-sollten von einem Muttersprachler geprüft werden.
+Die ukrainische Schreibweise der Namen entsteht automatisch (`transliterieren()` in `sprache.js`): Umkehrung der
+amtlichen ukrainischen Romanisierung (Oleh → Олег, Yurii → Юрій, Polishchuk → Поліщук, Kravets → Кравець); bei
+Nationalität DE, AT oder CH gelten deutsche Leseregeln (Jan Jenner → Ян Єннер, Schmidt → Шмідт). Im Admin wird
+das Feld „Name ukrainisch“ beim Tippen vorausgefüllt, „Auto“ erzeugt es neu, eine Eingabe von Hand hat Vorrang.
+Bleibt das Feld leer, nutzt die Kaderseite die automatische Umschrift. Grenze: Aus der lateinischen Form ist
+nicht immer eindeutig, ob і oder и gemeint ist (Malinovskyi → Маліновський statt Малиновський); solche Fälle
+im Admin von Hand setzen. Profiltexte werden nicht automatisch übersetzt; ohne `bioUk` erscheint der deutsche Text.
 
 ## Einbau in die bestehende Website
 

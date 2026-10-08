@@ -2,6 +2,7 @@
    JSON import/export. Speichert im localStorage (statische Seite); mit server.py zusätzlich Veröffentlichen
    und Foto-Upload, beides nur mit Admin-Passwort (KADER_ADMIN_TOKEN, geprüft am Server). */
 import { laden, lokalSchreiben, lokalLoeschen, pruefen, spielerNormalisieren, spielerFehler, idAus, teamfarbenSetzen, trikotSvg, escapeHtml, statusLabel, STATISTIK_FELDER } from './kader-daten.js';
+import { transliterieren } from './sprache.js';
 
 const bereich = document.getElementById('admin-bereich');
 const tbody = document.querySelector('#admin-tabelle tbody');
@@ -116,7 +117,7 @@ function tabelleZeichnen() {
       <td>${p.photo ? `<img class="tabelle-foto" src="${escapeHtml(p.photo)}" alt="">` : '<span class="tabelle-foto leer"></span>'}</td>
       <td><strong>${p.number}</strong></td>
       <td>${escapeHtml(p.name)}</td>
-      <td lang="uk">${p.nameUk ? escapeHtml(p.nameUk) : '<span class="muted">–</span>'}</td>
+      <td lang="uk">${p.nameUk ? escapeHtml(p.nameUk) : `<span class="muted" title="automatisch">${escapeHtml(transliterieren(p.name, p.nationality))}</span>`}</td>
       <td>${escapeHtml(p.position)}</td>
       <td><span class="status-punkt" data-status="${escapeHtml(p.status)}"></span>${statusLabel(p.status)}</td>
       <td>${escapeHtml(p.nationality)}</td>
@@ -165,10 +166,22 @@ function dialogOeffnen(spieler) {
     }
     for (const [feld] of STATISTIK_FELDER) formular.elements[feld].value = spieler.stats?.[feld] ?? '';
   }
+  nameUkVonHand = !!spieler?.nameUk;
+  if (!nameUkVonHand) nameUkAuto();
   fotoVorschauZeichnen();
   vorschauZeichnen();
   dialog.showModal();
 }
+
+/* Ukrainischer Name: automatisch aus dem lateinischen Namen, solange das Feld nicht von Hand geändert wurde */
+let nameUkVonHand = false;
+function nameUkAuto() {
+  formular.elements.nameUk.value = transliterieren(formular.elements.name.value, formular.elements.nationality.value);
+  nameUkVonHand = false;
+}
+formular.elements.nameUk.addEventListener('input', () => { nameUkVonHand = formular.elements.nameUk.value.trim() !== ''; });
+for (const feld of ['name', 'nationality']) formular.elements[feld].addEventListener('input', () => { if (!nameUkVonHand) nameUkAuto(); });
+document.getElementById('name-uk-neu').addEventListener('click', () => { nameUkAuto(); vorschauZeichnen(); });
 
 formular.addEventListener('input', vorschauZeichnen);
 function vorschauZeichnen() {
