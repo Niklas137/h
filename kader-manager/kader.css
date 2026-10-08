@@ -236,3 +236,17 @@ img{max-width:100%;display:block}
 .admin-vorschau .trikot-nummer{fill:var(--team-2);font-family:var(--titel);font-weight:700}.admin-vorschau .trikot-name{fill:var(--trikot-name,var(--team-text));font-family:var(--druck);font-weight:700}
 .admin-formular textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-height:90px;resize:vertical}
 .fehlertext{color:#B3261E;font-size:14px;grid-column:1/-1}
+.admin-dialog [hidden],.admin-bereich[hidden],#admin-bereich[hidden],#server-bereich[hidden]{display:none!important}
+.admin-konto{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.admin-konto .knopf{padding:5px 10px;font-size:13px}
+.anmelde-dialog{max-width:420px}
+.anmelde-dialog .dialog-knoepfe{margin-top:16px}
+.anmelde-dialog .knopf{text-decoration:none}
+.foto-feld{display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:start}
+.foto-vorschau{width:96px;aspect-ratio:3/4;border-radius:10px;background:var(--soft);border:1px dashed var(--line);display:grid;place-items:center;overflow:hidden;font-size:12px;text-align:center}
+.foto-vorschau img{width:100%;height:100%;object-fit:cover;display:block}
+.foto-knoepfe{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.foto-knoepfe .foto-titel{flex-basis:100%;font-size:14px;font-weight:600;color:var(--muted)}
+.foto-knoepfe .klein{flex-basis:100%}
+.tabelle-foto{display:block;width:32px;height:42px;object-fit:cover;border-radius:6px;background:var(--soft)}
+.tabelle-foto.leer{border:1px dashed var(--line)}
