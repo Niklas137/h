@@ -4,7 +4,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
   var LANGS = { de: 'Deutsch', en: 'English', uk: 'Українська', ru: 'Русский' }; // Eigennamen für Knöpfe und Menü
-  var UI = window.UI_TEXTE || { de: {} };
+  var UI = window.I18N || { de: {} };
   var LABEL_KEYS = { name: 'lbl_name', dark: 'set_dark', textSize: 'set_text', density: 'set_density', language: 'set_language', notifyPopup: 'set_popup', notifyApp: 'set_app', notifyWeekly: 'set_weekly' };
   var KLASSE = { Kritisch: 'r', Schwer: 'y', Mittel: '', Gering: '' };
   var AMPEL_FARBE = { gruen: 'g', gelb: 'y', rot: 'r' };
@@ -72,9 +72,9 @@
   function fmtGroesse(b) { return b < 1024 * 1024 ? Math.max(1, Math.round(b / 1024)) + ' KB' : (b / 1024 / 1024).toFixed(1).replace('.', ',') + ' MB'; }
   function fmtDatum(iso) { if (!iso) return ''; var d = new Date(iso); if (isNaN(d)) return iso; return d.toLocaleDateString(t('locale'), { day: '2-digit', month: '2-digit', year: 'numeric' }); }
   function fmt(key, v) {
-    if (typeof v === 'boolean') { if (key === 'dark') return t(v ? 'dunkel' : 'hell'); return t(v ? 'an' : 'aus'); }
-    if (key === 'textSize') return t({ klein: 'klein', normal: 'normal', gross: 'gross' }[v] || 'normal');
-    if (key === 'density') return t(v === 'kompakt' ? 'kompakt' : 'normal');
+    if (typeof v === 'boolean') { if (key === 'dark') return t(v ? 'common.dark' : 'common.light'); return t(v ? 'common.on' : 'common.off'); }
+    if (key === 'textSize') return t({ klein: 'common.small', normal: 'common.normal', gross: 'common.large' }[v] || 'common.normal');
+    if (key === 'density') return t(v === 'kompakt' ? 'common.compact' : 'common.normal');
     if (key === 'language') return langName(UI[v] ? v : 'de');
     return String(v);
   }
@@ -110,10 +110,10 @@
     if (S.status) {
       var st = S.status, sup = st.support || {};
       $('drop-hint').textContent = t('drop_hint', { n: MAX_DATEIEN });
-      $('info-verif').textContent = t(st.verifizierung === 'code' ? 'verif_code' : 'verif_einmal');
+      $('info-verif').textContent = t(st.verifizierung === 'code' ? 'app.set.info.verif' : 'app.set.info.verif');
       $('info-regeln').textContent = ['basis', 'din', 'ce'].map(satzName).join(', ');
-      $('help-adresse').textContent = sup.adresse || t('help_adresse');
-      $('help-kontakt').textContent = t('help_kontakt_p', { telefon: sup.telefon || t('telefon_platz'), zeiten: sup.zeiten || t('zeiten_platz') });
+      $('help-adresse').textContent = sup.adresse || t('app.help.contact.text');
+      $('help-kontakt').textContent = t('app.help.contact.text', { telefon: sup.telefon || t('app.help.contact.text'), zeiten: sup.zeiten || t('app.help.contact.text') });
       var fehlend = Object.keys(st.regeln || {}).filter(function (k) { return !st.regeln[k]; });
       var dateien = { basis: 'pruefkatalog.json', din: 'normlogik_82079.json', ce: 'ce_logik.json' };
       $('regeln-warn').hidden = !fehlend.length;
@@ -129,7 +129,7 @@
     $$('.step').forEach(function (el) { var n = +el.dataset.step; el.classList.toggle('active', n === S.step); el.classList.toggle('done', n < S.step); });
     $('erst2-text').innerHTML = t('s2_text', { email: '<b id="email-shown">' + esc(S.erst.email || t('deine_email')) + '</b>' }); $('erst-email2').value = S.erst.email;
     ['login-pwd', 'erst-pwd', 'erst-pwd2'].forEach(function (id) { $(id).type = S.showPwd ? 'text' : 'password'; });
-    $('login-show').textContent = t(S.showPwd ? 'verbergen' : 'anzeigen'); $('erst-show').textContent = t(S.showPwd ? 'verbergen' : 'anzeigen');
+    $('login-show').textContent = t(S.showPwd ? 'common.hide' : 'common.show'); $('erst-show').textContent = t(S.showPwd ? 'common.hide' : 'common.show');
     $('remember-cb').classList.toggle('on', S.remember);
     var ok = pwdRegeln($('erst-pwd').value, $('erst-pwd2').value);
     $$('#rules [data-rule]').forEach(function (el) { el.classList.toggle('ok', !!ok[el.dataset.rule]); });
@@ -161,9 +161,9 @@
     $('ui-side').textContent = langName(baseLang);
     var langs = S.reportLangs.filter(function (l) { return LANGS[l]; });
     if (!langs.length) { langs = [baseLang]; S.reportLangs = langs.slice(); }
-    $('rl-side').textContent = langs.map(langName).join(t('und'));
-    var langsTxt = langs.map(langName).join(t('und'));
-    $('report-plan').textContent = nf > 1 ? t('plan_mehr', { langs: langsTxt, n: langs.length * 2, gesamt: langs.length * 2 * nf }) : t('plan', { langs: langsTxt, n: langs.length * 2 });
+    $('rl-side').textContent = langs.map(langName).join(t('common.and'));
+    var langsTxt = langs.map(langName).join(t('common.and'));
+    $('report-plan').textContent = nf > 1 ? t('common.plan_mehr', { langs: langsTxt, n: langs.length * 2, gesamt: langs.length * 2 * nf }) : t('common.plan', { langs: langsTxt, n: langs.length * 2 });
     $$('#seg-report-langs button').forEach(function (b) { var on = langs.indexOf(b.dataset.v) >= 0; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
     $$('[data-run]').forEach(function (el) { el.querySelector('.cb').classList.toggle('on', !!S.run[el.dataset.run]); });
     $('drop-text').textContent = nf === 0 ? t('drop_text') : nf === 1 ? S.files[0].name : t('drop_n', { n: nf });
@@ -174,7 +174,7 @@
     renderPunkte(runs);
     var leer = runs.filter(function (k) { return S.punkte && S.punkte[k] && S.punkte[k].punkte.length && S.punkte[k].punkte.every(function (p) { return S.ohne[p.id]; }); });
     $('start-check').disabled = !nf || !runs.length || S.busy || leer.length > 0;
-    $('start-check').innerHTML = S.busy ? '<span class="spinner"></span>' + esc(t('pruefung_laeuft')) : esc(nf > 1 ? t('start_n', { n: nf }) : t('start_check'));
+    $('start-check').innerHTML = S.busy ? '<span class="spinner"></span>' + esc(t('app.check.busy')) : esc(nf > 1 ? t('common.start_n', { n: nf }) : t('app.check.btn'));
 
     $$('.snav [data-sec]').forEach(function (el) { el.classList.toggle('on', el.dataset.sec === S.section); });
     $$('[data-pane]').forEach(function (el) { el.hidden = el.dataset.pane !== S.section; });
@@ -189,9 +189,9 @@
     $('bar').hidden = !(ch.length > 0 && S.screen === 'settings' && !S.sheet);
     $('bar-txt').textContent = txt;
     $('save-top').disabled = ch.length === 0 || S.busy;
-    $('save-top').textContent = ch.length ? t('speichern_n', { n: ch.length }) : t('speichern');
+    $('save-top').textContent = ch.length ? t('app.set.save_count', { n: ch.length }) : t('app.set.save');
     $('modal').hidden = !S.sheet;
-    $('dlg-sub').textContent = ch.length === 1 ? t('dlg_sub_1') : t('dlg_sub_n', { n: ch.length });
+    $('dlg-sub').textContent = ch.length === 1 ? t('common.save') : t('common.save');
     $('changes').innerHTML = ch.map(function (c) { return '<div><b>' + esc(c.label) + '</b><s>' + esc(c.from) + '</s><em>' + esc(c.to) + '</em></div>'; }).join('');
     $('drawer').hidden = !S.help;
     renderLauf();
@@ -329,7 +329,7 @@
   $('f-pwd').addEventListener('submit', function (e) {
     e.preventDefault(); if ($('pwd-save').disabled) return; zeigeFehler('pwd-err', ''); S.busy = true; render();
     api('POST', '/api/ich/passwort', { alt: $('pwd-alt').value, neu: $('pwd-neu').value, neu2: $('pwd-neu2').value })
-      .then(function () { S.busy = false; $('modal-pwd').hidden = true; $('f-pwd').reset(); render(); showToast(t('pwd_geaendert')); ladeSitzungen(); })
+      .then(function () { S.busy = false; $('modal-pwd').hidden = true; $('f-pwd').reset(); render(); showToast(t('common.save')); ladeSitzungen(); })
       .catch(function (err) { S.busy = false; render(); zeigeFehler('pwd-err', err.message); });
   });
   function ladeSitzungen() {
@@ -352,21 +352,21 @@
         var s = st[u.status] || ['', u.status];
         var selbst = u.id === S.user.id;
         var fremderInhaber = u.inhaber && !selbst;
-        var aktion = fremderInhaber ? '<span class="cap">' + esc(t('nur_inhaber')) + '</span>' : '<button class="btn-link" data-otp="' + u.id + '">' + esc(t('neues_einmal')) + '</button>' +
-          (selbst || u.status === 'einmal' ? '' : ' · <button class="btn-link" data-status="' + u.id + '" data-neu="' + (u.status === 'gesperrt' ? 'aktiv' : 'gesperrt') + '">' + esc(t(u.status === 'gesperrt' ? 'entsperren' : 'sperren')) + '</button>') +
-          (S.user.inhaber && !selbst ? ' · <button class="btn-link" data-del-user="' + u.id + '" data-name="' + esc(u.name) + '" data-email="' + esc(u.email) + '" data-n="' + (u.pruefungen || 0) + '">' + esc(t('loeschen')) + '</button>' : '');
+        var aktion = fremderInhaber ? '<span class="cap">' + esc(t('common.owner_only')) + '</span>' : '<button class="btn-link" data-otp="' + u.id + '">' + esc(t('app.set.ver.otp')) + '</button>' +
+          (selbst || u.status === 'einmal' ? '' : ' · <button class="btn-link" data-status="' + u.id + '" data-neu="' + (u.status === 'gesperrt' ? 'aktiv' : 'gesperrt') + '">' + esc(t(u.status === 'gesperrt' ? 'common.unlock' : 'common.lock')) + '</button>') +
+          (S.user.inhaber && !selbst ? ' · <button class="btn-link" data-del-user="' + u.id + '" data-name="' + esc(u.name) + '" data-email="' + esc(u.email) + '" data-n="' + (u.pruefungen || 0) + '">' + esc(t('common.delete')) + '</button>' : '');
         var rolle = t(u.inhaber ? 'rolle_inhaber' : u.rolle === 'admin' ? 'rolle_admin' : 'rolle_mitglied');
-        return '<tr><td data-l="' + esc(t('th_name')) + '" style="font-weight:500">' + esc(u.name) + (selbst ? ' <span class="cap">' + esc(t('du')) + '</span>' : '') + '</td><td data-l="' + esc(t('th_email')) + '" class="muted">' + esc(u.email) + '</td><td data-l="' + esc(t('th_rolle')) + '">' + esc(rolle) + '</td><td data-l="' + esc(t('th_status')) + '"><span class="tick"><span class="dot ' + s[0] + '"></span>' + esc(s[1]) + '</span></td><td data-l="' + esc(t('th_aktion')) + '">' + aktion + '</td></tr>';
+        return '<tr><td data-l="' + esc(t('app.set.ver.table.name')) + '" style="font-weight:500">' + esc(u.name) + (selbst ? ' <span class="cap">' + esc(t('common.you')) + '</span>' : '') + '</td><td data-l="' + esc(t('app.set.ver.table.email')) + '" class="muted">' + esc(u.email) + '</td><td data-l="' + esc(t('app.set.ver.table.role')) + '">' + esc(rolle) + '</td><td data-l="' + esc(t('app.set.ver.table.status')) + '"><span class="tick"><span class="dot ' + s[0] + '"></span>' + esc(s[1]) + '</span></td><td data-l="' + esc(t('app.set.ver.table.act')) + '">' + aktion + '</td></tr>';
       }).join('');
-      $('users-hint').textContent = t(S.user.inhaber ? 'users_hint_inhaber' : 'users_hint');
+      $('users-hint').textContent = t(S.user.inhaber ? 'app.set.ver.sub' : 'app.set.ver.sub');
       $$('[data-del-user]').forEach(function (b) { b.addEventListener('click', function () {
         S.delUser = b.dataset.delUser; zeigeFehler('del-err', '');
         var n = +b.dataset.n;
-        $('del-text').textContent = t('del_text', { name: b.dataset.name, email: b.dataset.email, pruefungen: n === 1 ? t('pruefung_1') : t('pruefung_n', { n: n }) });
+        $('del-text').textContent = t('common.delete_confirm', { name: b.dataset.name, email: b.dataset.email, pruefungen: n === 1 ? t('common.audit_1') : t('common.audit_n', { n: n }) });
         $('modal-del').hidden = false;
       }); });
       $$('[data-otp]').forEach(function (b) { b.addEventListener('click', function () {
-        api('POST', '/api/benutzer/' + b.dataset.otp + '/einmal-passwort').then(function (r) { zeigeOtp(t('einmal_neu_text'), r.einmalPasswort); ladeBenutzer(); }).catch(function (err) { showToast(err.message); });
+        api('POST', '/api/benutzer/' + b.dataset.otp + '/einmal-passwort').then(function (r) { zeigeOtp(t('common.otp_new_text'), r.einmalPasswort); ladeBenutzer(); }).catch(function (err) { showToast(err.message); });
       }); });
       $$('[data-status]').forEach(function (b) { b.addEventListener('click', function () {
         api('PATCH', '/api/benutzer/' + b.dataset.status, { status: b.dataset.neu }).then(ladeBenutzer).catch(function (err) { showToast(err.message); });
@@ -399,19 +399,19 @@
     var gesamt = 0, aktiv = 0;
     runs.forEach(function (k) { var ps = (S.punkte[k] || { punkte: [] }).punkte; gesamt += ps.length; aktiv += ps.filter(function (p) { return !S.ohne[p.id]; }).length; });
     var leer = runs.filter(function (k) { var ps = (S.punkte[k] || { punkte: [] }).punkte; return ps.length && ps.every(function (p) { return S.ohne[p.id]; }); });
-    $('punkte-stand').textContent = leer.length ? t('punkte_leer', { satz: leer.map(satzName).join(', ') }) : (aktiv === gesamt ? t('punkte_alle', { n: gesamt }) : t('punkte_teil', { aktiv: aktiv, gesamt: gesamt, weg: gesamt - aktiv }));
+    $('punkte-stand').textContent = leer.length ? t('app.check.loading.footer', { satz: leer.map(satzName).join(', ') }) : (aktiv === gesamt ? t('common.all', { n: gesamt }) : t('common.partial', { aktiv: aktiv, gesamt: gesamt, weg: gesamt - aktiv }));
     $('punkte-stand').style.color = leer.length ? 'var(--danger)' : '';
-    $('punkte-toggle').textContent = t(S.punkteOffen ? 'punkte_schliessen' : 'punkte_oeffnen');
+    $('punkte-toggle').textContent = t(S.punkteOffen ? 'common.close' : 'common.show');
     $('punkte').hidden = !S.punkteOffen;
     if (!S.punkteOffen) return;
     $('punkte').innerHTML = SAETZE.map(function (k) {
       var satz = S.punkte[k] || { punkte: [], vorhanden: false };
       var an = satz.punkte.filter(function (p) { return !S.ohne[p.id]; }).length;
       var zeilen = satz.punkte.map(function (p) {
-        return '<button type="button" class="punkt" data-punkt="' + esc(p.id) + '" aria-pressed="' + (S.ohne[p.id] ? 'false' : 'true') + '"><span class="cb' + (S.ohne[p.id] ? '' : ' on') + '"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="t"><span class="mono">' + esc(p.id) + '</span> ' + esc(p.bereichAnzeige || p.bereich) + ' <span class="cap">· ' + esc(p.klasseAnzeige || p.fehlerklasse) + ', ' + esc(t('gewicht', { n: p.gewichtung })) + '</span><br><span class="cap">' + esc(p.empfehlungAnzeige || p.empfehlung) + '</span></span></button>';
+        return '<button type="button" class="punkt" data-punkt="' + esc(p.id) + '" aria-pressed="' + (S.ohne[p.id] ? 'false' : 'true') + '"><span class="cb' + (S.ohne[p.id] ? '' : ' on') + '"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="t"><span class="mono">' + esc(p.id) + '</span> ' + esc(p.bereichAnzeige || p.bereich) + ' <span class="cap">· ' + esc(p.klasseAnzeige || p.fehlerklasse) + ', ' + esc(t('common.weight', { n: p.gewichtung })) + '</span><br><span class="cap">' + esc(p.empfehlungAnzeige || p.empfehlung) + '</span></span></button>';
       }).join('');
-      var kopf = '<div class="kopf"><b>' + esc(satzName(k)) + '</b><span class="cap">' + esc(satz.vorhanden ? t('von', { a: an, b: satz.punkte.length }) : t('regeldatei_fehlt')) + '</span></div>';
-      var alle = satz.punkte.length ? '<div class="row" style="gap:8px"><button type="button" class="btn-link" data-alle="' + k + '" data-wert="1">' + esc(t('alle_an')) + '</button><button type="button" class="btn-link" data-alle="' + k + '" data-wert="0">' + esc(t('alle_aus')) + '</button></div>' : '';
+      var kopf = '<div class="kopf"><b>' + esc(satzName(k)) + '</b><span class="cap">' + esc(satz.vorhanden ? t('common.of', { a: an, b: satz.punkte.length }) : t('common.file_missing')) + '</span></div>';
+      var alle = satz.punkte.length ? '<div class="row" style="gap:8px"><button type="button" class="btn-link" data-alle="' + k + '" data-wert="1">' + esc(t('common.all_on')) + '</button><button type="button" class="btn-link" data-alle="' + k + '" data-wert="0">' + esc(t('common.all_off')) + '</button></div>' : '';
       return '<div class="satz' + (S.run[k] ? '' : ' aus') + '">' + kopf + zeilen + alle + '</div>';
     }).join('');
     $$('#punkte [data-punkt]').forEach(function (b) { b.addEventListener('click', function () { punktSetzen([b.dataset.punkt], !!S.ohne[b.dataset.punkt]); }); });
@@ -441,8 +441,8 @@
       if (S.files.some(function (x) { return x.name === f.name && x.size === f.size; })) return;
       S.files.push(f);
     });
-    if (abgelehnt.length) showToast(t('nur_docx', { liste: abgelehnt.join(', ') }));
-    if (S.files.length > MAX_DATEIEN) { S.files = S.files.slice(0, MAX_DATEIEN); showToast(t('hoechstens', { n: MAX_DATEIEN })); }
+    if (abgelehnt.length) showToast(t('common.only_docx', { liste: abgelehnt.join(', ') }));
+    if (S.files.length > MAX_DATEIEN) { S.files = S.files.slice(0, MAX_DATEIEN); showToast(t('common.max_files', { n: MAX_DATEIEN })); }
     zeigeFehler('check-err', ''); render();
   }
   function dateiEntfernen(i) { if (S.busy) return; S.files.splice(i, 1); render(); }
@@ -486,9 +486,9 @@
   // Die Prüfung schickt ihren Fortschritt als Zeilen (eine JSON-Zeile je Phase, zuletzt Ergebnis oder Fehler).
   function pruefungStreamen(fd) {
     return fetch('/api/pruefung', { method: 'POST', credentials: 'same-origin', headers: { 'X-Sprache': uiLang() }, body: fd }).then(function (r) {
-      if (r.status === 401) { abmelden(false); throw new Error(t('anmelden_fehlt')); }
+      if (r.status === 401) { abmelden(false); throw new Error(t('common.login_missing')); }
       if (!r.ok) {
-        return r.text().then(function (txt) { var d = {}; try { d = JSON.parse(txt); } catch (e) {} throw new Error(d.fehler || t('fehler_status', { status: r.status })); });
+        return r.text().then(function (txt) { var d = {}; try { d = JSON.parse(txt); } catch (e) {} throw new Error(d.fehler || t('common.error_status', { status: r.status })); });
       }
       var verarbeiten = function (zeile) {
         if (!zeile.trim()) return null;
@@ -536,29 +536,29 @@
     fd.append('fortschritt', '1');
     pruefungStreamen(fd).then(function (lauf) {
       laufEnde(); S.busy = false; render();
-      if (!lauf.ergebnisse.length) { zeigeFehler('check-err', (lauf.fehler[0] && lauf.fehler[0].fehler) || t('pruefung_fehlgeschlagen')); return; }
+      if (!lauf.ergebnisse.length) { zeigeFehler('check-err', (lauf.fehler[0] && lauf.fehler[0].fehler) || t('common.audit_failed')); return; }
       S.laufErg = lauf; S.result = lauf.ergebnisse[0];
       zeigeLauf(lauf); zeigeErgebnis(S.result); ladePruefungen();
       showPop(laufSatz(lauf));
     }).catch(function (err) { laufEnde(); S.busy = false; render(); zeigeFehler('check-err', err.message); });
   });
   function laufSatz(lauf) {
-    if (lauf.dateien === 1) { var r = lauf.ergebnisse[0]; return t('pop_fertig_1', { datei: r.dateiname, score: r.score, ampel: AMPEL_FARBE[r.ampel] ? t('kurz_' + r.ampel) : r.ampel, n: r.pdfs.length }); }
+    if (lauf.dateien === 1) { var r = lauf.ergebnisse[0]; return t('common.pop_done_1', { datei: r.dateiname, score: r.score, ampel: AMPEL_FARBE[r.ampel] ? t('common.short_' + r.ampel) : r.ampel, n: r.pdfs.length }); }
     var z = { gruen: 0, gelb: 0, rot: 0 }; lauf.ergebnisse.forEach(function (r) { if (z[r.ampel] !== undefined) z[r.ampel]++; });
-    var s = t('pop_fertig_n', { n: lauf.ergebnisse.length, g: z.gruen, y: z.gelb, r: z.rot });
-    if (lauf.fehler.length) s += ' ' + (lauf.fehler.length === 1 ? t('nicht_lesbar_1') : t('nicht_lesbar_n', { n: lauf.fehler.length }));
-    return s + ' ' + t('pdfs_bereit', { n: lauf.pdfAnzahl });
+    var s = t('common.pop_done_n', { n: lauf.ergebnisse.length, g: z.gruen, y: z.gelb, r: z.rot });
+    if (lauf.fehler.length) s += ' ' + (lauf.fehler.length === 1 ? t('common.not_readable_1') : t('common.not_readable_n', { n: lauf.fehler.length }));
+    return s + ' ' + t('common.pdfs_ready', { n: lauf.pdfAnzahl });
   }
   function zeigeLauf(lauf, nurNeuZeichnen) {
     var mehrere = lauf.dateien > 1;
     $('lauf-ergebnis').hidden = !mehrere;
     if (!mehrere) return;
-    $('lauf-meta').textContent = t('lauf_meta', { n: lauf.ergebnisse.length, gesamt: lauf.dateien, pdfs: lauf.pdfAnzahl });
+    $('lauf-meta').textContent = t('common.audit_meta', { n: lauf.ergebnisse.length, gesamt: lauf.dateien, pdfs: lauf.pdfAnzahl });
     var zeilen = lauf.ergebnisse.map(function (r) {
       var a = ampel(r.ampel);
-      return '<tr><td data-l="' + esc(t('th_dokument')) + '" class="doc" style="font-weight:500">' + esc(r.dateiname) + '</td><td data-l="' + esc(t('th_score')) + '" class="mono">' + r.score + ' %</td><td data-l="' + esc(t('th_ampel')) + '"><span class="tick"><span class="dot ' + a[0] + '"></span>' + esc(a[1]) + '</span></td><td data-l="' + esc(t('th_funde')) + '">' + r.fundeAnzahl + '</td><td data-l="' + esc(t('th_aufwand')) + '" class="mono">' + String(r.stunden).replace('.', ',') + ' h</td><td data-l="' + esc(t('th_berichte')) + '"><button class="btn-link" data-zeige="' + esc(r.id) + '">' + esc(t('ansehen')) + '</button></td></tr>';
+      return '<tr><td data-l="' + esc(t('app.res.funde.table.dokument')) + '" class="doc" style="font-weight:500">' + esc(r.dateiname) + '</td><td data-l="' + esc(t('app.res.funde.table.score')) + '" class="mono">' + r.score + ' %</td><td data-l="' + esc(t('app.res.funde.table.ampel')) + '"><span class="tick"><span class="dot ' + a[0] + '"></span>' + esc(a[1]) + '</span></td><td data-l="' + esc(t('app.res.funde.table.funde')) + '">' + r.fundeAnzahl + '</td><td data-l="' + esc(t('app.res.funde.table.aufwand')) + '" class="mono">' + String(r.stunden).replace('.', ',') + ' h</td><td data-l="' + esc(t('app.res.funde.table.berichte')) + '"><button class="btn-link" data-zeige="' + esc(r.id) + '">' + esc(t('common.view')) + '</button></td></tr>';
     }).concat(lauf.fehler.map(function (f) {
-      return '<tr><td data-l="' + esc(t('th_dokument')) + '" class="doc" style="font-weight:500">' + esc(f.datei) + '</td><td colspan="5" class="muted" data-l="' + esc(t('th_hinweis')) + '">' + esc(t('nicht_geprueft', { grund: f.fehler })) + '</td></tr>';
+      return '<tr><td data-l="' + esc(t('app.res.funde.table.dokument')) + '" class="doc" style="font-weight:500">' + esc(f.datei) + '</td><td colspan="5" class="muted" data-l="' + esc(t('app.res.funde.table.hinweis')) + '">' + esc(t('common.not_audited', { grund: f.fehler })) + '</td></tr>';
     }));
     $('lauf-tbody').innerHTML = zeilen.join('');
     $$('#lauf-tbody [data-zeige]').forEach(function (b) { b.addEventListener('click', function () { var r = lauf.ergebnisse.filter(function (x) { return x.id === b.dataset.zeige; })[0]; if (r) { S.result = r; zeigeErgebnis(r); } }); });
@@ -582,19 +582,19 @@
     if (kl.Kritisch) teile.push(t('kl_kritisch', { n: kl.Kritisch })); if (kl.Schwer) teile.push(t('kl_schwer', { n: kl.Schwer })); if (kl.Mittel) teile.push(t('kl_mittel', { n: kl.Mittel })); if (kl.Gering) teile.push(t('kl_gering', { n: kl.Gering }));
     $('res-funde').textContent = r.fundeAnzahl + (teile.length ? ' · ' + teile.join(', ') : '');
     $('res-aufwand').textContent = String(r.stunden).replace('.', ',') + ' h';
-    $('res-langs').textContent = r.sprachen.map(langName).join(t('und'));
+    $('res-langs').textContent = r.sprachen.map(langName).join(t('common.and'));
     $('res-fazit').textContent = r.fazit;
     var hinweise = r.lesehinweise || [];
     $('res-hinweise').hidden = !hinweise.length; $('res-hinweise').textContent = hinweise.length ? t('lesehinweis', { text: hinweise.join(' ') }) : '';
-    var btn = function (art) { return r.pdfs.filter(function (p) { return p.bericht === art; }).map(function (p) { return '<a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(t('pdf', { lang: LANGS[p.sprache] || p.sprache })) + '</a>'; }).join(''); };
+    var btn = function (art) { return r.pdfs.filter(function (p) { return p.bericht === art; }).map(function (p) { return '<a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(t('common.pdf', { lang: LANGS[p.sprache] || p.sprache })) + '</a>'; }).join(''); };
     $('pdf-pruef').innerHTML = btn('pruef'); $('pdf-fach').innerHTML = btn('fach');
-    $('zip-label').textContent = t('n_pdfs', { n: r.pdfs.length });
+    $('zip-label').textContent = t('common.n_pdfs', { n: r.pdfs.length });
     $('act-zip').href = r.zip;
     $('res-n').textContent = r.fundeAnzahl;
     $('res-tbody').innerHTML = (r.funde || []).map(function (f) {
       var k = KLASSE[f.Fehlerklasse]; var klasse = f.klasseAnzeige || f.Fehlerklasse; var kz = k ? '<span class="tick"><span class="dot ' + k + '"></span>' + esc(klasse) + '</span>' : esc(klasse);
-      return '<tr><td data-l="' + esc(t('th_id')) + '" class="mono">' + esc(f.ID) + '</td><td data-l="' + esc(t('th_bereich')) + '">' + esc(f.bereichAnzeige || f.Bereich) + '</td><td data-l="' + esc(t('th_klasse')) + '">' + kz + '</td><td data-l="' + esc(t('th_bewertung')) + '">' + esc(f.bewertungAnzeige || f.Bewertung) + '</td><td data-l="' + esc(t('th_empfehlung')) + '">' + esc(f.empfehlungAnzeige || f.Empfehlung) + '</td></tr>';
-    }).join('') || '<tr><td colspan="5" class="muted">' + esc(t('keine_funde')) + '</td></tr>';
+      return '<tr><td data-l="' + esc(t('app.res.funde.table.id')) + '" class="mono">' + esc(f.ID) + '</td><td data-l="' + esc(t('app.res.funde.table.bereich')) + '">' + esc(f.bereichAnzeige || f.Bereich) + '</td><td data-l="' + esc(t('app.res.funde.table.klasse')) + '">' + kz + '</td><td data-l="' + esc(t('app.res.funde.table.bewertung')) + '">' + esc(f.bewertungAnzeige || f.Bewertung) + '</td><td data-l="' + esc(t('app.res.funde.table.empfehlung')) + '">' + esc(f.empfehlungAnzeige || f.Empfehlung) + '</td></tr>';
+    }).join('') || '<tr><td colspan="5" class="muted">' + esc(t('app.res.funde.empty')) + '</td></tr>';
     $('result').hidden = false;
     if (!nurNeuZeichnen) (S.laufErg && S.laufErg.dateien > 1 ? $('res-detail') : $('result')).scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -616,8 +616,8 @@
   $('mail-close').addEventListener('click', function () { $('modal-mail').hidden = true; });
   $('mail-go').addEventListener('click', function () {
     api('POST', '/api/pruefung/' + S.result.id + '/mail-entwurf', { an: $('mail-an').value.trim() }).then(function (r) {
-      if (r.entwurf === 'mail') { $('modal-mail').hidden = true; showToast(t('mail_ok', { n: r.anhaenge.length })); }
-      else { $('mail-text').hidden = false; $('mail-text').textContent = t('betreff') + r.betreff + '\n\n' + r.text + '\n\n' + t('anhaenge') + r.anhaenge.join(', '); $('mail-copy').hidden = false; }
+      if (r.entwurf === 'mail') { $('modal-mail').hidden = true; showToast(t('common.mail_ok', { n: r.anhaenge.length })); }
+      else { $('mail-text').hidden = false; $('mail-text').textContent = t('common.subject') + r.betreff + '\n\n' + r.text + '\n\n' + t('common.attachments') + r.anhaenge.join(', '); $('mail-copy').hidden = false; }
     }).catch(function (err) { zeigeFehler('mail-err', err.message); });
   });
   $('mail-copy').addEventListener('click', function () { var txt = $('mail-text').textContent; (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(function () { showToast(t('kopiert')); }, function () { showToast(t('kopieren_hinweis')); }); });
