@@ -29,9 +29,9 @@
     if (vars) Object.keys(vars).forEach(function (k) { s = s.split('{' + k + '}').join(String(vars[k])); });
     return s;
   }
-  function langName(code) { return t('sprache_' + code); }
+  function langName(code) { return LANGS[code] || code; }
   function ampel(a) { return AMPEL_FARBE[a] ? [AMPEL_FARBE[a], t('ampel_' + a)] : ['', a]; }
-  function satzName(k) { return (S.punkte && S.punkte[k] && S.punkte[k].nameAnzeige) || { basis: t('satz_basis'), din: 'DIN 82079-1', ce: t('satz_ce') }[k] || k; }
+  function satzName(k) { return (S.punkte && S.punkte[k] && S.punkte[k].nameAnzeige) || { basis: t('app.check.rule.basis'), din: 'DIN 82079-1', ce: t('app.check.rule.ce') }[k] || k; }
   // Statische Texte der Seite: alle Elemente mit data-i18n bekommen den Text der aktuellen Sprache.
   function uebersetzen() {
     var l = uiLang(); if (S.uebersetzt === l) return; S.uebersetzt = l;
@@ -127,7 +127,7 @@
     $('f-step2').hidden = !(S.screen === 'erst' && S.step === 2);
     $('f-step3').hidden = !(S.screen === 'erst' && S.step === 3);
     $$('.step').forEach(function (el) { var n = +el.dataset.step; el.classList.toggle('active', n === S.step); el.classList.toggle('done', n < S.step); });
-    $('erst2-text').innerHTML = t('s2_text', { email: '<b id="email-shown">' + esc(S.erst.email || t('deine_email')) + '</b>' }); $('erst-email2').value = S.erst.email;
+    $('erst2-text').innerHTML = t('gate.erst.step2.sub', { email: '<b id="email-shown">' + esc(S.erst.email || t('common.your_email')) + '</b>' }); $('erst-email2').value = S.erst.email;
     ['login-pwd', 'erst-pwd', 'erst-pwd2'].forEach(function (id) { $(id).type = S.showPwd ? 'text' : 'password'; });
     $('login-show').textContent = t(S.showPwd ? 'common.hide' : 'common.show'); $('erst-show').textContent = t(S.showPwd ? 'common.hide' : 'common.show');
     $('remember-cb').classList.toggle('on', S.remember);
