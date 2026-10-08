@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kader verwalten</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="kader.css">
+</head>
+<body>
+<main class="innen">
+  <header class="admin-kopf">
+    <div>
+      <p class="saison" id="admin-team"></p>
+      <h1>Kader verwalten</h1>
+    </div>
+    <p class="klein"><a href="index.html">Zur Kaderseite</a></p>
+  </header>
+  <p class="admin-hinweis" id="admin-hinweis">Änderungen werden im Browser gespeichert und sofort auf der Kaderseite sichtbar. Veröffentlicht werden sie erst, wenn die exportierte Datei <code>daten/kader.json</code> ersetzt wird.</p>
+  <div class="admin-leiste">
+    <button type="button" class="knopf primaer" id="knopf-neu">Spieler hinzufügen</button>
+    <button type="button" class="knopf" id="knopf-export">JSON exportieren</button>
+    <label class="knopf" for="datei-import">JSON importieren</label>
+    <input type="file" id="datei-import" accept="application/json,.json" class="sr-only">
+    <button type="button" class="knopf gefahr" id="knopf-zuruecksetzen">Lokale Änderungen verwerfen</button>
+  </div>
+  <div class="admin-hinweis" id="server-bereich" hidden>
+    <strong>Server erkannt.</strong> Veröffentlichen schreibt den aktuellen Stand nach <code>daten/kader.json</code> auf dem Server (mit Sicherung).
+    <label style="display:block;margin-top:8px">Admin-Token <input type="password" id="admin-token" autocomplete="off" style="font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:8px;width:min(100%,320px)"></label>
+    <button type="button" class="knopf primaer" id="knopf-veroeffentlichen" style="margin-top:8px">Veröffentlichen</button>
+    <span id="server-meldung" class="klein muted"></span>
+  </div>
+  <div class="tabelle-scroll">
+    <table class="admin-tabelle" id="admin-tabelle">
+      <thead>
+        <tr><th>Nr.</th><th>Name</th><th>Position</th><th>Status</th><th>Nat.</th><th>Jg.</th><th>Sp.</th><th>T</th><th>A</th><th>Strafz.</th><th>Aktionen</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+
+<dialog class="admin-dialog" id="spieler-dialog">
+  <form method="dialog" id="spieler-formular" novalidate>
+    <h2 id="dialog-titel">Spieler</h2>
+    <fieldset class="admin-formular">
+      <label>Name <input name="name" required autocomplete="off"></label>
+      <label>Rückennummer <input name="number" type="number" min="0" max="99" required></label>
+      <label>Position <input name="position" list="positionen" required></label>
+      <datalist id="positionen"><option>Torwart</option><option>Verteidiger</option><option>Center</option><option>Stürmer</option></datalist>
+      <label>Status <select name="status"><option value="active">Aktiv</option><option value="injured">Verletzt</option><option value="inactive">Deaktiviert</option></select></label>
+      <label>Nationalität (Kürzel) <input name="nationality" maxlength="3" placeholder="UA"></label>
+      <label>Geburtsjahr <input name="birthYear" type="number" min="1900" max="2100"></label>
+      <label class="breit">Foto (Pfad oder URL) <input name="photo" placeholder="fotos/name.jpg"></label>
+      <label class="breit">Profiltext (optional) <textarea name="bio" rows="3"></textarea></label>
+      <label>Spiele <input name="games" type="number" min="0"></label>
+      <label>Tore <input name="goals" type="number" min="0"></label>
+      <label>Assists <input name="assists" type="number" min="0"></label>
+      <label>Strafzeiten <input name="penaltyMinutes" type="number" min="0"></label>
+      <div class="admin-vorschau"><div id="vorschau-trikot"></div><p class="klein muted">Vorschau des Trikots. Nummer und Name kommen direkt aus den Feldern.</p></div>
+      <p class="fehlertext" id="formular-fehler" role="alert"></p>
+      <div class="dialog-knoepfe">
+        <button type="button" class="knopf" value="abbrechen" id="knopf-abbrechen">Abbrechen</button>
+        <button type="submit" class="knopf primaer">Speichern</button>
+      </div>
+    </fieldset>
+  </form>
+</dialog>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
