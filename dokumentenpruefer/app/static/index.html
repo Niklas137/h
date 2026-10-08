@@ -129,8 +129,8 @@
         <h2 data-i18n="h2_pruefen">Dokument prüfen</h2>
         <div class="drop" id="drop">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
-          <b style="font-weight:500" id="drop-text">Word (.docx) oder PDF hierher ziehen</b>
-          <span class="muted sm" id="drop-hint">Bis zu 20 Dateien je Prüfung, je bis 25 MB</span>
+          <b style="font-weight:500" id="drop-text" data-i18n="app.check.drop">Word (.docx) oder PDF hierher ziehen</b>
+          <span class="muted sm" id="drop-hint" data-i18n="app.check.drop.sub">Bis zu 20 Dateien je Prüfung, je bis 25 MB</span>
           <label class="btn" for="file" style="margin-top:4px" data-i18n="choose_files">Dateien auswählen</label><input type="file" id="file" accept=".docx,.pdf" multiple hidden>
         </div>
         <ul class="file-list" id="file-list" hidden></ul>
@@ -141,12 +141,12 @@
             <button class="toggle-card" data-run="din"><span class="cb on"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="t"><b class="sm" style="font-weight:500">DIN 82079-1</b><span class="cap" id="hint-din" data-i18n="hint_din">Nutzungsinformationen</span></span></button>
             <button class="toggle-card" data-run="ce"><span class="cb on"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="t"><b class="sm" style="font-weight:500" data-i18n="satz_ce">CE / EU-Konformität</b><span class="cap" id="hint-ce" data-i18n="hint_ce">Nachweise und To-do-Liste</span></span></button>
           </div>
-          <div class="row"><span class="cap" id="punkte-stand">Alle Prüfpunkte aktiv</span><button type="button" class="btn-link" id="punkte-toggle">Einzelne Prüfpunkte wählen</button></div>
+          <div class="row"><span class="cap" id="punkte-stand" data-i18n="common.all">Alle Prüfpunkte aktiv</span><button type="button" class="btn-link" id="punkte-toggle" data-i18n="common.show">Einzelne Prüfpunkte wählen</button></div>
           <div class="punkte" id="punkte" hidden></div>
         </div>
         <div class="stack" style="gap:10px">
           <span class="label" data-i18n="lbl_lang2">Berichtssprachen für diese Prüfung</span>
-          <div class="seg" id="seg-report-langs" role="group"><button data-v="de" aria-pressed="true">Deutsch</button><button data-v="en" aria-pressed="false">English</button><button data-v="uk" aria-pressed="false">Українська</button><button data-v="ru" aria-pressed="false">Русский</button></div>
+          <div class="seg" id="seg-report-langs" role="group"></div>
           <span class="cap" id="rl-hint" data-i18n="rl_hint">Eine oder zwei Sprachen, unabhängig von der Oberfläche. Je Sprache entstehen Prüfbericht und Fachbericht als PDF.</span>
         </div>
         <div class="err" id="check-err" hidden></div>
@@ -159,7 +159,7 @@
           </ol>
           <span class="cap" data-i18n="lauf_note">Bearbeitung läuft. Die Phase sagt nichts über die Qualität des Dokuments.</span>
         </div>
-        <div class="row"><span class="cap" id="report-plan"></span><button class="btn-p" id="start-check" disabled>Prüfung starten</button></div>
+        <div class="row"><span class="cap" id="report-plan"></span><button class="btn-p" id="start-check" disabled data-i18n="app.check.btn">Prüfung starten</button></div>
       </div>
       <div class="col">
         <div class="card stack" style="gap:12px">
@@ -346,11 +346,11 @@
     <div class="pop-t"><b data-i18n="pop_title">Prüfbericht fertig</b><span id="pop-msg"></span><div class="pop-a"><button class="btn-p" id="pop-open" data-i18n="pop_open">Bericht öffnen</button><button class="btn-quiet" id="pop-close" data-i18n="schliessen">Schließen</button></div></div>
   </div>
   <div class="bar" id="bar" hidden>
-    <span class="pdot"></span><span class="txt" id="bar-txt">1 Änderung</span>
+    <span class="pdot"></span><span class="txt" id="bar-txt" data-i18n="common.change_1">1 Änderung</span>
     <button class="btn" id="discard" data-i18n="verwerfen">Verwerfen</button>
     <button class="btn" id="review" data-i18n="ansehen">Ansehen</button>
   </div>
-  <div class="toast" id="toast" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span id="toast-txt">Gespeichert</span></div>
+  <div class="toast" id="toast" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span id="toast-txt" data-i18n="common.save">Gespeichert</span></div>
 
   <div class="modal" id="modal" hidden>
     <div class="dialog" role="dialog" aria-labelledby="dlg-title">

@@ -164,7 +164,14 @@
     $('rl-side').textContent = langs.map(langName).join(t('common.and'));
     var langsTxt = langs.map(langName).join(t('common.and'));
     $('report-plan').textContent = nf > 1 ? t('common.plan_mehr', { langs: langsTxt, n: langs.length * 2, gesamt: langs.length * 2 * nf }) : t('common.plan', { langs: langsTxt, n: langs.length * 2 });
-    $$('#seg-report-langs button').forEach(function (b) { var on = langs.indexOf(b.dataset.v) >= 0; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+
+    var seg = $('seg-report-langs');
+    seg.innerHTML = Object.keys(LANGS).map(function (code) {
+      var on = langs.indexOf(code) >= 0;
+      return '<button data-v="' + code + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + langName(code) + '</button>';
+    }).join('');
+    $$('#seg-report-langs button').forEach(function (b) { b.classList.toggle('on', langs.indexOf(b.dataset.v) >= 0); });
+
     $$('[data-run]').forEach(function (el) { el.querySelector('.cb').classList.toggle('on', !!S.run[el.dataset.run]); });
     $('drop-text').textContent = nf === 0 ? t('drop_text') : nf === 1 ? S.files[0].name : t('drop_n', { n: nf });
     $('file-list').hidden = nf < 1;
