@@ -51,6 +51,7 @@ img{max-width:100%;display:block}
 .kader-seite{background:var(--raum);color:var(--raum-text);color-scheme:dark}
 .kader{max-width:1180px;margin:0 auto;padding:0 0 32px}
 .kader-kopf{text-align:center;padding:28px 16px 10px}
+.kopf-schalter{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 12px}
 .trikotwahl{display:inline-flex;margin-top:12px;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:3px;gap:2px}
 .trikotwahl button{border:0;background:none;color:var(--raum-muted);border-radius:999px;padding:6px 14px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
 .trikotwahl button[aria-pressed="true"]{background:#fff;color:#111}

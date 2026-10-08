@@ -119,7 +119,9 @@ export function spielerNormalisieren(p) {
     nationality: String(p.nationality || '').trim().toUpperCase(),
     photo: String(p.photo || '').trim()
   };
+  if (p.nameUk && String(p.nameUk).trim()) s.nameUk = String(p.nameUk).trim().slice(0, 60);
   if (p.bio && String(p.bio).trim()) s.bio = String(p.bio).trim();
+  if (p.bioUk && String(p.bioUk).trim()) s.bioUk = String(p.bioUk).trim();
   if (p.birthYear !== undefined && p.birthYear !== '' && p.birthYear !== null) {
     const j = Number.parseInt(p.birthYear, 10);
     if (Number.isFinite(j)) s.birthYear = j;

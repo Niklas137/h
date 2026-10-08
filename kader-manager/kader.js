@@ -6,7 +6,7 @@
    kennung; verzögerte Schritte (Timer, Animationsframes) prüfen sie und verfallen sonst (A01).
    Nur transform und opacity werden animiert; die Übergänge stehen in kader.css. */
 import { laden, teamfarbenSetzen, trikotWaehlen, trikotSvg, escapeHtml, statusLabel, STATUS } from './kader-daten.js';
-import { spracheWaehlen } from './sprache.js';
+import { spracheWaehlen, spracheSetzen, anzeigeName, anzeigePosition, anzeigeBio, SPRACHEN } from './sprache.js';
 
 const modul = document.getElementById('inhalt');
 const szene = document.getElementById('szene');
@@ -26,6 +26,9 @@ const desktop = matchMedia('(min-width: 900px)');
 
 let daten = { team: null, players: [] };
 let T = null;                 // Oberflächentexte der gewählten Sprache
+let sprache = 'de';
+const nameVon = p => anzeigeName(p, sprache);
+const positionVon = p => anzeigePosition(p.position, sprache);
 let trikotSchluessel = 'heim';
 let liste = [];               // sichtbare, gefilterte Spieler in Stangenreihenfolge
 let aktiverFilter = 'alle';
@@ -51,8 +54,9 @@ function neigungAnwenden() {
 async function init() {
   const ergebnis = await laden({ nurDatei: new URLSearchParams(location.search).has('datei') });
   daten = ergebnis.daten;
-  T = spracheWaehlen(daten.team).t;
+  ({ code: sprache, t: T } = spracheWaehlen(daten.team));
   texteAnwenden();
+  sprachwahlAufbauen();
   neigungAnwenden();
   if (daten.team.jersey && !(await bildLadbar(daten.team.jersey.back))) {
     console.warn(`Trikotbild „${daten.team.jersey.back}“ nicht ladbar, gezeichnetes Trikot wird verwendet.`);
@@ -92,6 +96,17 @@ function texteAnwenden() {
   filterLeiste.setAttribute('aria-label', T.positionFilter);
 }
 
+/* Sprachschalter DE / UK: merkt die Wahl und lädt die Seite in der Sprache neu */
+function sprachwahlAufbauen() {
+  const wahl = document.getElementById('sprachwahl');
+  wahl.setAttribute('aria-label', T.sprache);
+  wahl.innerHTML = SPRACHEN.map(([code, kurz, lang]) => `<button type="button" lang="${code}" data-sprache="${code}" aria-pressed="${code === sprache}" title="${escapeHtml(lang)}">${kurz}</button>`).join('');
+  wahl.addEventListener('click', e => {
+    const b = e.target.closest('button[data-sprache]');
+    if (b && b.dataset.sprache !== sprache) spracheSetzen(b.dataset.sprache);
+  });
+}
+
 /* Heim-/Auswärtstrikot, wenn Alternativen in den Daten stehen */
 function trikotwahlAufbauen() {
   const wahl = document.getElementById('trikotwahl');
@@ -128,7 +143,7 @@ function filterAufbauen() {
   const positionen = [...new Set(alle.map(p => p.position).filter(Boolean))];
   if (positionen.length < 2) { filterLeiste.hidden = true; return; }
   const chip = (pos, label, n) => `<button type="button" data-filter="${escapeHtml(pos)}" aria-pressed="${pos === aktiverFilter}">${escapeHtml(label)}<sup>${n}</sup></button>`;
-  filterLeiste.innerHTML = chip('alle', T.alle, alle.length) + positionen.map(pos => chip(pos, pos, alle.filter(p => p.position === pos).length)).join('');
+  filterLeiste.innerHTML = chip('alle', T.alle, alle.length) + positionen.map(pos => chip(pos, anzeigePosition(pos, sprache), alle.filter(p => p.position === pos).length)).join('');
   filterLeiste.addEventListener('click', e => {
     const knopf = e.target.closest('button[data-filter]');
     if (!knopf) return;
@@ -145,11 +160,11 @@ function stangeZeichnen() {
   hinweis.textContent = liste.length ? '' : T.keineSpieler;
   innen.innerHTML = liste.map(p => `
     <li class="haenger" data-id="${escapeHtml(p.id)}">
-      <button type="button" class="haenger-knopf" aria-label="${escapeHtml(p.name)}, ${T.nummer} ${p.number}, ${escapeHtml(p.position)}. ${T.trikotOeffnen}">
-        <span class="trikot-haengend">${trikotSvg(p, { beschriftung: false, mitHaenger: true })}</span>
+      <button type="button" class="haenger-knopf" aria-label="${escapeHtml(nameVon(p))}, ${T.nummer} ${p.number}, ${escapeHtml(positionVon(p))}. ${T.trikotOeffnen}">
+        <span class="trikot-haengend">${trikotSvg({ ...p, name: nameVon(p) }, { beschriftung: false, mitHaenger: true })}</span>
       </button>
     </li>`).join('');
-  zahlen.innerHTML = liste.map(p => `<li><button type="button" data-id="${escapeHtml(p.id)}" aria-label="${T.nummer} ${p.number}, ${escapeHtml(p.name)}">${p.number}</button></li>`).join('');
+  zahlen.innerHTML = liste.map(p => `<li><button type="button" data-id="${escapeHtml(p.id)}" aria-label="${T.nummer} ${p.number}, ${escapeHtml(nameVon(p))}">${p.number}</button></li>`).join('');
   // Start wie im Video: Stange beginnt links; die Markierung gilt dem Trikot, das dann wirklich in der Mitte hängt.
   // Der Innenabstand erlaubt trotzdem, jedes Trikot (auch das erste und letzte) mittig einzurasten (A04).
   const rand = parseFloat(getComputedStyle(innen).paddingLeft) || 0;
@@ -225,8 +240,8 @@ function aktuellSetzen(spieler) {
   aktuell = spieler && liste.includes(spieler) ? spieler : null;
   pfeileAktualisieren();
   if (!aktuell) { leisteSpieler.textContent = ''; leisteHinweis.textContent = ''; return; }
-  leisteSpieler.innerHTML = `<span class="leiste-nummer">${aktuell.number}</span> ${nameMarkup(aktuell.name)}`;
-  leisteHinweis.textContent = `${aktuell.position} · ${zustand === 'geschlossen' ? T.antippen : statusLabel(aktuell.status, T.statusWerte)}`;
+  leisteSpieler.innerHTML = `<span class="leiste-nummer">${aktuell.number}</span> ${nameMarkup(nameVon(aktuell))}`;
+  leisteHinweis.textContent = `${positionVon(aktuell)} · ${zustand === 'geschlossen' ? T.antippen : statusLabel(aktuell.status, T.statusWerte)}`;
   zahlen.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', b.dataset.id === aktuell.id ? 'true' : 'false'));
   innen.querySelectorAll('.haenger').forEach(li => li.classList.toggle('ist-mitte', li.dataset.id === aktuell.id));
 }
@@ -473,12 +488,12 @@ function karteFuellen(p) {
   }
   karteKoerper.innerHTML = `
     <div class="karte-spieler">
-      ${p.photo ? `<img class="karte-foto" src="${escapeHtml(p.photo)}" alt="${T.foto} ${escapeHtml(p.name)}">` : ''}
+      ${p.photo ? `<img class="karte-foto" src="${escapeHtml(p.photo)}" alt="${T.foto} ${escapeHtml(nameVon(p))}">` : ''}
       <span class="karte-nat" aria-hidden="true">${escapeHtml(p.nationality)}</span>
-      <span class="karte-position">${escapeHtml(p.position)}</span>
+      <span class="karte-position">${escapeHtml(positionVon(p))}</span>
       <span class="karte-nummer" aria-label="${T.rueckennummer} ${p.number}">${p.number}</span>
-      <h2 class="karte-name" id="karte-name">${nameMarkup(p.name)}</h2>
+      <h2 class="karte-name" id="karte-name">${nameMarkup(nameVon(p))}</h2>
     </div>
     <dl class="karte-zeilen">${zeilen.map(([k, v], i) => `<div style="--stufe:${i}"><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
-    ${p.bio ? `<section class="karte-profil"><h3>${T.profil}</h3><p>${escapeHtml(p.bio)}</p></section>` : ''}`;
+    ${anzeigeBio(p, sprache) ? `<section class="karte-profil"><h3>${T.profil}</h3><p>${escapeHtml(anzeigeBio(p, sprache))}</p></section>` : ''}`;
 }

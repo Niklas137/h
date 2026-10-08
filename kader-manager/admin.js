@@ -116,6 +116,7 @@ function tabelleZeichnen() {
       <td>${p.photo ? `<img class="tabelle-foto" src="${escapeHtml(p.photo)}" alt="">` : '<span class="tabelle-foto leer"></span>'}</td>
       <td><strong>${p.number}</strong></td>
       <td>${escapeHtml(p.name)}</td>
+      <td lang="uk">${p.nameUk ? escapeHtml(p.nameUk) : '<span class="muted">–</span>'}</td>
       <td>${escapeHtml(p.position)}</td>
       <td><span class="status-punkt" data-status="${escapeHtml(p.status)}"></span>${statusLabel(p.status)}</td>
       <td>${escapeHtml(p.nationality)}</td>
@@ -126,7 +127,7 @@ function tabelleZeichnen() {
         <button type="button" class="knopf" data-aktion="status">${p.status === 'inactive' ? 'Aktivieren' : 'Deaktivieren'}</button>
         <button type="button" class="knopf gefahr" data-aktion="loeschen">Löschen</button>
       </td>
-    </tr>`).join('') || '<tr><td colspan="12">Noch keine Spieler.</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="13">Noch keine Spieler.</td></tr>';
 }
 
 tbody.addEventListener('click', e => {
@@ -159,7 +160,7 @@ function dialogOeffnen(spieler) {
   fehlerFeld.textContent = '';
   fotoMeldung.textContent = fotoMeldung.dataset.standard ??= fotoMeldung.textContent;
   if (spieler) {
-    for (const feld of ['name', 'number', 'position', 'status', 'nationality', 'birthYear', 'photo', 'bio']) {
+    for (const feld of ['name', 'nameUk', 'number', 'position', 'status', 'nationality', 'birthYear', 'photo', 'bio', 'bioUk']) {
       formular.elements[feld].value = spieler[feld] ?? '';
     }
     for (const [feld] of STATISTIK_FELDER) formular.elements[feld].value = spieler.stats?.[feld] ?? '';
