@@ -58,6 +58,7 @@ export function pruefen(daten) {
   team.season = String(team.season || '').slice(0, 20);
   team.colors = farbenPruefen(team.colors);
   team.tilt = zahl(team.tilt, 30, 85, 50);   // Schrägstellung der Trikots an der Stange in Grad
+  if (/^[0-9a-f]{64}$/i.test(String(team.adminPasswordHash || ''))) team.adminPasswordHash = String(team.adminPasswordHash).toLowerCase(); else delete team.adminPasswordHash;   // SHA-256 des Admin-Passworts ohne Server
   if (team.jerseyAlternatives && typeof team.jerseyAlternatives === 'object') {
     const alt = {};
     for (const [k, v] of Object.entries(team.jerseyAlternatives)) { const j = trikotKonfigPruefen(v); if (j) alt[k] = j; }

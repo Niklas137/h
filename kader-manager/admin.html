@@ -14,7 +14,7 @@
       <p class="saison" id="admin-team"></p>
       <h1>Kader verwalten</h1>
     </div>
-    <p class="klein admin-konto"><span id="konto-stand"></span> <button type="button" class="knopf" id="knopf-abmelden">Abmelden</button> <a href="index.html">Zur Kaderseite</a></p>
+    <p class="klein admin-konto"><span id="konto-stand"></span> <button type="button" class="knopf" id="knopf-passwort">Passwort</button> <button type="button" class="knopf" id="knopf-abmelden">Abmelden</button> <a href="index.html">Zur Kaderseite</a></p>
   </header>
   <p class="admin-hinweis" id="admin-hinweis">Änderungen werden im Browser gespeichert und sofort auf der Kaderseite sichtbar. Veröffentlicht werden sie erst, wenn die exportierte Datei <code>daten/kader.json</code> ersetzt wird.</p>
   <div class="admin-leiste">
@@ -57,6 +57,54 @@
     <div class="dialog-knoepfe" id="anmelde-lokal" hidden>
       <a class="knopf" href="index.html">Zur Kaderseite</a>
       <button type="button" class="knopf primaer" id="knopf-lokal">Lokal weiterarbeiten</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Rückfragen und Meldungen als eigene Dialoge (Browser-Dialoge wie confirm() sind in Einbettungen oft gesperrt) -->
+<dialog class="admin-dialog anmelde-dialog" id="frage-dialog">
+  <form method="dialog">
+    <h2 id="frage-titel">Frage</h2>
+    <p id="frage-text"></p>
+    <div class="dialog-knoepfe">
+      <button type="button" class="knopf" id="frage-nein">Abbrechen</button>
+      <button type="submit" class="knopf primaer" id="frage-ja">OK</button>
+    </div>
+  </form>
+</dialog>
+<dialog class="admin-dialog anmelde-dialog" id="meldung-dialog">
+  <form method="dialog">
+    <h2 id="meldung-titel">Hinweis</h2>
+    <p id="meldung-text"></p>
+    <div class="dialog-knoepfe"><button type="submit" class="knopf primaer">OK</button></div>
+  </form>
+</dialog>
+<dialog class="admin-dialog anmelde-dialog" id="passwort-dialog">
+  <form method="dialog" id="passwort-formular" novalidate>
+    <h2>Admin-Passwort (ohne Server)</h2>
+    <p class="klein muted">Gilt für die Admin-Seite ohne <code>server.py</code>, z. B. auf einfachem Webspace. Gespeichert wird nur eine Prüfsumme in den Kaderdaten (mit „JSON exportieren“ veröffentlichen). Das ist eine Zugangshürde, kein Schutz der Daten: Mit <code>server.py</code> gilt das dort gesetzte Token.</p>
+    <fieldset class="admin-formular">
+      <label class="breit">Neues Passwort (mindestens 8 Zeichen) <input name="pw1" type="password" autocomplete="new-password"></label>
+      <label class="breit">Wiederholen <input name="pw2" type="password" autocomplete="new-password"></label>
+      <p class="fehlertext" id="passwort-fehler" role="alert"></p>
+      <div class="dialog-knoepfe">
+        <button type="button" class="knopf gefahr" id="passwort-entfernen">Passwort entfernen</button>
+        <button type="button" class="knopf" id="passwort-abbrechen">Abbrechen</button>
+        <button type="submit" class="knopf primaer">Speichern</button>
+      </div>
+    </fieldset>
+  </form>
+</dialog>
+
+<dialog class="admin-dialog" id="export-dialog">
+  <form method="dialog">
+    <h2>kader.json</h2>
+    <p class="klein muted">Ein Download ist hier nicht möglich. Text kopieren und als <code>daten/kader.json</code> speichern.</p>
+    <textarea id="export-text" rows="14" readonly style="width:100%;font:13px/1.4 ui-monospace,monospace;border:1px solid var(--line);border-radius:8px;padding:8px"></textarea>
+    <p class="klein muted" id="export-meldung"></p>
+    <div class="dialog-knoepfe">
+      <button type="button" class="knopf" id="export-kopieren">Kopieren</button>
+      <button type="submit" class="knopf primaer">Schließen</button>
     </div>
   </form>
 </dialog>

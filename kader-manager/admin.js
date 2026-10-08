@@ -22,6 +22,37 @@ const FOTO_BREITE = 480, FOTO_HOEHE = 640, FOTO_MAX_BYTES = 12_000_000;
 
 let daten;
 let bearbeiteId = null;
+
+/* ---------- Eigene Rückfragen und Meldungen (statt confirm/alert, die in Einbettungen gesperrt sein können) ---------- */
+function bestaetigen(text, { titel = 'Bitte bestätigen', ok = 'OK', gefahr = false } = {}) {
+  const d = document.getElementById('frage-dialog');
+  document.getElementById('frage-titel').textContent = titel;
+  document.getElementById('frage-text').textContent = text;
+  const ja = document.getElementById('frage-ja');
+  ja.textContent = ok;
+  ja.classList.toggle('gefahr', gefahr); ja.classList.toggle('primaer', !gefahr);
+  return new Promise(res => {
+    const ende = wert => { d.removeEventListener('close', beimSchliessen); res(wert); };
+    const beimSchliessen = () => ende(d.returnValue === 'ja');
+    d.addEventListener('close', beimSchliessen);
+    document.getElementById('frage-nein').onclick = () => d.close('nein');
+    d.querySelector('form').onsubmit = e => { e.preventDefault(); d.close('ja'); };
+    d.returnValue = 'nein';
+    d.showModal();
+    ja.focus();
+  });
+}
+function melden(text, titel = 'Hinweis') {
+  const d = document.getElementById('meldung-dialog');
+  document.getElementById('meldung-titel').textContent = titel;
+  document.getElementById('meldung-text').textContent = text;
+  d.showModal();
+}
+async function sha256Hex(text) {
+  if (!crypto?.subtle) throw new Error('Dieser Browser kann hier keine Prüfsumme bilden (unsichere Verbindung?).');
+  const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(bytes)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
 let server = false;          // server.py erreichbar (/api/kader antwortet)
 let token = '';              // nur im Speicher und in sessionStorage, nie in den Daten
 
@@ -42,9 +73,20 @@ async function init() {
     sessionStorage.removeItem(TOKEN_SCHLUESSEL);
     anmeldeFormular.elements.token.focus();
   } else {
-    anmeldeHinweis.textContent = 'Kein Server erreichbar (statische Seite oder Vorschau). Änderungen und Fotos bleiben in diesem Browser, bis die exportierte Datei daten/kader.json übernommen wird.';
-    document.getElementById('anmelde-lokal').hidden = false;
+    anmeldeDialogVorbereiten();
+    if (daten.team.adminPasswordHash && sessionStorage.getItem(TOKEN_SCHLUESSEL) === daten.team.adminPasswordHash) { anmelden(''); return; }
+    if (daten.team.adminPasswordHash) anmeldeFormular.elements.token.focus();
   }
+}
+
+/* Anmeldefenster ohne Server: Passwortfeld, wenn eine Prüfsumme gesetzt ist, sonst „Lokal weiterarbeiten“ */
+function anmeldeDialogVorbereiten() {
+  const mitPasswort = !!daten.team.adminPasswordHash;
+  anmeldeHinweis.textContent = mitPasswort
+    ? 'Bitte mit dem Admin-Passwort anmelden. Ohne Server bleiben Änderungen in diesem Browser, bis die exportierte Datei daten/kader.json übernommen wird.'
+    : 'Kein Server erreichbar (statische Seite oder Vorschau) und kein Admin-Passwort gesetzt. Änderungen und Fotos bleiben in diesem Browser, bis die exportierte Datei daten/kader.json übernommen wird. Ein Passwort lässt sich oben rechts unter „Passwort“ festlegen.';
+  document.getElementById('anmelde-felder').hidden = !mitPasswort;
+  document.getElementById('anmelde-lokal').hidden = mitPasswort;
 }
 
 async function serverErkennen() {
@@ -68,10 +110,15 @@ anmeldeFormular.addEventListener('submit', async e => {
   if (!eingabe) { anmeldeFehler.textContent = 'Bitte das Admin-Passwort eingeben.'; return; }
   const knopf = document.getElementById('knopf-anmelden');
   knopf.disabled = true;
-  const ok = await tokenPruefen(eingabe);
+  let ok = false;
+  try {
+    if (server) ok = await tokenPruefen(eingabe);
+    else { await new Promise(r => setTimeout(r, 400)); ok = (await sha256Hex(eingabe)) === daten.team.adminPasswordHash; }
+  } catch (f) { anmeldeFehler.textContent = f.message; knopf.disabled = false; return; }
   knopf.disabled = false;
-  if (!ok) { anmeldeFehler.textContent = 'Passwort falsch oder Server ohne gesetztes KADER_ADMIN_TOKEN.'; anmeldeFormular.elements.token.select(); return; }
-  anmelden(eingabe);
+  if (!ok) { anmeldeFehler.textContent = server ? 'Passwort falsch oder Server ohne gesetztes KADER_ADMIN_TOKEN.' : 'Passwort falsch.'; anmeldeFormular.elements.token.select(); return; }
+  if (!server) sessionStorage.setItem(TOKEN_SCHLUESSEL, daten.team.adminPasswordHash);   // nur die Prüfsumme, für diese Sitzung
+  anmelden(server ? eingabe : '');
 });
 anmeldeDialog.addEventListener('cancel', e => e.preventDefault());     // Escape schließt das Anmeldefenster nicht
 document.getElementById('knopf-lokal').addEventListener('click', () => anmelden(''));
@@ -82,8 +129,9 @@ function anmelden(t) {
   anmeldeFormular.reset();
   anmeldeDialog.close();
   document.getElementById('admin-team').textContent = [daten.team.name, daten.team.season].filter(Boolean).join(' · ');
-  document.getElementById('konto-stand').textContent = server ? 'Angemeldet als Admin' : 'Lokaler Modus (ohne Server)';
-  document.getElementById('knopf-abmelden').hidden = !server;
+  document.getElementById('konto-stand').textContent = server ? 'Angemeldet als Admin' : (daten.team.adminPasswordHash ? 'Angemeldet (ohne Server, Passwort)' : 'Lokaler Modus (ohne Server)');
+  document.getElementById('knopf-abmelden').hidden = !(server || daten.team.adminPasswordHash);
+  document.getElementById('knopf-passwort').hidden = server;
   document.getElementById('server-bereich').hidden = !server;
   if (server) document.getElementById('admin-hinweis').textContent = 'Änderungen werden zuerst im Browser gespeichert und sind sofort auf der Kaderseite sichtbar. Mit „Veröffentlichen“ landen sie auf dem Server.';
   bereich.hidden = false;
@@ -95,8 +143,42 @@ document.getElementById('knopf-abmelden').addEventListener('click', () => {
   sessionStorage.removeItem(TOKEN_SCHLUESSEL);
   bereich.hidden = true;
   anmeldeFehler.textContent = '';
+  if (!server) anmeldeDialogVorbereiten();
   anmeldeDialog.showModal();
-  anmeldeFormular.elements.token.focus();
+  if (server || daten.team.adminPasswordHash) anmeldeFormular.elements.token.focus();
+});
+
+/* ---------- Admin-Passwort ohne Server: Prüfsumme in den Teamdaten ---------- */
+const passwortDialog = document.getElementById('passwort-dialog');
+const passwortFormular = document.getElementById('passwort-formular');
+document.getElementById('knopf-passwort').addEventListener('click', () => {
+  passwortFormular.reset();
+  document.getElementById('passwort-fehler').textContent = '';
+  document.getElementById('passwort-entfernen').hidden = !daten.team.adminPasswordHash;
+  passwortDialog.showModal();
+});
+document.getElementById('passwort-abbrechen').addEventListener('click', () => passwortDialog.close());
+passwortFormular.addEventListener('submit', async e => {
+  e.preventDefault();
+  const pw1 = passwortFormular.elements.pw1.value, pw2 = passwortFormular.elements.pw2.value;
+  const fehler = document.getElementById('passwort-fehler');
+  if (pw1.length < 8) { fehler.textContent = 'Mindestens 8 Zeichen.'; return; }
+  if (pw1 !== pw2) { fehler.textContent = 'Die beiden Eingaben stimmen nicht überein.'; return; }
+  try { daten.team.adminPasswordHash = await sha256Hex(pw1); } catch (f) { fehler.textContent = f.message; return; }
+  passwortFormular.reset();
+  speichern();
+  sessionStorage.setItem(TOKEN_SCHLUESSEL, daten.team.adminPasswordHash);
+  passwortDialog.close();
+  anmelden('');
+  melden('Passwort gesetzt. Es gilt ab jetzt in diesem Browser und nach „JSON exportieren“ überall, wo diese Datei als daten/kader.json liegt.', 'Passwort');
+});
+document.getElementById('passwort-entfernen').addEventListener('click', async () => {
+  passwortDialog.close();
+  if (!await bestaetigen('Admin-Passwort entfernen? Die Admin-Seite ist dann ohne Server frei zugänglich.', { ok: 'Entfernen', gefahr: true })) return;
+  delete daten.team.adminPasswordHash;
+  sessionStorage.removeItem(TOKEN_SCHLUESSEL);
+  speichern();
+  anmelden('');
 });
 
 /* ---------- Speichern und Tabelle ---------- */
@@ -105,7 +187,7 @@ function speichern() {
     daten = pruefen(daten);
     lokalSchreiben(daten);
   } catch (f) {
-    alert(`Nicht gespeichert: ${f.message}`);
+    melden(`Nicht gespeichert: ${f.message}`, 'Fehler');
   }
   tabelleZeichnen();
 }
@@ -131,7 +213,7 @@ function tabelleZeichnen() {
     </tr>`).join('') || '<tr><td colspan="13">Noch keine Spieler.</td></tr>';
 }
 
-tbody.addEventListener('click', e => {
+tbody.addEventListener('click', async e => {
   const knopf = e.target.closest('button[data-aktion]');
   if (!knopf) return;
   const id = knopf.closest('tr').dataset.id;
@@ -141,10 +223,10 @@ tbody.addEventListener('click', e => {
   if (knopf.dataset.aktion === 'status') {
     spieler.status = spieler.status === 'inactive' ? 'active' : 'inactive';
     const fehler = spielerFehler(spieler, daten.players);
-    if (fehler.length) { spieler.status = spieler.status === 'inactive' ? 'active' : 'inactive'; alert(fehler.join('\n')); return; }
+    if (fehler.length) { spieler.status = spieler.status === 'inactive' ? 'active' : 'inactive'; melden(fehler.join(' '), 'Nicht möglich'); return; }
     speichern();
   }
-  if (knopf.dataset.aktion === 'loeschen' && confirm(`${spieler.name} (#${spieler.number}) endgültig aus dem Kader löschen?`)) {
+  if (knopf.dataset.aktion === 'loeschen' && await bestaetigen(`${spieler.name} (#${spieler.number}) endgültig aus dem Kader löschen?`, { titel: 'Spieler löschen', ok: 'Löschen', gefahr: true })) {
     daten.players = daten.players.filter(p => p.id !== id);
     speichern();
   }
@@ -280,11 +362,33 @@ async function bildLaden(datei) {
 const alsDataUrl = blob => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(new Error('Bild nicht lesbar.')); r.readAsDataURL(blob); });
 
 /* ---------- Export, Import, Veröffentlichen ---------- */
-document.getElementById('knopf-export').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(pruefen(daten), null, 2) + '\n'], { type: 'application/json' });
+document.getElementById('knopf-export').addEventListener('click', async () => {
+  let text;
+  try { text = JSON.stringify(pruefen(daten), null, 2) + '\n'; } catch (f) { melden(`Nicht exportiert: ${f.message}`, 'Export'); return; }
+  // In der claude.ai-Vorschau sind direkte Downloads gesperrt; dort läuft der Export über die Download-Schnittstelle der Einbettung.
+  const dl = window.claude?.use ? await window.claude.use('downloads').catch(() => null) : null;
+  if (dl) {
+    try { await dl.save({ filename: 'kader.json', data: text }); return; }
+    catch (f) { if (f?.code === 'declined' || f?.code === 'rate_limited') return; exportAnzeigen(text); return; }
+  }
+  if (window.top !== window) { exportAnzeigen(text); return; }     // eingebettet ohne Download-Schnittstelle: Text zum Kopieren
+  const blob = new Blob([text], { type: 'application/json' });
   const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'kader.json' });
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+/* Rückweg ohne Download: JSON zum Kopieren anzeigen */
+function exportAnzeigen(text) {
+  const d = document.getElementById('export-dialog');
+  const ta = document.getElementById('export-text');
+  ta.value = text;
+  d.showModal();
+  ta.select();
+}
+document.getElementById('export-kopieren').addEventListener('click', async () => {
+  const ta = document.getElementById('export-text');
+  try { await navigator.clipboard.writeText(ta.value); document.getElementById('export-meldung').textContent = 'In die Zwischenablage kopiert.'; }
+  catch { ta.select(); document.getElementById('export-meldung').textContent = 'Bitte mit Strg+C bzw. Cmd+C kopieren.'; }
 });
 
 document.getElementById('datei-import').addEventListener('change', async e => {
@@ -292,12 +396,12 @@ document.getElementById('datei-import').addEventListener('change', async e => {
   if (!datei) return;
   try {
     const neu = pruefen(JSON.parse(await datei.text()));
-    if (!confirm(`${neu.players.length} Spieler aus „${datei.name}" übernehmen? Der aktuelle lokale Stand wird ersetzt.`)) return;
+    if (!await bestaetigen(`${neu.players.length} Spieler aus „${datei.name}“ übernehmen? Der aktuelle lokale Stand wird ersetzt.`, { titel: 'JSON importieren', ok: 'Übernehmen' })) return;
     daten = neu;
     teamfarbenSetzen(daten.team);
     speichern();
   } catch (f) {
-    alert(`Datei nicht brauchbar: ${f.message}`);
+    melden(`Datei nicht brauchbar: ${f.message}`, 'Import');
   } finally {
     e.target.value = '';
   }
@@ -321,7 +425,7 @@ document.getElementById('knopf-veroeffentlichen').addEventListener('click', asyn
 });
 
 document.getElementById('knopf-zuruecksetzen').addEventListener('click', async () => {
-  if (!confirm('Alle lokalen Änderungen verwerfen und den veröffentlichten Stand laden?')) return;
+  if (!await bestaetigen('Alle lokalen Änderungen verwerfen und den veröffentlichten Stand laden?', { titel: 'Lokale Änderungen verwerfen', ok: 'Verwerfen', gefahr: true })) return;
   lokalLoeschen();
   daten = (await laden({ nurDatei: true })).daten;
   teamfarbenSetzen(daten.team);

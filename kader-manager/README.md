@@ -127,8 +127,19 @@ Die Admin-Seite öffnet zuerst ein Anmeldefenster. Mit `server.py` wird das eing
 (= `KADER_ADMIN_TOKEN`) per `POST /api/anmelden` am Server geprüft; erst dann erscheint die Kaderverwaltung.
 Das Passwort bleibt nur für die Browsersitzung gemerkt (`sessionStorage`), landet nie in den Daten und
 wird mit „Abmelden“ oder dem Schließen des Tabs verworfen. Fehlversuche bremst der Server mit 0,5 s.
-Ohne Server (statische Seite, Vorschau) gibt es nichts zu schützen: Das Fenster weist auf den lokalen
-Modus hin, „Lokal weiterarbeiten“ öffnet die Verwaltung, Änderungen bleiben im eigenen Browser.
+Ohne Server (statische Seite, Vorschau) gibt es zwei Fälle:
+
+- Ohne gesetztes Passwort weist das Fenster auf den lokalen Modus hin, „Lokal weiterarbeiten“ öffnet die
+  Verwaltung, Änderungen bleiben im eigenen Browser.
+- Mit Passwort (oben rechts „Passwort“ festlegen, mindestens 8 Zeichen) fragt das Fenster danach. Gespeichert
+  wird nur die SHA-256-Prüfsumme als `team.adminPasswordHash` in den Kaderdaten; sie wandert mit „JSON
+  exportieren“ nach `daten/kader.json` und gilt dann überall, wo diese Datei liegt. Die Anmeldung hält für die
+  Browsersitzung (Tab). Das ist eine Zugangshürde für die Admin-Oberfläche, kein Schutz der Daten: Wer die
+  Datei lesen kann, sieht die Kaderdaten ohnehin, und Änderungen ohne Server bleiben im eigenen Browser.
+  Echten Schutz gibt nur `server.py` mit `KADER_ADMIN_TOKEN`; dort wird das lokale Passwort nicht benutzt.
+
+Rückfragen und Hinweise der Admin-Seite (Löschen, Import, Verwerfen, Fehler) laufen über eigene Dialoge auf
+der Seite, nicht über `confirm()`/`alert()` des Browsers, weil Einbettungen und Vorschauen diese oft sperren.
 
 ### Spielerfotos importieren
 
