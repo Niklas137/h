@@ -7,7 +7,7 @@ Ist-Summe (leer, solange nichts gemeldet wurde). Wochennummern laufen fortlaufen
 |---|---|---|---|---|---|---|
 | 1 | Mo 21.09.2026 | Ofen-Hähnchen mit Rosmarinkartoffeln und grünen Bohnen · Gefüllte Paprika mit Hack und Reis · Lachs-Spinat-Nudeln | Quark-Bowl mit Haferflocken, Apfel und Zimt | 58,11 € | | Neu erstellt am Sa 19.09. („Wocheneinkauf neu"); Einkauf auf Wunsch am Mo 21.09. in einem Gang, Zeitraum 5 Tage bis Fr 25.09. |
 | 2 | Sa 26.09.2026 | Puten-Paprika-Geschnetzeltes · Seelachs in Tomaten-Zucchini-Sugo · Hackbällchen mit Ofengemüse | Rührei mit Tomaten auf Vollkornbrot | 57,95 € | | Testlauf vom 18.09.; Woche 3 am Fr 02.10. einkaufen (Sa Feiertag) |
-| 3 | Fr 02.10.2026 | Kürbis-Hähnchen-Blech · Schweinefilet mit Spitzkohl und Kartoffelpüree · Seelachs-Curry mit Erbsen | Warmer Porridge mit Banane und Walnüssen | 58,28 € | | Testlauf der Routine am 19.09.2026; Einkauf Fr statt Sa (03.10. Feiertag), Zeitraum 8 Tage bis Fr 09.10. |
+| 3 (Reise) | – | entfällt | – | – | | Reise in die Ukraine ab Do 01.10. (Floorball, Lutsk), Rückkehr offen; Routine pausiert, Entwurf `wochen/2026-10-02-woche-03.md` bleibt als Vorlage |
 
 ## Proteine der letzten Wochen
 

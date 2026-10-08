@@ -21,6 +21,9 @@ robots.txt, Alt-Texte, lokale Schriften, komprimierte Bilder, Lazy Loading, kein
 | `livegang.md` / `.pdf` | Livegang Schritt für Schritt (Hosting, Testadresse, DNS, Search Console, .de-Weiterleitung) |
 | `offene-punkte.md` / `.pdf` | die vier offenen Punkte mit fertigen Texten: GitHub-Support-Ticket, 40-%-Referenz, freelance.de-Profil, Rechtstexte |
 | `google-und-email-dns.md` / `.pdf` | Google-Unternehmensprofil (Entscheidungen, Schritte, fertige Texte) und E-Mail-DNS (SPF, DMARC, Null-MX) mit gemessenem Stand und fertigen Einträgen |
+| `erledigen.md` / `.pdf` | alle Klick-Schritte des Betreibers in Reihenfolge mit Werten zum Kopieren |
+| `referenzfreigabe-vorlage.md` / `.pdf` | Anfrage an Kunden, bevor ein Name auf der Website erscheint |
+| `vorschlag-info-postfach.md` / `.pdf` | Vorschlag für ein zentrales Postfach info@, zur Abstimmung mit Falk |
 | `pruefpaket-rechtstexte.md` / `.pdf` | Impressum, Datenschutz, AGB mit Änderungsliste und Fragen für den Rechtsprüfer; erzeugt von `tools/pruefpaket.py` |
 | `tools/` | `pruefpaket.py` und das Deckblatt des Prüfpakets |
 | `nachweise/` | Ablage für Belege (Support-Antworten, Freigaben, Lizenzen, DNS-Screenshot) |
@@ -168,7 +171,7 @@ Alle Punkte stehen auch als `_hinweise` in der jeweiligen JSON-Datei.
     (keine Rechtsberatung).
   - Auf Anweisung vom 22.09.2026 gestrichen: „auf Premium-Niveau“ (Einleitung der Startseite) und
     „Keine Buzzwords.“ (Über uns).
-- **Kundennamen**: entschieden am 22.09.2026: keine Kundennamen; die Startseite nennt Projekte nur
+- **Kundennamen**: entschieden am 22.09.2026 und bestätigt am 01.10.2026: keine Kundennamen; die Startseite nennt Projekte nur
   anonymisiert (Zeile „Aus dem Werdegang außerdem“ in `start.json`).
 - **Seite Redaktionssysteme ST4**: entschieden am 22.09.2026: bleibt als eigene Seite.
 - **Regionalseite**: entschieden am 22.09.2026: kurzer Title mit „FSH Teltow“ (56 Zeichen). Offen bleiben
@@ -185,6 +188,14 @@ Alle Punkte stehen auch als `_hinweise` in der jeweiligen JSON-Datei.
   am Verordnungstext prüfen.
 - **Schriften**: Poppins und Source Sans 3 kommen aus dem Google-Fonts-Archiv, liegen aber lokal
   (keine Verbindung zu Google beim Aufruf; die Datenschutzerklärung sagt das so).
+
+## Gestaltung (Stand 02.10.2026)
+
+Ruhige Fassung, nur über `assets/site.css`, Inhalte unverändert: mehr Abstand zwischen Abschnitten
+(72 px), Kopf mit stiller Navigation und Schalter ohne Rahmen, Chips als Umriss, weichere Linien.
+Regel: ein Kasten nur, wenn er klickbar ist. Informationskarten (Nutzen, Fragen, Schritte,
+Referenzen, Leistungsumfang) sind Listen mit einer Linie oben; Leistungs- und Verweiskarten bleiben
+Kästen. Dunkel und hell geprüft, kein Überlauf bei 390 px.
 
 ## Stand 22.09.2026
 

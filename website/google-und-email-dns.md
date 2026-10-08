@@ -1,6 +1,6 @@
 # Google-Unternehmensprofil und E-Mail-DNS: fertige Einträge und Texte
 
-Stand 22.09.2026. Zwei Maßnahmen aus dem Maßnahmenpaket Phase 2 (Abschnitt 6 und 7d), die unabhängig
+Stand 01.10.2026 (DNS-Werte nach Rücksprache angepasst; erste Fassung 22.09.2026). Zwei Maßnahmen aus dem Maßnahmenpaket Phase 2 (Abschnitt 6 und 7d), die unabhängig
 vom Website-Livegang gehen und beide nur der Betreiber ausführen kann. Alle Werte sind so vorbereitet,
 dass sie eingetragen oder eingefügt werden können; der DNS-Stand wurde am 22.09.2026 per DNS-Abfrage
 geprüft.
@@ -29,11 +29,15 @@ Reiter **DNS** → **TXT- und CNAME-Records verwalten** (STRATO-FAQ „DNS-Eintr
    TXT-Eintrag für `fsh-documentation.de` (Name leer bzw. `@`) eintragen:
 
    ```
-   v=spf1 include:_spf.strato.com ~all
+   v=spf1 include:_spf.strato.com -all
    ```
 
-   `_spf.strato.com` löst auf die Versandserver von STRATO auf (geprüft am 22.09.2026). Das `~all`
-   (Softfail) ist der sichere Start; nach zwei Wochen ohne Probleme auf `-all` (Hardfail) umstellen.
+   `_spf.strato.com` löst auf die Versandserver von STRATO auf (geprüft am 22.09.2026 und 01.10.2026).
+   Direkt `-all` (Hardfail), Entscheidung vom 01.10.2026: Versendet wird ausschließlich über STRATO
+   (Apple Mail mit dem STRATO-Konto), und DMARC steht ohnehin schon auf `p=reject`. Ein Softfail-Vorlauf
+   brächte deshalb keine zusätzliche Sicherheit. Vorher in Apple Mail prüfen: Einstellungen → Accounts →
+   Konto `fsh-documentation.de` → Servereinstellungen → Ausgangsserver muss `smtp.strato.de` sein, nicht
+   iCloud oder Gmail.
    Wird später ein weiterer Versanddienst genutzt (Newsletter, CRM, Microsoft 365), kommt dessen
    `include:` in dieselbe Zeile; es darf nur einen SPF-Eintrag je Domain geben.
 2. **DMARC** um eine Berichtsadresse ergänzen. STRATO bietet eine vordefinierte DMARC-Regel an; deren
@@ -41,13 +45,13 @@ Reiter **DNS** → **TXT- und CNAME-Records verwalten** (STRATO-FAQ „DNS-Eintr
    `_dmarc.fsh-documentation.de` eintragen:
 
    ```
-   v=DMARC1; p=reject; rua=mailto:dmarc@fsh-documentation.de; fo=1
+   v=DMARC1; p=reject; rua=mailto:niklas.heinzmann@fsh-documentation.de; fo=1
    ```
 
-   Vorher das Postfach `dmarc@fsh-documentation.de` bei STRATO anlegen oder als Weiterleitung auf
-   `Falk.Heinzmann@fsh-documentation.de` einrichten. Die täglichen XML-Berichte zeigen, wer im Namen
-   der Domain sendet und ob SPF und DKIM bestehen. Wer sie nicht selbst lesen will, trägt statt des
-   eigenen Postfachs die Adresse eines kostenlosen DMARC-Auswertedienstes ein.
+   Die Berichte gehen an das vorhandene Postfach `niklas.heinzmann@fsh-documentation.de`
+   (Entscheidung vom 01.10.2026; kein zusätzliches Postfach nötig). Die täglichen XML-Berichte zeigen,
+   wer im Namen der Domain sendet und ob SPF und DKIM bestehen. Werden sie zu viel, kommt später die
+   Adresse eines kostenlosen DMARC-Auswertedienstes an diese Stelle.
 3. **DKIM** bleibt wie es ist: STRATO signiert automatisch, solange die Nameserver der .de bei STRATO
    liegen (`docks18.rzone.de`, `shades01.rzone.de`, geprüft).
 4. **Test**: Eine Mail vom STRATO-Postfach an ein Gmail-Konto schicken, dort „Original anzeigen“ öffnen;
@@ -70,7 +74,7 @@ Umzug der Website auf GitHub Pages unverändert (die Livegang-Anleitung ersetzt 
 2. TXT, Name `_dmarc`:
 
    ```
-   v=DMARC1; p=reject; rua=mailto:dmarc@fsh-documentation.de
+   v=DMARC1; p=reject; rua=mailto:niklas.heinzmann@fsh-documentation.de
    ```
 
 3. Weil die Berichte an eine andere Domain gehen, muss die .de das erlauben. Bei STRATO für die .de
@@ -89,10 +93,16 @@ Umzug der Website auf GitHub Pages unverändert (die Livegang-Anleitung ersetzt 
 Nach dem Eintragen, frühestens nach einer Stunde, im Terminal:
 
 ```bash
-nslookup -type=txt fsh-documentation.de          # erwartet: v=spf1 include:_spf.strato.com ~all
-nslookup -type=txt _dmarc.fsh-documentation.de   # erwartet: v=DMARC1; p=reject; rua=mailto:dmarc@…
+python3 seo-audit/tools/mail_dns_check.py        # prüft alle sechs Einträge gegen die Sollwerte
+```
+
+Das Skript fragt dns.google ab und meldet je Eintrag OK oder den Unterschied. Von Hand:
+
+```bash
+nslookup -type=txt fsh-documentation.de          # erwartet: v=spf1 include:_spf.strato.com -all
+nslookup -type=txt _dmarc.fsh-documentation.de   # erwartet: v=DMARC1; p=reject; rua=mailto:niklas.heinzmann@…
 nslookup -type=txt fsh-documentation.com         # erwartet: v=spf1 -all
-nslookup -type=txt _dmarc.fsh-documentation.com  # erwartet: v=DMARC1; p=reject; rua=mailto:dmarc@…
+nslookup -type=txt _dmarc.fsh-documentation.com  # erwartet: v=DMARC1; p=reject; rua=mailto:niklas.heinzmann@…
 ```
 
 Oder ohne Terminal: `https://mxtoolbox.com/SuperTool.aspx`, dort `spf:fsh-documentation.de` und
