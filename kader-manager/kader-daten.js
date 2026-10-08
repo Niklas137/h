@@ -146,6 +146,7 @@ export function spielerFehler(s, andere = []) {
     fehler.push(`Rückennummer ${s.number} ist bei einem aktiven Spieler schon vergeben.`);
   }
   if (!s.position) fehler.push('Position fehlt.');
+  if (s.photo && !fotoZulaessig(s.photo)) fehler.push('Foto: nur relativer Pfad, https-Adresse oder eingebettetes JPG/PNG/WebP.');
   if (s.nationality && !/^[A-Z]{2,3}$/.test(s.nationality)) fehler.push('Nationalität als Länderkürzel (z. B. UA, DE).');
   const jahr = new Date().getFullYear();
   if (s.birthYear !== undefined && (s.birthYear < 1900 || s.birthYear > jahr)) fehler.push('Geburtsjahr unplausibel.');
@@ -153,6 +154,13 @@ export function spielerFehler(s, andere = []) {
     if (s.stats && s.stats[feld] !== undefined && s.stats[feld] < 0) fehler.push(`${label}: keine negativen Werte.`);
   }
   return fehler;
+}
+
+/** Fotoquelle: relativer Pfad ohne „..“, https-Adresse oder eingebettetes Bild (Data-URL aus dem Admin-Import). */
+export function fotoZulaessig(q) {
+  if (/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(q)) return q.length <= 1_500_000;
+  if (/^https:\/\/[^\s"'<>]{1,500}$/.test(q)) return true;
+  return /^[\w./-]{1,200}(\?v=\d{1,12})?$/.test(q) && !q.includes('..') && !q.startsWith('/');
 }
 
 export function idAus(name, number) {

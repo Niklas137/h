@@ -1,25 +1,104 @@
-/* Kader-Manager – Admin: Spieler anlegen, bearbeiten, deaktivieren, löschen; JSON import/export.
-   Speichert im localStorage (statische Seite). Für ein Backend speichern() auf einen POST umstellen. */
+/* Kader-Manager – Admin: Anmeldung, Spieler anlegen, bearbeiten, deaktivieren, löschen; Fotos importieren;
+   JSON import/export. Speichert im localStorage (statische Seite); mit server.py zusätzlich Veröffentlichen
+   und Foto-Upload, beides nur mit Admin-Passwort (KADER_ADMIN_TOKEN, geprüft am Server). */
 import { laden, lokalSchreiben, lokalLoeschen, pruefen, spielerNormalisieren, spielerFehler, idAus, teamfarbenSetzen, trikotSvg, escapeHtml, statusLabel, STATISTIK_FELDER } from './kader-daten.js';
 
+const bereich = document.getElementById('admin-bereich');
 const tbody = document.querySelector('#admin-tabelle tbody');
 const dialog = document.getElementById('spieler-dialog');
 const formular = document.getElementById('spieler-formular');
 const fehlerFeld = document.getElementById('formular-fehler');
 const vorschau = document.getElementById('vorschau-trikot');
+const fotoVorschau = document.getElementById('foto-vorschau');
+const fotoMeldung = document.getElementById('foto-meldung');
+const anmeldeDialog = document.getElementById('anmelde-dialog');
+const anmeldeFormular = document.getElementById('anmelde-formular');
+const anmeldeFehler = document.getElementById('anmelde-fehler');
+const anmeldeHinweis = document.getElementById('anmelde-hinweis');
+const serverMeldung = document.getElementById('server-meldung');
+const TOKEN_SCHLUESSEL = 'kaderManager.token';
+const FOTO_BREITE = 480, FOTO_HOEHE = 640, FOTO_MAX_BYTES = 12_000_000;
+
 let daten;
 let bearbeiteId = null;
+let server = false;          // server.py erreichbar (/api/kader antwortet)
+let token = '';              // nur im Speicher und in sessionStorage, nie in den Daten
 
-init().catch(f => { document.getElementById('admin-hinweis').textContent = `Daten nicht ladbar: ${f.message}`; });
+init().catch(f => { anmeldeHinweis.textContent = `Daten nicht ladbar: ${f.message}`; });
 
+/* ---------- Anmeldung ---------- */
 async function init() {
   daten = (await laden()).daten;
-  serverErkennen();
   teamfarbenSetzen(daten.team);
+  document.getElementById('anmelde-team').textContent = [daten.team.name, daten.team.season].filter(Boolean).join(' · ') || 'Kader-Manager';
+  server = await serverErkennen();
+  if (!anmeldeDialog.open) anmeldeDialog.showModal();
+  if (server) {
+    anmeldeHinweis.textContent = 'Bitte mit dem Admin-Passwort anmelden. Es wird am Server geprüft und nirgends gespeichert.';
+    document.getElementById('anmelde-felder').hidden = false;
+    const gemerkt = sessionStorage.getItem(TOKEN_SCHLUESSEL);
+    if (gemerkt && await tokenPruefen(gemerkt)) { anmelden(gemerkt); return; }
+    sessionStorage.removeItem(TOKEN_SCHLUESSEL);
+    anmeldeFormular.elements.token.focus();
+  } else {
+    anmeldeHinweis.textContent = 'Kein Server erreichbar (statische Seite oder Vorschau). Änderungen und Fotos bleiben in diesem Browser, bis die exportierte Datei daten/kader.json übernommen wird.';
+    document.getElementById('anmelde-lokal').hidden = false;
+  }
+}
+
+async function serverErkennen() {
+  try {
+    const r = await fetch('/api/kader', { method: 'GET', cache: 'no-store' });
+    return r.ok && (r.headers.get('Content-Type') || '').includes('application/json');
+  } catch { return false; }
+}
+
+async function tokenPruefen(t) {
+  try {
+    const r = await fetch('/api/anmelden', { method: 'POST', headers: { 'X-Admin-Token': t }, cache: 'no-store' });
+    return r.status === 204;
+  } catch { return false; }
+}
+
+anmeldeFormular.addEventListener('submit', async e => {
+  e.preventDefault();
+  const eingabe = anmeldeFormular.elements.token.value.trim();
+  anmeldeFehler.textContent = '';
+  if (!eingabe) { anmeldeFehler.textContent = 'Bitte das Admin-Passwort eingeben.'; return; }
+  const knopf = document.getElementById('knopf-anmelden');
+  knopf.disabled = true;
+  const ok = await tokenPruefen(eingabe);
+  knopf.disabled = false;
+  if (!ok) { anmeldeFehler.textContent = 'Passwort falsch oder Server ohne gesetztes KADER_ADMIN_TOKEN.'; anmeldeFormular.elements.token.select(); return; }
+  anmelden(eingabe);
+});
+anmeldeDialog.addEventListener('cancel', e => e.preventDefault());     // Escape schließt das Anmeldefenster nicht
+document.getElementById('knopf-lokal').addEventListener('click', () => anmelden(''));
+
+function anmelden(t) {
+  token = t;
+  if (t) sessionStorage.setItem(TOKEN_SCHLUESSEL, t);
+  anmeldeFormular.reset();
+  anmeldeDialog.close();
   document.getElementById('admin-team').textContent = [daten.team.name, daten.team.season].filter(Boolean).join(' · ');
+  document.getElementById('konto-stand').textContent = server ? 'Angemeldet als Admin' : 'Lokaler Modus (ohne Server)';
+  document.getElementById('knopf-abmelden').hidden = !server;
+  document.getElementById('server-bereich').hidden = !server;
+  if (server) document.getElementById('admin-hinweis').textContent = 'Änderungen werden zuerst im Browser gespeichert und sind sofort auf der Kaderseite sichtbar. Mit „Veröffentlichen“ landen sie auf dem Server.';
+  bereich.hidden = false;
   tabelleZeichnen();
 }
 
+document.getElementById('knopf-abmelden').addEventListener('click', () => {
+  token = '';
+  sessionStorage.removeItem(TOKEN_SCHLUESSEL);
+  bereich.hidden = true;
+  anmeldeFehler.textContent = '';
+  anmeldeDialog.showModal();
+  anmeldeFormular.elements.token.focus();
+});
+
+/* ---------- Speichern und Tabelle ---------- */
 function speichern() {
   try {
     daten = pruefen(daten);
@@ -34,6 +113,7 @@ function tabelleZeichnen() {
   const liste = [...daten.players].sort((a, b) => a.number - b.number);
   tbody.innerHTML = liste.map(p => `
     <tr class="${p.status === 'inactive' ? 'inaktiv' : ''}" data-id="${escapeHtml(p.id)}">
+      <td>${p.photo ? `<img class="tabelle-foto" src="${escapeHtml(p.photo)}" alt="">` : '<span class="tabelle-foto leer"></span>'}</td>
       <td><strong>${p.number}</strong></td>
       <td>${escapeHtml(p.name)}</td>
       <td>${escapeHtml(p.position)}</td>
@@ -46,7 +126,7 @@ function tabelleZeichnen() {
         <button type="button" class="knopf" data-aktion="status">${p.status === 'inactive' ? 'Aktivieren' : 'Deaktivieren'}</button>
         <button type="button" class="knopf gefahr" data-aktion="loeschen">Löschen</button>
       </td>
-    </tr>`).join('') || '<tr><td colspan="11">Noch keine Spieler.</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="12">Noch keine Spieler.</td></tr>';
 }
 
 tbody.addEventListener('click', e => {
@@ -68,6 +148,7 @@ tbody.addEventListener('click', e => {
   }
 });
 
+/* ---------- Spielerdialog ---------- */
 document.getElementById('knopf-neu').addEventListener('click', () => dialogOeffnen(null));
 document.getElementById('knopf-abbrechen').addEventListener('click', () => dialog.close());
 
@@ -76,12 +157,14 @@ function dialogOeffnen(spieler) {
   document.getElementById('dialog-titel').textContent = spieler ? `${spieler.name} bearbeiten` : 'Neuer Spieler';
   formular.reset();
   fehlerFeld.textContent = '';
+  fotoMeldung.textContent = fotoMeldung.dataset.standard ??= fotoMeldung.textContent;
   if (spieler) {
     for (const feld of ['name', 'number', 'position', 'status', 'nationality', 'birthYear', 'photo', 'bio']) {
       formular.elements[feld].value = spieler[feld] ?? '';
     }
     for (const [feld] of STATISTIK_FELDER) formular.elements[feld].value = spieler.stats?.[feld] ?? '';
   }
+  fotoVorschauZeichnen();
   vorschauZeichnen();
   dialog.showModal();
 }
@@ -89,6 +172,11 @@ function dialogOeffnen(spieler) {
 formular.addEventListener('input', vorschauZeichnen);
 function vorschauZeichnen() {
   vorschau.innerHTML = trikotSvg(ausFormular(), { beschriftung: false });
+}
+function fotoVorschauZeichnen() {
+  const pfad = formular.elements.photo.value;
+  fotoVorschau.innerHTML = pfad ? `<img src="${escapeHtml(pfad)}" alt="Spielerfoto">` : '<span class="muted">Kein Foto</span>';
+  document.getElementById('foto-entfernen').disabled = !pfad;
 }
 
 function ausFormular() {
@@ -113,6 +201,71 @@ formular.addEventListener('submit', e => {
   dialog.close();
 });
 
+/* ---------- Fotoimport ---------- */
+document.getElementById('foto-datei').addEventListener('change', async e => {
+  const datei = e.target.files[0];
+  e.target.value = '';
+  if (!datei) return;
+  fotoMeldung.textContent = 'Foto wird verarbeitet …';
+  try {
+    if (!/^image\/(jpeg|png|webp)$/.test(datei.type)) throw new Error('Nur JPG, PNG oder WebP.');
+    if (datei.size > FOTO_MAX_BYTES) throw new Error('Datei größer als 12 MB.');
+    const blob = await fotoVerkleinern(datei);
+    if (server && token) {
+      const kennung = bearbeiteId ?? ausFormular().id;
+      if (!kennung || kennung === 'spieler') throw new Error('Bitte zuerst Name und Rückennummer eintragen, dann das Foto wählen.');
+      const r = await fetch(`/api/foto?spieler=${encodeURIComponent(kennung)}`, { method: 'POST', headers: { 'Content-Type': 'image/jpeg', 'X-Admin-Token': token }, body: blob });
+      const antwort = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(antwort.fehler || `Server antwortet ${r.status}`);
+      formular.elements.photo.value = antwort.pfad;
+      fotoMeldung.textContent = `Hochgeladen nach ${antwort.pfad.split('?')[0]} (${Math.round(blob.size / 1024)} KB).`;
+    } else {
+      formular.elements.photo.value = await alsDataUrl(blob);
+      fotoMeldung.textContent = `Foto übernommen (${Math.round(blob.size / 1024)} KB, wird mit den Daten gespeichert).`;
+    }
+    fotoVorschauZeichnen();
+  } catch (f) {
+    fotoMeldung.textContent = `Foto nicht übernommen: ${f.message}`;
+  }
+});
+document.getElementById('foto-entfernen').addEventListener('click', () => {
+  formular.elements.photo.value = '';
+  fotoMeldung.textContent = 'Foto entfernt. Wird beim Speichern übernommen.';
+  fotoVorschauZeichnen();
+});
+
+/** Verkleinert und beschneidet das Bild auf 3:4 (480 × 640), Ausgabe als JPEG. */
+async function fotoVerkleinern(datei) {
+  const bild = await bildLaden(datei);
+  const quelle = Math.min(bild.width, bild.height * FOTO_BREITE / FOTO_HOEHE);       // größter 3:4-Ausschnitt
+  const quellHoehe = quelle * FOTO_HOEHE / FOTO_BREITE;
+  const sx = (bild.width - quelle) / 2, sy = Math.max(0, (bild.height - quellHoehe) * 0.3);   // Gesicht eher oben
+  const breite = Math.min(FOTO_BREITE, Math.round(quelle)), hoehe = Math.round(breite * FOTO_HOEHE / FOTO_BREITE);
+  const leinwand = document.createElement('canvas');
+  leinwand.width = breite; leinwand.height = hoehe;
+  const ctx = leinwand.getContext('2d');
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(bild, sx, sy, quelle, quellHoehe, 0, 0, breite, hoehe);
+  if (bild.close) bild.close();
+  const blob = await new Promise(res => leinwand.toBlob(res, 'image/jpeg', 0.86));
+  if (!blob) throw new Error('Bild konnte nicht umgewandelt werden.');
+  return blob;
+}
+async function bildLaden(datei) {
+  if ('createImageBitmap' in window) {
+    try { return await createImageBitmap(datei, { imageOrientation: 'from-image' }); } catch { /* unten der Rückweg */ }
+  }
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(datei);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); res(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Bild nicht lesbar.')); };
+    img.src = url;
+  });
+}
+const alsDataUrl = blob => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(new Error('Bild nicht lesbar.')); r.readAsDataURL(blob); });
+
+/* ---------- Export, Import, Veröffentlichen ---------- */
 document.getElementById('knopf-export').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(pruefen(daten), null, 2) + '\n'], { type: 'application/json' });
   const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'kader.json' });
@@ -136,31 +289,20 @@ document.getElementById('datei-import').addEventListener('change', async e => {
   }
 });
 
-/* Veröffentlichen über server.py (nur wenn /api/kader antwortet) */
-async function serverErkennen() {
-  try {
-    const r = await fetch('/api/kader', { method: 'GET', cache: 'no-store' });
-    if (!r.ok) return;
-    document.getElementById('server-bereich').hidden = false;
-    document.getElementById('admin-token').value = sessionStorage.getItem('kaderManager.token') || '';
-  } catch { /* kein Server, statischer Betrieb */ }
-}
 document.getElementById('knopf-veroeffentlichen').addEventListener('click', async () => {
-  const token = document.getElementById('admin-token').value.trim();
-  const meldung = document.getElementById('server-meldung');
-  if (!token) { meldung.textContent = 'Bitte Admin-Token eingeben.'; return; }
-  sessionStorage.setItem('kaderManager.token', token);
+  if (!token) { serverMeldung.textContent = 'Bitte zuerst anmelden.'; return; }
   let payload;
-  try { payload = pruefen(daten); } catch (f) { meldung.textContent = `Nicht veröffentlicht: ${f.message}`; return; }
-  meldung.textContent = 'Wird veröffentlicht …';
+  try { payload = pruefen(daten); } catch (f) { serverMeldung.textContent = `Nicht veröffentlicht: ${f.message}`; return; }
+  serverMeldung.textContent = 'Wird veröffentlicht …';
   try {
     const r = await fetch('/api/kader', { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Admin-Token': token }, body: JSON.stringify(payload) });
     const antwort = await r.json().catch(() => ({}));
-    if (!r.ok) { meldung.textContent = `Abgelehnt: ${antwort.fehler || r.status}`; return; }
+    if (r.status === 403) { serverMeldung.textContent = 'Anmeldung abgelaufen, bitte neu anmelden.'; document.getElementById('knopf-abmelden').click(); return; }
+    if (!r.ok) { serverMeldung.textContent = `Abgelehnt: ${antwort.fehler || r.status}`; return; }
     lokalLoeschen();
-    meldung.textContent = `Veröffentlicht (${antwort.spieler} Spieler). Lokale Änderungen wurden übernommen.`;
+    serverMeldung.textContent = `Veröffentlicht (${antwort.spieler} Spieler). Lokale Änderungen wurden übernommen.`;
   } catch (f) {
-    meldung.textContent = `Fehler beim Senden: ${f.message}`;
+    serverMeldung.textContent = `Fehler beim Senden: ${f.message}`;
   }
 });
 

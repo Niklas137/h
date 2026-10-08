@@ -29,6 +29,12 @@ Stand des Moduls: kader-manager.zip vom 08.10.2026 (nach der Prüfung). Quelldat
 - `server.py` mit tokengeschütztem Veröffentlichen und Sicherungskopien; Admin-Seite erkennt den Server automatisch.
 - Browsertests dafür: Sprache, Trikotwechsel, Zwischenablage, Veröffentlichen mit richtigem und falschem Token.
 
+## Nachtrag 08.10.2026: Anmeldefenster und Fotoimport
+
+- Admin-Seite startet mit Anmeldefenster; mit `server.py` Prüfung des Passworts über `POST /api/anmelden` (204/403, 0,5 s Bremse), Escape schließt das Fenster nicht, Passwort nur in `sessionStorage`, „Abmelden“ vorhanden. Ohne Server lokaler Modus mit Hinweis.
+- Fotoimport im Spielerdialog: Verkleinern auf 480 × 640 (3:4) im Browser; mit Server Upload `POST /api/foto` (Token, Magic-Bytes JPEG/PNG/WebP, max. 3 MB, ID-Muster `a-z0-9-`, atomares Schreiben), ohne Server Data-URL. Fotoquelle wird in `spielerFehler` geprüft (relativer Pfad ohne `..`, https, Data-URL bis 1,5 MB).
+- Tests (Chromium, `shot6.mjs`): API 403/403/204/403/415/400/200/404 wie erwartet; Anmeldung falsch/richtig, Upload mit Datei auf Platte, Veröffentlichen mit Pfad in `kader.json`, automatische Anmeldung nach Neuladen, Abmelden, Foto auf der Kaderseite 480 × 640; statischer Modus mit Data-URL und Anzeige auf dem Handy-Viewport. Keine JS-Fehler außer der erwarteten 403-Konsolenmeldung beim falschen Passwort.
+
 ## Offene Nachweise (R1–R4)
 
 Nicht durch mich erbracht: Safari auf iPhone und Mac, Chrome auf Android, Firefox, echte Touch-Gesten, Bildrate auf schwachen Geräten, Einbau in die Zielseite, Zugriffsschutz des Admin-Bereichs, Übersetzung ins Ukrainische. Alle Browsertests liefen in Chromium (Playwright) bei 1280, 1024 und 390 px Breite, mit und ohne reduzierte Bewegung.

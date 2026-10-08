@@ -12,11 +12,11 @@ Gedacht zur Übernahme in die bestehende Floorball-Website. Alle Spielerdaten ko
 | `admin.html`, `admin.js` | Admin: Spieler anlegen, bearbeiten, deaktivieren, löschen, Nummer/Position/Foto/Status ändern, JSON exportieren und importieren |
 | `kader-daten.js` | Gemeinsame Datenschicht: laden, prüfen (Pflichtfelder, eindeutige IDs, Trikotparameter), Trikot als SVG erzeugen |
 | `sprache.js` | Oberflächentexte Deutsch und Ukrainisch (`team.language` in kader.json, `?lang=uk` zum Testen) |
-| `server.py`, `.env.example` | Kleiner Server ohne Abhängigkeiten: statische Dateien plus geschütztes Veröffentlichen (`PUT /api/kader`) |
+| `server.py`, `.env.example` | Kleiner Server ohne Abhängigkeiten: statische Dateien plus geschützte Anmeldung (`POST /api/anmelden`), Veröffentlichen (`PUT /api/kader`) und Foto-Upload (`POST /api/foto`) |
 | `UMSETZUNG_Pruefbericht_2026-10-08.md` | Status aller Befunde aus dem Prüfbericht vom 08.10.2026 |
 | `kader.css` | Umkleideraum-Optik, Glaskarte, Animation (nur `transform` und `opacity`), `prefers-reduced-motion`; Admin hell/dunkel |
 | `daten/kader.json` | Kaderdaten (Beispiel) |
-| `fotos/` | KFK-Trikots (freigestellt) und Spielerfotos, Pfad im Feld `photo` |
+| `fotos/` | KFK-Trikots (freigestellt); Spielerfotos aus dem Admin-Upload in `fotos/spieler/`, Pfad im Feld `photo` |
 | `fonts/` | Oswald 700 für den Aufdruck (OFL-Lizenz liegt bei) |
 
 ## Lokal starten
@@ -118,6 +118,29 @@ Zwei Betriebsarten:
    `daten/kader.json` geschrieben, davor landet eine Sicherung in `daten/sicherung/`. Ohne gültigen Token
    lehnt der Server ab (403), ungültige Daten ebenfalls (422). Der Token steht nur in der Umgebungsvariable,
    siehe `.env.example`; die Sicherungen sind nicht abrufbar.
+
+### Anmeldung
+
+Die Admin-Seite öffnet zuerst ein Anmeldefenster. Mit `server.py` wird das eingegebene Admin-Passwort
+(= `KADER_ADMIN_TOKEN`) per `POST /api/anmelden` am Server geprüft; erst dann erscheint die Kaderverwaltung.
+Das Passwort bleibt nur für die Browsersitzung gemerkt (`sessionStorage`), landet nie in den Daten und
+wird mit „Abmelden“ oder dem Schließen des Tabs verworfen. Fehlversuche bremst der Server mit 0,5 s.
+Ohne Server (statische Seite, Vorschau) gibt es nichts zu schützen: Das Fenster weist auf den lokalen
+Modus hin, „Lokal weiterarbeiten“ öffnet die Verwaltung, Änderungen bleiben im eigenen Browser.
+
+### Spielerfotos importieren
+
+Im Spielerdialog steht „Foto auswählen“ (JPG, PNG oder WebP, bis 12 MB). Das Bild wird im Browser auf
+einen 3:4-Ausschnitt von 480 × 640 Pixel verkleinert (JPEG, etwa 30–80 KB) und dann
+
+- mit `server.py`: per `POST /api/foto?spieler=<id>` nach `fotos/spieler/<id>.jpg` hochgeladen (Token nötig,
+  Dateityp wird am Dateianfang geprüft, max. 3 MB, ID nur `a-z0-9-`); im Feld `photo` steht der Pfad mit
+  Versionszusatz `?v=…`, damit ein neues Foto sofort sichtbar ist;
+- ohne Server: als eingebettetes Bild (`data:image/jpeg;base64,…`) im Feld `photo` gespeichert; es wandert mit
+  „JSON exportieren“ in `daten/kader.json`.
+
+„Foto entfernen“ leert das Feld; die Datei auf dem Server bleibt liegen, bis ein neues Foto sie ersetzt.
+Beim Server-Upload müssen Name und Rückennummer schon eingetragen sein, daraus entsteht die Spieler-ID.
 
 Für ein eigenes Backend genügt es, `laden()` und `lokalSchreiben()` in `kader-daten.js` sowie das
 Veröffentlichen in `admin.js` auf die eigene API umzustellen.

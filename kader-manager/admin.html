@@ -8,13 +8,13 @@
 <link rel="stylesheet" href="kader.css">
 </head>
 <body>
-<main class="innen">
+<main class="innen" id="admin-bereich" hidden>
   <header class="admin-kopf">
     <div>
       <p class="saison" id="admin-team"></p>
       <h1>Kader verwalten</h1>
     </div>
-    <p class="klein"><a href="index.html">Zur Kaderseite</a></p>
+    <p class="klein admin-konto"><span id="konto-stand"></span> <button type="button" class="knopf" id="knopf-abmelden">Abmelden</button> <a href="index.html">Zur Kaderseite</a></p>
   </header>
   <p class="admin-hinweis" id="admin-hinweis">Änderungen werden im Browser gespeichert und sofort auf der Kaderseite sichtbar. Veröffentlicht werden sie erst, wenn die exportierte Datei <code>daten/kader.json</code> ersetzt wird.</p>
   <div class="admin-leiste">
@@ -25,20 +25,41 @@
     <button type="button" class="knopf gefahr" id="knopf-zuruecksetzen">Lokale Änderungen verwerfen</button>
   </div>
   <div class="admin-hinweis" id="server-bereich" hidden>
-    <strong>Server erkannt.</strong> Veröffentlichen schreibt den aktuellen Stand nach <code>daten/kader.json</code> auf dem Server (mit Sicherung).
-    <label style="display:block;margin-top:8px">Admin-Token <input type="password" id="admin-token" autocomplete="off" style="font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:8px;width:min(100%,320px)"></label>
-    <button type="button" class="knopf primaer" id="knopf-veroeffentlichen" style="margin-top:8px">Veröffentlichen</button>
-    <span id="server-meldung" class="klein muted"></span>
+    <strong>Server erkannt.</strong> Veröffentlichen schreibt den aktuellen Stand nach <code>daten/kader.json</code> auf dem Server (mit Sicherung). Fotos werden beim Auswählen direkt nach <code>fotos/spieler/</code> hochgeladen.
+    <div style="margin-top:8px"><button type="button" class="knopf primaer" id="knopf-veroeffentlichen">Veröffentlichen</button>
+    <span id="server-meldung" class="klein muted"></span></div>
   </div>
   <div class="tabelle-scroll">
     <table class="admin-tabelle" id="admin-tabelle">
       <thead>
-        <tr><th>Nr.</th><th>Name</th><th>Position</th><th>Status</th><th>Nat.</th><th>Jg.</th><th>Sp.</th><th>T</th><th>A</th><th>Strafz.</th><th>Aktionen</th></tr>
+        <tr><th>Foto</th><th>Nr.</th><th>Name</th><th>Position</th><th>Status</th><th>Nat.</th><th>Jg.</th><th>Sp.</th><th>T</th><th>A</th><th>Strafz.</th><th>Aktionen</th></tr>
       </thead>
       <tbody></tbody>
     </table>
   </div>
 </main>
+
+<!-- Anmeldefenster: mit server.py wird das Admin-Passwort (KADER_ADMIN_TOKEN) am Server geprüft.
+     Ohne Server (statische Seite, Vorschau) gibt es nichts zu schützen: Änderungen bleiben im eigenen Browser. -->
+<dialog class="admin-dialog anmelde-dialog" id="anmelde-dialog">
+  <form method="dialog" id="anmelde-formular" novalidate>
+    <p class="saison" id="anmelde-team">Kader-Manager</p>
+    <h2>Admin-Anmeldung</h2>
+    <p class="klein muted" id="anmelde-hinweis">Verbindung zum Server wird geprüft …</p>
+    <fieldset class="admin-formular" id="anmelde-felder" hidden>
+      <label class="breit">Admin-Passwort <input name="token" type="password" autocomplete="current-password" required></label>
+      <p class="fehlertext" id="anmelde-fehler" role="alert"></p>
+      <div class="dialog-knoepfe">
+        <a class="knopf" href="index.html">Zur Kaderseite</a>
+        <button type="submit" class="knopf primaer" id="knopf-anmelden">Anmelden</button>
+      </div>
+    </fieldset>
+    <div class="dialog-knoepfe" id="anmelde-lokal" hidden>
+      <a class="knopf" href="index.html">Zur Kaderseite</a>
+      <button type="button" class="knopf primaer" id="knopf-lokal">Lokal weiterarbeiten</button>
+    </div>
+  </form>
+</dialog>
 
 <dialog class="admin-dialog" id="spieler-dialog">
   <form method="dialog" id="spieler-formular" novalidate>
@@ -51,7 +72,17 @@
       <label>Status <select name="status"><option value="active">Aktiv</option><option value="injured">Verletzt</option><option value="inactive">Deaktiviert</option></select></label>
       <label>Nationalität (Kürzel) <input name="nationality" maxlength="3" placeholder="UA"></label>
       <label>Geburtsjahr <input name="birthYear" type="number" min="1900" max="2100"></label>
-      <label class="breit">Foto (Pfad oder URL) <input name="photo" placeholder="fotos/name.jpg"></label>
+      <div class="breit foto-feld">
+        <div class="foto-vorschau" id="foto-vorschau"><span class="muted">Kein Foto</span></div>
+        <div class="foto-knoepfe">
+          <span class="foto-titel">Spielerfoto</span>
+          <label class="knopf" for="foto-datei">Foto auswählen</label>
+          <input type="file" id="foto-datei" accept="image/jpeg,image/png,image/webp" class="sr-only">
+          <button type="button" class="knopf" id="foto-entfernen">Foto entfernen</button>
+          <span class="klein muted" id="foto-meldung">JPG, PNG oder WebP, Hochformat 3:4 wird am besten dargestellt. Das Bild wird auf 480 × 640 Pixel verkleinert.</span>
+          <input name="photo" type="hidden">
+        </div>
+      </div>
       <label class="breit">Profiltext (optional) <textarea name="bio" rows="3"></textarea></label>
       <label>Spiele <input name="games" type="number" min="0"></label>
       <label>Tore <input name="goals" type="number" min="0"></label>
