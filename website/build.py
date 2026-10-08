@@ -225,6 +225,17 @@ def held(bau: Bau, seite: Seite) -> str:
     return f'<section class="innen held{" held-ohne-karte" if not karte else ""}"><div class="held-text">{"".join(teile)}</div>{karte}</section>'
 
 
+MOTION_HERO = ASSETS / "motion-hero" / "motion-laptop.html"
+
+
+def showcase(bau: Bau, seite: Seite) -> str:
+    """Eigenständige Showcase-Komponente (Motion-Laptop) unterhalb des Held-Bereichs, nur wenn
+    die Seiten-JSON "showcase": "motion-laptop" enthält. Markup, CSS und JS liegen in assets/motion-hero/."""
+    if seite.daten.get("showcase") != "motion-laptop":
+        return ""
+    return MOTION_HERO.read_text(encoding="utf-8")
+
+
 def abschnitt_kopf(a: dict) -> str:
     if not a.get("h2"):
         return ""
@@ -470,12 +481,16 @@ def seite_html(bau: Bau, seite: Seite, varianten: dict | None) -> str:
     fonts = "".join(
         f'<link rel="preload" href="{esc(bau.href("/assets/fonts/" + f, seite))}" as="font" type="font/woff2" crossorigin>\n'
         for f in site.get("fonts_vorladen", []))
-    hauptteil = [pfadnavigation(bau, seite), held(bau, seite)]
+    hauptteil = [pfadnavigation(bau, seite), held(bau, seite), showcase(bau, seite)]
     for a in d.get("abschnitte", []):
         hauptteil.append(abschnitt(bau, seite, a, varianten))
     hauptteil.append(kontakt_abschnitt(bau, seite))
     main_klasse = seite.typ
     canonical = "" if seite.typ == "fehler" else f'<link rel="canonical" href="{esc(seite_url)}">\n'
+    showcase_css = showcase_js = ""
+    if d.get("showcase") == "motion-laptop":
+        showcase_css = f'<link rel="stylesheet" href="{esc(bau.href("/assets/motion-hero/motion-laptop.css", seite))}">\n'
+        showcase_js = f'<script src="{esc(bau.href("/assets/motion-hero/motion-laptop.js", seite))}" defer></script>\n'
     return f"""<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -498,7 +513,7 @@ def seite_html(bau: Bau, seite: Seite, varianten: dict | None) -> str:
 <meta name="theme-color" content="#F4F1EC" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#10161F" media="(prefers-color-scheme: dark)">
 {fonts}<link rel="stylesheet" href="{esc(css)}">
-<script>{KOPF_SCRIPT}</script>
+{showcase_css}{showcase_js}<script>{KOPF_SCRIPT}</script>
 <script type="application/ld+json">{json_script(json_ld(bau, seite))}</script>
 </head>
 <body>

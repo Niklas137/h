@@ -17,6 +17,7 @@ robots.txt, Alt-Texte, lokale Schriften, komprimierte Bilder, Lazy Loading, kein
 | `assets/site.css` | Stylesheet, Farbschema hell/dunkel |
 | `assets/fonts/` | Poppins und Source Sans 3 als WOFF2 (SIL Open Font License, Lizenztexte liegen dabei) |
 | `assets/img/` | Logo, Icons, Porträt, Zahnräder-Foto, Open-Graph-Bild |
+| `assets/motion-hero/` | Motion-Laptop-Showcase (eigenständig: `motion-laptop.html`, `.css`, `.js`); erscheint auf einer Seite, wenn deren JSON `"showcase": "motion-laptop"` enthält (derzeit `start.json`). Screens 1–6 in der HTML-Datei, Zeiten in `TIMELINE` der JS-Datei, Farben als `--ml-*`-Variablen im CSS. Entfernen: Flag aus der JSON nehmen. |
 | `dist/` | **fertige Website zum Hochladen** (wird von `build.py` komplett neu erzeugt) |
 | `livegang.md` / `.pdf` | Livegang Schritt für Schritt (Hosting, Testadresse, DNS, Search Console, .de-Weiterleitung) |
 | `offene-punkte.md` / `.pdf` | die vier offenen Punkte mit fertigen Texten: GitHub-Support-Ticket, 40-%-Referenz, freelance.de-Profil, Rechtstexte |
