@@ -27,3 +27,10 @@ Die neue Website liegt unter `website/`: Inhalte als JSON in `website/inhalt/`, 
 `python3 website/build.py --pruefen`, fertige Dateien in `website/dist/`. Anleitung, Hosting-Wege und
 offene Entscheidungen stehen in `website/README.md`, die Livegang-Schritte in `website/livegang.md`.
 Rechtstexte dort sind keine Rechtsberatung.
+
+## Kader-Manager (KFK, Trikot-Animation)
+
+Eigenständiges Web-Modul unter `kader-manager/` (HTML, CSS, JavaScript, JSON, kein Build): Kaderseite als
+Kleiderstange mit Trikot-Animation nach Videoreferenz, Spielerkarte, Admin-Seite, optional `server.py` mit
+tokengeschütztem Veröffentlichen. Anleitung, Datenmodell und Einbau in `kader-manager/README.md`; Status der
+Prüfbefunde in `kader-manager/UMSETZUNG_Pruefbericht_2026-10-08.md`. Lokal starten: `cd kader-manager && python3 server.py`.
