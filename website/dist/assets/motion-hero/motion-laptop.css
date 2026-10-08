@@ -3,13 +3,16 @@
    Geschwindigkeit: --ml-dauer (Gesamtloop) und die Zeiten in motion-laptop.js (TIMELINE). Farben: Variablen unten. */
 
 .motion-laptop{
-  --ml-bg:#050505;--ml-bg2:#090909;--ml-bg3:#111111;
-  --ml-orange:#ff6b3d;--ml-weiss:#ffffff;--ml-grau:#8b8b8b;
+  /* FSH-Farbwelt: Band-Dunkelblau, Akzentblau, Hellblau (siehe site.css :root) */
+  --ml-bg:#0B1119;--ml-bg2:#121E31;--ml-bg3:#182840;
+  --ml-orange:#43AEE8;          /* Akzent (Name aus der Vorlage beibehalten) */
+  --ml-akzent-rgb:67,174,232;   /* Hellblau als RGB für Glow und Partikel */
+  --ml-blau:#1B63A8;--ml-weiss:#F4F1EC;--ml-grau:#B3B9C4;
   --ml-dauer:16s;              /* Länge eines Loops */
   --ml-laptop-breite:min(760px,78vw);
-  --ml-screen-glow:rgba(255,107,61,.18); /* wird je Screen per JS gesetzt */
+  --ml-screen-glow:rgba(67,174,232,.18); /* wird je Screen per JS gesetzt */
   position:relative;isolation:isolate;overflow:hidden;
-  background:var(--ml-bg);color:var(--ml-weiss);
+  background:var(--ml-bg);color:var(--ml-weiss);border-top:1px solid rgba(108,192,240,.12);
   font-family:'Poppins','Segoe UI',system-ui,-apple-system,sans-serif;
   padding:72px 0 56px;min-height:min(92vh,820px);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;
@@ -19,21 +22,21 @@
 .ml-bg{position:absolute;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(ellipse 70% 55% at 50% 60%,var(--ml-bg3) 0%,var(--ml-bg2) 45%,var(--ml-bg) 100%)}
 .ml-grid{position:absolute;left:-20%;right:-20%;top:38%;bottom:-30%;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-image:linear-gradient(rgba(108,192,240,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(108,192,240,.07) 1px,transparent 1px);
   background-size:40px 40px;transform:perspective(900px) rotateX(62deg);transform-origin:50% 0;
   -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.9),transparent 85%);mask-image:linear-gradient(to bottom,rgba(0,0,0,.9),transparent 85%)}
 .ml-partikel{position:absolute;inset:0;z-index:1;pointer-events:none;width:100%;height:100%}
 .ml-vignette{position:absolute;inset:0;z-index:3;pointer-events:none;
-  background:radial-gradient(ellipse 80% 70% at 50% 50%,transparent 55%,rgba(5,5,5,.85) 100%)}
+  background:radial-gradient(ellipse 80% 70% at 50% 50%,transparent 55%,rgba(11,17,25,.85) 100%)}
 
 /* ---------- 5 Oranges Licht ---------- */
 .ml-licht{position:absolute;left:50%;top:50%;z-index:1;width:min(900px,120vw);height:3px;margin-left:calc(min(900px,120vw) / -2);
-  background:linear-gradient(90deg,transparent,var(--ml-orange) 30%,#ffb08a 50%,var(--ml-orange) 70%,transparent);
-  filter:blur(1.5px);box-shadow:0 0 20px rgba(255,107,61,.5),0 0 60px rgba(255,107,61,.35),0 0 140px rgba(255,107,61,.2);
+  background:linear-gradient(90deg,transparent,var(--ml-orange) 30%,#cfeeff 50%,var(--ml-orange) 70%,transparent);
+  filter:blur(1.5px);box-shadow:0 0 20px rgba(var(--ml-akzent-rgb),.5),0 0 60px rgba(var(--ml-akzent-rgb),.35),0 0 140px rgba(var(--ml-akzent-rgb),.2);
   opacity:0;transform:translateX(-100px) scaleX(.2);will-change:transform,opacity;
   animation:ml-licht var(--ml-dauer) cubic-bezier(.45,0,.2,1) infinite}
 .ml-licht-glow{position:absolute;left:50%;top:50%;z-index:1;width:min(700px,90vw);height:260px;margin:-130px 0 0 calc(min(700px,90vw) / -2);
-  background:radial-gradient(ellipse at center,rgba(255,107,61,.22),transparent 65%);filter:blur(30px);opacity:0;will-change:opacity,transform;
+  background:radial-gradient(ellipse at center,rgba(var(--ml-akzent-rgb),.22),transparent 65%);filter:blur(30px);opacity:0;will-change:opacity,transform;
   animation:ml-licht-glow var(--ml-dauer) ease-in-out infinite}
 @keyframes ml-licht{
   0%,14%{opacity:0;transform:translateX(-100px) scaleX(.2)}
@@ -66,7 +69,7 @@
 .laptop{position:relative;transform-style:preserve-3d;width:100%}
 .laptop .screen{position:relative;width:88%;margin:0 auto;aspect-ratio:16/10;border-radius:8px;
   background:#0a0a0a;border:1px solid rgba(255,255,255,.15);
-  box-shadow:0 30px 80px rgba(0,0,0,.8),0 0 60px rgba(255,107,61,.12),0 0 120px var(--ml-screen-glow);
+  box-shadow:0 30px 80px rgba(0,0,0,.8),0 0 60px rgba(var(--ml-akzent-rgb),.12),0 0 120px var(--ml-screen-glow);
   transform:rotateX(-6deg);transform-origin:50% 100%;overflow:hidden;transition:box-shadow 1.2s ease}
 .laptop .screen::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:inherit;
   background:linear-gradient(115deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.02) 28%,transparent 45%,transparent 70%,rgba(255,255,255,.04) 100%)}
@@ -85,7 +88,7 @@
 .laptop .keyboard{position:absolute;left:11%;right:11%;top:16%;height:52%;border-radius:4px;
   background-color:#0a0a0a;
   background-image:repeating-linear-gradient(90deg,#1b1b1b 0 5.6%,#0a0a0a 5.6% 6.6%),repeating-linear-gradient(180deg,transparent 0 20%,#0a0a0a 20% 25%);
-  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 24px rgba(255,107,61,.08) inset}
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 24px rgba(var(--ml-akzent-rgb),.08) inset}
 .laptop .trackpad{position:absolute;left:38%;right:38%;bottom:7%;height:22%;border-radius:4px;
   background:#161616;box-shadow:0 0 0 1px rgba(255,255,255,.07)}
 .laptop .base::after{content:"";position:absolute;left:46%;right:46%;top:-1px;height:4px;border-radius:0 0 4px 4px;background:#0a0a0a}
@@ -112,7 +115,7 @@
 @keyframes ml-scan{to{top:110%}}
 
 /* Screen 1: Dark grid, dünne orange Linie */
-.ml-s1{background:#080808;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:28px 28px}
+.ml-s1{background:#0E1620;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:28px 28px}
 .ml-s1 .linie{position:absolute;left:8%;right:8%;top:50%;height:1px;background:var(--ml-orange);box-shadow:0 0 12px var(--ml-orange);
   transform:scaleX(0);transform-origin:0 50%}
 .ml-s1.aktiv .linie{animation:ml-linie 1.1s cubic-bezier(.2,.8,.2,1) .35s forwards}
@@ -123,50 +126,50 @@
 @keyframes ml-punkt{to{opacity:1}}
 
 /* Screen 2: Orange Design */
-.ml-s2{background:var(--ml-orange);display:flex;flex-direction:column;justify-content:center;padding:0 10%;color:#0a0a0a}
+.ml-s2{background:linear-gradient(135deg,#1B63A8,#43AEE8);display:flex;flex-direction:column;justify-content:center;padding:0 10%;color:#F4F1EC}
 .ml-s2 .gross{font-size:clamp(30px,7.2vw,78px);font-weight:700;letter-spacing:-.04em;line-height:.95;margin:0;overflow:hidden}
 .ml-s2 .gross span{display:inline-block;transform:translateY(110%);transition:transform .9s cubic-bezier(.2,.8,.2,1) .25s}
 .ml-s2.aktiv .gross span{transform:translateY(0)}
-.ml-s2 .klein{font-family:'Source Sans 3',system-ui,sans-serif;font-size:clamp(10px,1.8vw,18px);letter-spacing:.3em;text-transform:lowercase;margin:8px 0 0;opacity:0;transform:translateX(-10px);transition:all .8s ease .7s}
+.ml-s2 .klein{font-family:'Source Sans 3',system-ui,sans-serif;font-size:clamp(10px,1.8vw,18px);letter-spacing:.3em;text-transform:uppercase;margin:8px 0 0;opacity:0;transform:translateX(-10px);transition:all .8s ease .7s}
 .ml-s2.aktiv .klein{opacity:.85;transform:translateX(0)}
-.ml-s2 .kreis{position:absolute;right:-12%;top:-30%;width:70%;aspect-ratio:1;border-radius:50%;border:1px solid rgba(0,0,0,.25);transform:scale(.6);transition:transform 1.6s cubic-bezier(.2,.8,.2,1)}
+.ml-s2 .kreis{position:absolute;right:-12%;top:-30%;width:70%;aspect-ratio:1;border-radius:50%;border:1px solid rgba(244,241,236,.35);transform:scale(.6);transition:transform 1.6s cubic-bezier(.2,.8,.2,1)}
 .ml-s2.aktiv .kreis{transform:scale(1)}
 
 /* Screen 3: 3D-Wellen (Canvas) */
-.ml-s3{background:#06060a}
+.ml-s3{background:#0B1119}
 .ml-s3 canvas,.ml-s6 canvas{position:absolute;inset:0;width:100%;height:100%}
 
 /* Screen 4: Tech-Logo auf Blau */
-.ml-s4{background:radial-gradient(ellipse at 50% 40%,#1a4fd8,#0b2a8a 70%);display:grid;place-items:center}
+.ml-s4{background:radial-gradient(ellipse at 50% 40%,#1B63A8,#121E31 70%);display:grid;place-items:center}
 .ml-s4 svg{width:38%;height:auto;overflow:visible}
-.ml-s4 .pfad{fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:420;stroke-dashoffset:420}
+.ml-s4 .pfad{fill:none;stroke:#F4F1EC;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:420;stroke-dashoffset:420}
 .ml-s4.aktiv .pfad{animation:ml-zeichnen 1.6s cubic-bezier(.4,0,.2,1) .2s forwards}
-.ml-s4 .ring{fill:none;stroke:rgba(255,255,255,.35);stroke-width:1;transform-origin:50% 50%;transform:scale(.4);opacity:0;transition:transform 1.4s cubic-bezier(.2,.8,.2,1) .5s,opacity 1s ease .5s}
+.ml-s4 .ring{fill:none;stroke:rgba(108,192,240,.5);stroke-width:1;transform-origin:50% 50%;transform:scale(.4);opacity:0;transition:transform 1.4s cubic-bezier(.2,.8,.2,1) .5s,opacity 1s ease .5s}
 .ml-s4.aktiv .ring{transform:scale(1);opacity:1}
-.ml-s4 .kern{fill:#fff;transform-origin:50% 50%;transform:scale(0);transition:transform .7s cubic-bezier(.3,1.4,.5,1) 1.3s}
+.ml-s4 .kern{fill:#43AEE8;transform-origin:50% 50%;transform:scale(0);transition:transform .7s cubic-bezier(.3,1.4,.5,1) 1.3s}
 .ml-s4.aktiv .kern{transform:scale(1)}
 @keyframes ml-zeichnen{to{stroke-dashoffset:0}}
 
 /* Screen 5: Analytics */
-.ml-s5{background:#0c0c0c;display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:auto 1fr;gap:4% 6%;padding:7% 8%;font-family:'Poppins',system-ui,sans-serif}
-.ml-s5 .wert{grid-column:1;font-size:clamp(22px,4.6vw,52px);font-weight:700;letter-spacing:-.03em;line-height:1;margin:0;color:#fff}
+.ml-s5{background:#121E31;display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:auto 1fr;gap:4% 6%;padding:7% 8%;font-family:'Poppins',system-ui,sans-serif}
+.ml-s5 .wert{grid-column:1;font-size:clamp(22px,4.6vw,52px);font-weight:700;letter-spacing:-.03em;line-height:1;margin:0;color:#F4F1EC}
 .ml-s5 .wert small{display:block;font-size:clamp(7px,1.1vw,11px);letter-spacing:.3em;text-transform:uppercase;color:var(--ml-grau);font-weight:600;margin-bottom:6px}
 .ml-s5 .wert b{color:var(--ml-orange);font-weight:700}
 .ml-s5 .balken{grid-column:1;align-self:end;display:flex;gap:4%;align-items:flex-end;height:100%}
-.ml-s5 .balken i{flex:1;background:linear-gradient(180deg,var(--ml-orange),rgba(255,107,61,.35));border-radius:3px 3px 0 0;height:var(--h);transform:scaleY(0);transform-origin:50% 100%;transition:transform 1s cubic-bezier(.2,.8,.2,1)}
-.ml-s5 .balken i:nth-child(2n){background:linear-gradient(180deg,#fff,rgba(255,255,255,.3))}
+.ml-s5 .balken i{flex:1;background:linear-gradient(180deg,var(--ml-orange),rgba(var(--ml-akzent-rgb),.35));border-radius:3px 3px 0 0;height:var(--h);transform:scaleY(0);transform-origin:50% 100%;transition:transform 1s cubic-bezier(.2,.8,.2,1)}
+.ml-s5 .balken i:nth-child(2n){background:linear-gradient(180deg,#F4F1EC,rgba(244,241,236,.3))}
 .ml-s5.aktiv .balken i{transform:scaleY(1)}
 .ml-s5 .ring{grid-column:2;grid-row:1/3;display:grid;place-items:center;position:relative}
 .ml-s5 .ring svg{width:70%;height:auto;transform:rotate(-90deg)}
-.ml-s5 .ring .bahn{fill:none;stroke:#1f1f1f;stroke-width:6}
+.ml-s5 .ring .bahn{fill:none;stroke:#2C3645;stroke-width:6}
 .ml-s5 .ring .wertkreis{fill:none;stroke:var(--ml-orange);stroke-width:6;stroke-linecap:round;stroke-dasharray:264;stroke-dashoffset:264;transition:stroke-dashoffset 1.6s cubic-bezier(.3,.7,.2,1) .4s}
-.ml-s5.aktiv .ring .wertkreis{stroke-dashoffset:58} /* 78 % von 264 */
-.ml-s5 .ring strong{position:absolute;font-size:clamp(14px,2.6vw,30px);font-weight:700;color:#fff}
+.ml-s5.aktiv .ring .wertkreis{stroke-dashoffset:0} /* 100 % normgerecht */
+.ml-s5 .ring strong{position:absolute;font-size:clamp(14px,2.6vw,30px);font-weight:700;color:#F4F1EC}
 .ml-s5 .ring strong small{display:block;text-align:center;font-size:clamp(6px,.9vw,10px);letter-spacing:.3em;color:var(--ml-grau);text-transform:uppercase;font-weight:600}
 .ml-s5 .raster{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:100% 12.5%}
 
 /* Screen 6: Partikel (Canvas) */
-.ml-s6{background:#000}
+.ml-s6{background:#0B1119}
 
 /* ---------- 7 Responsive ---------- */
 @media (max-width:899px){
@@ -192,6 +195,6 @@
   .ml-s1 .linie{transform:scaleX(1)} .ml-s1 .punkt{opacity:1}
   .ml-s2 .gross span{transform:none} .ml-s2 .klein{opacity:.85;transform:none} .ml-s2 .kreis{transform:scale(1)}
   .ml-s4 .pfad{stroke-dashoffset:0} .ml-s4 .ring{transform:scale(1);opacity:1} .ml-s4 .kern{transform:scale(1)}
-  .ml-s5 .balken i{transform:scaleY(1)} .ml-s5 .ring .wertkreis{stroke-dashoffset:58}
+  .ml-s5 .balken i{transform:scaleY(1)} .ml-s5 .ring .wertkreis{stroke-dashoffset:0}
 }
 .motion-laptop.ml-pausiert .ml-float,.motion-laptop.ml-pausiert .ml-licht,.motion-laptop.ml-pausiert .ml-licht-glow{animation-play-state:paused}

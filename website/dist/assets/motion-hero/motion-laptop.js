@@ -8,14 +8,16 @@
 
   /* ---------- 1 Timeline (Millisekunden ab Loop-Start, Loop = DAUER) ---------- */
   var DAUER = 16000;
+  var AKZENT = (getComputedStyle(wurzel).getPropertyValue('--ml-akzent-rgb') || '67,174,232').trim();
+  var HELL = '244,241,236';   /* FSH-Hellton statt Reinweiß */
   var TIMELINE = [            /* Screen-Wechsel: [Zeit, Screen-Index 0-5, Glow-Farbe für Gehäuse und Spiegelung] */
-    [2500, 0, 'rgba(255,107,61,.14)'],
-    [4000, 1, 'rgba(255,107,61,.45)'],
-    [5800, 2, 'rgba(255,107,61,.22)'],
-    [7500, 3, 'rgba(60,110,230,.40)'],
-    [9000, 4, 'rgba(255,107,61,.20)'],
-    [11000, 5, 'rgba(255,255,255,.16)'],
-    [13000, 0, 'rgba(255,107,61,.14)']
+    [2500, 0, 'rgba(' + AKZENT + ',.14)'],
+    [4000, 1, 'rgba(' + AKZENT + ',.45)'],
+    [5800, 2, 'rgba(' + AKZENT + ',.22)'],
+    [7500, 3, 'rgba(27,99,168,.45)'],
+    [9000, 4, 'rgba(' + AKZENT + ',.20)'],
+    [11000, 5, 'rgba(' + HELL + ',.16)'],
+    [13000, 0, 'rgba(' + AKZENT + ',.14)']
   ];
   var screens = Array.prototype.slice.call(wurzel.querySelectorAll('.ml-screen'));
   var aktiv = -1, start = null, laeuft = true, sichtbar = true, zeitImLoop = 0;
@@ -61,7 +63,7 @@
       var t = teilchen[i];
       t.x += t.vx * tempo; t.y += t.vy * tempo;
       if (t.x > B + 20 || t.y < -20) { neuesTeilchen(t); t.x = -10 + Math.random() * B * 0.3; t.y = H * (0.3 + Math.random() * 0.8); }
-      var farbe = t.orange ? '255,107,61' : '255,255,255';
+      var farbe = t.orange ? AKZENT : HELL;
       if (t.art < 0.55) {
         ctx.fillStyle = 'rgba(' + farbe + ',' + t.alpha + ')';
         ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, 6.283); ctx.fill();
@@ -78,7 +80,7 @@
   /* ---------- 3 Screen 3: 3D-Wellen-Grid ---------- */
   var c3 = wurzel.querySelector('.ml-s3 canvas'), x3 = c3.getContext('2d');
   function groesse3() { c3.width = c3.clientWidth * dpr; c3.height = c3.clientHeight * dpr; x3.setTransform(dpr, 0, 0, dpr, 0, 0); }
-  var FARBEN3 = ['255,107,61', '255,80,160', '150,90,255', '255,150,90'];
+  var FARBEN3 = ['67,174,232', '108,192,240', '27,99,168', '244,241,236'];
   function maleWellen(zeit) {
     var w = c3.clientWidth, h = c3.clientHeight; if (!w) { return; }
     x3.clearRect(0, 0, w, h);
@@ -97,7 +99,7 @@
         x3.beginPath(); x3.arc(x, y, r, 0, 6.283); x3.fill();
       }
     }
-    var g = x3.createLinearGradient(0, 0, 0, h); g.addColorStop(0, 'rgba(6,6,10,.9)'); g.addColorStop(0.35, 'rgba(6,6,10,0)');
+    var g = x3.createLinearGradient(0, 0, 0, h); g.addColorStop(0, 'rgba(11,17,25,.9)'); g.addColorStop(0.35, 'rgba(11,17,25,0)');
     x3.fillStyle = g; x3.fillRect(0, 0, w, h);
   }
 
@@ -113,11 +115,11 @@
   for (var k = 0; k < 90; k++) { funken.push(neuerFunke()); }
   function maleFunken() {
     var w = c6.clientWidth, h = c6.clientHeight; if (!w) { return; }
-    x6.fillStyle = 'rgba(0,0,0,.35)'; x6.fillRect(0, 0, w, h);
+    x6.fillStyle = 'rgba(11,17,25,.35)'; x6.fillRect(0, 0, w, h);
     for (var i = 0; i < funken.length; i++) {
       var f = funken[i]; f.x += f.vx; f.y += f.vy;
       if (f.x > w + 60 || f.y < -60) { neuerFunke(f); f.x = -40 - Math.random() * w * 0.3; f.y = h * (0.4 + Math.random() * 0.9); }
-      var farbe = f.orange ? '255,107,61' : '255,255,255';
+      var farbe = f.orange ? AKZENT : HELL;
       var g = x6.createLinearGradient(f.x, f.y, f.x - f.l, f.y + f.l * 0.55);
       g.addColorStop(0, 'rgba(' + farbe + ',' + f.a + ')'); g.addColorStop(1, 'rgba(' + farbe + ',0)');
       x6.strokeStyle = g; x6.lineWidth = f.orange ? 1.6 : 1;
@@ -162,7 +164,7 @@
 
   if (reduziert) {
     /* Reduzierte Bewegung: fester Zustand, Screen 5 (Analytics) als Inhalt sichtbar, kein Canvas. */
-    zeige(4, 'rgba(255,107,61,.2)');
+    zeige(4, 'rgba(' + AKZENT + ',.2)');
     malePartikel(0);
     return;
   }
