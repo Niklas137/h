@@ -2,6 +2,8 @@ var I18N = {
   de: {
     // Gate
     'gate.title': 'Dokumentenprüfer',
+    'gate.brand.name': 'FSH-Documentation',
+    'gate.brand.slogan': 'Fast. Simple. High Quality.',
     'gate.pitch': 'Technische Dokumente gegen DIN 82079-1 und CE-Anforderungen prüfen, Berichte als PDF für Team und Kunden.',
     'gate.feat.1': 'Word und PDF',
     'gate.feat.2': 'Drei Regelsätze: Basisprüfung, DIN 82079-1, CE',
