@@ -17,6 +17,8 @@
   --druck:'Oswald','Arial Narrow','Roboto Condensed',sans-serif;
   --dauer-kurz:220ms;--dauer:520ms;--dauer-lang:780ms;--dauer-dreh:420ms;--dauer-kamera:560ms;
   --kurve:cubic-bezier(.22,.8,.26,1);
+  --kurve-aus:cubic-bezier(.16,1,.3,1);          /* schnell beginnen, weich auslaufen */
+  --kurve-schwung:cubic-bezier(.3,1.25,.4,1);     /* leichtes Überschwingen */
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
@@ -53,7 +55,9 @@ img{max-width:100%;display:block}
 .kader-kopf{text-align:center;padding:28px 16px 10px}
 .kopf-schalter{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 12px}
 .trikotwahl{display:inline-flex;margin-top:12px;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:3px;gap:2px}
-.trikotwahl button{border:0;background:none;color:var(--raum-muted);border-radius:999px;padding:6px 14px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+.trikotwahl button{border:0;background:none;color:var(--raum-muted);border-radius:999px;padding:6px 14px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:color var(--dauer-kurz),background var(--dauer-kurz),transform var(--dauer-kurz) var(--kurve-aus)}
+.trikotwahl button:hover{color:#fff}
+.trikotwahl button:active{transform:scale(.96)}
 .trikotwahl button[aria-pressed="true"]{background:#fff;color:#111}
 .karte-pfeil.kopiert{background:var(--team-2);color:#111}
 .kader-saison{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--raum-muted)}
@@ -97,7 +101,7 @@ img{max-width:100%;display:block}
 .haenger-knopf:focus-visible{outline:none}
 .haenger-knopf:focus-visible .trikot-haengend{filter:drop-shadow(0 0 8px var(--team-2)) drop-shadow(10px 16px 18px rgba(0,0,0,.6))}
 .haenger.gewaehlt{z-index:5}
-.haenger.gewaehlt .trikot-haengend{transform:rotateY(0deg);filter:drop-shadow(0 28px 34px rgba(0,0,0,.7))}
+.haenger.gewaehlt .trikot-haengend{transform:rotateY(0deg);filter:drop-shadow(0 28px 34px rgba(0,0,0,.7));transition-timing-function:var(--kurve-schwung)}
 .trikot-name,.trikot-nummer{font-family:var(--druck);font-weight:700;letter-spacing:.02em;text-transform:uppercase}
 .trikot-nummer{fill:var(--trikot-nummer,var(--team-2))}
 .trikot-name{fill:var(--trikot-name,var(--team-text));letter-spacing:.08em}
@@ -110,6 +114,23 @@ img{max-width:100%;display:block}
 /* An der Stange: Name größer und ohne Schatten, damit er trotz Schrägstellung lesbar bleibt */
 .trikot-beschriftung{transform-box:fill-box;transform-origin:center;transition:transform var(--dauer-dreh) ease}
 .haenger:not(.gewaehlt) .trikot-beschriftung{transform:scale(1.15)}
+
+/* Reveal beim Laden und nach dem Filterwechsel: Trikots hängen sich nacheinander an die Stange */
+.haenger.ein{animation:kader-haengen 900ms var(--kurve-aus) both;animation-delay:calc(var(--i,0) * 45ms)}
+@keyframes kader-haengen{from{opacity:0;transform:translateY(-26px)}to{opacity:1;transform:none}}
+.stange-innen.verblasst .haenger{opacity:0;transition:opacity 180ms ease}
+.kader-kopf > *{animation:kader-hoch 700ms var(--kurve-aus) both}
+.kader-kopf > :nth-child(2){animation-delay:80ms}
+.kader-kopf > :nth-child(3){animation-delay:160ms}
+.leiste.ein > *{animation:kader-hoch 700ms var(--kurve-aus) both}
+.leiste.ein > :nth-child(2){animation-delay:70ms}
+.leiste.ein > :nth-child(3){animation-delay:140ms}
+.leiste.ein > :nth-child(4){animation-delay:210ms}
+/* Dezentes Hintergrundlicht: ein warmer Lichtkegel wandert sehr langsam über die Wand */
+.szene::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.6;
+  background:radial-gradient(40% 55% at 30% 10%,rgba(255,196,128,.14),transparent 70%);
+  animation:kader-licht 22s cubic-bezier(.45,0,.55,1) infinite alternate}
+@keyframes kader-licht{from{transform:translateX(-8%) scale(1)}to{transform:translateX(22%) scale(1.15)}}
 
 /* Pfeile zum Bewegen der Stange */
 .stange-pfeil{position:absolute;top:50%;z-index:4;width:48px;height:48px;margin-top:-24px;border-radius:50%;border:1px solid rgba(255,255,255,.22);
@@ -163,10 +184,26 @@ img{max-width:100%;display:block}
 .karte-nummer{grid-area:nummer;font-family:var(--titel);font-weight:700;font-size:54px;line-height:1}
 .karte-name{grid-area:name;font-family:var(--schrift);font-weight:400;font-size:clamp(26px,3vw,34px);line-height:1.05;letter-spacing:-.01em}
 .karte-name strong{font-weight:700}
+/* Reveal der Spielerdaten (Motion-Presets: kader-hoch, kader-nummer, kader-linie); läuft bei Öffnen und Wechsel */
+.karte.offen .karte-foto{animation:kader-foto var(--dauer-lang) var(--kurve-aus) 300ms both}
+.karte.offen .karte-nummer{animation:kader-nummer 640ms var(--kurve-schwung) 320ms both}
+.karte.offen .karte-name{animation:kader-hoch var(--dauer) var(--kurve-aus) 400ms both}
+.karte.offen .karte-position{animation:kader-hoch var(--dauer) var(--kurve-aus) 470ms both}
+.karte.offen .karte-nat{animation:kader-hoch var(--dauer) var(--kurve-aus) 520ms both}
+.karte.offen .karte-profil{animation:kader-hoch var(--dauer) var(--kurve-aus) calc(600ms + var(--stufen,4) * 70ms) both}
+.karte-spieler::after{content:"";position:absolute;left:16px;right:16px;bottom:0;height:1px;background:linear-gradient(90deg,var(--team-2),transparent);transform:scaleX(0);transform-origin:0 50%}
+.karte-spieler{position:relative}
+.karte.offen .karte-spieler::after{animation:kader-linie 700ms var(--kurve-aus) 560ms both}
+@keyframes kader-hoch{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes kader-foto{from{opacity:0;transform:scale(.92) translateY(6px)}to{opacity:1;transform:none}}
+@keyframes kader-nummer{from{opacity:0;transform:translateY(14px) scale(.7);filter:blur(4px)}60%{filter:blur(0)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes kader-linie{to{transform:scaleX(1)}}
 .karte-zeilen{margin:10px 0 0;padding:0 6px}
-.karte-zeilen > div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:10px 0;border-bottom:1px dotted rgba(255,255,255,.18);
-  opacity:0;transform:translateY(8px);transition:opacity var(--dauer) var(--kurve),transform var(--dauer) var(--kurve);transition-delay:calc(420ms + var(--stufe,0) * 70ms)}
-.karte.offen .karte-zeilen > div{opacity:1;transform:none}
+.karte-zeilen > div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:10px 0;position:relative;opacity:0}
+.karte-zeilen > div::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(255,255,255,.18);transform:scaleX(0);transform-origin:0 50%}
+/* Als Animation (nicht Transition), damit die Staffelung auch beim Spielerwechsel läuft, wenn die Zeilen neu eingesetzt werden */
+.karte.offen .karte-zeilen > div{animation:kader-hoch var(--dauer) var(--kurve-aus) calc(420ms + var(--stufe,0) * 70ms) both}
+.karte.offen .karte-zeilen > div::after{animation:kader-linie var(--dauer-lang) var(--kurve-aus) calc(500ms + var(--stufe,0) * 70ms) both}
 .karte-zeilen dt{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--raum-muted)}
 .karte-zeilen dd{margin:0;text-align:right;font-size:18px}
 .karte-zeilen dd b{font-weight:700}
@@ -174,10 +211,15 @@ img{max-width:100%;display:block}
 .karte-profil h3{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--raum-muted);font-weight:600;margin-bottom:6px}
 .karte-profil p{font-size:16px;line-height:1.5}
 .karte-fuss{position:relative;display:flex;gap:10px;padding:12px}
-.karte-zurueck{flex:1;border:1px solid var(--glas-rand);background:rgba(255,255,255,.06);border-radius:999px;padding:14px 16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background var(--dauer-kurz)}
-.karte-zurueck:hover{background:rgba(255,255,255,.14)}
-.karte-pfeil{width:52px;height:52px;border-radius:50%;border:1px solid var(--glas-rand);background:rgba(255,255,255,.06);display:grid;place-items:center;cursor:pointer;transition:background var(--dauer-kurz)}
-.karte-pfeil:hover{background:rgba(255,255,255,.14)}
+.karte-zurueck{flex:1;border:1px solid var(--glas-rand);background:rgba(255,255,255,.06);border-radius:999px;padding:14px 16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background var(--dauer-kurz),transform var(--dauer-kurz) var(--kurve-aus)}
+.karte-zurueck:hover{background:rgba(255,255,255,.14);transform:translateY(-1px)}
+.karte-zurueck:active{transform:translateY(0) scale(.98)}
+.karte-pfeil{width:52px;height:52px;border-radius:50%;border:1px solid var(--glas-rand);background:rgba(255,255,255,.06);display:grid;place-items:center;cursor:pointer;transition:background var(--dauer-kurz),transform var(--dauer-kurz) var(--kurve-aus)}
+.karte-pfeil:hover{background:rgba(255,255,255,.14);transform:scale(1.06)}
+.karte-pfeil:active{transform:scale(.94)}
+.karte-pfeil svg{transition:transform var(--dauer-kurz) var(--kurve-aus)}
+#karte-weiter:hover svg{transform:translateX(2px)}
+#karte-vorher:hover svg{transform:translateX(-2px)}
 
 /* Leiste unter der Szene */
 .leiste{padding:18px 16px 0;text-align:center}
@@ -188,9 +230,12 @@ img{max-width:100%;display:block}
 .zahlen{list-style:none;margin:16px auto 0;padding:0 8px;display:flex;justify-content:center;gap:2px;flex-wrap:wrap;max-width:720px}
 .zahlen button{border:0;background:none;color:var(--raum-muted);font-family:var(--titel);font-size:12px;padding:6px 5px;cursor:pointer;border-radius:6px;min-width:28px;transition:color var(--dauer-kurz),transform var(--dauer-kurz) var(--kurve)}
 .zahlen button[aria-current="true"]{color:#fff;transform:scale(1.35);font-weight:700}
-.zahlen button:hover{color:#fff}
+.zahlen button:hover{color:#fff;transform:scale(1.18)}
+.zahlen button[aria-current="true"]:hover{transform:scale(1.35)}
 .kader-filter{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:16px 0 0}
-.kader-filter button{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:var(--raum-text);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background var(--dauer-kurz),color var(--dauer-kurz)}
+.kader-filter button{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:var(--raum-text);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background var(--dauer-kurz),color var(--dauer-kurz),transform var(--dauer-kurz) var(--kurve-aus),border-color var(--dauer-kurz)}
+.kader-filter button:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.45)}
+.kader-filter button:active{transform:translateY(0) scale(.97)}
 .kader-filter button sup{font-size:10px;margin-left:5px;color:var(--team-2)}
 .kader-filter button[aria-pressed="true"]{background:#fff;color:#111;border-color:#fff}
 .kader-filter button[aria-pressed="true"] sup{color:#111}
@@ -202,9 +247,15 @@ img{max-width:100%;display:block}
   .trikot-haengend,.haenger.ist-mitte .trikot-haengend,.haenger-knopf:hover .trikot-haengend{transform:rotateY(var(--neigung,60deg))}
   .karte,.karte.offen{transition-delay:0ms;transition-duration:1ms;transform:none}
   .karte:not(.offen){opacity:0}
-  .karte-zeilen > div{transition-delay:0ms;transform:none}
+  .karte-zeilen > div{opacity:1;transform:none}
   .zahlen button[aria-current="true"]{transform:none;text-decoration:underline}
   .karte{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(22,14,14,.94)}
+  .haenger.ein,.kader-kopf > *,.leiste.ein > *,.szene::before,.karte.offen .karte-foto,.karte.offen .karte-nummer,.karte.offen .karte-name,
+  .karte.offen .karte-position,.karte.offen .karte-nat,.karte.offen .karte-profil,.karte.offen .karte-spieler::after,.karte.offen .karte-zeilen > div,.karte.offen .karte-zeilen > div::after{animation:none}
+  .karte-spieler::after,.karte-zeilen > div::after{transform:scaleX(1);transition:none}
+  .karte-zurueck,.karte-pfeil,.kader-filter button,.zahlen button,.trikotwahl button{transition:none}
+  .karte-zurueck:hover,.karte-pfeil:hover,.kader-filter button:hover,.zahlen button:hover{transform:none}
+  .stange-innen.verblasst .haenger{transition:none}
 }
 
 /* Admin */

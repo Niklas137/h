@@ -123,7 +123,7 @@ function trikotwahlAufbauen() {
     wahl.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
     trikotWaehlen(daten.team, trikotSchluessel);
     sofortSchliessen();
-    stangeZeichnen();
+    stangeNeuZeichnen();
   });
 }
 
@@ -150,7 +150,7 @@ function filterAufbauen() {
     aktiverFilter = knopf.dataset.filter;
     filterLeiste.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === knopf)));
     sofortSchliessen();            // alte Abläufe vollständig beenden, dann neu zeichnen
-    stangeZeichnen();
+    stangeNeuZeichnen();
   });
 }
 
@@ -158,8 +158,8 @@ function stangeZeichnen() {
   liste = oeffentlich().filter(p => aktiverFilter === 'alle' || p.position === aktiverFilter);
   hinweis.hidden = liste.length > 0;
   hinweis.textContent = liste.length ? '' : T.keineSpieler;
-  innen.innerHTML = liste.map(p => `
-    <li class="haenger" data-id="${escapeHtml(p.id)}">
+  innen.innerHTML = liste.map((p, i) => `
+    <li class="haenger ein" data-id="${escapeHtml(p.id)}" style="--i:${Math.min(i, 14)}">
       <button type="button" class="haenger-knopf" aria-label="${escapeHtml(nameVon(p))}, ${T.nummer} ${p.number}, ${escapeHtml(positionVon(p))}. ${T.trikotOeffnen}">
         <span class="trikot-haengend">${trikotSvg({ ...p, name: nameVon(p) }, { beschriftung: false, mitHaenger: true })}</span>
       </button>
@@ -170,6 +170,19 @@ function stangeZeichnen() {
   const rand = parseFloat(getComputedStyle(innen).paddingLeft) || 0;
   stange.scrollTo({ left: Math.max(0, rand - 12), behavior: 'auto' });
   aktuellSetzen(mittleresTrikot() || liste[0] || null);
+  innen.classList.remove('verblasst');
+  document.getElementById('leiste').classList.add('ein');
+  // Reveal-Klasse nach dem Lauf entfernen, damit Drehung und Kamera später nicht mit der Animation kollidieren
+  const kennung = vorgang;
+  setTimeout(() => { if (kennung === vorgang) innen.querySelectorAll('.haenger.ein').forEach(li => li.classList.remove('ein')); }, reduziert.matches ? 0 : 900 + Math.min(liste.length, 14) * 45);
+}
+
+/* Weicher Wechsel der Stange (Filter, Trikotwahl): kurz ausblenden, neu zeichnen, Trikots hängen sich neu an */
+function stangeNeuZeichnen() {
+  if (reduziert.matches) { stangeZeichnen(); return; }
+  innen.classList.add('verblasst');
+  const kennung = vorgang;
+  setTimeout(() => { if (kennung === vorgang) stangeZeichnen(); }, 190);
 }
 
 function mittleresTrikot() {
@@ -495,5 +508,28 @@ function karteFuellen(p) {
       <h2 class="karte-name" id="karte-name">${nameMarkup(nameVon(p))}</h2>
     </div>
     <dl class="karte-zeilen">${zeilen.map(([k, v], i) => `<div style="--stufe:${i}"><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
-    ${anzeigeBio(p, sprache) ? `<section class="karte-profil"><h3>${T.profil}</h3><p>${escapeHtml(anzeigeBio(p, sprache))}</p></section>` : ''}`;
+    ${anzeigeBio(p, sprache) ? `<section class="karte-profil" style="--stufen:${zeilen.length}"><h3>${T.profil}</h3><p>${escapeHtml(anzeigeBio(p, sprache))}</p></section>` : ''}`;
+  zahlenHochzaehlen();
+}
+
+/* Statistiken (fette Zahlen) zählen kurz hoch, zeitlich zu ihrer Zeile passend; bei reduzierter Bewegung sofort */
+function zahlenHochzaehlen() {
+  if (reduziert.matches) return;
+  const kennung = vorgang;
+  karteKoerper.querySelectorAll('.karte-zeilen > div').forEach(zeile => {
+    const b = zeile.querySelector('dd b');
+    if (!b) return;
+    const ziel = parseInt(b.textContent, 10);
+    if (!Number.isFinite(ziel) || ziel === 0) return;
+    const stufe = parseInt(zeile.style.getPropertyValue('--stufe'), 10) || 0;
+    const start = performance.now() + 420 + stufe * 70, dauer = 600;
+    b.textContent = '0';
+    const schritt = jetzt => {
+      if (kennung !== vorgang || !b.isConnected) return;
+      const q = Math.min(Math.max((jetzt - start) / dauer, 0), 1), e = 1 - Math.pow(1 - q, 3);
+      b.textContent = String(Math.round(ziel * e));
+      if (q < 1) requestAnimationFrame(schritt);
+    };
+    requestAnimationFrame(schritt);
+  });
 }
