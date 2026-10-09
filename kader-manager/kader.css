@@ -44,6 +44,7 @@ img{max-width:100%;display:block}
 .klein{font-size:14px;line-height:1.45}
 .muted{color:var(--muted)}
 .status-punkt{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;background:#2E9E5B}
+.status-punkt[data-status="recovery"]{background:#D9B62B}
 .status-punkt[data-status="injured"]{background:#D9822B}
 .status-punkt[data-status="inactive"]{background:#8A8F99}
 

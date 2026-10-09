@@ -1,7 +1,7 @@
 /* Kader-Manager – Admin: Anmeldung, Spieler anlegen, bearbeiten, deaktivieren, löschen; Fotos importieren;
    JSON import/export. Speichert im localStorage (statische Seite); mit server.py zusätzlich Veröffentlichen
    und Foto-Upload, beides nur mit Admin-Passwort (KADER_ADMIN_TOKEN, geprüft am Server). */
-import { laden, lokalSchreiben, lokalLoeschen, pruefen, spielerNormalisieren, spielerFehler, idAus, teamfarbenSetzen, trikotSvg, escapeHtml, statusLabel, STATISTIK_FELDER } from './kader-daten.js';
+import { laden, lokalSchreiben, lokalLoeschen, pruefen, spielerNormalisieren, spielerFehler, idAus, teamfarbenSetzen, trikotSvg, escapeHtml, statusLabel, STATISTIK_FELDER, istLadoTeam, ausLadoTeam } from './kader-daten.js';
 import { transliterieren } from './sprache.js';
 
 const bereich = document.getElementById('admin-bereich');
@@ -60,7 +60,7 @@ init().catch(f => { anmeldeHinweis.textContent = `Daten nicht ladbar: ${f.messag
 
 /* ---------- Anmeldung ---------- */
 async function init() {
-  daten = (await laden()).daten;
+  daten = (await laden({ ohneQuelle: true })).daten;
   teamfarbenSetzen(daten.team);
   document.getElementById('anmelde-team').textContent = [daten.team.name, daten.team.season].filter(Boolean).join(' · ') || 'Kader-Manager';
   server = await serverErkennen();
@@ -132,6 +132,8 @@ function anmelden(t) {
   document.getElementById('konto-stand').textContent = server ? 'Angemeldet als Admin' : (daten.team.adminPasswordHash ? 'Angemeldet (ohne Server, Passwort)' : 'Lokaler Modus (ohne Server)');
   document.getElementById('knopf-abmelden').hidden = !(server || daten.team.adminPasswordHash);
   document.getElementById('knopf-passwort').hidden = server;
+  document.getElementById('quelle-bereich').hidden = !daten.team.quelle;
+  document.getElementById('quelle-adresse').textContent = daten.team.quelle || '';
   document.getElementById('server-bereich').hidden = !server;
   if (server) document.getElementById('admin-hinweis').textContent = 'Änderungen werden zuerst im Browser gespeichert und sind sofort auf der Kaderseite sichtbar. Mit „Veröffentlichen“ landen sie auf dem Server.';
   bereich.hidden = false;
@@ -197,7 +199,7 @@ function tabelleZeichnen() {
   tbody.innerHTML = liste.map(p => `
     <tr class="${p.status === 'inactive' ? 'inaktiv' : ''}" data-id="${escapeHtml(p.id)}">
       <td>${p.photo ? `<img class="tabelle-foto" src="${escapeHtml(p.photo)}" alt="">` : '<span class="tabelle-foto leer"></span>'}</td>
-      <td><strong>${p.number}</strong></td>
+      <td><strong>${p.number}</strong>${Number.isInteger(p.numbers?.weiss) && p.numbers.weiss !== p.number ? `<br><small class="muted" title="weißes Trikot">weiß ${p.numbers.weiss}</small>` : ''}</td>
       <td>${escapeHtml(p.name)}</td>
       <td lang="uk">${p.nameUk ? escapeHtml(p.nameUk) : `<span class="muted" title="automatisch">${escapeHtml(transliterieren(p.name, p.nationality))}</span>`}</td>
       <td>${escapeHtml(p.position)}</td>
@@ -247,6 +249,7 @@ function dialogOeffnen(spieler) {
       formular.elements[feld].value = spieler[feld] ?? '';
     }
     for (const [feld] of STATISTIK_FELDER) formular.elements[feld].value = spieler.stats?.[feld] ?? '';
+    formular.elements.numberWeiss.value = Number.isInteger(spieler.numbers?.weiss) ? spieler.numbers.weiss : '';
   }
   nameUkVonHand = !!spieler?.nameUk;
   if (!nameUkVonHand) nameUkAuto();
@@ -395,8 +398,16 @@ document.getElementById('datei-import').addEventListener('change', async e => {
   const datei = e.target.files[0];
   if (!datei) return;
   try {
-    const neu = pruefen(JSON.parse(await datei.text()));
-    if (!await bestaetigen(`${neu.players.length} Spieler aus „${datei.name}“ übernehmen? Der aktuelle lokale Stand wird ersetzt.`, { titel: 'JSON importieren', ok: 'Übernehmen' })) return;
+    const roh = JSON.parse(await datei.text());
+    let neu;
+    if (istLadoTeam(roh)) {
+      // Export oder Schnittstelle von KFK LadoTeam: nur die Spielerfelder übernehmen, Team, Trikots und Fotos bleiben
+      neu = pruefen({ team: daten.team, players: ausLadoTeam(roh, daten.players) });
+      if (!await bestaetigen(`${neu.players.length} Spieler aus KFK LadoTeam („${datei.name}“) übernehmen? Übernommen werden Name, ukrainischer Name, Rückennummern, Position und Status. Teamdaten, Trikots, Fotos und Profiltexte bleiben.`, { titel: 'KFK LadoTeam importieren', ok: 'Übernehmen' })) return;
+    } else {
+      neu = pruefen(roh);
+      if (!await bestaetigen(`${neu.players.length} Spieler aus „${datei.name}“ übernehmen? Der aktuelle lokale Stand wird ersetzt.`, { titel: 'JSON importieren', ok: 'Übernehmen' })) return;
+    }
     daten = neu;
     teamfarbenSetzen(daten.team);
     speichern();

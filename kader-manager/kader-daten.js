@@ -8,6 +8,7 @@ export const SPEICHER_SCHLUESSEL = 'kaderManager.daten.v1';
 
 export const STATUS = {
   active:   { label: 'Aktiv',       oeffentlich: true },
+  recovery: { label: 'Im Aufbau',   oeffentlich: true },    // Wiederaufbau nach Verletzung (Begriff aus KFK LadoTeam)
   injured:  { label: 'Verletzt',    oeffentlich: true },
   inactive: { label: 'Deaktiviert', oeffentlich: false }
 };
@@ -19,16 +20,76 @@ export const STATISTIK_FELDER = [
   ['penaltyMinutes', 'Strafzeiten']
 ];
 
-/** Lädt die Kaderdaten. Lokale Admin-Änderungen haben Vorrang, außer bei nurDatei=true. */
-export async function laden({ nurDatei = false } = {}) {
-  if (!nurDatei) {
-    const lokal = lokalLesen();
-    if (lokal) return { daten: lokal, quelle: 'lokal' };
+/** Lädt die Kaderdaten. Lokale Admin-Änderungen haben Vorrang, außer bei nurDatei=true.
+    Ist team.quelle gesetzt (Adresse der öffentlichen Kader-Schnittstelle von KFK LadoTeam), kommen die
+    Spieler live von dort; Teamdaten, Trikots, Fotos und Profiltexte bleiben aus der lokalen Datei. */
+export async function laden({ nurDatei = false, ohneQuelle = false } = {}) {
+  let ergebnis;
+  const lokal = nurDatei ? null : lokalLesen();
+  if (lokal) ergebnis = { daten: lokal, quelle: 'lokal' };
+  else {
+    const antwort = await fetch(DATEN_URL, { cache: 'no-store' });
+    if (!antwort.ok) throw new Error(`Kaderdaten nicht ladbar (${antwort.status})`);
+    ergebnis = { daten: pruefen(await antwort.json()), quelle: 'datei' };
   }
-  const antwort = await fetch(DATEN_URL, { cache: 'no-store' });
-  if (!antwort.ok) throw new Error(`Kaderdaten nicht ladbar (${antwort.status})`);
-  const daten = pruefen(await antwort.json());
-  return { daten, quelle: 'datei' };
+  const quelle = ergebnis.daten.team.quelle;
+  if (quelle && !ohneQuelle) {
+    try {
+      const antwort = await fetch(new URL(quelle, import.meta.url).href, { cache: 'no-store' });   // relativ zum Modulordner
+      if (!antwort.ok) throw new Error(`Antwort ${antwort.status}`);
+      const roh = await antwort.json();
+      const players = ausLadoTeam(roh, ergebnis.daten.players);
+      ergebnis = { daten: pruefen({ team: ergebnis.daten.team, players }), quelle: 'ladoteam', stand: roh.exportedAt || '' };
+    } catch (f) {
+      console.warn(`Kader-Schnittstelle „${quelle}“ nicht erreichbar, lokale Daten werden gezeigt: ${f.message}`);
+      ergebnis.quelleFehler = f.message;
+    }
+  }
+  return ergebnis;
+}
+
+/* ---------- Anbindung an KFK LadoTeam (Falks Kader-Manager) ----------
+   Versteht zwei Formate: den Admin-Export der App (format "kfk-backup", Spieler unter state.players) und die
+   öffentliche Kader-Schnittstelle (format "kfk-kader", Spieler unter players; Datei in einbau-ladoteam/).
+   Übernommen werden nur Name, ukrainischer Name, beide Rückennummern, Position und Status. Alles andere aus
+   dem Export (E-Mails, Notizen, Finanzen, Mitglieder) wird nicht gelesen. Fotos, Profiltexte, Geburtsjahr und
+   Statistik bleiben aus dem bisherigen Datensatz erhalten, wenn die Spieler-ID übereinstimmt. */
+export const LADOTEAM_POSITIONEN = { goalie: 'Torwart', defense: 'Verteidiger', offense: 'Stürmer' };
+export function istLadoTeam(obj) {
+  return !!obj && typeof obj === 'object' && typeof obj.format === 'string' && obj.format.startsWith('kfk-');
+}
+export function ausLadoTeam(obj, bisher = []) {
+  const liste = Array.isArray(obj?.players) ? obj.players : (Array.isArray(obj?.state?.players) ? obj.state.players : null);
+  if (!liste) throw new Error('KFK LadoTeam: keine Spielerliste gefunden (erwartet players oder state.players).');
+  const alt = new Map(bisher.map(p => [p.id, p]));
+  const players = [];
+  for (const q of liste) {
+    if (!q || typeof q !== 'object') continue;
+    const id = String(q.id || idAus(q.name, q.black || q.white)).toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+    const schwarz = nummer(q.black), weiss = nummer(q.white);
+    if (schwarz === null && weiss === null) { console.warn(`KFK LadoTeam: ${q.name || id} ohne Rückennummer, wird ausgelassen.`); continue; }
+    const vorher = alt.get(id) || {};
+    const p = {
+      id,
+      name: String(q.name || '').trim(),
+      number: schwarz ?? weiss,
+      position: LADOTEAM_POSITIONEN[q.position] || String(q.position || '').trim() || 'Feldspieler',
+      status: STATUS[q.status] ? q.status : 'active',
+      nationality: vorher.nationality || '',
+      photo: vorher.photo || ''
+    };
+    if (weiss !== null && weiss !== p.number) p.numbers = { weiss };
+    if (q.nameUk && String(q.nameUk).trim()) p.nameUk = String(q.nameUk).trim();
+    if (q.detail && String(q.detail).trim()) p.positionDetail = String(q.detail).trim().slice(0, 60);
+    for (const feld of ['bio', 'bioUk', 'birthYear', 'stats']) if (vorher[feld] !== undefined) p[feld] = vorher[feld];
+    players.push(p);
+  }
+  return players;
+}
+function nummer(wert) {
+  if (wert === undefined || wert === null || String(wert).trim() === '') return null;
+  const n = Number.parseInt(String(wert).trim(), 10);
+  return Number.isInteger(n) && n >= 0 && n <= 99 ? n : null;
 }
 
 export function lokalLesen() {
@@ -58,6 +119,7 @@ export function pruefen(daten) {
   team.season = String(team.season || '').slice(0, 20);
   team.colors = farbenPruefen(team.colors);
   team.tilt = zahl(team.tilt, 30, 85, 50);   // Schrägstellung der Trikots an der Stange in Grad
+  if (typeof team.quelle === 'string' && /^(https:\/\/[^\s"'<>]{1,300}|[\w./-]{1,200})$/.test(team.quelle.trim()) && !team.quelle.includes('..')) team.quelle = team.quelle.trim(); else delete team.quelle;   // Adresse der KFK-LadoTeam-Schnittstelle
   if (/^[0-9a-f]{64}$/i.test(String(team.adminPasswordHash || ''))) team.adminPasswordHash = String(team.adminPasswordHash).toLowerCase(); else delete team.adminPasswordHash;   // SHA-256 des Admin-Passworts ohne Server
   if (team.jerseyAlternatives && typeof team.jerseyAlternatives === 'object') {
     const alt = {};
@@ -120,6 +182,13 @@ export function spielerNormalisieren(p) {
     nationality: String(p.nationality || '').trim().toUpperCase(),
     photo: String(p.photo || '').trim()
   };
+  if (p.numbers && typeof p.numbers === 'object') {
+    const numbers = {};
+    for (const [k, w] of Object.entries(p.numbers)) { const n = nummer(w); if (/^[a-z0-9-]{1,20}$/.test(k) && n !== null) numbers[k] = n; }
+    if (Object.keys(numbers).length) s.numbers = numbers;          // Rückennummer je Trikot, z. B. { weiss: 7 }
+  }
+  if (p.numberWeiss !== undefined && p.numberWeiss !== '' && p.numberWeiss !== null) { const n = nummer(p.numberWeiss); if (n !== null) s.numbers = { ...(s.numbers || {}), weiss: n }; }
+  if (p.positionDetail && String(p.positionDetail).trim()) s.positionDetail = String(p.positionDetail).trim().slice(0, 60);
   if (p.nameUk && String(p.nameUk).trim()) s.nameUk = String(p.nameUk).trim().slice(0, 60);
   if (p.bio && String(p.bio).trim()) s.bio = String(p.bio).trim();
   if (p.bioUk && String(p.bioUk).trim()) s.bioUk = String(p.bioUk).trim();

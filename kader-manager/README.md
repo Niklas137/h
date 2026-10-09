@@ -17,6 +17,7 @@ Gedacht zur Übernahme in die bestehende Floorball-Website. Alle Spielerdaten ko
 | `kader.css` | Umkleideraum-Optik, Glaskarte, Animation (nur `transform` und `opacity`), `prefers-reduced-motion`; Admin hell/dunkel |
 | `daten/kader.json` | Kaderdaten (Beispiel) |
 | `fotos/` | KFK-Trikots (freigestellt); Spielerfotos aus dem Admin-Upload in `fotos/spieler/`, Pfad im Feld `photo` |
+| `einbau-ladoteam/` | Anbindung an KFK LadoTeam: Übergabenotiz für Falk und die neue Schnittstellendatei `route.ts` |
 | `fonts/` | Oswald 700 für den Aufdruck (OFL-Lizenz liegt bei) |
 
 ## Lokal starten
@@ -45,7 +46,9 @@ Dann `http://localhost:8000/` (Kader) und `http://localhost:8000/admin.html` (Ad
 ```
 
 - Pflicht: `id`, `name`, `number` (0–99), `position`, `status` (`active`, `injured`, `inactive`).
-- Optional: `nationality` (Länderkürzel), `photo`, `birthYear`, `bio` (Profiltext), `stats` mit `games`, `goals`, `assists`, `penaltyMinutes`.
+- Optional: `nationality` (Länderkürzel), `photo`, `birthYear`, `bio` (Profiltext), `stats` mit `games`, `goals`, `assists`, `penaltyMinutes`,
+  `numbers` (Rückennummer je Trikot, z. B. `{"weiss": 31}`), `positionDetail` (Zusatz zur Position).
+- Status: `active`, `recovery` (Im Aufbau), `injured`, `inactive` (nicht auf der Seite).
 - Zweisprachig: `nameUk` (Name in ukrainischer Schreibweise) und `bioUk` (Profiltext ukrainisch). In der ukrainischen
   Ansicht stehen sie auf Trikot, Karte, Leiste und in den Vorlesetexten; fehlt `nameUk`, wird `name` gezeigt.
 - Es wird nur angezeigt, was vorhanden ist. Spieler mit `status: "inactive"` erscheinen nicht auf der Kaderseite.
@@ -160,6 +163,26 @@ Veröffentlichen in `admin.js` auf die eigene API umzustellen.
 
 Weitere Funktionen der Kaderseite: Heim-/Auswärtstrikot-Umschalter (erscheint, wenn `jerseyAlternatives`
 gesetzt ist), „Link kopieren“ in der Spielerkarte (Direktlink `#spieler=<id>`).
+
+## Anbindung an KFK LadoTeam (Falks Kader-Manager)
+
+Falks App bleibt unverändert; die Trikotseite liest ihre Spieler von dort. Zwei Wege, Details und die
+Datei für Falk in `einbau-ladoteam/`:
+
+- **Weg 1, Export einspielen:** Team-JSON aus KFK LadoTeam exportieren, im Admin „JSON importieren“ wählen.
+  Das Modul erkennt das Format (`kfk-backup`), übernimmt nur Name, ukrainischen Namen, beide Rückennummern,
+  Position und Status und behält Team, Trikots, Fotos und Profiltexte. Danach „JSON exportieren“ und als
+  `daten/kader.json` ablegen. Die Exportdatei aus der App enthält E-Mails und Finanzen und bleibt privat.
+- **Weg 2, live:** Falk nimmt `einbau-ladoteam/app/api/public/kader/route.ts` in seine App auf (eine neue
+  Datei, Freigabe der Website-Domain eintragen, veröffentlichen). Dann in `daten/kader.json` unter `team`
+  die Adresse eintragen: `"quelle": "https://<app-domain>/api/public/kader"`. Die Kaderseite lädt die
+  Spieler bei jedem Aufruf von dort; ist die Adresse nicht erreichbar, zeigt sie den gespeicherten Stand.
+  Fotos, Profiltexte, Geburtsjahr und Statistik bleiben im Modul und werden über die Spieler-ID zugeordnet.
+
+Zuordnung: `black` → Heimnummer `number`, `white` → `numbers.weiss` (nur wenn abweichend; der Heim-/Auswärts-
+Schalter zeigt die passende Nummer), `goalie`/`defense`/`offense` → Torwart/Verteidiger/Stürmer, `detail`
+→ Zusatz in der Karte, Status `recovery` → „Im Aufbau“. Deaktivierte Spieler fehlen auf der Seite,
+Spieler ohne Rückennummer werden mit Hinweis in der Konsole ausgelassen.
 
 ## Sprachen: Deutsch und Ukrainisch
 

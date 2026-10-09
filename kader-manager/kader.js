@@ -72,6 +72,8 @@ async function init() {
     q.hidden = false;
     q.innerHTML = `${T.lokal} <a href="?datei">${T.veroeffentlicht}</a>`;
   }
+  if (ergebnis.quelleFehler) console.warn('Kader-Schnittstelle nicht erreichbar, lokale Daten werden gezeigt.');
+  modul.dataset.quelle = ergebnis.quelle;
   hinweis.hidden = true;
   trikotwahlAufbauen();
   filterAufbauen();
@@ -131,7 +133,9 @@ function bildLadbar(url) {
   return new Promise(res => { const b = new Image(); b.onload = () => res(true); b.onerror = () => res(false); b.src = new URL(url, location.href).href; });
 }
 
-const oeffentlich = () => daten.players.filter(p => STATUS[p.status]?.oeffentlich).sort((a, b) => a.number - b.number);
+/* Rückennummer für das gewählte Trikot: numbers[<trikot>] falls vorhanden, sonst die Hauptnummer */
+const nummerVon = p => (trikotSchluessel !== 'heim' && Number.isInteger(p.numbers?.[trikotSchluessel])) ? p.numbers[trikotSchluessel] : p.number;
+const oeffentlich = () => daten.players.filter(p => STATUS[p.status]?.oeffentlich).sort((a, b) => nummerVon(a) - nummerVon(b));
 const haengerVon = spieler => spieler ? innen.querySelector(`.haenger[data-id="${CSS.escape(spieler.id)}"]`) : null;
 const neuerVorgang = () => ++vorgang;
 const spaeter = (kennung, ms, fn) => setTimeout(() => { if (kennung === vorgang) fn(); }, ms);
@@ -160,11 +164,11 @@ function stangeZeichnen() {
   hinweis.textContent = liste.length ? '' : T.keineSpieler;
   innen.innerHTML = liste.map(p => `
     <li class="haenger" data-id="${escapeHtml(p.id)}">
-      <button type="button" class="haenger-knopf" aria-label="${escapeHtml(nameVon(p))}, ${T.nummer} ${p.number}, ${escapeHtml(positionVon(p))}. ${T.trikotOeffnen}">
-        <span class="trikot-haengend">${trikotSvg({ ...p, name: nameVon(p) }, { beschriftung: false, mitHaenger: true })}</span>
+      <button type="button" class="haenger-knopf" aria-label="${escapeHtml(nameVon(p))}, ${T.nummer} ${nummerVon(p)}, ${escapeHtml(positionVon(p))}. ${T.trikotOeffnen}">
+        <span class="trikot-haengend">${trikotSvg({ ...p, name: nameVon(p), number: nummerVon(p) }, { beschriftung: false, mitHaenger: true })}</span>
       </button>
     </li>`).join('');
-  zahlen.innerHTML = liste.map(p => `<li><button type="button" data-id="${escapeHtml(p.id)}" aria-label="${T.nummer} ${p.number}, ${escapeHtml(nameVon(p))}">${p.number}</button></li>`).join('');
+  zahlen.innerHTML = liste.map(p => `<li><button type="button" data-id="${escapeHtml(p.id)}" aria-label="${T.nummer} ${nummerVon(p)}, ${escapeHtml(nameVon(p))}">${nummerVon(p)}</button></li>`).join('');
   // Start wie im Video: Stange beginnt links; die Markierung gilt dem Trikot, das dann wirklich in der Mitte hängt.
   // Der Innenabstand erlaubt trotzdem, jedes Trikot (auch das erste und letzte) mittig einzurasten (A04).
   const rand = parseFloat(getComputedStyle(innen).paddingLeft) || 0;
@@ -223,7 +227,8 @@ stange.addEventListener('scroll', () => {
 let rastTimer = 0, fingerUnten = false;
 function einrasten() {
   if (zustand !== 'geschlossen' || zieh || fingerUnten) return;
-  const m = mittleresTrikot();
+  // Läuft gerade eine gezielte Fahrt (Nummernband, Pfeile, Tastatur), gilt deren Ziel, nicht die momentane Mitte
+  const m = (rollZiel && Date.now() < rollZiel.bis && liste.includes(rollZiel.spieler)) ? rollZiel.spieler : mittleresTrikot();
   if (!m) return;
   const li = haengerVon(m);
   const ziel = li.offsetLeft + li.offsetWidth / 2 - stange.clientWidth / 2;
@@ -240,15 +245,17 @@ function aktuellSetzen(spieler) {
   aktuell = spieler && liste.includes(spieler) ? spieler : null;
   pfeileAktualisieren();
   if (!aktuell) { leisteSpieler.textContent = ''; leisteHinweis.textContent = ''; return; }
-  leisteSpieler.innerHTML = `<span class="leiste-nummer">${aktuell.number}</span> ${nameMarkup(nameVon(aktuell))}`;
+  leisteSpieler.innerHTML = `<span class="leiste-nummer">${nummerVon(aktuell)}</span> ${nameMarkup(nameVon(aktuell))}`;
   leisteHinweis.textContent = `${positionVon(aktuell)} · ${zustand === 'geschlossen' ? T.antippen : statusLabel(aktuell.status, T.statusWerte)}`;
   zahlen.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', b.dataset.id === aktuell.id ? 'true' : 'false'));
   innen.querySelectorAll('.haenger').forEach(li => li.classList.toggle('ist-mitte', li.dataset.id === aktuell.id));
 }
 
+let rollZiel = null;
 function zurMitteRollen(spieler, weich) {
   const li = haengerVon(spieler);
   if (!li) return;
+  rollZiel = { spieler, bis: Date.now() + 1500 };
   const ziel = li.offsetLeft + li.offsetWidth / 2 - stange.clientWidth / 2;
   stange.scrollTo({ left: ziel, behavior: weich && !reduziert.matches ? 'smooth' : 'auto' });
 }
@@ -490,8 +497,8 @@ function karteFuellen(p) {
     <div class="karte-spieler">
       ${p.photo ? `<img class="karte-foto" src="${escapeHtml(p.photo)}" alt="${T.foto} ${escapeHtml(nameVon(p))}">` : ''}
       <span class="karte-nat" aria-hidden="true">${escapeHtml(p.nationality)}</span>
-      <span class="karte-position">${escapeHtml(positionVon(p))}</span>
-      <span class="karte-nummer" aria-label="${T.rueckennummer} ${p.number}">${p.number}</span>
+      <span class="karte-position">${escapeHtml(positionVon(p))}${p.positionDetail ? ` · ${escapeHtml(p.positionDetail)}` : ''}</span>
+      <span class="karte-nummer" aria-label="${T.rueckennummer} ${nummerVon(p)}">${nummerVon(p)}</span>
       <h2 class="karte-name" id="karte-name">${nameMarkup(nameVon(p))}</h2>
     </div>
     <dl class="karte-zeilen">${zeilen.map(([k, v], i) => `<div style="--stufe:${i}"><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>

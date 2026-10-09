@@ -9,7 +9,7 @@ export const TEXTE = {
     status: 'Status', jahrgang: 'Jahrgang', spiele: 'Spiele', tore: 'Tore', assists: 'Assists', strafzeiten: 'Strafzeiten', profil: 'Profil',
     rueckennummer: 'Rückennummer', foto: 'Foto von', trikotOeffnen: 'Trikot öffnen', nummer: 'Nummer', links: 'Trikots nach links bewegen', rechts: 'Trikots nach rechts bewegen',
     positionFilter: 'Nach Position filtern', heim: 'Heim', auswaerts: 'Auswärts', trikotwahl: 'Trikot', lokal: 'Lokale Admin-Änderungen, noch nicht veröffentlicht.', veroeffentlicht: 'Veröffentlichten Stand zeigen',
-    admin: 'Admin-Bereich', sprache: 'Sprache', statusWerte: { active: 'Aktiv', injured: 'Verletzt', inactive: 'Deaktiviert' },
+    admin: 'Admin-Bereich', sprache: 'Sprache', statusWerte: { active: 'Aktiv', recovery: 'Im Aufbau', injured: 'Verletzt', inactive: 'Deaktiviert' },
     positionen: { Torwart: 'Torwart', Verteidiger: 'Verteidiger', Center: 'Center', 'Stürmer': 'Stürmer' }
   },
   uk: {
@@ -19,7 +19,7 @@ export const TEXTE = {
     status: 'Статус', jahrgang: 'Рік народження', spiele: 'Матчі', tore: 'Голи', assists: 'Передачі', strafzeiten: 'Штрафні хвилини', profil: 'Профіль',
     rueckennummer: 'Ігровий номер', foto: 'Фото', trikotOeffnen: 'Відкрити футболку', nummer: 'Номер', links: 'Прокрутити вліво', rechts: 'Прокрутити вправо',
     positionFilter: 'Фільтр за позицією', heim: 'Домашня', auswaerts: 'Виїзна', trikotwahl: 'Футболка', lokal: 'Локальні зміни адміністратора, ще не опубліковані.', veroeffentlicht: 'Показати опубліковану версію',
-    admin: 'Адміністрування', sprache: 'Мова', statusWerte: { active: 'Активний', injured: 'Травмований', inactive: 'Деактивований' },
+    admin: 'Адміністрування', sprache: 'Мова', statusWerte: { active: 'Активний', recovery: 'Відновлення', injured: 'Травмований', inactive: 'Деактивований' },
     positionen: { Torwart: 'Воротар', Verteidiger: 'Захисник', Center: 'Центральний', 'Stürmer': 'Нападник' }
   }
 };

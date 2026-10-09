@@ -20,10 +20,11 @@
   <div class="admin-leiste">
     <button type="button" class="knopf primaer" id="knopf-neu">Spieler hinzufügen</button>
     <button type="button" class="knopf" id="knopf-export">JSON exportieren</button>
-    <label class="knopf" for="datei-import">JSON importieren</label>
+    <label class="knopf" for="datei-import">JSON importieren (auch KFK-LadoTeam-Export)</label>
     <input type="file" id="datei-import" accept="application/json,.json" class="sr-only">
     <button type="button" class="knopf gefahr" id="knopf-zuruecksetzen">Lokale Änderungen verwerfen</button>
   </div>
+  <div class="admin-hinweis" id="quelle-bereich" hidden><strong>Spieler kommen live aus KFK LadoTeam</strong> (<code id="quelle-adresse"></code>). Die Kaderseite liest Name, Nummern, Position und Status von dort; hier gepflegt werden nur Trikots, Fotos, Profiltexte und Zusatzfelder, die über die Spieler-ID zugeordnet bleiben.</div>
   <div class="admin-hinweis" id="server-bereich" hidden>
     <strong>Server erkannt.</strong> Veröffentlichen schreibt den aktuellen Stand nach <code>daten/kader.json</code> auf dem Server (mit Sicherung). Fotos werden beim Auswählen direkt nach <code>fotos/spieler/</code> hochgeladen.
     <div style="margin-top:8px"><button type="button" class="knopf primaer" id="knopf-veroeffentlichen">Veröffentlichen</button>
@@ -115,10 +116,11 @@
     <fieldset class="admin-formular">
       <label>Name (lateinisch, deutsch) <input name="name" required autocomplete="off" placeholder="Oleh Tkachenko"></label>
       <label>Name ukrainisch (wird automatisch erzeugt) <span class="feld-mit-knopf"><input name="nameUk" autocomplete="off" lang="uk" placeholder="Олег Ткаченко"><button type="button" class="knopf" id="name-uk-neu" title="Aus dem lateinischen Namen neu erzeugen">Auto</button></span></label>
-      <label>Rückennummer <input name="number" type="number" min="0" max="99" required></label>
+      <label>Rückennummer (Heim, schwarz) <input name="number" type="number" min="0" max="99" required></label>
+      <label>Nummer weißes Trikot (falls anders) <input name="numberWeiss" type="number" min="0" max="99" placeholder="wie Heim"></label>
       <label>Position <input name="position" list="positionen" required></label>
       <datalist id="positionen"><option>Torwart</option><option>Verteidiger</option><option>Center</option><option>Stürmer</option></datalist>
-      <label>Status <select name="status"><option value="active">Aktiv</option><option value="injured">Verletzt</option><option value="inactive">Deaktiviert</option></select></label>
+      <label>Status <select name="status"><option value="active">Aktiv</option><option value="recovery">Im Aufbau</option><option value="injured">Verletzt</option><option value="inactive">Deaktiviert</option></select></label>
       <label>Nationalität (Kürzel) <input name="nationality" maxlength="3" placeholder="UA"></label>
       <label>Geburtsjahr <input name="birthYear" type="number" min="1900" max="2100"></label>
       <div class="breit foto-feld">
