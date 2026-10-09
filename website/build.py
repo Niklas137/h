@@ -487,6 +487,8 @@ def seite_html(bau: Bau, seite: Seite, varianten: dict | None) -> str:
     hauptteil.append(kontakt_abschnitt(bau, seite))
     main_klasse = seite.typ
     canonical = "" if seite.typ == "fehler" else f'<link rel="canonical" href="{esc(seite_url)}">\n'
+    motion_css = f'<link rel="stylesheet" href="{esc(bau.href("/assets/motion/site-motion.css", seite))}">\n'
+    motion_js = f'<script src="{esc(bau.href("/assets/motion/site-motion.js", seite))}" defer></script>\n'
     showcase_css = showcase_js = ""
     if d.get("showcase") == "motion-laptop":
         showcase_css = f'<link rel="stylesheet" href="{esc(bau.href("/assets/motion-hero/motion-laptop.css", seite))}">\n'
@@ -513,7 +515,7 @@ def seite_html(bau: Bau, seite: Seite, varianten: dict | None) -> str:
 <meta name="theme-color" content="#F4F1EC" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#10161F" media="(prefers-color-scheme: dark)">
 {fonts}<link rel="stylesheet" href="{esc(css)}">
-{showcase_css}{showcase_js}<script>{KOPF_SCRIPT}</script>
+{motion_css}{motion_js}{showcase_css}{showcase_js}<script>{KOPF_SCRIPT}</script>
 <script type="application/ld+json">{json_script(json_ld(bau, seite))}</script>
 </head>
 <body>

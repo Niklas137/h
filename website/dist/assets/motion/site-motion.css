@@ -1,0 +1,144 @@
+/* FSH-Documentation – seitenweite Bewegungsschicht (Motion Design).
+   Dockt an die vorhandenen Klassen aus site.css an, ändert kein Layout.
+   Abschnitte: 1 Grundlagen, 2 Kopf, 3 Held, 4 Scroll-Reveal, 5 Karten/Buttons, 6 Bänder, 7 Zahlen/Schritte,
+   8 Bilder, 9 Fuß, 10 Seitenwechsel, 11 Reduced Motion. Alle Timings über --mo-*. */
+
+:root{
+  --mo-schnell:.45s;--mo-mittel:.8s;--mo-langsam:1.2s;
+  --mo-ease:cubic-bezier(.2,.7,.2,1);          /* weich auslaufend */
+  --mo-ease-in-out:cubic-bezier(.65,0,.35,1);
+  --mo-akzent-rgb:27,99,168;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--mo-akzent-rgb:108,192,240}}
+:root[data-theme="dark"]{--mo-akzent-rgb:108,192,240}
+
+/* ---------- 1 Grundlagen ---------- */
+.mo-fortschritt{position:fixed;left:0;top:0;height:3px;width:100%;z-index:200;pointer-events:none;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));transform:scaleX(0);transform-origin:0 50%;will-change:transform}
+html.js body{animation:mo-seite-ein var(--mo-mittel) var(--mo-ease) both}
+html.js body.mo-verlassen{animation:mo-seite-aus .28s var(--mo-ease-in-out) forwards}
+@keyframes mo-seite-ein{from{opacity:0}to{opacity:1}}
+@keyframes mo-seite-aus{to{opacity:0;transform:translateY(-6px)}}
+
+/* ---------- 2 Kopf ---------- */
+html.js .kopf{position:sticky;top:0;z-index:50;transition:box-shadow var(--mo-schnell) ease,background-color var(--mo-schnell) ease}
+html.js .kopf.mo-gescrollt{box-shadow:0 10px 30px rgba(18,30,49,.10);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+html.js .kopf-innen>*{animation:mo-runter var(--mo-mittel) var(--mo-ease) both}
+html.js .kopf-innen>:nth-child(2){animation-delay:.08s}
+html.js .kopf-innen>:nth-child(3){animation-delay:.16s}
+@keyframes mo-runter{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+.nav a{position:relative}
+.nav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;border-radius:2px;background:var(--accent);
+  transform:scaleX(0);transform-origin:0 50%;transition:transform var(--mo-schnell) var(--mo-ease)}
+.nav a:hover::after,.nav a[aria-current="page"]::after{transform:scaleX(1)}
+.logo img{transition:transform var(--mo-mittel) var(--mo-ease)}
+.logo:hover img{transform:rotate(-4deg) scale(1.04)}
+
+/* ---------- 3 Held (Einstieg) ---------- */
+html.js .held .kicker,html.js .held .einleitung,html.js .held .cta-reihe,html.js .held .hinweis,html.js .pfad{
+  animation:mo-hoch var(--mo-mittel) var(--mo-ease) both}
+html.js .held .kicker{animation-delay:.15s}
+html.js .held .einleitung{animation-delay:.55s}
+html.js .held .cta-reihe{animation-delay:.7s}
+html.js .held .hinweis{animation-delay:.85s}
+html.js .held h1 .mo-wort{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
+html.js .held h1 .mo-wort>span{display:inline-block;transform:translateY(110%);animation:mo-wort var(--mo-langsam) var(--mo-ease) both;animation-delay:calc(.25s + var(--i) * .05s)}
+@keyframes mo-wort{to{transform:none}}
+@keyframes mo-hoch{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+html.js .held-karte{animation:mo-karte-rein var(--mo-langsam) var(--mo-ease) .5s both;position:relative;overflow:hidden}
+@keyframes mo-karte-rein{from{opacity:0;transform:translateX(40px) rotateY(-6deg);filter:blur(6px)}to{opacity:1;transform:none;filter:blur(0)}}
+html.js .held-karte::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;z-index:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,var(--accent) 35%,var(--accent-2) 50%,var(--accent) 65%,transparent 100%);
+  background-size:50% 100%;background-repeat:no-repeat;animation:mo-lauf 5s var(--mo-ease-in-out) infinite alternate;opacity:.9}
+@keyframes mo-lauf{from{background-position:-10% 0}to{background-position:110% 0}}
+html.js .held-karte>*{position:relative;z-index:1}
+html.js .held .chip{opacity:0;transform:scale(.8);animation:mo-chip .6s var(--mo-ease) both;animation-delay:calc(.9s + var(--i,0) * .07s)}
+@keyframes mo-chip{to{opacity:1;transform:none}}
+
+/* ---------- 4 Scroll-Reveal (JS setzt data-mo und .mo-sichtbar) ---------- */
+html.js [data-mo]{opacity:0;transform:translateY(28px);filter:blur(4px);will-change:transform,opacity,filter;
+  transition:opacity var(--mo-mittel) var(--mo-ease),transform var(--mo-mittel) var(--mo-ease),filter var(--mo-mittel) var(--mo-ease);
+  transition-delay:calc(var(--i,0) * .09s)}
+html.js [data-mo="links"]{transform:translateX(-32px)}
+html.js [data-mo="rechts"]{transform:translateX(32px)}
+html.js [data-mo="zoom"]{transform:scale(.94)}
+html.js [data-mo].mo-sichtbar{opacity:1;transform:none;filter:blur(0)}
+html.js .abschnitt-kopf h2{position:relative;display:inline-block}
+html.js .abschnitt-kopf h2::after{content:"";position:absolute;left:0;bottom:-8px;width:56px;height:3px;border-radius:3px;background:var(--accent);
+  transform:scaleX(0);transform-origin:0 50%;transition:transform var(--mo-mittel) var(--mo-ease) .35s}
+html.js .abschnitt-kopf.mo-sichtbar h2::after{transform:scaleX(1)}
+
+/* ---------- 5 Karten, Chips, Buttons ---------- */
+.karte{position:relative;overflow:hidden;transition:transform var(--mo-schnell) var(--mo-ease),box-shadow var(--mo-schnell) var(--mo-ease),border-color var(--mo-schnell) ease}
+.karte::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,transparent 30%,rgba(var(--mo-akzent-rgb),.10) 50%,transparent 70%);
+  transform:translateX(-120%);transition:transform var(--mo-mittel) var(--mo-ease)}
+.karte:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(18,30,49,.12),0 0 0 1px rgba(var(--mo-akzent-rgb),.25);border-color:rgba(var(--mo-akzent-rgb),.5)}
+.karte:hover::after{transform:translateX(120%)}
+.karte-link .mehr::after{content:" →";display:inline-block;transition:transform var(--mo-schnell) var(--mo-ease)}
+.karte-link:hover .mehr::after{transform:translateX(5px)}
+.karte .mehr::after{content:""}
+.chip{transition:transform var(--mo-schnell) var(--mo-ease),background-color var(--mo-schnell) ease}
+.chip:hover{transform:translateY(-2px);background:color-mix(in srgb,var(--soft) 60%,var(--accent) 40%)}
+.cta,.cta-zweit,.schalter{position:relative;overflow:hidden;transition:transform var(--mo-schnell) var(--mo-ease),box-shadow var(--mo-schnell) var(--mo-ease),filter var(--mo-schnell) ease,color var(--mo-schnell) ease,border-color var(--mo-schnell) ease}
+.cta::before{content:"";position:absolute;top:-50%;bottom:-50%;left:-30%;width:40%;transform:skewX(-20deg) translateX(-200%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transition:transform .7s var(--mo-ease)}
+.cta:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(var(--mo-akzent-rgb),.35)}
+.cta:hover::before{transform:skewX(-20deg) translateX(500%)}
+.cta:active,.cta-zweit:active{transform:translateY(0) scale(.98)}
+.cta-zweit:hover{transform:translateY(-2px)}
+.link-pfeil::after{display:inline-block;transition:transform var(--mo-schnell) var(--mo-ease)}
+.link-pfeil:hover::after{transform:translateX(5px)}
+
+/* ---------- 6 Bänder (dunkelblau) ---------- */
+.band{position:relative;overflow:hidden;isolation:isolate}
+.band::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:linear-gradient(rgba(108,192,240,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(108,192,240,.07) 1px,transparent 1px);
+  background-size:40px 40px;-webkit-mask-image:radial-gradient(ellipse 70% 80% at 50% 50%,#000 30%,transparent 100%);mask-image:radial-gradient(ellipse 70% 80% at 50% 50%,#000 30%,transparent 100%)}
+.band::after{content:"";position:absolute;z-index:-1;pointer-events:none;top:-40%;left:-20%;width:50%;height:180%;
+  background:radial-gradient(ellipse at center,rgba(67,174,232,.22),transparent 65%);filter:blur(40px);
+  animation:mo-licht 14s var(--mo-ease-in-out) infinite alternate}
+@keyframes mo-licht{from{transform:translateX(0)}to{transform:translateX(160%)}}
+
+/* ---------- 7 Zahlen, Schritte ---------- */
+.zahl{display:inline-block;font-variant-numeric:tabular-nums}
+html.js .zahl-block .zahl{transition:color var(--mo-schnell) ease}
+html.js .schritt-nr{display:inline-block;transform:scale(.6);opacity:0;transition:transform var(--mo-mittel) cubic-bezier(.3,1.5,.5,1),opacity var(--mo-schnell) ease;transition-delay:calc(var(--i,0) * .09s + .2s)}
+html.js .mo-sichtbar .schritt-nr{transform:none;opacity:1}
+.schritt{position:relative}
+.schritt::before{content:"";position:absolute;left:24px;right:24px;top:0;height:3px;border-radius:0 0 3px 3px;background:var(--accent);
+  transform:scaleX(0);transform-origin:0 50%;transition:transform var(--mo-langsam) var(--mo-ease);transition-delay:calc(var(--i,0) * .09s + .3s)}
+html.js .schritt.mo-sichtbar::before{transform:scaleX(1)}
+
+/* ---------- 8 Bilder ---------- */
+html.js [data-mo="bild"]{transform:none;filter:none;clip-path:inset(0 100% 0 0 round 16px);transition:clip-path var(--mo-langsam) var(--mo-ease),opacity .3s ease}
+html.js [data-mo="bild"].mo-sichtbar{clip-path:inset(0 0 0 0 round 16px)}
+html.js [data-mo="bild"] img{transform:scale(1.08);transition:transform 1.6s var(--mo-ease)}
+html.js [data-mo="bild"].mo-sichtbar img{transform:none}
+.bild-breit img,.portraet img{transition:transform var(--mo-langsam) var(--mo-ease)}
+.bild-breit:hover img,.portraet:hover img{transform:scale(1.02)}
+
+/* ---------- 9 Fuß ---------- */
+.fuss a{transition:color var(--mo-schnell) ease,transform var(--mo-schnell) var(--mo-ease);display:inline-block}
+.fuss nav a:hover{transform:translateX(4px)}
+
+/* ---------- 10 Mobil ---------- */
+@media (max-width:899px){
+  html.js [data-mo]{transform:translateY(18px)}
+  html.js [data-mo="links"],html.js [data-mo="rechts"]{transform:translateY(18px)}
+  html.js .held-karte::before{animation-duration:7s}
+  html.js .kopf.mo-gescrollt{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
+}
+
+/* ---------- 11 Reduced Motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  html.js body,html.js .kopf-innen>*,html.js .held *,html.js .held-karte,html.js .held-karte::before,.band::after{animation:none !important}
+  html.js .held-karte::before{background-position:50% 0}
+  html.js .held h1 .mo-wort>span{transform:none}
+  html.js .held .chip{opacity:1;transform:none}
+  html.js [data-mo],html.js .schritt-nr{opacity:1;transform:none;filter:none;transition:none;clip-path:none}
+  html.js [data-mo="bild"] img{transform:none}
+  html.js .abschnitt-kopf h2::after,html.js .schritt::before{transform:scaleX(1);transition:none}
+  .karte,.cta,.cta-zweit,.chip,.karte::after,.cta::before{transition:none}
+  .mo-fortschritt{display:none}
+}
