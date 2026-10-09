@@ -177,7 +177,12 @@ def kopf(bau: Bau, seite: Seite) -> str:
     <nav class="nav" id="hauptnav" aria-label="Hauptnavigation">{''.join(links)}</nav>
     <div class="kopf-aktionen">
       <a class="cta kopf-cta" href="{esc(bau.href('#kontakt' if seite.hat_kontakt else '/#kontakt', seite))}">{esc(site['cta_kopf'])}</a>
-      <button class="schalter" type="button" id="thema-schalter" aria-label="Farbschema wechseln" title="Farbschema: Auto, Dunkel oder Hell">Auto</button>
+      <div class="thema" id="thema-schalter" role="group" aria-label="Farbschema">
+        <span class="thema-marke" aria-hidden="true"></span>
+        <button type="button" data-thema="light" aria-label="Hell" title="Hell" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+        <button type="button" data-thema="auto" aria-label="Automatisch" title="Automatisch (wie das System)" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg></button>
+        <button type="button" data-thema="dark" aria-label="Dunkel" title="Dunkel" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
+      </div>
       <button class="schalter menue-schalter" type="button" id="menue-schalter" aria-expanded="false" aria-controls="hauptnav" aria-label="Menü öffnen oder schließen"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
   </div>
@@ -233,7 +238,12 @@ def showcase(bau: Bau, seite: Seite) -> str:
     die Seiten-JSON "showcase": "motion-laptop" enthält. Markup, CSS und JS liegen in assets/motion-hero/."""
     if seite.daten.get("showcase") != "motion-laptop":
         return ""
-    return MOTION_HERO.read_text(encoding="utf-8")
+    markup = MOTION_HERO.read_text(encoding="utf-8")
+    if not seite.daten.get("intro"):
+        return markup
+    intro = markup.replace('<section class="motion-laptop"', '<section class="motion-laptop ml-als-intro" data-intro="5600"', 1)
+    return (f'<div class="ml-intro-overlay" id="ml-intro" aria-label="Intro">{intro}'
+            f'<button type="button" class="ml-intro-skip" id="ml-intro-skip">Überspringen</button></div>{markup}')
 
 
 def abschnitt_kopf(a: dict) -> str:
@@ -454,11 +464,11 @@ def json_ld(bau: Bau, seite: Seite) -> dict:
 # ----------------------------------------------------------------------------- Seite
 KOPF_SCRIPT = """(function(){var d=document.documentElement;d.classList.add('js');try{var t=localStorage.getItem('fsh-thema');if(t==='dark'||t==='light'){d.setAttribute('data-theme',t);}}catch(e){}})();"""
 
-FUSS_SCRIPT = """(function(){var d=document.documentElement;var b=document.getElementById('thema-schalter');
-function label(){if(!b){return;}var t=d.getAttribute('data-theme');b.textContent=t==='dark'?'Dunkel':t==='light'?'Hell':'Auto';}
-label();if(b){b.addEventListener('click',function(){var t=d.getAttribute('data-theme');var n=t==='dark'?'light':t==='light'?null:'dark';
-if(n){d.setAttribute('data-theme',n);}else{d.removeAttribute('data-theme');}
-try{if(n){localStorage.setItem('fsh-thema',n);}else{localStorage.removeItem('fsh-thema');}}catch(e){}label();});}
+FUSS_SCRIPT = """(function(){var d=document.documentElement;var g=document.getElementById('thema-schalter');
+function zeige(){if(!g){return;}var t=d.getAttribute('data-theme')||'auto';var k=g.querySelectorAll('button');for(var i=0;i<k.length;i++){var a=k[i].getAttribute('data-thema')===t;k[i].setAttribute('aria-pressed',a?'true':'false');if(a){g.style.setProperty('--pos',i);}}}
+zeige();if(g){g.addEventListener('click',function(e){var b=e.target.closest('button[data-thema]');if(!b){return;}var n=b.getAttribute('data-thema');
+if(n==='auto'){d.removeAttribute('data-theme');}else{d.setAttribute('data-theme',n);}
+try{if(n==='auto'){localStorage.removeItem('fsh-thema');}else{localStorage.setItem('fsh-thema',n);}}catch(x){}zeige();});}
 var m=document.getElementById('menue-schalter'),n=document.getElementById('hauptnav');
 if(m&&n){m.addEventListener('click',function(){var o=n.classList.toggle('offen');m.setAttribute('aria-expanded',o?'true':'false');});
 n.addEventListener('click',function(e){if(e.target.tagName==='A'){n.classList.remove('offen');m.setAttribute('aria-expanded','false');}});}})();"""
@@ -489,6 +499,9 @@ def seite_html(bau: Bau, seite: Seite, varianten: dict | None) -> str:
     canonical = "" if seite.typ == "fehler" else f'<link rel="canonical" href="{esc(seite_url)}">\n'
     motion_css = f'<link rel="stylesheet" href="{esc(bau.href("/assets/motion/site-motion.css", seite))}">\n'
     motion_js = f'<script src="{esc(bau.href("/assets/motion/site-motion.js", seite))}" defer></script>\n'
+    intro_script = ""
+    if d.get("showcase") == "motion-laptop" and d.get("intro"):
+        intro_script = "<script>(function(){try{if(!sessionStorage.getItem('fsh-intro')){document.documentElement.classList.add('mo-intro');}}catch(e){document.documentElement.classList.add('mo-intro');}})();</script>\n"
     showcase_css = showcase_js = ""
     if d.get("showcase") == "motion-laptop":
         showcase_css = f'<link rel="stylesheet" href="{esc(bau.href("/assets/motion-hero/motion-laptop.css", seite))}">\n'
@@ -514,7 +527,7 @@ def seite_html(bau: Bau, seite: Seite, varianten: dict | None) -> str:
 <link rel="apple-touch-icon" href="{esc(bau.href('/assets/img/apple-touch-icon.png', seite))}">
 <meta name="theme-color" content="#F4F1EC" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#10161F" media="(prefers-color-scheme: dark)">
-{fonts}<link rel="stylesheet" href="{esc(css)}">
+{intro_script}{fonts}<link rel="stylesheet" href="{esc(css)}">
 {motion_css}{motion_js}{showcase_css}{showcase_js}<script>{KOPF_SCRIPT}</script>
 <script type="application/ld+json">{json_script(json_ld(bau, seite))}</script>
 </head>

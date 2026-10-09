@@ -198,3 +198,14 @@
   .ml-s5 .balken i{transform:scaleY(1)} .ml-s5 .ring .wertkreis{stroke-dashoffset:0}
 }
 .motion-laptop.ml-pausiert .ml-float,.motion-laptop.ml-pausiert .ml-licht,.motion-laptop.ml-pausiert .ml-licht-glow{animation-play-state:paused}
+
+/* ---------- 9 Intro-Overlay (Startseite, einmal je Sitzung) ---------- */
+.ml-intro-overlay{position:fixed;inset:0;z-index:1000;background:var(--ml-bg,#0B1119);display:flex;align-items:center;justify-content:center;
+  transition:opacity .9s cubic-bezier(.65,0,.35,1),transform .9s cubic-bezier(.65,0,.35,1)}
+.ml-intro-overlay .motion-laptop{width:100%;min-height:100vh;min-height:100dvh;padding:0;border-top:0}
+.ml-intro-overlay.ml-intro-aus{opacity:0;transform:scale(1.04);pointer-events:none}
+.ml-intro-skip{position:absolute;right:24px;bottom:24px;z-index:5;background:transparent;color:#B3B9C4;border:1px solid rgba(179,185,196,.35);border-radius:999px;
+  padding:10px 18px;font:600 13px 'Source Sans 3',system-ui,sans-serif;letter-spacing:.04em;cursor:pointer;opacity:0;animation:ml-text .8s ease 1.2s forwards;transition:color .3s,border-color .3s}
+.ml-intro-skip:hover{color:#F4F1EC;border-color:#43AEE8}
+html:not(.mo-intro) .ml-intro-overlay{display:none}
+@media (prefers-reduced-motion:reduce){.ml-intro-overlay{display:none}}

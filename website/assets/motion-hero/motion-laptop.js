@@ -2,9 +2,22 @@
    Abschnitte: 1 Timeline, 2 Hintergrund-Partikel, 3 Screen 3 (Wellen), 4 Screen 6 (Funken), 5 Sichtbarkeit, 6 Start. */
 (function () {
   'use strict';
-  var wurzel = document.querySelector('.motion-laptop');
-  if (!wurzel) { return; }
   var reduziert = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- 0 Intro-Overlay (Startseite): läuft einmal je Sitzung, dann Seite freigeben ---------- */
+  function beendeIntro(overlay, stopp) {
+    if (!overlay || overlay.classList.contains('ml-intro-aus')) { return; }
+    overlay.classList.add('ml-intro-aus');
+    try { sessionStorage.setItem('fsh-intro', '1'); } catch (e) {}
+    document.documentElement.classList.remove('mo-intro');   /* Lade-Animationen der Seite starten jetzt */
+    setTimeout(function () { stopp(); overlay.remove(); }, 950);
+  }
+
+  Array.prototype.slice.call(document.querySelectorAll('.motion-laptop')).forEach(starte);
+
+  function starte(wurzel) {
+  var overlay = wurzel.closest('.ml-intro-overlay');
+  if (overlay && (!document.documentElement.classList.contains('mo-intro') || reduziert)) { overlay.remove(); return; }
 
   /* ---------- 1 Timeline (Millisekunden ab Loop-Start, Loop = DAUER) ---------- */
   var DAUER = 16000;
@@ -132,7 +145,7 @@
   alleGroessen();
   var resizeTimer;
   window.addEventListener('resize', function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(alleGroessen, 120); }, { passive: true });
-  if ('IntersectionObserver' in window) {
+  if (!overlay && 'IntersectionObserver' in window) {
     new IntersectionObserver(function (e) {
       sichtbar = e[0].isIntersecting;
       wurzel.classList.toggle('ml-pausiert', !sichtbar);
@@ -145,8 +158,20 @@
 
   /* ---------- 6 Hauptschleife ---------- */
   var letzterSchritt = 0;
+  var introDauer = overlay ? parseInt(wurzel.getAttribute('data-intro') || '5600', 10) : 0, introStart = null;
+  function stopp() { laeuft = false; sichtbar = false; }
+  if (overlay) {
+    var skip = overlay.querySelector('.ml-intro-skip');
+    if (skip) { skip.addEventListener('click', function () { beendeIntro(overlay, stopp); }); }
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { beendeIntro(overlay, stopp); } });
+    setTimeout(function () { beendeIntro(overlay, stopp); }, introDauer + 2500);   /* Sicherheitsnetz, falls rAF nicht läuft */
+  }
   function schritt(jetzt) {
-    if (!sichtbar || document.hidden) { return; }
+    if (!laeuft || !sichtbar || document.hidden) { return; }
+    if (overlay) {
+      if (introStart === null) { introStart = jetzt; }
+      if (jetzt - introStart >= introDauer) { beendeIntro(overlay, stopp); return; }
+    }
     if (start === null) { start = jetzt - zeitImLoop; letzterSchritt = jetzt; }
     zeitImLoop = (jetzt - start) % DAUER;
     var dt = Math.min((jetzt - letzterSchritt) / 16.67, 3); letzterSchritt = jetzt;
@@ -170,4 +195,5 @@
   }
   zeige(0, TIMELINE[0][2]);
   requestAnimationFrame(schritt);
+  }
 })();

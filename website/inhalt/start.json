@@ -2,6 +2,7 @@
   "pfad": "/",
   "typ": "start",
   "showcase": "motion-laptop",
+  "intro": true,
   "menue": "Start",
   "title": "FSH-Documentation – Technische Dokumentation Teltow",
   "description": "FSH-Documentation aus Teltow: Betriebsanleitungen nach IEC/IEEE 82079-1, CE-/UKCA-Konformität, Risikobeurteilung, MDR-Dokumentation. Erstreaktion in 24 h.",
