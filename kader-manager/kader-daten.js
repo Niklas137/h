@@ -79,7 +79,9 @@ export function ausLadoTeam(obj, bisher = []) {
       photo: vorher.photo || ''
     };
     if (weiss !== null && weiss !== p.number) p.numbers = { weiss };
-    if (q.nameUk && String(q.nameUk).trim()) p.nameUk = String(q.nameUk).trim();
+    // Ukrainischer Name aus KFK LadoTeam nur, wenn dort bestätigt (oder ohne Bestätigungsfeld); unbestätigte
+    // Vorschläge der App werden durch die eigene Umschrift ersetzt (z. B. Коваль statt Ковал)
+    if (q.nameUk && String(q.nameUk).trim() && q.nameUkConfirmed !== false) p.nameUk = String(q.nameUk).trim();
     if (q.detail && String(q.detail).trim()) p.positionDetail = String(q.detail).trim().slice(0, 60);
     for (const feld of ['bio', 'bioUk', 'birthYear', 'stats']) if (vorher[feld] !== undefined) p[feld] = vorher[feld];
     players.push(p);

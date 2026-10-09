@@ -53,6 +53,7 @@ Dateien in die App kopieren (nichts davon ersetzt eine bestehende Datei):
 ```
 Quellcode/app/kader-trikots.tsx                      ← einbau-ladoteam/app/kader-trikots.tsx
 Quellcode/public/assets/kader/kader-einbettung.js    ← kader-einbettung.js
+Quellcode/public/assets/kader/kader-global.js        ← kader-global.js (Einstieg für die Komponente)
 Quellcode/public/assets/kader/kader-vorlage.js       ← kader-vorlage.js
 Quellcode/public/assets/kader/kader-daten.js         ← kader-daten.js
 Quellcode/public/assets/kader/sprache.js             ← sprache.js
@@ -69,15 +70,19 @@ Drei kleine Ergänzungen in bestehenden Dateien, jeweils eine Zeile, nichts wird
    `['trikots',Users]` (oder ein anderes Lucide-Symbol, z. B. `Shirt`).
 3. `app/team-app.tsx`, in der Seitenwahl vor `page==='finance'`: `page==='trikots'?<KaderTrikots/>:`
 
-Die Komponente lädt die Moduldateien zur Laufzeit aus `/assets/kader/` (am Bundler vorbei), hängt die Ansicht
-in ein eigenes Element und räumt beim Wechsel der Ansicht oder Sprache wieder auf. Sie schreibt keinen Hash,
+Die Komponente lädt `kader-global.js` als `<script type="module">` aus `/assets/kader/` (verträgt sich mit der
+Content-Security-Policy der App, kein `eval`), hängt die Ansicht in ein eigenes Element und räumt beim Wechsel
+der Ansicht oder Sprache wieder auf. Ein Fehler in der Ansicht bleibt dank Error Boundary in der Ansicht. Sie schreibt keinen Hash,
 der Hash bleibt bei der App-Navigation. Alle Stilregeln sind auf `.kader-wurzel` begrenzt und ändern Farben
 und Schriften der App nicht (geprüft: `--ink` und Hintergrund des Gastgebers bleiben).
 
-Prüfen nach dem Einbau: `npm test`, `tsc --noEmit`, `npm run build`, dann in der App „Trikots“ öffnen, ein
-Trikot antippen, Sprache umschalten, Heim/Auswärts wechseln (Koval zeigt 1 bzw. 31). Mit 390 px Breite ohne
-waagerechten Überlauf. Was hier nicht nachgewiesen ist: der Lauf in der echten App (Node, Wrangler, D1, R2).
-Die Moduldateien und die Einbettung sind mit dem Nachbau in Chromium geprüft.
+Nachgewiesen am 09.10.2026 in einer lokalen Installation von Version 24 nach `Anleitung/Einrichtung_und_Uebergabe.txt`
+(Abhängigkeiten aus der Lockdatei, lokale D1-Migrationen, Entwicklungsserver): `tsc --noEmit` ohne Fehler, `npm test`
+93 bestanden, Anmeldung mit der lokalen Entwicklungsidentität, fünf Spieler über `/api/command` angelegt, Ansicht
+„Trikots“ im Menü und als Seite, Trikot antippen (Karte, Hash bleibt `#trikots`), Weiter, Sprachschalter der App
+(ukrainische Trikotnamen, Menü „Футболки“), Auswärtstrikot (Koval 31 statt 1), Ansichtswechsel ohne Reste, 390 px
+ohne Überlauf, keine JS-Fehler. Nach dem Einbau bei dir bitte dieselben Schritte einmal durchgehen und
+`npm run build` vor der Veröffentlichung.
 
 ## Feldzuordnung
 
