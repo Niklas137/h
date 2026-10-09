@@ -1,3 +1,5 @@
+/* ABGELEITET aus kader.css durch einbau-ladoteam/css-ableiten.py – nicht von Hand ändern.
+   Für die Einbettung in eine fremde Seite: alle globalen Regeln auf .kader-wurzel begrenzt. */
 /* Kader-Manager – Kaderseite „Kleiderstange“ (dunkler Umkleideraum), Datenkarte, Admin.
    Animiert werden nur transform und opacity (GPU-freundlich). Farben als Variablen;
    Teamfarben setzt kader.js aus daten/kader.json. Admin-Seite hell/dunkel automatisch. */
@@ -7,7 +9,7 @@
 @font-face{font-family:'Oswald';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/oswald-700-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:'Oswald';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/oswald-700-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 
-:root{
+.kader-wurzel{
   --bg:#F4F1EC;--surface:#FFFFFF;--ink:#121E31;--muted:#4A5262;--line:#D9D4CB;
   --accent:#1B63A8;--accent-ink:#FFFFFF;--soft:#E9EEF5;--schatten:0 18px 50px rgba(18,30,49,.18);
   --team-1:#0B3D91;--team-2:#F2C230;--team-text:#FFFFFF;
@@ -20,24 +22,23 @@
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
+  .kader-wurzel:not([data-theme="light"]){
     --bg:#10161F;--surface:#1A2230;--ink:#F1EEE8;--muted:#B3B9C4;--line:#2C3645;
     --accent:#6CC0F0;--accent-ink:#0E1620;--soft:#1F2A3A;--schatten:0 18px 50px rgba(0,0,0,.5);color-scheme:dark;
   }
 }
-:root[data-theme="dark"]{
+.kader-wurzel[data-theme="dark"]{
   --bg:#10161F;--surface:#1A2230;--ink:#F1EEE8;--muted:#B3B9C4;--line:#2C3645;
   --accent:#6CC0F0;--accent-ink:#0E1620;--soft:#1F2A3A;--schatten:0 18px 50px rgba(0,0,0,.5);color-scheme:dark;
 }
 
-*,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--schrift);overflow-x:hidden}
-h1,h2,h3{font-family:var(--titel);margin:0;line-height:1.2}
-p{margin:0}
-button{font:inherit;color:inherit}
-img{max-width:100%;display:block}
-:focus-visible{outline:3px solid var(--team-2);outline-offset:3px}
+.kader-wurzel *,.kader-wurzel *::before,.kader-wurzel *::after{box-sizing:border-box}
+.kader-wurzel{color:var(--ink);font:400 17px/1.55 var(--schrift);overflow-x:hidden}
+.kader-wurzel h1,.kader-wurzel h2,.kader-wurzel h3{font-family:var(--titel);margin:0;line-height:1.2}
+.kader-wurzel p{margin:0}
+.kader-wurzel button{font:inherit;color:inherit}
+.kader-wurzel img{max-width:100%;display:block}
+.kader-wurzel :focus-visible{outline:3px solid var(--team-2);outline-offset:3px}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .innen{max-width:1180px;margin:0 auto;padding:0 16px}
 @media (min-width:900px){.innen{padding:0 48px}}
@@ -199,8 +200,8 @@ img{max-width:100%;display:block}
 
 /* Reduzierte Bewegung: keine Drehung, kein Flug, nur kurzes Einblenden */
 @media (prefers-reduced-motion: reduce){
-  :root{--dauer-kurz:1ms;--dauer:120ms;--dauer-lang:120ms}
-  :root{--dauer-dreh:1ms;--dauer-kamera:1ms}
+  .kader-wurzel{--dauer-kurz:1ms;--dauer:120ms;--dauer-lang:120ms}
+  .kader-wurzel{--dauer-dreh:1ms;--dauer-kamera:1ms}
   .trikot-haengend,.haenger.ist-mitte .trikot-haengend,.haenger-knopf:hover .trikot-haengend{transform:rotateY(var(--neigung,60deg))}
   .karte,.karte.offen{transition-delay:0ms;transition-duration:1ms;transform:none}
   .karte:not(.offen){opacity:0}
