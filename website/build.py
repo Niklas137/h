@@ -518,7 +518,10 @@ def seite_html(bau: Bau, seite: Seite, varianten: dict | None) -> str:
     motion_js = f'<script src="{esc(bau.href("/assets/motion/site-motion.js", seite))}" defer></script>\n'
     intro_script = ""
     if d.get("showcase") == "motion-laptop" and d.get("intro"):
-        intro_script = "<script>(function(){try{if(!sessionStorage.getItem('fsh-intro')){document.documentElement.classList.add('mo-intro');}}catch(e){document.documentElement.classList.add('mo-intro');}})();</script>\n"
+        # Schlüssel je Intro-Variante; ?intro=1 in der Adresse erzwingt das Intro (Vorschau, Test)
+        intro_key = "fsh-intro-" + ("logo" if d.get("intro") == "logo" else "laptop")
+        intro_script = ("<script>(function(){var d=document.documentElement;try{if(/[?&]intro=1/.test(location.search)||!sessionStorage.getItem('"
+                        + intro_key + "')){d.classList.add('mo-intro');}}catch(e){d.classList.add('mo-intro');}})();</script>\n")
     showcase_css = showcase_js = ""
     if d.get("showcase") == "motion-laptop":
         showcase_css = f'<link rel="stylesheet" href="{esc(bau.href("/assets/motion-hero/motion-laptop.css", seite))}">\n'

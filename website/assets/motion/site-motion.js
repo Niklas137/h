@@ -110,7 +110,7 @@
       var schliesse = function () {
         if (introZu) { return; } introZu = true;
         logoIntro.classList.add('mo-logo-aus');
-        try { sessionStorage.setItem('fsh-intro', '1'); } catch (e) {}
+        try { sessionStorage.setItem('fsh-intro-logo', '1'); } catch (e) {}
         document.documentElement.classList.remove('mo-intro');
         setTimeout(function () { logoIntro.remove(); }, 750);
       };
