@@ -353,7 +353,12 @@ def abschnitt(bau: Bau, seite: Seite, a: dict, varianten: dict | None) -> str:
         s = "".join(
             f'<li class="karte schritt"><span class="schritt-nr" aria-hidden="true">{i}</span><h3>{frag(x["h3"])}</h3><p class="muted">{frag(x["text"])}</p></li>'
             for i, x in enumerate(schritte, 1))
-        return f'<section class="innen abschnitt"{ident}>{abschnitt_kopf(a)}<ol class="raster raster-4 schritte">{s}</ol></section>'
+        kurve = "M0 44 C 120 44, 170 12, 300 22 S 520 56, 640 30 S 880 6, 1000 26"
+        linie = (f'<svg class="schritte-linie" viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
+                 f'<path d="{kurve}"/></svg>'
+                 f'<span class="schritte-punkt" aria-hidden="true" style="offset-path:path(\'{kurve}\')"></span>')
+        return (f'<section class="innen abschnitt"{ident}>{abschnitt_kopf(a)}'
+                f'<div class="schritte-huelle">{linie}<ol class="raster raster-4 schritte">{s}</ol></div></section>')
 
     if art == "fragen":
         f = "".join(f'<div class="karte"><h3>{frag(x["frage"])}</h3><p class="muted">{frag(x["antwort"])}</p></div>' for x in a["fragen"])

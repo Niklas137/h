@@ -20,6 +20,8 @@
   markiere('.abschnitt-kopf', 'hoch');
   markiere('.raster > .karte', 'hoch', true);
   markiere('.raster > .schritt', 'hoch', true);
+  markiere('.schritte-huelle', 'rahmen');            /* nur Beobachter für die Verbindungskurve, kein Ausblenden */
+  $('.nav a').forEach(function (a, i) { a.style.setProperty('--i', i); });
   markiere('.zahl-block', 'hoch', true);
   markiere('.band-raster > *', 'hoch', true);
   markiere('.punkte > *', 'links', true);
@@ -100,6 +102,36 @@
   }
   window.addEventListener('scroll', beiScroll, { passive: true });
   beiScroll();
+
+  /* ---------- 5c Parallax (ab 900 px): Held-Karte und Breitbild driften minimal gegen den Scroll ---------- */
+  var parallaxZiele = $('.held-karte, .bild-breit img');
+  var breit = window.matchMedia('(min-width: 900px)');
+  function parallax() {
+    if (!breit.matches || reduziert) { parallaxZiele.forEach(function (el) { el.style.removeProperty('--py'); }); return; }
+    var mitte = window.innerHeight / 2;
+    parallaxZiele.forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) { return; }
+      var abstand = (r.top + r.height / 2 - mitte) / window.innerHeight;   /* -0.5 … 0.5 */
+      el.style.setProperty('--py', (abstand * -22).toFixed(1));
+    });
+  }
+  if (parallaxZiele.length && !reduziert) {
+    var pTick = false;
+    window.addEventListener('scroll', function () { if (pTick) { return; } pTick = true; requestAnimationFrame(function () { parallax(); pTick = false; }); }, { passive: true });
+    window.addEventListener('resize', parallax, { passive: true });
+    parallax();
+  }
+
+  /* ---------- 5d Weicher Farbübergang beim Thema-Wechsel ---------- */
+  if (!reduziert && 'MutationObserver' in window) {
+    var themaTimer;
+    new MutationObserver(function () {
+      document.documentElement.classList.add('mo-thema-wechsel');
+      clearTimeout(themaTimer);
+      themaTimer = setTimeout(function () { document.documentElement.classList.remove('mo-thema-wechsel'); }, 500);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  }
 
   /* ---------- 6 Seitenwechsel: kurzes Ausblenden bei internen Links ---------- */
   if (!reduziert) {

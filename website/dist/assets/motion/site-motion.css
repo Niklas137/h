@@ -130,6 +130,46 @@ html.js .mo-sichtbar .schritt-nr{transform:none;opacity:1}
   transform:scaleX(0);transform-origin:0 50%;transition:transform var(--mo-langsam) var(--mo-ease);transition-delay:calc(var(--i,0) * .09s + .3s)}
 html.js .schritt.mo-sichtbar::before{transform:scaleX(1)}
 
+/* Verbindungskurve der Ablaufschritte: zeichnet sich auf, ein Lichtpunkt läuft entlang (ab 900 px) */
+.schritte-huelle{position:relative}
+.schritte-linie,.schritte-punkt{display:none}
+@media (min-width:900px){
+  .schritte-linie{display:block;position:absolute;left:3%;width:94%;top:-34px;height:60px;overflow:visible;pointer-events:none}
+  .schritte-linie path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;opacity:.55;vector-effect:non-scaling-stroke;
+    stroke-dasharray:1400;stroke-dashoffset:1400}
+  html.js .schritte-huelle.mo-sichtbar .schritte-linie path{animation:mo-zeichnen 1.8s var(--mo-ease) .25s forwards}
+  .schritte-punkt{display:block;position:absolute;left:3%;top:-34px;width:94%;height:60px;pointer-events:none;
+    /* Der Punkt ist das ::before; die Box selbst ist nur der Bezugsrahmen des offset-path */}
+  .schritte-punkt{width:10px;height:10px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 12px var(--accent-2);opacity:0;
+    transform:translate(0,0);offset-rotate:0deg;offset-distance:0%;left:3%;top:-34px}
+  html.js .schritte-huelle.mo-sichtbar .schritte-punkt{animation:mo-punkt-lauf 7s cubic-bezier(.45,0,.55,1) 1.9s infinite}
+}
+@keyframes mo-zeichnen{to{stroke-dashoffset:0}}
+@keyframes mo-punkt-lauf{0%{offset-distance:0%;opacity:0}6%{opacity:1}94%{opacity:1}100%{offset-distance:100%;opacity:0}}
+html.js [data-mo="rahmen"]{opacity:1;transform:none;filter:none}
+
+/* Handymenü: weich auf- und zuklappen statt ein-/ausblenden, Einträge gestaffelt */
+@media (max-width:899px){
+  html.js .nav{display:flex;visibility:hidden;opacity:0;transform:translateY(-10px);
+    transition:opacity var(--mo-schnell) var(--mo-ease),transform var(--mo-schnell) var(--mo-ease),visibility 0s linear var(--mo-schnell)}
+  html.js .nav.offen{visibility:visible;opacity:1;transform:none;transition-delay:0s}
+  html.js .nav a{opacity:0;transform:translateX(-8px);transition:opacity .35s var(--mo-ease),transform .35s var(--mo-ease);transition-delay:0s}
+  html.js .nav.offen a{opacity:1;transform:none;transition-delay:calc(.05s + var(--i,0) * .04s)}
+  .menue-schalter svg{transition:transform var(--mo-schnell) var(--mo-ease)}
+  .menue-schalter[aria-expanded="true"] svg{transform:rotate(90deg)}
+}
+
+/* Parallax: Held-Karte und Breitbild bewegen sich minimal gegen den Scroll (JS setzt --py, nur ab 900 px) */
+@media (min-width:900px){
+  html.js .held-karte,html.js .bild-breit img{transform:translateY(calc(var(--py,0) * 1px))}
+  html.js .bild-breit{overflow:hidden;border-radius:16px}
+  html.js [data-mo="bild"].mo-sichtbar img{transform:translateY(calc(var(--py,0) * 1px)) scale(1.06)}
+}
+
+/* Weicher Farbübergang beim Wechsel Hell/Dunkel (Klasse setzt site-motion.js kurz) */
+html.mo-thema-wechsel,html.mo-thema-wechsel *,html.mo-thema-wechsel *::before,html.mo-thema-wechsel *::after{
+  transition:background-color .45s ease,color .45s ease,border-color .45s ease,fill .45s ease !important}
+
 /* ---------- 8 Bilder ---------- */
 html.js [data-mo="bild"]{transform:none;filter:none;clip-path:inset(0 100% 0 0 round 16px);transition:clip-path var(--mo-langsam) var(--mo-ease),opacity .3s ease}
 html.js [data-mo="bild"].mo-sichtbar{clip-path:inset(0 0 0 0 round 16px)}
@@ -161,4 +201,9 @@ html.js [data-mo="bild"].mo-sichtbar img{transform:none}
   html.js .abschnitt-kopf h2::after,html.js .schritt::before{transform:scaleX(1);transition:none}
   .karte,.cta,.cta-zweit,.chip,.karte::after,.cta::before{transition:none}
   .mo-fortschritt{display:none}
+  .schritte-linie path{stroke-dashoffset:0;animation:none}
+  .schritte-punkt{display:none}
+  html.js .nav,html.js .nav a{transition:none}
+  html.js .held-karte,html.js .bild-breit img,html.js [data-mo="bild"].mo-sichtbar img{transform:none}
+  html.mo-thema-wechsel,html.mo-thema-wechsel *{transition:none !important}
 }
