@@ -84,15 +84,14 @@
     requestAnimationFrame(schritt);
   }
 
-  /* ---------- 5 Kopf (Schatten nach Scroll), Fortschrittsbalken ---------- */
-  var kopf = document.querySelector('.kopf'), balken = document.createElement('div');
+  /* ---------- 5 Fortschrittsbalken (Kopfzeile bleibt im Fluss, nicht sticky) ---------- */
+  var balken = document.createElement('div');
   balken.className = 'mo-fortschritt'; balken.setAttribute('aria-hidden', 'true'); document.body.appendChild(balken);
   var tick = false;
   function beiScroll() {
     if (tick) { return; } tick = true;
     requestAnimationFrame(function () {
       var y = window.scrollY || document.documentElement.scrollTop;
-      if (kopf) { kopf.classList.toggle('mo-gescrollt', y > 8); }
       var max = document.documentElement.scrollHeight - window.innerHeight;
       balken.style.transform = 'scaleX(' + (max > 0 ? Math.min(y / max, 1) : 0) + ')';
       tick = false;
