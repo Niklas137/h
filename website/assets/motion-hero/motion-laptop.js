@@ -8,7 +8,6 @@
   function beendeIntro(overlay, stopp) {
     if (!overlay || overlay.classList.contains('ml-intro-aus')) { return; }
     overlay.classList.add('ml-intro-aus');
-    try { sessionStorage.setItem('fsh-intro-laptop', '1'); } catch (e) {}
     document.documentElement.classList.remove('mo-intro');   /* Lade-Animationen der Seite starten jetzt */
     setTimeout(function () { stopp(); overlay.remove(); }, 950);
   }
