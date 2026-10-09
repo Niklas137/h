@@ -1,0 +1,69 @@
+/* FSH-Documentation – Logo-Intro beim Start (Übernahme der Animation „FSH Logo Animation mit Aufsprung-Effekt“).
+   Markup kommt aus build.py (logo_intro), Steuerung in logo-intro.js. Zeichen: assets/img/zeichen-gold.png. */
+.mo-logo-intro{
+  /* Bühne des Intros: immer Mitternacht (Vorlage: Artefakt „FSH-Documentation – Logo-Intro“) */
+  --nacht:#0a1628; --nacht-2:#12223a; --tiefblau:#16325c; --kante:#22324d;
+  --gold:#dda440; --politur:#fbca5e; --eis:#8fbfe6; --champagner:#d4b98c;
+  --elfenbein:#faf7f0; --leise:#a7b0c0;
+  --L:clamp(160px, 46vmin, 270px);
+  position:fixed;inset:0;z-index:1000;box-sizing:border-box;color:var(--elfenbein);
+  font-family:'Poppins','Segoe UI',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;
+  padding:0;transition:opacity .5s ease}
+.mo-logo-intro *,.mo-logo-intro *::before,.mo-logo-intro *::after{box-sizing:border-box}
+.mo-logo-intro.mo-logo-aus{opacity:0;pointer-events:none}
+html:not(.mo-intro) .mo-logo-intro{display:none}
+
+/* ---------- Bühne ---------- */
+.mo-logo-intro .buehne{
+  position:absolute;inset:0;overflow:hidden;
+  background:
+    radial-gradient(120% 80% at 50% 42%, #10203a 0%, var(--nacht) 55%, #060d19 100%);
+  display:flex;align-items:center;justify-content:center;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
+}
+.mo-logo-intro .raumlicht{position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:
+    radial-gradient(38vmax 30vmax at 50% 43%, rgba(22,50,92,.75), transparent 70%),
+    radial-gradient(22vmax 18vmax at 50% 44%, rgba(221,164,64,.10), transparent 70%);
+}
+.mo-logo-intro canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.mo-logo-intro #gitter{opacity:0;
+  -webkit-mask-image:radial-gradient(circle at var(--cx,50%) var(--cy,45%), transparent calc(var(--r,0px) - 120px), #000 calc(var(--r,0px) - 24px), transparent calc(var(--r,0px) + 36px));
+          mask-image:radial-gradient(circle at var(--cx,50%) var(--cy,45%), transparent calc(var(--r,0px) - 120px), #000 calc(var(--r,0px) - 24px), transparent calc(var(--r,0px) + 36px));
+}
+
+.mo-logo-intro .gruppe{position:relative;display:flex;flex-direction:column;align-items:center;gap:calc(var(--L) * .2);margin-top:-4vh}
+.mo-logo-intro .anker{position:relative;width:var(--L);height:calc(var(--L) * 576 / 472)}
+.mo-logo-intro .koerper{position:absolute;inset:0;opacity:0;will-change:transform,opacity;transform-origin:50% 49.8%}
+.mo-logo-intro .koerper img,.mo-logo-intro .koerper .geist,.mo-logo-intro .koerper .glanz{position:absolute;inset:0;width:100%;height:100%;display:block}
+.mo-logo-intro .koerper img{user-select:none;-webkit-user-drag:none}
+.mo-logo-intro .geist{opacity:0;
+  -webkit-mask:var(--zeichen) center/100% 100% no-repeat;mask:var(--zeichen) center/100% 100% no-repeat}
+.mo-logo-intro .geist.eis{background:var(--eis)}
+.mo-logo-intro .geist.gold{background:var(--politur)}
+.mo-logo-intro .scheibe{visibility:hidden}
+.mo-logo-intro .glanz{opacity:0;mix-blend-mode:soft-light;
+  background:linear-gradient(104deg, transparent 38%, rgba(255,251,238,.95) 50%, transparent 62%) no-repeat;
+  background-size:260% 100%;
+  -webkit-mask:var(--zeichen) center/100% 100% no-repeat;mask:var(--zeichen) center/100% 100% no-repeat}
+.mo-logo-intro svg.spur,.mo-logo-intro svg.ringe{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.mo-logo-intro svg.ringe path{fill:none;opacity:0}
+
+.mo-logo-intro .name{display:flex;flex-direction:column;align-items:center;gap:12px;opacity:0;will-change:opacity,transform}
+.mo-logo-intro .wortmarke{
+  --ls:.2em;margin:0;font-weight:700;font-size:clamp(15px, 4.4vw, 24px);line-height:1;
+  letter-spacing:var(--ls);padding-left:var(--ls);white-space:nowrap;color:var(--elfenbein);
+}
+.mo-logo-intro .linie{display:block;height:1px;width:100%;background:var(--champagner);transform:scaleX(0)}
+.mo-logo-intro .unterzeile{margin:0;font-size:clamp(13px, 3.3vw, 15px);font-weight:400;letter-spacing:.03em;color:var(--leise);opacity:0}
+.mo-logo-intro .blitz{position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 44%, rgba(255,247,226,.95) 0%, rgba(251,202,94,.32) 22%, rgba(22,50,92,0) 58%)}
+
+.mo-logo-intro .ueberspringen{
+  position:absolute;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  font:600 13px/1 'Source Sans 3',system-ui,sans-serif;color:var(--leise);background:rgba(10,22,40,.4);
+  border:1px solid var(--kante);border-radius:4px;padding:10px 14px;cursor:pointer;opacity:0;transition:opacity .4s, color .2s, border-color .2s;
+}
+.mo-logo-intro .ueberspringen:hover{color:var(--elfenbein);border-color:#6b7a92}
+.mo-logo-intro button:focus-visible{outline:2px solid var(--champagner);outline-offset:3px}
+

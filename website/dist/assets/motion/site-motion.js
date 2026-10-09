@@ -101,24 +101,6 @@
   window.addEventListener('scroll', beiScroll, { passive: true });
   beiScroll();
 
-  /* ---------- 5b Logo-Intro beenden (einmal je Sitzung, Klick oder Esc bricht ab) ---------- */
-  var logoIntro = document.getElementById('mo-logo-intro');
-  if (logoIntro) {
-    if (!document.documentElement.classList.contains('mo-intro') || reduziert) { logoIntro.remove(); }
-    else {
-      var introZu = false;
-      var schliesse = function () {
-        if (introZu) { return; } introZu = true;
-        logoIntro.classList.add('mo-logo-aus');
-        document.documentElement.classList.remove('mo-intro');
-        setTimeout(function () { logoIntro.remove(); }, 750);
-      };
-      logoIntro.addEventListener('click', schliesse);
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { schliesse(); } });
-      setTimeout(schliesse, 3000);
-    }
-  }
-
   /* ---------- 6 Seitenwechsel: kurzes Ausblenden bei internen Links ---------- */
   if (!reduziert) {
     document.addEventListener('click', function (ev) {

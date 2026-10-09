@@ -23,6 +23,8 @@
 <meta name="theme-color" content="#F4F1EC" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#10161F" media="(prefers-color-scheme: dark)">
 <script>(function(){var d=document.documentElement,r=document.referrer,h=location.href;var intern=false;try{intern=!!r&&new URL(r).origin===location.origin&&!/[?&]intro=1/.test(location.search);}catch(e){}if(!intern){d.classList.add('mo-intro');}})();</script>
+<link rel="stylesheet" href="/assets/motion/logo-intro.css">
+<script src="/assets/motion/logo-intro.js" defer></script>
 <link rel="preload" href="/assets/fonts/source-sans-3-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/poppins-700-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css?v=4ba3d678">
@@ -136,7 +138,33 @@
 </header>
 <main id="inhalt" class="start">
 <section class="innen held"><div class="held-text"><p class="kicker">Technische Dokumentation · CE-Konformität · Risikobeurteilung</p><h1>Technische Dokumentation aus Teltow bei Berlin – normgerecht, verständlich, termintreu</h1><p class="einleitung">Betriebsanleitungen, CE-/UKCA-Konformität und Risikobeurteilungen für Maschinen- und Anlagenbau, Energie und Medizintechnik. Schnell, revisionssicher, mehrsprachig (DE/EN/UKR/RU), deutschlandweit.</p><div class="cta-reihe"><a class="cta" href="#kontakt">Jetzt anfragen</a><a class="cta-zweit" href="tel:+491729795939">Direkt anrufen</a></div><p class="hinweis muted">Erstreaktion binnen 24 h an Werktagen. Kick-off (30 Minuten) zur Klärung von Ziel, Normen, Zielgruppe und Sprache.</p></div><aside class="karte held-karte" aria-label="Auditfähig ab der ersten Lieferung"><p class="karte-kicker">Auditfähig ab der ersten Lieferung</p><p>Wir arbeiten nach den im Angebot vereinbarten Normen, die Auditoren und Marktaufsicht prüfen:</p><ul class="chips" aria-label="Normen"><li class="chip">DIN EN IEC/IEEE 82079-1</li><li class="chip">EN ISO 20607</li><li class="chip">ISO 12100</li><li class="chip">VGB-S-831</li><li class="chip">CE/Maschinenverordnung</li><li class="chip">ISO 14971 (MedTech)</li></ul><p class="muted klein">Abnahme nach vereinbarten Freigabekriterien, danach 30-Tage-Service-Window inklusive. Details in AGB (§ 6, § 7) und Angebot.</p></aside></section>
-<div class="mo-logo-intro" id="mo-logo-intro" aria-label="Intro" role="presentation"><div class="mo-logo-buehne"><img class="mo-logo-mark" src="/assets/img/mark.png" alt="" width="98" height="120" decoding="async"><div class="mo-logo-wort"><img src="/assets/img/wortmarke.png" alt="Logo FSH-Documentation – Fast. Simple. High Quality." decoding="async"></div><span class="mo-logo-linie" aria-hidden="true"></span></div></div><!-- Motion-Laptop-Hero: Markup. Screens 1-6 sind die .ml-screen-Blöcke; Inhalte dort austauschen. -->
+<div class="mo-logo-intro" id="mo-logo-intro" aria-label="Intro: Das Zeichen von FSH-Documentation baut sich auf">
+<main class="buehne" id="buehne">
+  <div class="raumlicht" id="raumlicht"></div>
+  <canvas id="gitter" aria-hidden="true"></canvas>
+  <div class="gruppe">
+    <div class="anker" id="anker">
+      <svg class="ringe" id="ringe" viewBox="0 0 472 576" aria-hidden="true"></svg>
+      <div class="koerper" id="koerper">
+        <div class="geist eis" id="geistEis"></div>
+        <div class="geist gold" id="geistGold"></div>
+        <img id="zeichen" src="/assets/img/zeichen-gold.png" alt="" width="472" height="576" decoding="async">
+        <div id="scheiben"></div>
+        <div class="glanz" id="glanz"></div>
+      </div>
+      <svg class="spur" id="spur" viewBox="0 0 472 576" aria-hidden="true"></svg>
+    </div>
+    <div class="name" id="name">
+      <p class="wortmarke" id="wortmarke">FSH-DOCUMENTATION</p>
+      <span class="linie" id="linie"></span>
+      <p class="unterzeile" id="unterzeile">Technische Dokumentation</p>
+    </div>
+  </div>
+  <canvas id="funken" aria-hidden="true"></canvas>
+  <div class="blitz" id="blitz"></div>
+  <button class="ueberspringen" id="ueberspringen" type="button">Überspringen</button>
+</main>
+</div><!-- Motion-Laptop-Hero: Markup. Screens 1-6 sind die .ml-screen-Blöcke; Inhalte dort austauschen. -->
 <section class="motion-laptop" aria-label="Showcase-Animation">
   <div class="ml-bg"></div>
   <div class="ml-grid"></div>

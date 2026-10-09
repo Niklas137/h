@@ -250,17 +250,36 @@ def showcase(bau: Bau, seite: Seite) -> str:
 
 
 def logo_intro(bau: Bau, seite: Seite) -> str:
-    """Logo-Reveal beim Start (wie der Splash-Screen des Dokumentenprüfers): Hexagon-Zeichen, Schriftzug,
-    blaue Linie, dann Ausblenden. Steuerung in assets/motion/site-motion.js, Stile in site-motion.css."""
-    site = bau.site
-    mark = bau.href("/assets/img/mark.png", seite)
-    logo = bau.href("/assets/img/wortmarke.png", seite)
-    return (f'<div class="mo-logo-intro" id="mo-logo-intro" aria-label="Intro" role="presentation">'
-            f'<div class="mo-logo-buehne">'
-            f'<img class="mo-logo-mark" src="{esc(mark)}" alt="" width="98" height="120" decoding="async">'
-            f'<div class="mo-logo-wort"><img src="{esc(logo)}" alt="{esc(site["logo_alt"])}" decoding="async"></div>'
-            f'<span class="mo-logo-linie" aria-hidden="true"></span>'
-            f'</div></div>')
+    """Logo-Intro beim Start: Übernahme der Animation „FSH Logo Animation mit Aufsprung-Effekt“ (Artefakt
+    „FSH-Documentation – Logo-Intro“). Stile in assets/motion/logo-intro.css, Steuerung in logo-intro.js."""
+    zeichen = bau.href("/assets/img/zeichen-gold.png", seite)
+    return f"""<div class="mo-logo-intro" id="mo-logo-intro" aria-label="Intro: Das Zeichen von FSH-Documentation baut sich auf">
+<main class="buehne" id="buehne">
+  <div class="raumlicht" id="raumlicht"></div>
+  <canvas id="gitter" aria-hidden="true"></canvas>
+  <div class="gruppe">
+    <div class="anker" id="anker">
+      <svg class="ringe" id="ringe" viewBox="0 0 472 576" aria-hidden="true"></svg>
+      <div class="koerper" id="koerper">
+        <div class="geist eis" id="geistEis"></div>
+        <div class="geist gold" id="geistGold"></div>
+        <img id="zeichen" src="{esc(zeichen)}" alt="" width="472" height="576" decoding="async">
+        <div id="scheiben"></div>
+        <div class="glanz" id="glanz"></div>
+      </div>
+      <svg class="spur" id="spur" viewBox="0 0 472 576" aria-hidden="true"></svg>
+    </div>
+    <div class="name" id="name">
+      <p class="wortmarke" id="wortmarke">FSH-DOCUMENTATION</p>
+      <span class="linie" id="linie"></span>
+      <p class="unterzeile" id="unterzeile">Technische Dokumentation</p>
+    </div>
+  </div>
+  <canvas id="funken" aria-hidden="true"></canvas>
+  <div class="blitz" id="blitz"></div>
+  <button class="ueberspringen" id="ueberspringen" type="button">Überspringen</button>
+</main>
+</div>"""
 
 
 def abschnitt_kopf(a: dict) -> str:
@@ -523,6 +542,9 @@ def seite_html(bau: Bau, seite: Seite, varianten: dict | None) -> str:
         intro_script = ("<script>(function(){var d=document.documentElement,r=document.referrer,h=location.href;"
                         "var intern=false;try{intern=!!r&&new URL(r).origin===location.origin&&!/[?&]intro=1/.test(location.search);}catch(e){}"
                         "if(!intern){d.classList.add('mo-intro');}})();</script>\n")
+    if d.get("showcase") == "motion-laptop" and d.get("intro") == "logo":
+        intro_script += (f'<link rel="stylesheet" href="{esc(bau.href("/assets/motion/logo-intro.css", seite))}">\n'
+                         f'<script src="{esc(bau.href("/assets/motion/logo-intro.js", seite))}" defer></script>\n')
     showcase_css = showcase_js = ""
     if d.get("showcase") == "motion-laptop":
         showcase_css = f'<link rel="stylesheet" href="{esc(bau.href("/assets/motion-hero/motion-laptop.css", seite))}">\n'
