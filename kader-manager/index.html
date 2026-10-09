@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kader</title>
+<meta name="description" content="Kaderübersicht: Trikots an der Stange, Spielerprofil auf Tipp.">
+<link rel="stylesheet" href="kader.css">
+</head>
+<body class="kader-seite">
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <filter id="kader-druck-stoff" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency=".02 .035" numOctaves="2" seed="4" result="stoff"/>
+      <feDisplacementMap in="SourceGraphic" in2="stoff" scale="1.1" xChannelSelector="R" yChannelSelector="G"/>
+      <feDropShadow dx="0" dy="1" stdDeviation=".7" flood-color="#000" flood-opacity=".4"/>
+    </filter>
+  </defs>
+</svg>
+<main class="kader" id="inhalt">
+  <header class="kader-kopf">
+    <p class="kader-saison" id="kader-saison"></p>
+    <h1 class="kader-titel" id="kader-titel">Kader</h1>
+    <div class="kopf-schalter">
+      <div class="trikotwahl" id="trikotwahl" role="group" hidden></div>
+      <div class="trikotwahl sprachwahl" id="sprachwahl" role="group"></div>
+    </div>
+  </header>
+  <p class="admin-hinweis" id="kader-quelle" hidden></p>
+
+  <section class="szene" id="szene" aria-label="Trikots an der Stange">
+    <div class="stange-schiene" aria-hidden="true"></div>
+    <div class="stange" id="stange"><ul class="stange-innen" id="stange-innen"></ul></div>
+    <button type="button" class="stange-pfeil links" id="stange-links" aria-label="Trikots nach links bewegen"><svg viewBox="0 0 20 20" width="22" height="22" aria-hidden="true"><path d="M12 4l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" class="stange-pfeil rechts" id="stange-rechts" aria-label="Trikots nach rechts bewegen"><svg viewBox="0 0 20 20" width="22" height="22" aria-hidden="true"><path d="M8 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+
+    <aside class="karte" id="karte" aria-labelledby="karte-name" hidden>
+      <header class="karte-kopf">
+        <span class="karte-marke" data-t="kaderBlatt">Kader<br>Blatt</span>
+        <span class="karte-team" id="karte-team"></span>
+        <span class="karte-zaehler" id="karte-zaehler"></span>
+        <button type="button" class="karte-klappen" id="karte-klappen" aria-expanded="true" aria-label="Details einklappen"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M4 7l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </header>
+      <div class="karte-koerper" id="karte-koerper"></div>
+      <footer class="karte-fuss">
+        <button type="button" class="karte-zurueck" id="karte-zurueck" data-t="zurueck">Zurück zur Stange</button>
+        <button type="button" class="karte-pfeil" id="karte-teilen" aria-label="Link kopieren" title="Link kopieren"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M8.5 11.5l3-3M7 13a3 3 0 0 1 0-4.2l1.3-1.3M13 7a3 3 0 0 1 0 4.2l-1.3 1.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+        <button type="button" class="karte-pfeil" id="karte-vorher" aria-label="Vorheriger Spieler"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M12 4l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button type="button" class="karte-pfeil" id="karte-weiter" aria-label="Nächster Spieler"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M8 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </footer>
+    </aside>
+  </section>
+
+  <section class="leiste" id="leiste" aria-label="Aktueller Spieler und Navigation">
+    <p class="leiste-spieler" id="leiste-spieler" aria-live="polite"></p>
+    <p class="leiste-hinweis" id="leiste-hinweis"></p>
+    <ol class="zahlen" id="zahlen" aria-label="Rückennummern"></ol>
+    <nav class="kader-filter" id="kader-filter" aria-label="Nach Position filtern"></nav>
+  </section>
+  <p class="kader-hinweis" id="kader-hinweis">Kader wird geladen …</p>
+  <noscript><p class="kader-hinweis">Für die Kaderansicht muss JavaScript aktiviert sein.</p></noscript>
+  <p class="klein kader-fusszeile"><a href="admin.html" data-t="admin">Admin-Bereich</a></p>
+</main>
+<script type="module" src="kader.js"></script>
+</body>
+</html>

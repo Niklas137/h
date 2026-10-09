@@ -1,0 +1,146 @@
+[
+  {
+    "id": "CE-001",
+    "keywords": [
+      "ce-kennzeichnung",
+      "ce-mark",
+      "ce-markierung"
+    ],
+    "bereich": "CE-Kennzeichnung",
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "CE-Kennzeichnung muss deutlich sichtbar und erläutert sein",
+    "gewichtung": 5,
+    "bereich_en": "CE marking",
+    "bereich_uk": "Маркування CE",
+    "bereich_ru": "Маркировка CE",
+    "empfehlung_en": "The CE marking must be clearly visible and explained",
+    "empfehlung_uk": "Маркування CE має бути добре помітним і поясненим",
+    "empfehlung_ru": "Маркировка CE должна быть хорошо видна и пояснена"
+  },
+  {
+    "id": "CE-002",
+    "keywords": [
+      "konformität",
+      "konform",
+      "eu-richtlinie",
+      "richtlinie"
+    ],
+    "bereich": "Konformitätserklärung",
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "Konformitätserklärung muss vollständig vorhanden sein",
+    "gewichtung": 5,
+    "bereich_en": "Declaration of conformity",
+    "bereich_uk": "Декларація відповідності",
+    "bereich_ru": "Декларация соответствия",
+    "empfehlung_en": "The declaration of conformity must be complete and included",
+    "empfehlung_uk": "Декларація відповідності має бути наявна в повному обсязі",
+    "empfehlung_ru": "Декларация соответствия должна присутствовать в полном объёме"
+  },
+  {
+    "id": "CE-003",
+    "keywords": [
+      "hersteller",
+      "herstellerangaben"
+    ],
+    "bereich": "Herstellerangaben",
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "Vollständige Herstellerangaben (Name, Adresse) sind erforderlich",
+    "gewichtung": 4,
+    "bereich_en": "Manufacturer details",
+    "bereich_uk": "Дані виробника",
+    "bereich_ru": "Данные производителя",
+    "empfehlung_en": "Complete manufacturer details (name, address) are required",
+    "empfehlung_uk": "Потрібні повні дані виробника (назва, адреса)",
+    "empfehlung_ru": "Требуются полные данные производителя (название, адрес)"
+  },
+  {
+    "id": "CE-004",
+    "keywords": [
+      "notifizierte stelle",
+      "benannte stelle",
+      "notified body"
+    ],
+    "bereich": "Notifizierte Stelle",
+    "fehlerklasse": "Schwer",
+    "empfehlung": "Identifikation der notifizierten Stelle muss vorhanden sein",
+    "gewichtung": 3,
+    "bereich_en": "Notified body",
+    "bereich_uk": "Нотифікований орган",
+    "bereich_ru": "Нотифицированный орган",
+    "empfehlung_en": "The notified body must be identified",
+    "empfehlung_uk": "Має бути зазначено нотифікований орган",
+    "empfehlung_ru": "Должен быть указан нотифицированный орган"
+  },
+  {
+    "id": "CE-005",
+    "keywords": [
+      "gefahren",
+      "risiken",
+      "risikobewertung"
+    ],
+    "bereich": "Gefahren & Risiken",
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "Identifizierte Gefahren und Risiken müssen dokumentiert sein",
+    "gewichtung": 4,
+    "bereich_en": "Hazards and risks",
+    "bereich_uk": "Небезпеки та ризики",
+    "bereich_ru": "Опасности и риски",
+    "empfehlung_en": "Identified hazards and risks must be documented",
+    "empfehlung_uk": "Виявлені небезпеки та ризики мають бути задокументовані",
+    "empfehlung_ru": "Выявленные опасности и риски должны быть задокументированы"
+  },
+  {
+    "id": "CE-006",
+    "keywords": [
+      "persönliche schutzausrüstung",
+      "psa",
+      "schutzausrüstung"
+    ],
+    "bereich": "PSA",
+    "fehlerklasse": "Schwer",
+    "empfehlung": "Erforderliche PSA muss klar angegeben werden",
+    "gewichtung": 3,
+    "bereich_en": "PPE",
+    "bereich_uk": "ЗІЗ",
+    "bereich_ru": "СИЗ",
+    "empfehlung_en": "The required personal protective equipment (PPE) must be stated clearly",
+    "empfehlung_uk": "Необхідні засоби індивідуального захисту (ЗІЗ) мають бути чітко зазначені",
+    "empfehlung_ru": "Необходимые средства индивидуальной защиты (СИЗ) должны быть чётко указаны"
+  },
+  {
+    "id": "CE-007",
+    "keywords": [
+      "entsorgung",
+      "recycling",
+      "rückgabe"
+    ],
+    "bereich": "Entsorgung",
+    "fehlerklasse": "Mittel",
+    "empfehlung": "Korrekte Entsorgungs- und Recyclingvorgaben sind erforderlich",
+    "gewichtung": 2,
+    "bereich_en": "Disposal",
+    "bereich_uk": "Утилізація",
+    "bereich_ru": "Утилизация",
+    "empfehlung_en": "Correct disposal and recycling instructions are required",
+    "empfehlung_uk": "Потрібні правильні вказівки щодо утилізації та переробки",
+    "empfehlung_ru": "Требуются правильные указания по утилизации и переработке"
+  },
+  {
+    "id": "CE-008",
+    "keywords": [
+      "maschinenrichtlinie",
+      "elektromagnetische verträglichkeit",
+      "emv"
+    ],
+    "bereich": "Richtlinien-Konformität",
+    "fehlerklasse": "Kritisch",
+    "empfehlung": "Compliance mit anwendbaren EU-Richtlinien nachweisen",
+    "gewichtung": 4,
+    "bereich_en": "Directive compliance",
+    "bereich_uk": "Відповідність директивам",
+    "bereich_ru": "Соответствие директивам",
+    "empfehlung_en": "Demonstrate compliance with the applicable EU directives",
+    "empfehlung_uk": "Підтвердіть відповідність застосовним директивам ЄС",
+    "empfehlung_ru": "Подтвердите соответствие применимым директивам ЕС"
+  }
+]

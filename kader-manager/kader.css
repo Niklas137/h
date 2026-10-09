@@ -1,0 +1,254 @@
+/* Kader-Manager – Kaderseite „Kleiderstange“ (dunkler Umkleideraum), Datenkarte, Admin.
+   Animiert werden nur transform und opacity (GPU-freundlich). Farben als Variablen;
+   Teamfarben setzt kader.js aus daten/kader.json. Admin-Seite hell/dunkel automatisch. */
+
+/* Schmale Blockschrift für Rückennummer und Name (Oswald, SIL Open Font License, siehe fonts/) */
+@font-face{font-family:'Oswald';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/oswald-700-cyrillic.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:'Oswald';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/oswald-700-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Oswald';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/oswald-700-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+:root{
+  --bg:#F4F1EC;--surface:#FFFFFF;--ink:#121E31;--muted:#4A5262;--line:#D9D4CB;
+  --accent:#1B63A8;--accent-ink:#FFFFFF;--soft:#E9EEF5;--schatten:0 18px 50px rgba(18,30,49,.18);
+  --team-1:#0B3D91;--team-2:#F2C230;--team-text:#FFFFFF;
+  --raum:#0e0b0a;--raum-hell:#1c1512;--raum-text:#F3EFEA;--raum-muted:rgba(243,239,234,.62);--glas:rgba(22,14,14,.74);--glas-rand:rgba(255,255,255,.14);
+  --schrift:'Source Sans 3','Segoe UI',system-ui,-apple-system,sans-serif;
+  --titel:'Poppins','Segoe UI',system-ui,-apple-system,sans-serif;
+  --druck:'Oswald','Arial Narrow','Roboto Condensed',sans-serif;
+  --dauer-kurz:220ms;--dauer:520ms;--dauer-lang:780ms;--dauer-dreh:420ms;--dauer-kamera:560ms;
+  --kurve:cubic-bezier(.22,.8,.26,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10161F;--surface:#1A2230;--ink:#F1EEE8;--muted:#B3B9C4;--line:#2C3645;
+    --accent:#6CC0F0;--accent-ink:#0E1620;--soft:#1F2A3A;--schatten:0 18px 50px rgba(0,0,0,.5);color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10161F;--surface:#1A2230;--ink:#F1EEE8;--muted:#B3B9C4;--line:#2C3645;
+  --accent:#6CC0F0;--accent-ink:#0E1620;--soft:#1F2A3A;--schatten:0 18px 50px rgba(0,0,0,.5);color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--schrift);overflow-x:hidden}
+h1,h2,h3{font-family:var(--titel);margin:0;line-height:1.2}
+p{margin:0}
+button{font:inherit;color:inherit}
+img{max-width:100%;display:block}
+:focus-visible{outline:3px solid var(--team-2);outline-offset:3px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.innen{max-width:1180px;margin:0 auto;padding:0 16px}
+@media (min-width:900px){.innen{padding:0 48px}}
+.klein{font-size:14px;line-height:1.45}
+.muted{color:var(--muted)}
+.status-punkt{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;background:#2E9E5B}
+.status-punkt[data-status="injured"]{background:#D9822B}
+.status-punkt[data-status="inactive"]{background:#8A8F99}
+
+/* ===== Kaderseite: dunkler Raum ===== */
+.kader-seite{background:var(--raum);color:var(--raum-text);color-scheme:dark}
+.kader{max-width:1180px;margin:0 auto;padding:0 0 32px}
+.kader-kopf{text-align:center;padding:28px 16px 10px}
+.kopf-schalter{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 12px}
+.trikotwahl{display:inline-flex;margin-top:12px;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:3px;gap:2px}
+.trikotwahl button{border:0;background:none;color:var(--raum-muted);border-radius:999px;padding:6px 14px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+.trikotwahl button[aria-pressed="true"]{background:#fff;color:#111}
+.karte-pfeil.kopiert{background:var(--team-2);color:#111}
+.kader-saison{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--raum-muted)}
+.kader-titel{font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:.02em;text-transform:uppercase;
+  background:linear-gradient(180deg,#fff 0%,#e9dcc2 55%,#b89b62 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kader .admin-hinweis{margin:0 16px 12px;background:rgba(255,255,255,.08);color:var(--raum-text)}
+.kader .admin-hinweis a{color:var(--team-2)}
+.kader-fusszeile{text-align:center;padding:18px 16px 0;color:var(--raum-muted)}
+.kader-fusszeile a{color:var(--raum-muted)}
+.kader-hinweis{text-align:center;padding:30px 16px;color:var(--raum-muted)}
+
+/* Szene: Wandpaneele mit warmem Gegenlicht, Stange, Trikots fast seitlich (wie im Video) */
+.szene{position:relative;height:clamp(520px,72vh,720px);overflow:hidden;isolation:isolate;
+  background:
+    radial-gradient(70% 45% at 50% -8%,rgba(255,196,128,.22),transparent 60%),
+    linear-gradient(180deg,rgba(0,0,0,.2),transparent 28%,rgba(0,0,0,.72) 100%),
+    repeating-linear-gradient(90deg,#1c1411 0 34px,#140e0c 34px 38px),
+    var(--raum-hell)}
+.szene::after{content:"";position:absolute;inset:auto 0 0 0;height:30%;background:linear-gradient(180deg,transparent,rgba(0,0,0,.75));pointer-events:none;z-index:1}
+.stange-schiene{display:none}
+.stange-innen::before{content:"";position:absolute;left:-200vw;right:-200vw;top:46px;height:9px;z-index:0;
+  background:linear-gradient(180deg,#8b8b8b,#4a4a4a 45%,#1d1d1d);box-shadow:0 8px 20px rgba(0,0,0,.65),0 1px 0 rgba(255,255,255,.25) inset}
+.stange{position:absolute;inset:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;z-index:3;
+  --haenger-breite:250px;--haenger-schritt:78px;--kamera-zoom:1.22;touch-action:pan-x pan-y}
+.stange::-webkit-scrollbar{display:none}
+.szene.offen .stange{overflow:hidden;touch-action:pan-y}   /* waagerechtes Wischen geht an kader.js, Seite bleibt senkrecht scrollbar */
+.stange-innen{list-style:none;margin:0;padding:0 calc(50% - var(--haenger-breite) / 2);display:flex;align-items:flex-start;width:max-content;min-width:100%;position:relative;
+  perspective:1100px;perspective-origin:50% 28%;transform-origin:0 0;
+  transition:transform var(--dauer-kamera) cubic-bezier(.3,.7,.2,1);will-change:transform}
+@media (min-width:700px){.stange{--haenger-breite:330px;--haenger-schritt:104px;--kamera-zoom:1.3}}
+.haenger{flex:0 0 auto;width:var(--haenger-breite);margin-right:calc(var(--haenger-schritt) - var(--haenger-breite));padding-top:30px;position:relative;z-index:0;pointer-events:none}
+.haenger:last-child{margin-right:0}
+.haenger-knopf{display:block;width:100%;padding:0;border:0;background:none;cursor:pointer;border-radius:12px;pointer-events:none}
+.trikot-haengend{pointer-events:auto}
+.trikot-haengend{display:block;transform-origin:50% 0;transform:rotateY(var(--neigung,60deg));
+  transition:transform var(--dauer-dreh) cubic-bezier(.2,.7,.2,1);will-change:transform;
+  filter:drop-shadow(10px 16px 18px rgba(0,0,0,.6))}
+.trikot-haengend svg{width:100%;height:auto;display:block;overflow:visible}
+.haenger.ist-mitte .trikot-haengend{transform:rotateY(calc(var(--neigung,60deg) - 5deg))}
+.haenger-knopf:hover .trikot-haengend,.haenger-knopf:focus-visible .trikot-haengend{transform:rotateY(calc(var(--neigung,60deg) - 14deg))}
+.haenger-knopf:focus-visible{outline:none}
+.haenger-knopf:focus-visible .trikot-haengend{filter:drop-shadow(0 0 8px var(--team-2)) drop-shadow(10px 16px 18px rgba(0,0,0,.6))}
+.haenger.gewaehlt{z-index:5}
+.haenger.gewaehlt .trikot-haengend{transform:rotateY(0deg);filter:drop-shadow(0 28px 34px rgba(0,0,0,.7))}
+.trikot-name,.trikot-nummer{font-family:var(--druck);font-weight:700;letter-spacing:.02em;text-transform:uppercase}
+.trikot-nummer{fill:var(--trikot-nummer,var(--team-2))}
+.trikot-name{fill:var(--trikot-name,var(--team-text));letter-spacing:.08em}
+/* Aufdruck: Stofflicht als Verlauf darüber, leichte Wölbung, hauchdünner Schatten */
+/* Nur die große Nummer des nach vorn gedrehten Trikots bekommt den Stoff-Filter; Namen und die Trikots an der Stange bleiben scharf */
+.trikot-druck{filter:none}
+.haenger.gewaehlt .trikot-druck{filter:url(#kader-druck-stoff)}
+.trikot-name,.trikot-nummer{text-rendering:geometricPrecision}
+.haenger.gewaehlt .trikot-beschriftung{filter:drop-shadow(0 1px 0 rgba(0,0,0,.35))}
+/* An der Stange: Name größer und ohne Schatten, damit er trotz Schrägstellung lesbar bleibt */
+.trikot-beschriftung{transform-box:fill-box;transform-origin:center;transition:transform var(--dauer-dreh) ease}
+.haenger:not(.gewaehlt) .trikot-beschriftung{transform:scale(1.15)}
+
+/* Pfeile zum Bewegen der Stange */
+.stange-pfeil{position:absolute;top:50%;z-index:4;width:48px;height:48px;margin-top:-24px;border-radius:50%;border:1px solid rgba(255,255,255,.22);
+  background:rgba(20,12,10,.55);color:#fff;display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:background var(--dauer-kurz),opacity var(--dauer-kurz),transform var(--dauer-kurz) var(--kurve)}
+.stange-pfeil.links{left:10px}
+.stange-pfeil.rechts{right:10px}
+.stange-pfeil:hover{background:rgba(255,255,255,.18)}
+.stange-pfeil:disabled{opacity:.25;cursor:default}
+.szene.offen .stange-pfeil{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.8)}
+@media (min-width:900px){.stange-pfeil{width:56px;height:56px;margin-top:-28px}.stange-pfeil.links{left:18px}.stange-pfeil.rechts{right:18px}}
+.stange.zieht{cursor:grabbing;scroll-snap-type:none}
+.stange.zieht .trikot-haengend{pointer-events:none}
+
+/* Leichte Abdunklung der Szene, Nachbarn bleiben sichtbar (wie im Video) */
+.stange-innen::after{content:"";position:absolute;inset:-200vh -300vw;z-index:1;background:rgba(6,3,3,.3);opacity:0;pointer-events:none;transition:opacity var(--dauer-kamera) var(--kurve)}
+.szene.aktiv .stange-innen::after{opacity:1}
+.szene.offen .stange{cursor:pointer}            /* Klick auf freie Fläche schließt (kader.js) */
+.szene.offen .haenger-knopf,.szene.offen .trikot-haengend{cursor:pointer}
+@media (min-width:900px){.szene{height:clamp(560px,74vh,760px)}}
+
+/* Datenkarte (Glas) */
+.karte{position:absolute;z-index:6;left:12px;right:12px;bottom:12px;max-height:47%;display:flex;flex-direction:column;
+  background:var(--glas);border:1px solid var(--glas-rand);border-radius:22px;color:var(--raum-text);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 30px 60px rgba(0,0,0,.6);
+  transform:translateY(calc(100% + 24px));opacity:0;transition:transform 460ms cubic-bezier(.2,.7,.2,1),opacity 300ms var(--kurve);transition-delay:260ms;will-change:transform}
+.karte{touch-action:pan-y}
+.karte.offen{transform:translateY(0);opacity:1}
+.karte:not(.offen){transition-delay:0ms;pointer-events:none}
+.karte[hidden]{display:none}
+.karte::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(90% 60% at 50% 0%,color-mix(in srgb,var(--team-1) 55%,transparent),transparent 70%);opacity:.9}
+@media (min-width:900px){
+  .karte{left:auto;right:28px;top:28px;bottom:28px;width:400px;max-height:none;transform:translateX(calc(100% + 40px))}
+  .karte.offen{transform:translateX(0)}
+}
+.karte-kopf{position:relative;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:14px;padding:14px 16px 10px;font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+.karte-marke{line-height:1.15;font-weight:600}
+.karte-team{color:var(--team-2);line-height:1.3;letter-spacing:.1em;font-size:11px}
+.karte-zaehler{font-family:var(--titel);font-size:15px;letter-spacing:.1em}
+.karte-klappen{width:36px;height:36px;border-radius:50%;border:1px solid var(--glas-rand);background:rgba(255,255,255,.06);display:grid;place-items:center;cursor:pointer;transition:transform var(--dauer-kurz) var(--kurve)}
+.karte.eingeklappt .karte-klappen{transform:rotate(180deg)}
+.karte-koerper{position:relative;overflow:auto;padding:0 12px;transition:opacity 200ms var(--kurve)}
+.karte-koerper.wechsel{opacity:0}
+.karte.eingeklappt .karte-koerper{display:none}
+.karte-spieler{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"nat position" "nummer name";column-gap:16px;align-items:end;
+  border:1px solid var(--glas-rand);border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.04)}
+.karte-foto{grid-column:1/-1;width:96px;aspect-ratio:3/4;object-fit:cover;border-radius:10px;margin-bottom:10px}
+.karte-nat{grid-area:nat;justify-self:start;min-width:44px;padding:3px 8px;border-radius:5px;background:rgba(255,255,255,.14);font-size:13px;font-weight:600;letter-spacing:.12em;text-align:center}
+.karte-position{grid-area:position;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--raum-muted)}
+.karte-nummer{grid-area:nummer;font-family:var(--titel);font-weight:700;font-size:54px;line-height:1}
+.karte-name{grid-area:name;font-family:var(--schrift);font-weight:400;font-size:clamp(26px,3vw,34px);line-height:1.05;letter-spacing:-.01em}
+.karte-name strong{font-weight:700}
+.karte-zeilen{margin:10px 0 0;padding:0 6px}
+.karte-zeilen > div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:10px 0;border-bottom:1px dotted rgba(255,255,255,.18);
+  opacity:0;transform:translateY(8px);transition:opacity var(--dauer) var(--kurve),transform var(--dauer) var(--kurve);transition-delay:calc(420ms + var(--stufe,0) * 70ms)}
+.karte.offen .karte-zeilen > div{opacity:1;transform:none}
+.karte-zeilen dt{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--raum-muted)}
+.karte-zeilen dd{margin:0;text-align:right;font-size:18px}
+.karte-zeilen dd b{font-weight:700}
+.karte-profil{padding:14px 6px 4px}
+.karte-profil h3{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--raum-muted);font-weight:600;margin-bottom:6px}
+.karte-profil p{font-size:16px;line-height:1.5}
+.karte-fuss{position:relative;display:flex;gap:10px;padding:12px}
+.karte-zurueck{flex:1;border:1px solid var(--glas-rand);background:rgba(255,255,255,.06);border-radius:999px;padding:14px 16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background var(--dauer-kurz)}
+.karte-zurueck:hover{background:rgba(255,255,255,.14)}
+.karte-pfeil{width:52px;height:52px;border-radius:50%;border:1px solid var(--glas-rand);background:rgba(255,255,255,.06);display:grid;place-items:center;cursor:pointer;transition:background var(--dauer-kurz)}
+.karte-pfeil:hover{background:rgba(255,255,255,.14)}
+
+/* Leiste unter der Szene */
+.leiste{padding:18px 16px 0;text-align:center}
+.leiste-spieler{font-size:22px;line-height:1.2}
+.leiste-nummer{font-family:var(--titel);font-weight:700;color:var(--team-2);margin-right:4px}
+.leiste-spieler strong{font-weight:700}
+.leiste-hinweis{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--raum-muted);margin-top:4px}
+.zahlen{list-style:none;margin:16px auto 0;padding:0 8px;display:flex;justify-content:center;gap:2px;flex-wrap:wrap;max-width:720px}
+.zahlen button{border:0;background:none;color:var(--raum-muted);font-family:var(--titel);font-size:12px;padding:6px 5px;cursor:pointer;border-radius:6px;min-width:28px;transition:color var(--dauer-kurz),transform var(--dauer-kurz) var(--kurve)}
+.zahlen button[aria-current="true"]{color:#fff;transform:scale(1.35);font-weight:700}
+.zahlen button:hover{color:#fff}
+.kader-filter{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:16px 0 0}
+.kader-filter button{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:var(--raum-text);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background var(--dauer-kurz),color var(--dauer-kurz)}
+.kader-filter button sup{font-size:10px;margin-left:5px;color:var(--team-2)}
+.kader-filter button[aria-pressed="true"]{background:#fff;color:#111;border-color:#fff}
+.kader-filter button[aria-pressed="true"] sup{color:#111}
+
+/* Reduzierte Bewegung: keine Drehung, kein Flug, nur kurzes Einblenden */
+@media (prefers-reduced-motion: reduce){
+  :root{--dauer-kurz:1ms;--dauer:120ms;--dauer-lang:120ms}
+  :root{--dauer-dreh:1ms;--dauer-kamera:1ms}
+  .trikot-haengend,.haenger.ist-mitte .trikot-haengend,.haenger-knopf:hover .trikot-haengend{transform:rotateY(var(--neigung,60deg))}
+  .karte,.karte.offen{transition-delay:0ms;transition-duration:1ms;transform:none}
+  .karte:not(.offen){opacity:0}
+  .karte-zeilen > div{transition-delay:0ms;transform:none}
+  .zahlen button[aria-current="true"]{transform:none;text-decoration:underline}
+  .karte{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(22,14,14,.94)}
+}
+
+/* Admin */
+.admin-kopf{padding:36px 0 16px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between}
+.admin-kopf h1{font-size:clamp(26px,3vw,38px)}
+.admin-leiste{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:18px}
+.knopf{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;cursor:pointer;font-weight:600;font-size:15px}
+.knopf.primaer{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.knopf.gefahr{color:#B3261E;border-color:#B3261E}
+.knopf:disabled{opacity:.5;cursor:default}
+.admin-hinweis{background:var(--soft);border-radius:12px;padding:12px 16px;font-size:15px;margin-bottom:18px}
+.admin-tabelle{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:15px}
+.admin-tabelle th,.admin-tabelle td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.admin-tabelle th{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+.admin-tabelle tr.inaktiv td{color:var(--muted)}
+.admin-tabelle td.aktionen{white-space:nowrap}
+.admin-tabelle td.aktionen button{margin-right:6px}
+.tabelle-scroll{overflow-x:auto;padding-bottom:60px}
+.admin-formular{border:0;padding:0;margin:0;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.admin-formular label{display:grid;gap:4px;font-size:14px;font-weight:600;color:var(--muted)}
+.admin-formular input,.admin-formular select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.admin-formular .breit{grid-column:1/-1}
+.admin-dialog{border:0;border-radius:18px;padding:0;max-width:720px;width:calc(100% - 32px);background:var(--surface);color:var(--ink);box-shadow:var(--schatten)}
+.admin-dialog::backdrop{background:rgba(10,16,28,.55)}
+.admin-dialog form{padding:24px}
+.admin-dialog h2{font-size:22px;margin-bottom:16px}
+.admin-dialog .dialog-knoepfe{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;grid-column:1/-1}
+.admin-vorschau{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;grid-column:1/-1;background:var(--soft);border-radius:12px;padding:12px}
+.admin-vorschau svg{width:100%;height:auto}
+.admin-vorschau .trikot-nummer{fill:var(--team-2);font-family:var(--titel);font-weight:700}.admin-vorschau .trikot-name{fill:var(--trikot-name,var(--team-text));font-family:var(--druck);font-weight:700}
+.admin-formular textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-height:90px;resize:vertical}
+.fehlertext{color:#B3261E;font-size:14px;grid-column:1/-1}
+.admin-dialog [hidden],.admin-bereich[hidden],#admin-bereich[hidden],#server-bereich[hidden]{display:none!important}
+.feld-mit-knopf{display:flex;gap:6px}.feld-mit-knopf input{flex:1}.feld-mit-knopf .knopf{padding:6px 10px;font-size:13px}
+.admin-konto{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.admin-konto .knopf{padding:5px 10px;font-size:13px}
+.anmelde-dialog{max-width:420px}
+.anmelde-dialog .dialog-knoepfe{margin-top:16px}
+.anmelde-dialog .knopf{text-decoration:none}
+.foto-feld{display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:start}
+.foto-vorschau{width:96px;aspect-ratio:3/4;border-radius:10px;background:var(--soft);border:1px dashed var(--line);display:grid;place-items:center;overflow:hidden;font-size:12px;text-align:center}
+.foto-vorschau img{width:100%;height:100%;object-fit:cover;display:block}
+.foto-knoepfe{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.foto-knoepfe .foto-titel{flex-basis:100%;font-size:14px;font-weight:600;color:var(--muted)}
+.foto-knoepfe .klein{flex-basis:100%}
+.tabelle-foto{display:block;width:32px;height:42px;object-fit:cover;border-radius:6px;background:var(--soft)}
+.tabelle-foto.leer{border:1px dashed var(--line)}

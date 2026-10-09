@@ -8,7 +8,11 @@ Verlauf liegen unter `wocheneinkauf/`. Budget 60 € pro Woche ist fest, nicht n
 
 ## Dokumentenprüfer
 
-`app.py` ist eine Streamlit-App (lokaler Dokumentenprüfer, Regeln in `normlogik_82079.json`).
+Schreibt der Nutzer „Dokumentenprüfer" oder „Prüftool" (auch „starten", „testen", „prüfen", „Übergabe"),
+den Skill `.claude/skills/dokumentenpruefer/SKILL.md` ausführen. Die Web-App liegt unter
+`dokumentenpruefer/` (FastAPI, Konten, PDF-Berichte), Anleitung in `dokumentenpruefer/README.md`,
+Ablage und Entscheidungen in `.claude/skills/dokumentenpruefer/references/ablage.md`.
+`app.py` im Stamm ist die alte Streamlit-App (Regeln in `normlogik_82079.json`) und bleibt als Rückfall.
 Sie hat nichts mit dem Wocheneinkauf zu tun.
 
 ## SEO-Audit (FSH-Documentation)
@@ -23,3 +27,10 @@ Die neue Website liegt unter `website/`: Inhalte als JSON in `website/inhalt/`, 
 `python3 website/build.py --pruefen`, fertige Dateien in `website/dist/`. Anleitung, Hosting-Wege und
 offene Entscheidungen stehen in `website/README.md`, die Livegang-Schritte in `website/livegang.md`.
 Rechtstexte dort sind keine Rechtsberatung.
+
+## Kader-Manager (KFK, Trikot-Animation)
+
+Eigenständiges Web-Modul unter `kader-manager/` (HTML, CSS, JavaScript, JSON, kein Build): Kaderseite als
+Kleiderstange mit Trikot-Animation nach Videoreferenz, Spielerkarte, Admin-Seite, optional `server.py` mit
+tokengeschütztem Veröffentlichen. Anleitung, Datenmodell und Einbau in `kader-manager/README.md`; Status der
+Prüfbefunde in `kader-manager/UMSETZUNG_Pruefbericht_2026-10-08.md`. Lokal starten: `cd kader-manager && python3 server.py`.
