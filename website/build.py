@@ -239,11 +239,28 @@ def showcase(bau: Bau, seite: Seite) -> str:
     if seite.daten.get("showcase") != "motion-laptop":
         return ""
     markup = MOTION_HERO.read_text(encoding="utf-8")
-    if not seite.daten.get("intro"):
+    intro = seite.daten.get("intro")
+    if not intro:
         return markup
-    intro = markup.replace('<section class="motion-laptop"', '<section class="motion-laptop ml-als-intro" data-intro="5600"', 1)
-    return (f'<div class="ml-intro-overlay" id="ml-intro" aria-label="Intro">{intro}'
+    if intro == "logo":
+        return logo_intro(bau, seite) + markup
+    laptop = markup.replace('<section class="motion-laptop"', '<section class="motion-laptop ml-als-intro" data-intro="5600"', 1)
+    return (f'<div class="ml-intro-overlay" id="ml-intro" aria-label="Intro">{laptop}'
             f'<button type="button" class="ml-intro-skip" id="ml-intro-skip">Überspringen</button></div>{markup}')
+
+
+def logo_intro(bau: Bau, seite: Seite) -> str:
+    """Logo-Reveal beim Start (wie der Splash-Screen des Dokumentenprüfers): Hexagon-Zeichen, Schriftzug,
+    blaue Linie, dann Ausblenden. Steuerung in assets/motion/site-motion.js, Stile in site-motion.css."""
+    site = bau.site
+    mark = bau.href("/assets/img/mark.png", seite)
+    logo = bau.href("/assets/img/wortmarke.png", seite)
+    return (f'<div class="mo-logo-intro" id="mo-logo-intro" aria-label="Intro" role="presentation">'
+            f'<div class="mo-logo-buehne">'
+            f'<img class="mo-logo-mark" src="{esc(mark)}" alt="" width="98" height="120" decoding="async">'
+            f'<div class="mo-logo-wort"><img src="{esc(logo)}" alt="{esc(site["logo_alt"])}" decoding="async"></div>'
+            f'<span class="mo-logo-linie" aria-hidden="true"></span>'
+            f'</div></div>')
 
 
 def abschnitt_kopf(a: dict) -> str:
