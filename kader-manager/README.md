@@ -78,15 +78,6 @@ schließt die Karte. Tippen auf ein Nachbartrikot wechselt ebenfalls, Tippen auf
 Technik: nur `transform` und `opacity`; die Kamera ist ein `translate` + `scale` auf der Trikotliste,
 die Drehung ein `rotateY` je Trikot (`kader.css`, Funktion `kameraAuf()` in `kader.js`).
 
-Motion-Ergänzungen (Stand 09.10.2026, ohne Bibliothek): Beim Laden hängen sich die Trikots nacheinander an die Stange,
-Kopf und Leiste blenden gestaffelt ein. In der Karte erscheinen Foto, Nummer (mit leichtem Schwung), Name, Position,
-Nationalität und Profil nacheinander, unter dem Spielerblock und jeder Datenzeile zeichnet sich eine Linie auf, die
-fetten Statistikwerte zählen kurz hoch (`zahlenHochzaehlen()` in `kader.js`). Filter- und Trikotwechsel blenden die Stange
-kurz aus und hängen die Trikots neu an (`stangeNeuZeichnen()`). Buttons, Chips und Nummern reagieren auf Hover und Klick,
-ein warmer Lichtkegel wandert sehr langsam über die Wand (`.szene::before`). Die Presets heißen `kader-hoch`,
-`kader-nummer`, `kader-foto`, `kader-linie`, `kader-haengen`, `kader-licht`; Kurven `--kurve-aus` (schnell beginnen,
-weich auslaufen) und `--kurve-schwung`. Bei `prefers-reduced-motion` ist alles davon aus, Inhalte und Bedienung bleiben.
-
 Bei `prefers-reduced-motion: reduce` entfallen Drehung und Kamerafahrt; Trikot und Karte blenden
 nur kurz ein. Alle Funktionen bleiben erhalten. Direktlink: `index.html#spieler=jan-jenner`.
 
