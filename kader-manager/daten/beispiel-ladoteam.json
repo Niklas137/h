@@ -1,0 +1,13 @@
+{
+  "format": "kfk-kader",
+  "version": 1,
+  "revision": 412,
+  "exportedAt": "2026-10-09T08:05:00.000Z",
+  "team": {"name": "KFK LadoTeam"},
+  "players": [
+    {"id": "7c1e2a4b-0f3d-4b9a-9c1e-1a2b3c4d5e01", "name": "Oleh Tkachenko", "nameUk": "Олег Ткаченко", "nameUkConfirmed": true, "position": "offense", "detail": "Center", "white": "7", "black": "7", "status": "active", "teamRole": "Kapitän"},
+    {"id": "7c1e2a4b-0f3d-4b9a-9c1e-1a2b3c4d5e02", "name": "Maksym Koval", "nameUk": "", "nameUkConfirmed": false, "position": "goalie", "detail": "", "white": "31", "black": "1", "status": "active", "teamRole": ""},
+    {"id": "7c1e2a4b-0f3d-4b9a-9c1e-1a2b3c4d5e03", "name": "Dmytro Bondar", "nameUk": "Дмитро Бондар", "nameUkConfirmed": true, "position": "offense", "detail": "", "white": "22", "black": "22", "status": "recovery", "teamRole": ""},
+    {"id": "7c1e2a4b-0f3d-4b9a-9c1e-1a2b3c4d5e05", "name": "Jan Jenner", "nameUk": "Ян Єннер", "nameUkConfirmed": true, "position": "offense", "detail": "", "white": "", "black": "18", "status": "injured", "teamRole": ""}
+  ]
+}

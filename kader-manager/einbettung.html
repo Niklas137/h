@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trikots im Manager</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Vorschau: Trikot-Animation als Ansicht im Kader-Manager KFK LadoTeam.">
+<!-- Nachbau der Oberfläche von KFK LadoTeam (Seitenleiste, Kopfzeile), damit die Einbettung vorab sichtbar ist.
+     Die Spieler kommen aus daten/beispiel-ladoteam.json im Format der Kader-Schnittstelle (kfk-kader). -->
+<link rel="stylesheet" href="kader-einbettung.css">
+<style>
+  :root{--ink:#152f32;--muted:#63777a;--brand:#14766c;--brand-dark:#0d5a53;--line:rgba(65,106,106,.14);--surface:rgba(255,255,255,.72);
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:linear-gradient(160deg,#eef5f3,#f6f8f7 60%,#eaf1ef);color:var(--ink);font:15px/1.5 Inter,-apple-system,"Segoe UI",sans-serif}
+  .app-shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+  .sidebar{background:var(--surface);border-right:1px solid var(--line);padding:22px 16px;backdrop-filter:blur(12px)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;color:var(--ink);text-decoration:none}
+  .brand i{width:34px;height:34px;border-radius:9px;background:#111;display:grid;place-items:center;color:#C9A24A;font-style:normal;font-size:12px;letter-spacing:.08em}
+  .brand span span{display:block;font-weight:500;font-size:12px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase}
+  .sidebar-label{margin:26px 0 8px;font-size:11px;letter-spacing:.18em;color:var(--muted)}
+  .sidebar nav a{display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:10px;color:var(--ink);text-decoration:none;font-weight:500}
+  .sidebar nav a.active{background:var(--brand);color:#fff}
+  .sidebar nav a i{width:18px;height:18px;border-radius:5px;border:1.6px solid currentColor;opacity:.75;font-style:normal}
+  .workspace{display:flex;flex-direction:column;min-width:0}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 26px;border-bottom:1px solid var(--line);background:var(--surface)}
+  .breadcrumb{font-size:14px;color:var(--muted)}.breadcrumb strong{color:var(--ink);margin-left:6px}
+  .language{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:2px;gap:2px;background:#fff}
+  .language button{border:0;background:none;padding:5px 12px;border-radius:999px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted)}
+  .language button[aria-pressed="true"]{background:var(--brand);color:#fff}
+  main{padding:22px 26px 40px;min-width:0}
+  .panel-titel{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 0 14px}
+  .panel-titel h1{margin:0;font-size:22px}
+  .panel-titel p{margin:0;color:var(--muted);font-size:13px}
+  .vorschau-hinweis{font-size:12px;color:var(--muted);margin:14px 0 0}
+  /* Die Trikotansicht sitzt als Kachel im Arbeitsbereich */
+  .kader-wurzel{border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0e0b0a}
+  @media (max-width:760px){.app-shell{grid-template-columns:1fr}.sidebar{display:none}main{padding:12px 10px 30px}.topbar{padding:10px 12px}}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Menü (Nachbau)">
+    <a class="brand" href="#"><i>KFK</i><span>KFK<span>LadoTeam</span></span></a>
+    <div class="sidebar-label">DEIN TEAMRAUM</div>
+    <nav>
+      <a href="#"><i></i><span data-nav="dashboard">Übersicht</span></a>
+      <a href="#"><i></i><span data-nav="inbox">Nachrichten</span></a>
+      <a href="#"><i></i><span data-nav="events">Termine</span></a>
+      <a href="#"><i></i><span data-nav="team">Team</span></a>
+      <a href="#" class="active"><i></i><span data-nav="trikots">Trikots</span></a>
+      <a href="#"><i></i><span data-nav="finance">Finanzen</span></a>
+    </nav>
+  </aside>
+  <div class="workspace">
+    <header class="topbar">
+      <span class="breadcrumb">KFK LadoTeam <span>/</span><strong data-nav="trikots">Trikots</strong></span>
+      <div class="language" aria-label="Sprache / Мова" id="sprache">
+        <button type="button" lang="de" data-sprache="de" aria-pressed="true">DE</button>
+        <button type="button" lang="uk" data-sprache="uk" aria-pressed="false">УКР</button>
+      </div>
+    </header>
+    <main>
+      <div class="panel-titel"><h1 data-nav="trikots">Trikots</h1><p id="stand"></p></div>
+      <div class="kader-wurzel" id="trikots"></div>
+      <p class="vorschau-hinweis">Vorschau: Oberfläche nachgebaut, Spieler aus <code>daten/beispiel-ladoteam.json</code> (Format der Kader-Schnittstelle). Im echten Manager liefert die App die Spieler und den Sprachschalter.</p>
+    </main>
+  </div>
+</div>
+<script type="module">
+  import { kaderMounten } from './kader-einbettung.js';
+  import { pruefen, ausLadoTeam } from './kader-daten.js';
+  const TEXT = { de: { dashboard: 'Übersicht', inbox: 'Nachrichten', events: 'Termine', team: 'Team', trikots: 'Trikots', finance: 'Finanzen' },
+                 uk: { dashboard: 'Огляд', inbox: 'Повідомлення', events: 'Події', team: 'Команда', trikots: 'Футболки', finance: 'Фінанси' } };
+  // Teamdaten (Trikotbilder, Farben) wie in daten/kader.json; die Spieler kommen aus der Schnittstelle
+  const TEAM = { name: 'КФК', short: 'KFK', season: '2026/27', tilt: 50,
+    colors: { primary: '#C9A24A', secondary: '#C9A24A', text: '#FFFFFF' },
+    jersey: { back: 'fotos/trikot-kfk-schwarz.png', nameY: 102, numberY: 268, nameSize: 30, numberSize: 150, nameColor: '#B28A47', numberColor: '#B28A47' },
+    jerseyAlternatives: { weiss: { back: 'fotos/trikot-kfk-weiss.png', nameY: 102, numberY: 268, nameSize: 30, numberSize: 150, nameColor: '#161616', numberColor: '#161616' } } };
+  let instanz = null, sprache = 'de', daten = null;
+  async function laden() {
+    const roh = await (await fetch('daten/beispiel-ladoteam.json', { cache: 'no-store' })).json();
+    daten = pruefen({ team: TEAM, players: ausLadoTeam(roh) });
+    document.getElementById('stand').textContent = `${daten.players.length} Spieler · Stand ${new Date(roh.exportedAt).toLocaleString(sprache === 'uk' ? 'uk-UA' : 'de-DE')}`;
+  }
+  function zeigen() {
+    instanz?.entfernen();
+    instanz = kaderMounten(document.getElementById('trikots'), { daten, sprache, hash: false });
+    document.documentElement.lang = sprache;
+    document.querySelectorAll('[data-nav]').forEach(el => { el.textContent = TEXT[sprache][el.dataset.nav]; });
+    document.querySelectorAll('#sprache button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sprache === sprache)));
+  }
+  document.getElementById('sprache').addEventListener('click', e => {
+    const b = e.target.closest('button[data-sprache]');
+    if (!b || b.dataset.sprache === sprache) return;
+    sprache = b.dataset.sprache;
+    zeigen();
+  });
+  await laden();
+  zeigen();
+</script>
+</body>
+</html>

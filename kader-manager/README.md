@@ -17,6 +17,7 @@ Gedacht zur Übernahme in die bestehende Floorball-Website. Alle Spielerdaten ko
 | `kader.css` | Umkleideraum-Optik, Glaskarte, Animation (nur `transform` und `opacity`), `prefers-reduced-motion`; Admin hell/dunkel |
 | `daten/kader.json` | Kaderdaten (Beispiel) |
 | `fotos/` | KFK-Trikots (freigestellt); Spielerfotos aus dem Admin-Upload in `fotos/spieler/`, Pfad im Feld `photo` |
+| `kader-einbettung.js`, `kader-vorlage.js`, `kader-einbettung.css`, `einbettung.html` | Einhängbares Modul, Markup-Vorlage, begrenztes Stylesheet und Vorschau der Ansicht im Manager |
 | `einbau-ladoteam/` | Anbindung an KFK LadoTeam: Übergabenotiz für Falk und die neue Schnittstellendatei `route.ts` |
 | `fonts/` | Oswald 700 für den Aufdruck (OFL-Lizenz liegt bei) |
 
@@ -183,6 +184,17 @@ Zuordnung: `black` → Heimnummer `number`, `white` → `numbers.weiss` (nur wen
 Schalter zeigt die passende Nummer), `goalie`/`defense`/`offense` → Torwart/Verteidiger/Stürmer, `detail`
 → Zusatz in der Karte, Status `recovery` → „Im Aufbau“. Deaktivierte Spieler fehlen auf der Seite,
 Spieler ohne Rückennummer werden mit Hinweis in der Konsole ausgelassen.
+
+## Ansicht „Trikots“ im Manager (Einbettung)
+
+Die Kaderseite ist seit 09.10.2026 ein einhängbares Modul: `kaderMounten(element, optionen)` in
+`kader-einbettung.js` baut Markup (aus `kader-vorlage.js`), Stange, Karte und Leiste in ein beliebiges Element.
+`index.html` nutzt es über `kader.js` ohne Optionen. Für die Einbettung in KFK LadoTeam: Optionen `daten`
+(geprüftes `{team, players}`), `sprache` (`de`/`uk`, Sprachschalter des Moduls bleibt dann verborgen) und
+`hash: false` (keine `#spieler=`-Links, der Gastgeber nutzt den Hash). `kader-einbettung.css` ist die auf
+`.kader-wurzel` begrenzte Fassung von `kader.css` (abgeleitet mit `einbau-ladoteam/css-ableiten.py`, nach
+jeder Änderung an `kader.css` neu erzeugen). Vorschau im Nachbau der Manager-Oberfläche: `einbettung.html`.
+Die React-Komponente und die Einbauschritte für Falk stehen in `einbau-ladoteam/UEBERGABE_FALK.md`, Weg 3.
 
 ## Sprachen: Deutsch und Ukrainisch
 

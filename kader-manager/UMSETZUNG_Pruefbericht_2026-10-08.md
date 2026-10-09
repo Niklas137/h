@@ -42,6 +42,12 @@ Stand des Moduls: kader-manager.zip vom 08.10.2026 (nach der Prüfung). Quelldat
 - Für Falk: `einbau-ladoteam/app/api/public/kader/route.ts` (neue Datei, nur lesend, nur öffentliche Felder, CORS-Freigabe per Liste) und `UEBERGABE_FALK.md`. Nicht in seiner App gestartet; Endpunkt nach Veröffentlichung von Falk einmal aufrufen.
 - Tests (Node und Chromium, `shot10.mjs`): Backup mit 6 Spielern → 5 übernommen (ohne Nummer ausgelassen), keine E-Mail und keine Notiz im Ergebnis, Foto/Profil/Jahrgang über ID erhalten; Live-Quelle liefert 4 Trikots, Beispielkader weg; Karte mit Position und Zusatz; Status „Im Aufbau“ und ukrainisch „Відновлення“; Auswärtstrikot zeigt Koval 31 statt 1 in Trikot, Leiste und Zahlenband; Admin-Import mit eigenem Dialog, zweite Nummer in Tabelle und Formular. Keine JS-Fehler.
 
+## Nachtrag 09.10.2026: Ansicht „Trikots“ im Manager
+
+- `kader.js` in `kaderMounten(wurzel, optionen)` überführt (`kader-einbettung.js`), Markup als Vorlage, Fenster-Ereignisse werden mit `entfernen()` abgeräumt; `index.html` unverändert in Bedienung und Regression (10 Fälle).
+- Einbettung geprüft mit `einbettung.html` (Nachbau der App-Oberfläche) in Chromium bei 1280 und 390 px: Spieler aus dem Schnittstellenformat, Sprachwahl und Teilen-Knopf des Moduls verborgen, SVG-Filter nur einmal im Dokument, Farben und Hintergrund des Gastgebers unverändert, kein Hash beim Öffnen, Karte mit Position und Zusatz, Wechsel über Sprachschalter des Gastgebers (ukrainische Trikotnamen, Chips), Pfeiltaste nach Neu-Einhängen ohne doppelte Reaktion, Auswärtsnummern, kein Überlauf mobil, keine JS-Fehler.
+- Für Falk: `einbau-ladoteam/app/kader-trikots.tsx` und drei Einzeiler (i18n, Navigation, Seitenwahl); nicht in der echten App gestartet.
+
 ## Offene Nachweise (R1–R4)
 
 Nicht durch mich erbracht: Safari auf iPhone und Mac, Chrome auf Android, Firefox, echte Touch-Gesten, Bildrate auf schwachen Geräten, Einbau in die Zielseite, Zugriffsschutz des Admin-Bereichs, Übersetzung ins Ukrainische. Alle Browsertests liefen in Chromium (Playwright) bei 1280, 1024 und 390 px Breite, mit und ohne reduzierte Bewegung.

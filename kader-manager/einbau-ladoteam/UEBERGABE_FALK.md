@@ -42,6 +42,43 @@ Die Kaderseite lädt die Spieler dann live von dort. Ist die Schnittstelle nicht
 zuletzt gespeicherten Stand aus `daten/kader.json` (Hinweis in der Browserkonsole). Trikotbilder, Fotos,
 Profiltexte, Geburtsjahr und Statistik bleiben im Trikot-Modul und werden über die Spieler-ID zugeordnet.
 
+## Weg 3: Ansicht „Trikots“ im Manager (empfohlen für die Vorschau im Team)
+
+Die Trikot-Animation läuft als eigene Ansicht in der App, für angemeldete Nutzer, mit den Spielern aus dem
+Teamstand und dem Sprachschalter der App. Vorschau des Ergebnisses: `einbettung.html` im Trikot-Modul
+(Oberfläche nachgebaut, Spieler aus `daten/beispiel-ladoteam.json`).
+
+Dateien in die App kopieren (nichts davon ersetzt eine bestehende Datei):
+
+```
+Quellcode/app/kader-trikots.tsx                      ← einbau-ladoteam/app/kader-trikots.tsx
+Quellcode/public/assets/kader/kader-einbettung.js    ← kader-einbettung.js
+Quellcode/public/assets/kader/kader-vorlage.js       ← kader-vorlage.js
+Quellcode/public/assets/kader/kader-daten.js         ← kader-daten.js
+Quellcode/public/assets/kader/sprache.js             ← sprache.js
+Quellcode/public/assets/kader/kader-einbettung.css   ← kader-einbettung.css
+Quellcode/public/assets/kader/fonts/                 ← fonts/ (Oswald, OFL-Lizenz liegt bei)
+Quellcode/public/assets/kader/fotos/                 ← fotos/trikot-kfk-schwarz.png, fotos/trikot-kfk-weiss.png
+```
+
+Drei kleine Ergänzungen in bestehenden Dateien, jeweils eine Zeile, nichts wird entfernt:
+
+1. `lib/i18n.ts`, in die Liste der Paare: `trikots:["Trikots","Футболки"],`
+2. `app/team-app.tsx`, Import und Navigationseintrag:
+   `import {KaderTrikots} from './kader-trikots';` und in `navigation` nach `['team',Users]` den Eintrag
+   `['trikots',Users]` (oder ein anderes Lucide-Symbol, z. B. `Shirt`).
+3. `app/team-app.tsx`, in der Seitenwahl vor `page==='finance'`: `page==='trikots'?<KaderTrikots/>:`
+
+Die Komponente lädt die Moduldateien zur Laufzeit aus `/assets/kader/` (am Bundler vorbei), hängt die Ansicht
+in ein eigenes Element und räumt beim Wechsel der Ansicht oder Sprache wieder auf. Sie schreibt keinen Hash,
+der Hash bleibt bei der App-Navigation. Alle Stilregeln sind auf `.kader-wurzel` begrenzt und ändern Farben
+und Schriften der App nicht (geprüft: `--ink` und Hintergrund des Gastgebers bleiben).
+
+Prüfen nach dem Einbau: `npm test`, `tsc --noEmit`, `npm run build`, dann in der App „Trikots“ öffnen, ein
+Trikot antippen, Sprache umschalten, Heim/Auswärts wechseln (Koval zeigt 1 bzw. 31). Mit 390 px Breite ohne
+waagerechten Überlauf. Was hier nicht nachgewiesen ist: der Lauf in der echten App (Node, Wrangler, D1, R2).
+Die Moduldateien und die Einbettung sind mit dem Nachbau in Chromium geprüft.
+
 ## Feldzuordnung
 
 | KFK LadoTeam | Trikot-Modul | Anmerkung |
