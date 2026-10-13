@@ -189,6 +189,14 @@ Alle Punkte stehen auch als `_hinweise` in der jeweiligen JSON-Datei.
 - **Schriften**: Poppins und Source Sans 3 kommen aus dem Google-Fonts-Archiv, liegen aber lokal
   (keine Verbindung zu Google beim Aufruf; die Datenschutzerklärung sagt das so).
 
+## Gestaltung (Stand 02.10.2026)
+
+Ruhige Fassung, nur über `assets/site.css`, Inhalte unverändert: mehr Abstand zwischen Abschnitten
+(72 px), Kopf mit stiller Navigation und Schalter ohne Rahmen, Chips als Umriss, weichere Linien.
+Regel: ein Kasten nur, wenn er klickbar ist. Informationskarten (Nutzen, Fragen, Schritte,
+Referenzen, Leistungsumfang) sind Listen mit einer Linie oben; Leistungs- und Verweiskarten bleiben
+Kästen. Dunkel und hell geprüft, kein Überlauf bei 390 px.
+
 ## Stand 22.09.2026
 
 Erster Bau: 12 Seiten, `build.py --pruefen` ohne Fehler und Warnungen; Chromium-Prüfung Desktop
