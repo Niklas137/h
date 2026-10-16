@@ -13,14 +13,16 @@ wird mit dem vorherigen verglichen. Alle Parameter stehen fest. Nicht nachfragen
 
 ## Feste Parameter
 
-- Website: `https://fsh-documentation.com/` (Startseite laut Suchindex). Zweitdomain
-  `fsh-documentation.de` (E-Mail-Domain der Firma, Stand 19.09.2026 ohne indexierte Inhalte).
-- Plattform (Stand 19.09.2026): Canva-Website, Einseiter, Inhalt entsteht erst per JavaScript (Roh-HTML ohne
-  Text), kein eigener Head-Code, keine robots.txt. fsh-documentation.de zeigt eine STRATO-Platzhalterseite.
-  Nach dem Relaunch (statische Website aus `website/`, GitHub Pages): Roh-HTML mit Text, zwölf Seiten,
-  Sitemap mit elf URLs. Erkennbar daran, dass `onpage_check.py` auf dem Roh-HTML Wörter und eine h1
-  liefert; dann Technik und On-Page für Startseite und alle Sitemap-URLs prüfen und im Bericht als
-  Veränderung „Relaunch live“ führen (B3, B7, B8, B9, B10, B11 neu bewerten).
+- Website (seit 16.10.2026 festgestellt): Hauptdomain `https://fsh-documentation.de/`, statische Website
+  über Cloudflare (Nameserver und Auslieferung), drei Sprachfassungen `/`, `/en`, `/uk`, Rechtsseiten
+  `/impressum`, `/datenschutz`, `/agb`, Sitemap `https://fsh-documentation.de/sitemap.xml`. Quelle nicht im
+  Repository (`website/` war der eigene GitHub-Pages-Plan für die .com und ist überholt).
+  `fsh-documentation.com` (Zone bei Canva) leitet auf die .de weiter; Soll ist 301, Stand 16.10.2026 nur 302.
+  E-Mail läuft weiter über STRATO (MX, DKIM), die DNS-Zone der .de liegt aber bei Cloudflare.
+- Vorgeschichte (19.09. bis 09.10.2026): Canva-Einseiter auf der .com, Inhalt per JavaScript, .de mit
+  STRATO-Platzhalter. Berichte bis einschließlich 09.10.2026 beziehen sich darauf.
+- Technik und On-Page jeweils für die Startseite, die Sprachfassungen, die Rechtsseiten und alle
+  Sitemap-URLs prüfen. Weiterleitungen beider Domains mit Statuscode festhalten.
 - Firma: FSH-Documentation UG (haftungsbeschränkt), Bäckerstraße 2 D, 14513 Teltow. Technische
   Dokumentation, CE-/UKCA-Konformität, Risikobeurteilung, Normenmanagement, ST4.
 - Zielmarkt: Deutschland, regional Teltow, Potsdam, Berlin, Brandenburg.
@@ -161,8 +163,8 @@ von jeder Seite verlinkt; mehrsprachige Seiten mit `hreflang`.
 
 ### Suchindex-Abfragen (fest, in dieser Reihenfolge)
 
-1. `site:fsh-documentation.com`
-2. `site:fsh-documentation.de`
+1. `site:fsh-documentation.de`
+2. `site:fsh-documentation.com`
 3. `"FSH-Documentation"`
 4. `FSH-Documentation Teltow`
 5. `Technische Dokumentation Teltow`
@@ -170,8 +172,9 @@ von jeder Seite verlinkt; mehrsprachige Seiten mit `hreflang`.
 7. `Technische Redaktion CE-Konformität Betriebsanleitung Dienstleister Berlin Brandenburg`
 8. `Betriebsanleitung erstellen lassen Maschinenbau CE`
 9. der exakte Seitentitel der Startseite in Anführungszeichen, so wie ihn `onpage_check.py` in diesem
-   Lauf liefert (Canva-Seite: `"Technische Dokumentation auf Premium-Niveau"`; nach dem Relaunch
-   `"FSH-Documentation – Technische Dokumentation Teltow"`)
+   Lauf liefert (Stand 16.10.2026: `"Technische Redaktion, CE & Risikobeurteilung | FSH-Documentation"`;
+   zusätzlich den alten Canva-Titel `"Technische Dokumentation auf Premium-Niveau"` abfragen, solange er
+   im Index steht)
 10. `FSH documentation` (Markenkollision beobachten)
 
 Je Abfrage zählen: Treffer von fsh-documentation.com oder .de (ja/nein, URL, Position, sofern

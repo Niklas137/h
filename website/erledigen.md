@@ -1,5 +1,28 @@
 # Erledigen: alle Klick-Schritte an einem Ort
 
+> **Stand 16.10.2026, vor allem anderen lesen.** Seit dem 09.10. ist eine neue Website live, auf
+> `fsh-documentation.de` über Cloudflare, nicht aus diesem Repository und nicht auf GitHub Pages. Die
+> .com leitet dorthin weiter (noch 302). Das verändert diese Liste:
+>
+> - **A1 (STRATO-DNS) ist am falschen Ort.** Die DNS-Zone der .de liegt jetzt bei Cloudflare; Einträge im
+>   STRATO-Menü werden nicht ausgeliefert. Deshalb blieben die Eingaben vom 09.10. unsichtbar. Die drei
+>   TXT-Einträge gehören ins Cloudflare-Konto: DNS → Records → Add record, Typ TXT, gleiche Namen und Werte
+>   wie unten. SPF ist dort schon gesetzt (`v=spf1 redirect=_spf.strato.com`, ausreichend); es fehlen
+>   DMARC mit Berichtsadresse und die Berichtsfreigabe.
+> - **A2 (STRATO-Weiterleitung) entfällt.** Die .de ist jetzt die Hauptdomain. Stattdessen bei Canva die
+>   Weiterleitung der .com auf **permanent (301)** umstellen (Befund B13).
+> - **B1 (Canva-DNS) bleibt nötig**, zusätzlich muss der verschwundene DMARC-Eintrag der .com neu angelegt
+>   werden.
+> - **B2 bis B4 (Canva-Design) entfallen**, das Design ist nicht mehr online.
+> - **C (Google-Unternehmensprofil) bleibt**, Website-Adresse jetzt `https://fsh-documentation.de/`.
+> - **D (GitHub Pages) ist überholt.** Offen ist die Entscheidung, ob `website/` (Seitenplan, Rechtstexte)
+>   als Vorlage für Leistungsseiten auf der neuen Seite dient oder eingestellt wird. Dafür muss bekannt
+>   sein, wo der Quellcode der neuen Website liegt und wer das Cloudflare-Konto verwaltet.
+> - **Neu, zuerst:** Search Console für die .de anlegen, Sitemap einreichen, Adressänderung der .com melden,
+>   sobald die 301 steht.
+>
+> Die folgenden Blöcke sind der Stand vom 01.10.2026 und werden nach der Entscheidung zu D neu geschrieben.
+
 Stand 01.10.2026. Alles, was nur mit deinen Logins geht, in der Reihenfolge, die am meisten bringt.
 Jeder Block ist in sich abgeschlossen; du kannst nach jedem Block aufhören. Werte zum Kopieren stehen
 in Codeblöcken. Nach einem Block kurz hier im Chat melden („A fertig“), ich prüfe dann per DNS und

@@ -1,0 +1,323 @@
+{
+  "domain": "fsh-documentation.de",
+  "firma": "FSH-Documentation UG (haftungsbeschränkt), Teltow",
+  "stand": "2026-10-16",
+  "uhrzeit": "07:43",
+  "lauf": "freitag-0730",
+  "art": "Vollprüfung",
+  "untertitel": "Wochenaudit für FSH-Documentation UG (haftungsbeschränkt), Teltow. Relaunch live: Hauptdomain ist jetzt fsh-documentation.de, fsh-documentation.com leitet weiter. Vergleich mit dem Zwischenstand vom 09.10.2026 (16:09).",
+  "ergebnis_kurz": "Relaunch live auf der .de: sieben Befunde erledigt, zwei neue",
+  "zusammenfassung": [
+    "Seit dem 09.10.2026 ist eine neue Website live, und zwar auf fsh-documentation.de: statisches HTML über Cloudflare (Nameserver und Auslieferung), drei Sprachfassungen (/, /en, /uk), Impressum, Datenschutz und AGB als eigene Seiten, Lebensläufe als PDF. Die Startseite hat 1.112 Wörter im Roh-HTML, genau eine H1 und neun H2, Title „Technische Redaktion, CE & Risikobeurteilung | FSH-Documentation“, Description mit Teltow und Leistungen, Canonical, hreflang (de, en, uk, x-default), Open Graph mit Bild, JSON-LD ProfessionalService mit Adresse, Telefon, USt-ID und sameAs auf die LinkedIn-Firmenseite, robots.txt mit Sitemap-Verweis, Sitemap mit drei URLs. Sie lädt 19 Ressourcen mit 0,68 MB und ist nach 1,5 s vollständig. Diese Website stammt nicht aus dem Repository (website/ zielt auf GitHub Pages und die .com); Quelle und Hosting-Zugang sind der Routine nicht bekannt.",
+    "fsh-documentation.com, bisher die Hauptdomain mit der Canva-Seite, antwortet jetzt mit einer Weiterleitung auf https://fsh-documentation.de/, allerdings mit Statuscode 302 (vorübergehend) statt 301 (dauerhaft). Der Suchindex kennt weiterhin nur die alte .com-Startseite mit dem alten Titel; die .de ist noch nicht indexiert, bei den vier Kernbegriff-Abfragen erscheint kein eigener Treffer. Damit sind sieben Befunde erledigt (B1 Domain-Split, B2 Titel, B7 Überschriften, B8 Alt-Texte, B9 Canonical und strukturierte Daten, B10 Ladezeit, B11 robots und Sitemap), B3 (keine Leistungsseiten) und B5 (sameAs) sind verbessert, B4 und B6 unverändert.",
+    "Die Nameserver der .de liegen jetzt bei Cloudflare, nicht mehr bei STRATO. Das erklärt, warum die am 09.10. im STRATO-Kundenmenü eingetragenen DNS-Einträge und die STRATO-Weiterleitung nie sichtbar wurden: Die Zone wird dort nicht mehr ausgeliefert. Im E-Mail-DNS der .de ist SPF jetzt gesetzt (STRATO-Vorlage mit redirect, wirksam wie -all), DMARC weiterhin ohne Berichtsadresse; bei der .com fehlt SPF, und der frühere DMARC-Eintrag ist verschwunden. B12 bleibt deshalb offen, verbessert. Neu: B13 Weiterleitung nur 302 (mittel) und B14 Feinschliff der neuen Seite (niedrig). Offen sind sieben Befunde: 2 hoch, 4 mittel, 1 niedrig."
+  ],
+  "veraenderungen": [
+    "Relaunch live: fsh-documentation.de liefert eine neue statische Website über Cloudflare (A-Records 172.67.196.151 und 104.21.84.201, Nameserver thea/julio.ns.cloudflare.com, Sitemap-lastmod 07.10.2026). Die STRATO-Platzhalterseite ist verschwunden. Die Datenschutzerklärung der neuen Seite nennt Cloudflare als Hoster mit Auftragsverarbeitungsvertrag und STRATO für E-Mail.",
+    "fsh-documentation.com (A-Record jetzt 103.169.142.6, Zone bei Canva neu veröffentlicht, Serial 1791890612) leitet mit 302 auf https://fsh-documentation.de/ weiter; www.fsh-documentation.com weiterhin 301 auf die .com. Die Canva-Seite ist nicht mehr erreichbar. robots.txt und sitemap.xml der .com antworten 404.",
+    "Technik der .de: http → https 301, www → ohne www 301, 404-Test korrekt, robots.txt vorhanden (Cloudflare-Vorlage: Suchmaschinen erlaubt, KI-Crawler gesperrt, Sitemap-Verweis), Sitemap mit drei URLs und hreflang. Kein HSTS-Header mehr (die Canva-Seite hatte ihn). Laborwerte: DOM fertig nach 0,9 s, vollständig nach 1,5 s, 0,68 MB (vorher 3,1 MB und 5,2 s).",
+    "On-Page der .de: Title 64 Zeichen mit Leistungen und Marke, Description 159 Zeichen mit Teltow und Leistungen, 1 H1, 9 H2, Canonical, hreflang, Open Graph, JSON-LD ProfessionalService (sameAs LinkedIn-Firmenseite), 13 Bilder im DOM, alle mit alt-Attribut (10 leer, dekorativ; Logo „FSH-Documentation“), 13 interne und 4 externe Links. Impressum, Datenschutz und AGB als eigene Seiten mit eigenem Title und Canonical; /en/agb antwortet 404, /agb ohne hreflang.",
+    "E-Mail-DNS: fsh-documentation.de hat jetzt SPF „v=spf1 redirect=_spf.strato.com“ (STRATO-Vorlage, wirksam wie -all), DMARC unverändert „v=DMARC1;p=reject;“ ohne rua, DKIM und MX unverändert bei STRATO. fsh-documentation.com: weiterhin kein SPF, der DMARC-Eintrag „p=none“ ist entfernt, Berichtsfreigabe fehlt. Zone der .de jetzt bei Cloudflare (Serial 2417425484): DNS-Änderungen für die .de müssen ab sofort im Cloudflare-Konto erfolgen, nicht bei STRATO.",
+    "Erledigt (erscheinen letztmalig): B1, B2, B7, B8, B9, B10, B11. Verbessert: B3 (Sprachfassungen, Rechtsseiten, interne Links, aber keine Leistungsseiten), B5 (sameAs vorhanden), B12 (SPF .de). Neu: B13 (302 statt 301), B14 (Feinschliff). Prüfskript mail_dns_check.py akzeptiert jetzt auch die STRATO-SPF-Vorlage mit redirect.",
+    "Suchindex unverändert: Nur https://fsh-documentation.com/ mit dem alten Titel „Technische Dokumentation auf Premium-Niveau“ (Domain-Abfrage, „FSH-Documentation Teltow“ Position 3, alter Titel Position 4). Die neue .de und ihr neuer Titel erscheinen bei keiner Abfrage; die Phrase „Technische Redaktion, CE & Risikobeurteilung“ liefert nur Fremdtreffer. Solange die .com mit 302 weiterleitet, bleibt der Index bei der alten Adresse."
+  ],
+  "pruefstatus": [
+    {
+      "bereich": "Indexierung",
+      "status": "geprueft",
+      "ergebnis": "Nur die alte .com-Startseite im Index; die neue .de noch nicht aufgenommen, Sitemap mit drei URLs vorhanden."
+    },
+    {
+      "bereich": "Kernbegriffe",
+      "status": "geprueft",
+      "ergebnis": "Kein eigener Treffer bei den vier Kernbegriff-Abfragen; Wettbewerber mit Leistungsseiten ranken."
+    },
+    {
+      "bereich": "Marke",
+      "status": "geprueft",
+      "ergebnis": "„FSH“ bleibt mehrdeutig; JSON-LD mit sameAs auf LinkedIn, neuer Titel noch nicht im Index."
+    },
+    {
+      "bereich": "Domains",
+      "status": "geprueft",
+      "ergebnis": "Hauptdomain jetzt .de; .com leitet weiter, aber mit 302 statt 301; www und http korrekt per 301."
+    },
+    {
+      "bereich": "Lokale Signale",
+      "status": "teilweise",
+      "ergebnis": "NAP in JSON-LD, Impressum und Verzeichnissen konsistent; Google-Unternehmensprofil nicht prüfbar."
+    },
+    {
+      "bereich": "Technik",
+      "status": "geprueft",
+      "ergebnis": "Cloudflare, robots.txt und Sitemap vorhanden, 404 korrekt, 0,68 MB und 1,5 s; HSTS fehlt."
+    },
+    {
+      "bereich": "On-Page",
+      "status": "geprueft",
+      "ergebnis": "Title, Description, H1/H2, Canonical, hreflang, JSON-LD, Alt-Attribute vorhanden; Title 64 Zeichen; keine Leistungsseiten."
+    }
+  ],
+  "pruefumfang": [
+    "Wochenaudit mit vollem Prüfumfang gegen die neue Hauptdomain: Erreichbarkeit aller Varianten beider Domains, Weiterleitungen und Statuscodes, DNS (A, NS, SOA), robots.txt, sitemap.xml, 404-Verhalten, Antwort-Header, E-Mail-DNS (SPF, DMARC, DKIM, MX) beider Domains, Roh-HTML und gerenderter DOM der Startseite, Roh-HTML von /impressum, /datenschutz, /agb, /en und /uk mit onpage_check.py, Sprachvarianten der Rechtsseiten, die zehn festen Suchabfragen, eine Abfrage zum neuen Seitentitel und eine zur Firma. Vergleichsstand ist der Lauf freitag-1600 vom 09.10.2026.",
+    "Nicht prüfbar: Core Web Vitals aus Felddaten, das Google-Unternehmensprofil, Daten der Search Console, der Quellcode und das Cloudflare-Konto der neuen Website (nicht im Repository). Die Rechtstexte der neuen Seite wurden nicht geprüft; die Datenschutzerklärung nennt Cloudflare als Hoster mit Auftragsverarbeitungsvertrag. Laborwerte aus einem Rechenzentrum, nur als Größenordnung zu lesen."
+  ],
+  "befunde": [
+    {
+      "id": "B3",
+      "titel": "Keine eigenen Leistungsseiten",
+      "prioritaet": "hoch",
+      "entwicklung": "verbessert",
+      "beleg": "Die neue .de besteht aus einer Startseite in drei Sprachen (/, /en, /uk) plus Rechtsseiten und PDF-Lebensläufen; die Sitemap führt drei URLs. Die sechs Leistungen („Sechs Dinge, die wir übernehmen“) stehen als Abschnitte auf der Startseite, nicht als eigene URLs mit eigenem Title und eigener H1. Gegenüber dem Canva-Einseiter sind Sprachfassungen, Rechtsseiten und 13 interne Links neu.",
+      "empfehlung": "Je Kernleistung eine eigene Seite mit eigener URL, Title und H1: Betriebsanleitungen, CE-/UKCA-Konformität, Risikobeurteilung, Medizinprodukte (MDR/IVDR), Redaktionssysteme (ST4), Dokumentenprüfung, dazu eine Regionalseite Berlin-Brandenburg. Der Seitenplan mit Titles, Descriptions und Gliederung liegt fertig in seo-audit/massnahmen/2026-09-21-phase-2.md, Abschnitt 4, und als gebaute Vorlage in website/inhalt/.",
+      "kurz": "Startseite in drei Sprachen, aber keine Seite je Leistung; Seitenplan liegt fertig vor."
+    },
+    {
+      "id": "B4",
+      "titel": "Keine Sichtbarkeit für Kernbegriffe",
+      "prioritaet": "hoch",
+      "entwicklung": "unverändert",
+      "beleg": "Bei den vier Kernbegriff-Abfragen („Technische Dokumentation Teltow“, „Technische Dokumentation Potsdam Berlin Dienstleister“, „Technische Redaktion CE-Konformität Betriebsanleitung Dienstleister Berlin Brandenburg“, „Betriebsanleitung erstellen lassen Maschinenbau CE“) erscheint am 16.10.2026 kein eigener Treffer. Es ranken koenig-td.de (Berlin), technikdoc.de (Potsdam), d-und-a.de, mt-redaktion.de, ce-koordination.de, handbuch-experten.de, unique-doc.de, wiessneth.de, winklergmbh.de, cte-entwicklungen.de, ib-leimkuehler.de, dogrel.com und kerntecdoc.com, alle mit eigenen Leistungsseiten. Für Teltow erscheinen Bauaufsicht, OSZ und Branchenbuch.",
+      "empfehlung": "Folge von B3: Ohne eigene Seiten je Leistung gibt es keine Zuordnung zu diesen Begriffen. Zusätzlich jetzt: .com per 301 statt 302 auf die .de (B13) und die .de in der Search Console anmelden, damit der Index überhaupt auf die neue Seite wechselt."
+    },
+    {
+      "id": "B5",
+      "titel": "Marke „FSH“ ist mehrdeutig",
+      "prioritaet": "mittel",
+      "entwicklung": "verbessert",
+      "beleg": "„FSH documentation“ und die Phrase „FSH-Documentation“ liefern weiterhin FHIR Shorthand, FSH School und Hormon-Studien. Neu: Die .de trägt JSON-LD ProfessionalService mit Name, alternateName „FSH-Documentation“ und sameAs auf https://www.linkedin.com/company/fsh-documentation/; außerdem verlinkt sie das persönliche LinkedIn-Profil. freelance.de-Profil und Handelsregister-Auszug fehlen in sameAs.",
+      "empfehlung": "sameAs um https://www.freelance.de/Freelancer/269905-Geschaeftsfuehrer-FSH-Documentation und https://openregister.de/company/DE-HRB-G1312-37959 ergänzen; den vollen Namen mit Zusatz „Technische Redaktion“ in allen Profilen führen."
+    },
+    {
+      "id": "B6",
+      "titel": "Google-Unternehmensprofil fehlt",
+      "prioritaet": "mittel",
+      "entwicklung": "unverändert",
+      "beleg": "Handelsregister, Creditreform, freelance.de, Branchenbuch Teltow und unternehmen24.info nennen Adresse und Registernummer übereinstimmend; JSON-LD und Impressum der neuen Seite ebenfalls (Bäckerstraße 2d, +49 172 9795939). Ein Google-Unternehmensprofil war am 16.10.2026 in keiner Abfrage sichtbar.",
+      "empfehlung": "Profil anlegen oder beanspruchen, Website jetzt https://fsh-documentation.de/; Texte und Entscheidungen in website/google-und-email-dns.md, Abschnitt 2."
+    },
+    {
+      "id": "B12",
+      "titel": "E-Mail-Authentifizierung noch lückenhaft",
+      "prioritaet": "mittel",
+      "entwicklung": "verbessert",
+      "beleg": "DNS-Abfrage am 16.10.2026: fsh-documentation.de hat jetzt SPF „v=spf1 redirect=_spf.strato.com“ (STRATO-Vorlage; die Zielregel endet mit -all, also wirksam), DKIM und MX bei STRATO unverändert, DMARC weiterhin „v=DMARC1;p=reject;“ ohne rua. fsh-documentation.com: kein SPF, der frühere DMARC-Eintrag „p=none“ ist entfernt. Die Berichtsfreigabe fsh-documentation.com._report._dmarc.fsh-documentation.de fehlt. Die Zone der .de liegt seit dem Relaunch bei Cloudflare; Einträge im STRATO-DNS-Menü sind wirkungslos.",
+      "empfehlung": "Im Cloudflare-Konto (DNS → Records) für fsh-documentation.de: TXT _dmarc auf „v=DMARC1; p=reject; rua=mailto:niklas.heinzmann@fsh-documentation.de; fo=1“ ändern und TXT fsh-documentation.com._report._dmarc mit „v=DMARC1“ anlegen. Bei Canva für fsh-documentation.com: TXT @ „v=spf1 -all“ und TXT _dmarc „v=DMARC1; p=reject; rua=mailto:niklas.heinzmann@fsh-documentation.de“. Prüfung mit seo-audit/tools/mail_dns_check.py.",
+      "kurz": "SPF der .de gesetzt. Offen: DMARC-Berichtsadresse (.de, jetzt bei Cloudflare), SPF und DMARC der .com (bei Canva)."
+    },
+    {
+      "id": "B13",
+      "titel": "Weiterleitung .com → .de nur vorübergehend (302)",
+      "prioritaet": "mittel",
+      "entwicklung": "neu",
+      "beleg": "https://fsh-documentation.com/ antwortet am 16.10.2026 mit 302 und Location https://fsh-documentation.de/ (Server Cloudflare, A-Record 103.169.142.6, Zone bei Canva). Ein 302 signalisiert Suchmaschinen eine vorübergehende Umleitung; Google behält dann die .com als kanonische Adresse. Der Index zeigt entsprechend weiterhin nur die .com mit dem alten Titel.",
+      "empfehlung": "Die Weiterleitung bei Canva (Domains → fsh-documentation.com → Weiterleitung) auf „permanent“ (301) umstellen, Pfade mitnehmen. Danach in der Google Search Console die Property fsh-documentation.de anlegen, die Sitemap einreichen und für die .com-Property die Adressänderung melden. Erfolg prüfbar mit curl -sI https://fsh-documentation.com/ (erwartet 301).",
+      "kurz": "Die .com leitet mit 302 statt 301 weiter; Google bleibt deshalb bei der alten Adresse. Bei Canva auf permanent umstellen."
+    },
+    {
+      "id": "B14",
+      "titel": "Feinschliff der neuen Seite",
+      "prioritaet": "niedrig",
+      "entwicklung": "neu",
+      "beleg": "Title der Startseite 64 Zeichen (Richtwert 60), /uk 63 Zeichen; Description auf /en 163 Zeichen (Richtwert 160). Kein Strict-Transport-Security-Header (die alte Seite hatte HSTS). /en/agb antwortet 404, während /en/impressum und /en/datenschutz existieren; /agb trägt kein hreflang. Rechtsseiten fehlen in der Sitemap. Alt-Text des Logos nur „FSH-Documentation“.",
+      "empfehlung": "Title auf höchstens 60 Zeichen kürzen (zum Beispiel „Technische Redaktion, CE & Risikobeurteilung | FSH“ oder ohne „&“), EN-Description kürzen, HSTS in Cloudflare unter SSL/TLS → Edge Certificates aktivieren, englische AGB anlegen oder den Verweis entfernen, Rechtsseiten in die Sitemap aufnehmen."
+    },
+    {
+      "id": "B1",
+      "titel": "Zweitdomain .de zeigte eine Platzhalterseite",
+      "prioritaet": "hoch",
+      "entwicklung": "erledigt",
+      "beleg": "Seit dem Relaunch ist fsh-documentation.de die Hauptdomain mit Inhalt; www und http leiten per 301 auf https://fsh-documentation.de/. fsh-documentation.com leitet auf die .de (siehe B13 wegen des Statuscodes). Es gibt nur noch eine Domain mit Inhalt.",
+      "empfehlung": "Keine weitere Maßnahme außer B13."
+    },
+    {
+      "id": "B2",
+      "titel": "Seitentitel ohne Marke, Ort und Leistung",
+      "prioritaet": "hoch",
+      "entwicklung": "erledigt",
+      "beleg": "Title jetzt „Technische Redaktion, CE & Risikobeurteilung | FSH-Documentation“, Description „Technische Redaktion aus Teltow: Betriebsanleitungen, Risikobeurteilung, CE-Begleitung nach Maschinenverordnung und Dokumentenprüfung mit eigenem Prüfwerkzeug.“ (159 Zeichen). Marke, Leistungen und Ort sind genannt. Länge siehe B14.",
+      "empfehlung": "Erledigt."
+    },
+    {
+      "id": "B7",
+      "titel": "Keine Überschriften im Dokument",
+      "prioritaet": "mittel",
+      "entwicklung": "erledigt",
+      "beleg": "Die .de-Startseite hat genau eine H1 („Komplexe Technik auf den Punkt gebracht.“) und neun H2, im Roh-HTML ohne JavaScript.",
+      "empfehlung": "Erledigt."
+    },
+    {
+      "id": "B8",
+      "titel": "Bilder ohne Alt-Text",
+      "prioritaet": "niedrig",
+      "entwicklung": "erledigt",
+      "beleg": "Alle Bilder der .de tragen ein alt-Attribut; dekorative Grafiken haben einen leeren Alt-Text, das Logo „FSH-Documentation“. Das Prüfwerkzeug zählt leere Alt-Texte als fehlend (10 von 13), das ist hier beabsichtigt.",
+      "empfehlung": "Erledigt."
+    },
+    {
+      "id": "B9",
+      "titel": "Kein Canonical, keine strukturierten Daten",
+      "prioritaet": "mittel",
+      "entwicklung": "erledigt",
+      "beleg": "Canonical auf https://fsh-documentation.de/ und je Unterseite auf sich selbst; JSON-LD ProfessionalService mit Adresse, Telefon, E-Mail, USt-ID, Logo, Bild und sameAs; hreflang für de, en, uk und x-default; Open Graph mit og:url und og:image.",
+      "empfehlung": "Erledigt; sameAs-Ergänzung siehe B5."
+    },
+    {
+      "id": "B10",
+      "titel": "Seitengewicht und Ladezeit",
+      "prioritaet": "mittel",
+      "entwicklung": "erledigt",
+      "beleg": "19 Ressourcen mit 0,68 MB, HTML 40 KB übertragen; DOM fertig nach 0,9 s, Seite vollständig nach 1,5 s (Chromium aus dem Rechenzentrum). Vorher 58 Ressourcen, 3,1 MB, 5,2 s.",
+      "empfehlung": "Erledigt."
+    },
+    {
+      "id": "B11",
+      "titel": "robots.txt fehlt, Sitemap veraltet",
+      "prioritaet": "niedrig",
+      "entwicklung": "erledigt",
+      "beleg": "robots.txt vorhanden (Cloudflare-Vorlage: alle Suchmaschinen erlaubt, KI-Trainings-Crawler gesperrt, Sitemap-Verweis), sitemap.xml mit drei URLs, lastmod 07.10.2026 und hreflang-Verweisen.",
+      "empfehlung": "Erledigt; Rechtsseiten in die Sitemap aufnehmen (B14)."
+    }
+  ],
+  "massnahmen": [
+    {
+      "nr": 1,
+      "text": "Bei Canva die Weiterleitung fsh-documentation.com → https://fsh-documentation.de/ auf permanent (301) umstellen",
+      "prioritaet": "hoch",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 2,
+      "text": "Google Search Console: Property fsh-documentation.de anlegen, Sitemap einreichen, Adressänderung von der .com melden",
+      "prioritaet": "hoch",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 3,
+      "text": "Leistungsseiten anlegen (eine URL je Kernleistung plus Regionalseite) nach dem Seitenplan aus Phase 2",
+      "prioritaet": "hoch",
+      "aufwand": "mittel"
+    },
+    {
+      "nr": 4,
+      "text": "DNS der .de bei Cloudflare: DMARC mit rua, Berichtsfreigabe-TXT; DNS der .com bei Canva: SPF -all und DMARC p=reject wieder anlegen",
+      "prioritaet": "mittel",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 5,
+      "text": "Google-Unternehmensprofil anlegen oder beanspruchen, Website https://fsh-documentation.de/",
+      "prioritaet": "mittel",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 6,
+      "text": "sameAs um freelance.de-Profil und Handelsregister-Auszug ergänzen",
+      "prioritaet": "mittel",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 7,
+      "text": "Feinschliff: Title kürzen, EN-Description kürzen, HSTS in Cloudflare aktivieren, /en/agb anlegen oder Verweis entfernen, Rechtsseiten in die Sitemap",
+      "prioritaet": "niedrig",
+      "aufwand": "gering"
+    },
+    {
+      "nr": 8,
+      "text": "Quelle und Hosting-Zugang der neuen Website festhalten (Repository, Cloudflare-Konto), website/ und erledigen.md auf den neuen Stand bringen",
+      "prioritaet": "mittel",
+      "aufwand": "gering"
+    }
+  ],
+  "offene_pruefpunkte": [
+    {
+      "gruppe": "Technik",
+      "punkte": [
+        "Core Web Vitals aus Felddaten (Search Console, CrUX)",
+        "Quellcode und Build der neuen Website (nicht im Repository)"
+      ]
+    },
+    {
+      "gruppe": "Extern",
+      "punkte": [
+        "Google-Unternehmensprofil vorhanden?",
+        "Search Console: Property .de, Indexstatus, Adressänderung"
+      ]
+    },
+    {
+      "gruppe": "Rechtliches",
+      "punkte": [
+        "Impressum, Datenschutz (nennt Cloudflare mit AVV und STRATO) und AGB der neuen Seite nicht geprüft",
+        "Englische und ukrainische Rechtsseiten unvollständig (/en/agb 404)"
+      ]
+    }
+  ],
+  "dafuer_noetig": [
+    "Angabe, wo der Quellcode der neuen Website liegt und wer das Cloudflare-Konto verwaltet, damit Title, Leistungsseiten, HSTS und DNS geändert werden können.",
+    "Zugang zur Google Search Console für fsh-documentation.de und fsh-documentation.com.",
+    "Angabe, ob ein Google-Unternehmensprofil existiert.",
+    "Rechtstexte der neuen Seite durch den Betreiber oder einen Rechtsbeistand prüfen lassen."
+  ],
+  "quellen_hinweis": "Direkter Abruf beider Domains, Chromium-Rendering der .de, DNS-Abfragen über dns.google am 16. Oktober 2026 (07:43 Uhr), Websuche mit den zehn festen Abfragen, dem neuen Seitentitel und einer Abfrage zur Firma.",
+  "quellen": [
+    {
+      "text": "fsh-documentation.de",
+      "url": "https://fsh-documentation.de/",
+      "beschreibung": "Roh-HTML und gerenderter DOM der Startseite, /en, /uk, /impressum, /datenschutz, /agb, robots.txt, sitemap.xml, 404-Test, Antwort-Header"
+    },
+    {
+      "text": "fsh-documentation.com",
+      "url": "https://fsh-documentation.com/",
+      "beschreibung": "302 auf https://fsh-documentation.de/; robots.txt und sitemap.xml 404"
+    },
+    {
+      "text": "dns.google",
+      "url": "https://dns.google/resolve?name=fsh-documentation.de&type=NS",
+      "beschreibung": "A-, NS-, SOA- und TXT-Einträge beider Domains"
+    },
+    {
+      "text": "openregister.de",
+      "url": "https://openregister.de/company/DE-HRB-G1312-37959",
+      "beschreibung": "Handelsregister-Auszug"
+    },
+    {
+      "text": "freelance.de",
+      "url": "https://www.freelance.de/Freelancer/269905-Geschaeftsfuehrer-FSH-Documentation",
+      "beschreibung": "Profil"
+    },
+    {
+      "text": "linkedin.com",
+      "url": "https://www.linkedin.com/company/fsh-documentation/",
+      "beschreibung": "Firmenseite, als sameAs in der neuen Website"
+    },
+    {
+      "text": "Kernbegriff-Treffer: koenig-td.de, technikdoc.de, mt-redaktion.de, ce-koordination.de, handbuch-experten.de, ce-con.de, winklergmbh.de, kerntecdoc.com, dogrel.com, midok.de, reinisch.de, td-ce.de, syskon.com, e-kern.com, cte-entwicklungen.de"
+    },
+    {
+      "text": "Namenskollision: fshschool.org, github.com/HL7/fhir-shorthand, clinicaltrials.gov, en.wikipedia.org/wiki/FSH"
+    }
+  ],
+  "kurzfassung": {
+    "untertitel": "fsh-documentation.de · Wochenaudit 16.10.2026: Relaunch live, sieben Befunde erledigt, Weiterleitung und Index offen",
+    "befunde": [
+      "B13",
+      "B3",
+      "B4",
+      "B12"
+    ],
+    "naechste_schritte": [
+      {
+        "titel": "301 statt 302",
+        "text": "Weiterleitung der .com bei Canva auf permanent stellen, dann Search Console für die .de"
+      },
+      {
+        "titel": "Leistungsseiten",
+        "text": "Eine URL je Kernleistung nach dem Seitenplan aus Phase 2"
+      },
+      {
+        "titel": "DNS am richtigen Ort",
+        "text": ".de jetzt bei Cloudflare: DMARC-Berichtsadresse; .com bei Canva: SPF und DMARC"
+      }
+    ]
+  }
+}

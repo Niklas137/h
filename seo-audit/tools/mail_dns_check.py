@@ -4,6 +4,8 @@
 Aufruf:  python3 seo-audit/tools/mail_dns_check.py [--json]
 Quelle:  dns.google (DNS-over-HTTPS), keine lokale Auflösung nötig.
 Sollwerte: website/google-und-email-dns.md, Abschnitt 1. Exit-Code 0 = alles gesetzt, 1 = Abweichung.
+SPF der .de gilt auch mit der STRATO-Vorlage "v=spf1 redirect=_spf.strato.com" als gesetzt (Zielregel endet mit -all).
+Seit dem 16.10.2026 liegt die Zone der .de bei Cloudflare; Änderungen dort, nicht im STRATO-Menü.
 """
 import json
 import sys
@@ -14,7 +16,8 @@ RUA = "mailto:niklas.heinzmann@fsh-documentation.de"
 CHECKS = [
     # (Name, Typ, Beschreibung, Prüffunktion)
     ("fsh-documentation.de", "TXT", "SPF .de",
-     lambda v: any(x.startswith("v=spf1") and "include:_spf.strato.com" in x and x.rstrip().endswith("-all") for x in v)),
+     lambda v: any(x.startswith("v=spf1") and "_spf.strato.com" in x
+                   and (x.rstrip().endswith("-all") or "redirect=_spf.strato.com" in x) for x in v)),
     ("_dmarc.fsh-documentation.de", "TXT", "DMARC .de",
      lambda v: any("v=DMARC1" in x and "p=reject" in x.replace(" ", "") and RUA in x for x in v)),
     ("strato-dkim-0002._domainkey.fsh-documentation.de", "TXT", "DKIM .de (STRATO RSA)",
