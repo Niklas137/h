@@ -334,7 +334,7 @@ class Bau:
   </svg>
 </figure>"""
         klasse = " held-start" if seite_key == "start" else ""
-        return f"""<section class="held{klasse}"><div class="innen held-innen">
+        return f"""<section class="held{klasse}"><canvas id="szene3d" class="szene3d" aria-hidden="true"></canvas><div class="innen held-innen">
   <div class="held-text">
     <p class="kicker">{esc(s["kicker"])}</p>
     <h1>{frag(s["h1"])}</h1>
@@ -370,6 +370,7 @@ class Bau:
 </main>
 {self.fuss(sprache, pfad)}
 <script>{FUSS_SCRIPT}</script>
+<script src="{esc(self.link(pfad, "/assets/szene3d.js"))}" defer></script>
 </body>
 </html>
 """

@@ -224,6 +224,26 @@ main.recht .held-innen{padding-bottom:28px}
 h2,h3{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
 
 /* Ancola-Anmutung: weiches Glühen hinter dem Aufmacher, zurückhaltend */
-.held h1{text-shadow:0 0 36px rgba(85,144,100,.35)}
-.held::after{content:"";position:absolute;inset:-20%;pointer-events:none;z-index:0;background:radial-gradient(38% 55% at 72% 45%,rgba(85,144,100,.26),transparent 70%);filter:blur(14px)}
+
+
 .held-innen{z-index:1}
+
+/* 3D-Szene im Aufmacher */
+.szene3d{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;image-rendering:auto}
+.held{background:#050705}
+.held::before{opacity:.25;z-index:1}
+.held-innen{z-index:2}
+.held-start .held-innen{min-height:min(82vh,780px)}
+@media (min-width:900px){.held-start .held-innen{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}}
+.held-diagramm{opacity:.0;pointer-events:none}
+@media (min-width:900px){.held-diagramm{opacity:.0}}
+.seite-unter .held .szene3d{opacity:.55}
+.held h1{text-shadow:0 2px 18px rgba(0,0,0,.5)}
+
+/* Lesbarkeit über der 3D-Szene */
+.held-innen::before{content:"";position:absolute;inset:-40px -20px;z-index:-1;background:linear-gradient(90deg,rgba(5,7,5,.78) 0,rgba(5,7,5,.55) 45%,rgba(5,7,5,0) 70%);pointer-events:none}
+.held-innen{position:relative}
+@media (max-width:899px){.held-innen::before{background:linear-gradient(180deg,rgba(5,7,5,.82) 0,rgba(5,7,5,.6) 55%,rgba(5,7,5,0) 85%)}}
+.held::before{display:none}
+
+@media (max-width:899px){.held-start .held-innen{min-height:min(96vh,860px)}.held-start .held-text{padding-bottom:40vw}}

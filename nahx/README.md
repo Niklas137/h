@@ -70,12 +70,18 @@ Teil der SVG (für eine Claim-Fassung als Vektor fehlt ein Werkzeug, das Schrift
 
 ## Gestaltung
 
+**3D-Szene im Aufmacher** (`assets/szene3d.js`, WebGL ohne Bibliothek, Entscheidung 2026-10-25 „3D und
+realistisch“): Raymarching einer Distanzfunktion rendert das NAHX-A als extrudierten Körper mit abgerundeten
+Kanten, prozeduraler Oberfläche, Hauptlicht, Fresnel-Kantenglühen in der Markenfarbe, Lichtnebel, Vignette und
+Filmkorn. Reagiert sanft auf Maus und Scrollen, rendert in reduzierter Auflösung (0,8 Desktop, 0,6 Handy),
+pausiert außerhalb des Bildes und bei verborgenem Tab; ohne WebGL entfällt sie, bei `prefers-reduced-motion`
+steht ein Standbild. Das frühere statische Diagramm ist im Markup noch vorhanden, aber ausgeblendet.
+
+
 Farben aus der Ancola-Vorlage gemessen (Entscheidung 2026-10-25): Schwarz mit Grünstich `#050705`, Flächen `#0D1410`,
 Akzent Grün `#559064` (Buttons) und Glühkante `#B2EEC9` (Links, Kicker, A der Wortmarke), Text cremeweiß `#FDFAF4` und
 Hellgrau `#B4C0B6`; dazu ein weiches grünes Glühen hinter dem Aufmacher. Outfit für Überschriften (frei lizenzierte Alternative zur kommerziellen Ancola, Entscheidung 2026-10-25), Source Sans 3 für Text. Dezentes Raster im
-Aufmacher, ein statisches Diagramm der drei Bereiche, Linien-Piktogramme. Einzige Bewegung: Inhalte blenden beim
-ersten Erscheinen einmal weich ein; bei `prefers-reduced-motion` gar nicht. Keine Dauer-Animationen, kein Glühen,
-kein Korn.
+Aufmacher, ein statisches Diagramm der drei Bereiche, Linien-Piktogramme. Inhalte blenden beim ersten Erscheinen einmal weich ein; bei `prefers-reduced-motion` gar nicht.
 
 ## Platzhalter und offene Punkte
 
