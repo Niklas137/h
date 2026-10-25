@@ -484,7 +484,7 @@ WORTMARKE = (
     '<svg class="wortmarke" viewBox="-8 0 300 100" aria-hidden="true" focusable="false">'
     '<g fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter">'
     '<path class="zug" style="--i:0" d="M7 90V10l42 80V10"/><path class="zug" style="--i:2" d="M159 10v80M201 10v80M159 50h42"/><path class="zug" style="--i:3" d="M228 10l56 80M284 10l-56 80"/></g>'
-    '<g fill="none" stroke="var(--accent-2,#22B8E0)" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path class="zug" style="--i:1" d="M76 90l28-80 28 80M90 62h28"/></g></svg>'
+    '<g fill="none" stroke="var(--accent-2,#B2EEC9)" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path class="zug" style="--i:1" d="M76 90l28-80 28 80M90 62h28"/></g></svg>'
 )
 
 KOPF_SCRIPT = (
@@ -643,11 +643,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--noindex", action="store_true", help="Testbetrieb: alle Seiten noindex, robots.txt sperrt, keine Sitemap")
     ap.add_argument("--basis-url", default=None, help="Basis-URL für Canonical, hreflang, Sitemap")
     ap.add_argument("--ausgabe", default=None, help="Zielordner (Standard: nahx/dist)")
-    ap.add_argument("--palette", default="", help="Farbwelt: bernstein, violett, lime, indigo (leer = Cyan)")
     args = ap.parse_args(argv)
 
     site = lade(INHALT / "site.json")
-    bau = Bau(site, args.basis_url or site["basis_url"], args.relativ, args.noindex, Path(args.ausgabe or STANDARD_AUSGABE), args.palette)
+    bau = Bau(site, args.basis_url or site["basis_url"], args.relativ, args.noindex, Path(args.ausgabe or STANDARD_AUSGABE))
     seiten = bau.bauen()
     print(f"{len(seiten)} Seiten nach {bau.ausgabe} gebaut ({'relativ' if bau.relativ else 'site-absolut'}, Basis {bau.basis_url}).")
     if args.pruefen:

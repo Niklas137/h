@@ -72,12 +72,17 @@ erscheinen sofort. Pixeldichte ist auf 1,5 begrenzt, bei verborgenem Tab pausier
 
 ## Marke und Logo
 
-Die Wortmarke „NAHX“ besteht aus vier geometrischen Buchstaben als SVG-Pfade (kein Schriftbedarf), das A in
-Cyan `#22B8E0`, die übrigen Buchstaben in `currentColor`. Im Seitenkopf und in der Fußzeile wird sie inline
-ausgegeben (`WORTMARKE` in `build.py`), damit sie im hellen und dunklen Schema mitfärbt; der Kopf ist fest
-dunkel. `assets/img/nahx-wortmarke.svg` ist die eigenständige helle Fassung für dunklen Grund. Favicon ist
-das cyanblaue A auf Dunkelblau; PNG, ICO und Open-Graph-Bild wurden daraus gerendert. Der Zusatz
-„Technologies“ steht als Text in Poppins daneben und wird unter 1100 px ausgeblendet.
+Farbwelt **„Smaragd“** (Entscheidung Niklas 2026-10-25), gemessen aus einer gespeicherten Vorlage: Hintergrund
+Schwarz mit Grünstich `#050705`, Glühen `#3B6A45` bis `#559064` (Akzent, Buttons), Glühkante `#B2EEC9`
+(Lichtpunkte, Kicker, A der Wortmarke), Schrift cremeweiß `#FDFAF4`. Dazu gehören ein weiches grünes Glühen
+hinter Überschriften und ein feines Filmkorn über der Seite (eingebettete SVG-Rauschtextur). Alle Werte stehen als
+Tokens in `:root` von `assets/site.css`; die Canvas-Animation liest sie über `--akzent-rgb`, `--punkt-rgb` und
+`--welt-*-rgb`. Das helle Schema (Schalter auf Unterseiten) ist dieselbe Welt invertiert.
+
+Die Wortmarke „NAHX“ besteht aus vier geometrischen Buchstaben als SVG-Pfade (kein Schriftbedarf), das A in der
+Glühkante `#B2EEC9`, die übrigen Buchstaben in `currentColor`. Im Seitenkopf und in der Fußzeile wird sie inline
+ausgegeben (`WORTMARKE` in `build.py`) und zeichnet sich beim Laden. `assets/img/nahx-wortmarke.svg` ist die
+eigenständige helle Fassung. Favicon ist das A auf `#050705`; PNG, ICO und Open-Graph-Bild wurden daraus gerendert.
 
 ## Platzhalter und offene Entscheidungen
 
