@@ -13,7 +13,7 @@ Abhängigkeiten, fertige Dateien in `dist/`. Kein externes Skript, keine externe
 | `inhalt/site.json` | gemeinsame Daten: Name, Basis-URL, Sprachen mit Wurzelpfad, Reihenfolge der Seiten |
 | `inhalt/de.json`, `inhalt/en.json` | alle Texte je Sprache, gleiche Seitenschlüssel (`start`, `leistungen`, `projekte`, `ueber-mich`, `zusammenarbeit`, `kontakt`, `impressum`, `datenschutz`) |
 | `assets/site.css` | Stylesheet, dunkel als Standard, hell per Schalter (nicht auf der Startseite) |
-| `assets/welt.js` | Live-Animation der Startseite (Canvas, Szenen-Kamera, Schreibmaschine) |
+| `assets/welt.js` | Live-Animation „Aus Komplexität wird Struktur“ (Canvas, Szenen-Kamera, Schreibmaschine), auf allen Seiten |
 | `assets/fonts/` | Poppins und Source Sans 3 als WOFF2 (SIL Open Font License, Lizenztexte liegen dabei) |
 | `assets/img/` | `nahx-wortmarke.svg` (helle Wortmarke, Buchstaben als Pfade, A in Cyan `#22B8E0`), `favicon.svg`, `favicon.ico` (32/16 px), `apple-touch-icon.png` (180 px), `icon-512.png`, `og-nahx.jpg` (1200 × 630) |
 | `dist/` | **fertige Website zum Hochladen** (wird von `build.py` komplett neu erzeugt) |
@@ -51,21 +51,24 @@ führt auf dieselbe Seite in der anderen Sprache. Die Farbschema-Wahl wird nur l
 
 ## Gestaltung und Bewegung
 
-Die Startseite ist eine Scroll-Inszenierung nach dem Vorbild der gespeicherten Beispiele vom 2026-10-25: eine
-**Live-Animation auf Canvas** (`assets/welt.js`, ohne Bibliotheken) läuft dauerhaft hinter sechs Vollbild-Szenen.
-Gravierte Zahnräder, ein Ring-Tunnel und Wellenlinien in Cyan auf Schwarz drehen sich aus eigener Kraft und
-zusätzlich mit dem Scrollen; jede Szene hat eine Kamera (`data-zoom`, `data-rot`, `data-x/y`, `data-tunnel`,
-`data-wellen`, `data-hell`), zwischen den Szenen wird weich überblendet. Texte tippen sich Satz für Satz mit Cursor,
-sobald die Szene im Bild ist. Die letzte Szene wird hell (Kontakt mit E-Mail), Kopf und Text färben über `--welt-hell`
-mit. Navigation ist auf drei Ziele reduziert, kein Button im Kopf.
+Motiv **„Aus Komplexität wird Struktur“**, abgeleitet aus dem Claim: Eine **Live-Animation auf Canvas**
+(`assets/welt.js`, ohne Bibliotheken) zeigt ein Feld aus Lichtpunkten und Leiterbahnen. Zu Beginn liegen die
+Punkte chaotisch und sind lose verbunden; beim Scrollen ordnen sie sich zu einem klaren Raster, Signale laufen als
+Lichtimpulse über die Bahnen, Lötpunkte bekommen Ringe. Zu den Leistungen bündelt sich das Feld in drei leuchtende
+Knoten mit Umlaufbahn, zum Ablauf laufen Signale auf waagerechten Bahnen, der Schluss wird hell (Kontakt). Das Bild
+ist deterministisch (fester Zufalls-Seed), läuft dauerhaft und reagiert zusätzlich auf das Scrollen.
 
-Szenen in `build.py` (`start_main`): Aufmacher · Einleitung im Tunnel · drei Leistungs-Ringe · Ablauf auf Wellen ·
-Projekte als Zeilen · heller Kontakt-Schluss. Die Inhalte kommen unverändert aus `start.json`-Abschnitten in
-`de.json`/`en.json`. Unterseiten teilen Kopf, Fußzeile und Typografie, ohne Kästen (Linien statt Karten), mit
-getippter Kicker-Zeile und Wort-für-Wort-Überschrift.
+Startseite: sechs Vollbild-Szenen (`start_main` in `build.py`), jede mit Kamera über `data-zoom`, `data-rot`,
+`data-x/y`, `data-ordnung` (0 = Chaos, 1 = Raster), `data-hubs`, `data-fluss`, `data-hell`; zwischen den Szenen wird
+weich überblendet, die Aufhellung folgt dem Hereinrollen der Kontakt-Szene. Texte tippen sich Satz für Satz mit
+Cursor, sobald die Szene im Bild ist. Kopf und Text färben über `--welt-hell` mit. Navigation auf drei Ziele reduziert.
 
-Bei `prefers-reduced-motion` steht die Animation still (ein Standbild, das nur beim Scrollen neu gezeichnet wird),
-Texte erscheinen sofort. Pixeldichte ist auf 1,5 begrenzt, bei verborgenem Tab pausiert die Zeichenschleife.
+Unterseiten: dieselbe Animation als ruhige, geordnete Fassung hinter dem Inhalt (Kamera aus Vorgabewerten in
+`welt.js`, halbe Deckkraft), Inhalt auf leicht abgedunkeltem Verlauf, Linien statt Kästen, Knoten-Ikonen,
+getippte Kicker-Zeile und Wort-für-Wort-Überschrift. Die Inhalte kommen unverändert aus `de.json`/`en.json`.
+
+Bei `prefers-reduced-motion` steht die Animation still (Standbild, nur beim Scrollen neu gezeichnet), Texte
+erscheinen sofort. Pixeldichte ist auf 1,5 begrenzt, bei verborgenem Tab pausiert die Zeichenschleife.
 
 ## Marke und Logo
 

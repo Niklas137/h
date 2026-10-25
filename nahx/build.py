@@ -55,45 +55,15 @@ def lade(pfad: Path) -> dict:
 import math
 
 
-def zahnrad(cx: float, cy: float, r: float, zaehne: int, klasse: str, dauer: int, rueckwaerts: bool = False) -> str:
-    """Zahnrad als SVG-Gruppe: Zahnkranz als Polygon, dazu gravierte Ringe und Speichen. Dreht per CSS."""
-    aussen, innen = r, r * 0.84
-    pts = []
-    for i in range(zaehne * 4):
-        w = 2 * math.pi * i / (zaehne * 4)
-        rad = aussen if i % 4 in (0, 1) else innen
-        pts.append(f"{cx + rad * math.cos(w):.1f},{cy + rad * math.sin(w):.1f}")
-    speichen = "".join(
-        f'<line x1="{cx + r*0.22*math.cos(w):.1f}" y1="{cy + r*0.22*math.sin(w):.1f}" x2="{cx + r*0.62*math.cos(w):.1f}" y2="{cy + r*0.62*math.sin(w):.1f}"/>'
-        for w in [2 * math.pi * k / 6 for k in range(6)]
-    )
-    return (
-        f'<g class="zahnrad {klasse}" style="--dauer:{dauer}s;--richtung:{"reverse" if rueckwaerts else "normal"};transform-origin:{cx}px {cy}px">'
-        f'<polygon points="{" ".join(pts)}"/>'
-        f'<circle cx="{cx}" cy="{cy}" r="{r*0.72:.1f}" class="gravur"/>'
-        f'<circle cx="{cx}" cy="{cy}" r="{r*0.64:.1f}" class="gravur fein"/>'
-        f'<circle cx="{cx}" cy="{cy}" r="{r*0.2:.1f}"/>'
-        f'<g class="speichen">{speichen}</g></g>'
-    )
-
-
-def buehne() -> str:
-    """Zahnradgruppe hinter dem Aufmacher (rein dekorativ, dreht sich mit dem Scrollen weiter)."""
-    return (
-        '<svg class="buehne" viewBox="0 0 600 600" aria-hidden="true" focusable="false">'
-        + zahnrad(360, 300, 190, 24, "z1", 60)
-        + zahnrad(135, 150, 92, 14, "z2", 36, True)
-        + zahnrad(150, 470, 70, 11, "z3", 28, True)
-        + "</svg>"
-    )
-
-
 def ring(nr: int) -> str:
-    """Kleiner Zahnrad-Ring als Ikone für die Leistungskarten."""
+    """Knoten-Ikone: Kern, Umlaufbahn und Satellit (ersetzt das frühere Zahnrad)."""
+    w = [0.6, 2.7, 4.6][nr % 3]
+    sx, sy = 50 + 38 * math.cos(w), 50 + 38 * math.sin(w)
     return (
         '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false">'
-        + zahnrad(50, 50, 44, 12 + nr * 2, f"r{nr}", 40 + nr * 8, nr % 2 == 1)
-        + "</svg>"
+        f'<g class="knoten" style="--dauer:{26 + nr * 6}s"><circle cx="50" cy="50" r="38" class="bahn"/>'
+        f'<circle cx="{sx:.1f}" cy="{sy:.1f}" r="3.5" class="satellit"/></g>'
+        '<circle cx="50" cy="50" r="22" class="kern"/><circle cx="50" cy="50" r="5" class="mitte"/></svg>'
     )
 
 
@@ -303,38 +273,38 @@ class Bau:
         weiter = ui.get("weiter", "Scrollen")
         return f"""<canvas id="welt" aria-hidden="true"></canvas>
 <main id="inhalt" class="start">
-  <section class="szene szene-held" data-zoom="1" data-x="0.64" data-y="0.5">
+  <section class="szene szene-held" data-zoom="1.1" data-x="0.5" data-y="0.5" data-ordnung="0.05">
     <div class="szene-innen">
       <p class="kicker tippe" data-text="{esc(s["kicker"])}">{esc(s["kicker"])}</p>
       <h1>{self.tippe(self.saetze(s["h1"]), "zeile")}</h1>
       <p class="weiter" aria-hidden="true">{esc(weiter)}<span class="pfeil"></span></p>
     </div>
   </section>
-  <section class="szene szene-tunnel" data-zoom="1.4" data-x="0.5" data-y="0.5" data-tunnel="1" data-rot="0.4">
+  <section class="szene szene-tunnel" data-zoom="1.3" data-x="0.5" data-y="0.45" data-ordnung="0.55" data-rot="0.08">
     <div class="szene-innen"><p class="satz">{self.tippe(self.saetze(s["einleitung"]))}</p></div>
   </section>
-  <section class="szene szene-ringe" id="{esc(leistungen.get("id", "leistungen"))}" data-zoom="0.75" data-x="0.5" data-y="0.62" data-rot="0.9" data-dichte="1.5">
+  <section class="szene szene-ringe" id="{esc(leistungen.get("id", "leistungen"))}" data-zoom="1" data-x="0.5" data-y="0.5" data-ordnung="0.9" data-hubs="1">
     <div class="szene-innen breit">
       <h2 class="tippe" data-text="{esc(leistungen["h2"])}">{esc(leistungen["h2"])}</h2>
       <ul class="ringe">{ringe}</ul>
       <p class="mehr-zeile"><a href="{esc(self.link(pfad, self.pfad(sprache, "leistungen")))}">{esc(t["seiten"]["leistungen"]["menue"])} →</a></p>
     </div>
   </section>
-  <section class="szene szene-ablauf" id="{esc(schritte.get("id", "ablauf"))}" data-zoom="2.2" data-x="0.15" data-y="0.2" data-wellen="1" data-rot="-0.5">
+  <section class="szene szene-ablauf" id="{esc(schritte.get("id", "ablauf"))}" data-zoom="1.2" data-x="0.5" data-y="0.5" data-ordnung="1" data-fluss="1">
     <div class="szene-innen breit">
       <h2 class="tippe" data-text="{esc(schritte["h2"])}">{esc(schritte["h2"])}</h2>
       <p class="satz klein-satz">{frag(schritte["text"])}</p>
       <ol class="ablauf">{schritt_html}</ol>
     </div>
   </section>
-  <section class="szene szene-projekte" id="{esc(projekte.get("id", "projekte"))}" data-zoom="1.1" data-x="0.85" data-y="0.5" data-rot="1.6" data-wellen="0.4">
+  <section class="szene szene-projekte" id="{esc(projekte.get("id", "projekte"))}" data-zoom="1.6" data-x="0.2" data-y="0.5" data-ordnung="1" data-rot="0.2">
     <div class="szene-innen breit">
       <h2 class="tippe" data-text="{esc(projekte["h2"])}">{esc(projekte["h2"])}</h2>
       <ul class="projekte">{projekt_html}</ul>
       <p class="mehr-zeile">{frag(projekte.get("hinweis", ""))} <a href="{esc(self.link(pfad, self.pfad(sprache, "projekte")))}">{esc(projekte["link"]["text"])} →</a></p>
     </div>
   </section>
-  <section class="szene szene-kontakt" id="{esc(band.get("id", "kontakt"))}" data-zoom="0.9" data-x="0.5" data-y="0.5" data-hell="1" data-rot="2.4">
+  <section class="szene szene-kontakt" id="{esc(band.get("id", "kontakt"))}" data-zoom="1" data-x="0.5" data-y="0.5" data-ordnung="1" data-hell="1">
     <div class="szene-innen">
       <h2 class="tippe" data-text="{esc(band["h2"])}">{esc(band["h2"])}</h2>
       <p class="satz">{frag(band["text"])}</p>
@@ -371,7 +341,9 @@ class Bau:
             hauptteil = self.start_main(sprache, pfad)
             welt = f'<script src="{esc(self.link(pfad, "/assets/welt.js"))}" defer></script>'
         else:
-            hauptteil = f"""<main id="inhalt" class="{hauptklasse}">
+            welt = f'<script src="{esc(self.link(pfad, "/assets/welt.js"))}" defer></script>'
+            hauptteil = f"""<canvas id="welt" aria-hidden="true"></canvas>
+<main id="inhalt" class="{hauptklasse}">
   <section class="held">
     <div class="innen held-innen">
       <p class="kicker tipp" data-text="{esc(s["kicker"])}">{esc(s["kicker"])}</p>
@@ -382,7 +354,6 @@ class Bau:
   </section>
   {abschnitte}
 </main>"""
-            welt = ""
         json_ld = {
             "@context": "https://schema.org",
             "@type": "WebPage",

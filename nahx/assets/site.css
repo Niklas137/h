@@ -88,20 +88,13 @@ img,svg{max-width:100%;height:auto;display:block}
 
 /* Held mit Zahnrad-Bühne */
 .held{position:relative;overflow:hidden;padding-top:56px;padding-bottom:40px;isolation:isolate}
-.held::before{content:"";position:absolute;inset:-40%;z-index:-2;background:
+.held::before{content:"";position:absolute;inset:-40%;z-index:-2;display:none;background:
   radial-gradient(60% 50% at 70% 40%,var(--glow),transparent 70%),
   radial-gradient(40% 40% at 20% 80%,rgba(34,184,224,.12),transparent 70%);
   animation:verlauf 18s ease-in-out infinite alternate}
 .held-innen{display:flex;flex-direction:column;gap:20px;position:relative}
 .held-innen>*{max-width:760px}
 @media (min-width: 900px){.held{padding-top:96px;padding-bottom:72px;min-height:min(78vh,760px);display:flex;align-items:center}.held-innen{width:100%}}
-.buehne{position:absolute;z-index:-1;right:-12%;top:50%;width:min(70vw,640px);height:auto;transform:translateY(-50%) rotate(calc(var(--scroll,0)*.08deg));opacity:.55;pointer-events:none}
-@media (max-width: 899px){.buehne{right:-45%;width:120vw;opacity:.28}}
-.zahnrad{fill:none;stroke:var(--accent-2);stroke-width:1.6;animation:drehen var(--dauer,40s) linear infinite var(--richtung,normal)}
-.zahnrad polygon{fill:rgba(34,184,224,.05);stroke-width:1.8}
-.zahnrad .gravur{stroke:var(--gravur);stroke-dasharray:3 5}
-.zahnrad .fein{stroke-dasharray:1 3;stroke-width:1}
-.zahnrad .speichen{stroke-width:1.2;opacity:.8}
 .kicker{font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-2);min-height:1.5em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 .tipp.tippt::after{content:"";display:inline-block;width:.55em;height:1.05em;margin-left:2px;vertical-align:-.15em;background:var(--accent-2);animation:blinken .9s steps(2) infinite}
 h1 .wort{display:inline-block;opacity:0;transform:translateY(.4em);animation:wort .6s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(.35s + var(--i,0)*.11s)}
@@ -124,11 +117,10 @@ html:not(.js) .reveal{opacity:1;transform:none}
 @keyframes zeichnen{to{stroke-dashoffset:0}}
 .wortmarke .zug{stroke-dasharray:420;stroke-dashoffset:420;animation:zeichnen 1.1s ease-out forwards;animation-delay:calc(var(--i,0)*.18s)}
 @media (prefers-reduced-motion: reduce){
-  .zahnrad,.held::before{animation:none}
+  .held::before,.knoten{animation:none}
   h1 .wort{opacity:1;transform:none;animation:none}
   .reveal{opacity:1;transform:none;transition:none}
   .wortmarke .zug{stroke-dashoffset:0;animation:none}
-  .buehne{transform:translateY(-50%)}
 }
 
 /* Karten, Raster */
@@ -137,8 +129,7 @@ html:not(.js) .reveal{opacity:1;transform:none}
 .karte{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px;display:flex;flex-direction:column;gap:10px;position:relative;transition:border-color .3s,box-shadow .3s,transform .3s}
 .karte:hover{border-color:var(--accent-2);box-shadow:0 0 0 1px var(--accent-2) inset,0 18px 40px -20px var(--glow);transform:translateY(-3px)}
 .karte .ring{width:60px;height:60px;margin-bottom:8px;overflow:visible;filter:drop-shadow(0 0 6px var(--glow))}
-.karte .ring .zahnrad{stroke-width:2.4}
-.karte .ring polygon{fill:rgba(34,184,224,.1)}
+
 .karte p{font-size:16px;line-height:1.5}
 .karte h2{font-size:22px}
 .karte ul{display:flex;flex-direction:column;gap:6px;font-size:16px}
@@ -250,8 +241,6 @@ html:not(.js) .szene-innen{opacity:1;transform:none}
 .szene.an .ringkachel{opacity:1;transform:none}
 .ringbild{width:min(44vw,210px);aspect-ratio:1;display:grid;place-items:center;position:relative}
 .ringbild .ring{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 14px rgba(34,184,224,.45))}
-.ringbild .ring .zahnrad{stroke-width:1.6}
-.ringbild .ring polygon{fill:rgba(7,12,18,.55)}
 .ringkachel h3{font-size:15px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;margin-top:-54%;position:relative;z-index:1;padding:0 12px}
 .ringkachel p{font-size:15px;color:var(--welt-muted);max-width:260px;margin-top:38%}
 @media (max-width:899px){.ringkachel h3{margin-top:-52%}.ringkachel p{margin-top:36%}}
@@ -295,3 +284,23 @@ html:not(.js) .szene-innen{opacity:1;transform:none}
 .seite-unter .kicker{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 :root[data-theme="light"] .seite-unter .karte,:root[data-theme="light"] .seite-unter .schritte li{border-top-color:rgba(10,127,163,.35)}
 @media (prefers-reduced-motion: reduce){.weiter .pfeil{animation:none}.szene-innen,.ringkachel,.ablauf li{opacity:1;transform:none;transition:none}}
+
+/* ===================== Knoten-Ikone und Canvas auf Unterseiten ===================== */
+.ring{fill:none;stroke:var(--accent-2)}
+.ring .knoten{transform-origin:50px 50px;animation:drehen var(--dauer,30s) linear infinite}
+.ring .bahn{stroke-width:1;stroke-dasharray:3 5;opacity:.8}
+.ring .satellit{fill:#EEF1EF;stroke:none}
+.ring .kern{stroke-width:1.6;fill:rgba(34,184,224,.08)}
+.ring .mitte{fill:var(--accent-2);stroke:none}
+.ringbild .ring{filter:drop-shadow(0 0 16px rgba(34,184,224,.5))}
+.ringbild .ring .kern{fill:rgba(7,12,18,.6)}
+.ringkachel h3{margin-top:-54%}
+.seite-unter{background:#070C12}
+.seite-unter #welt{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block}
+.seite-unter .kopf,.seite-unter .fortschritt{position:sticky;z-index:30}
+.seite-unter main,.seite-unter .fuss{position:relative;z-index:1}
+.seite-unter .kopf{background:color-mix(in srgb,var(--kopf) 70%,transparent)}
+.seite-unter .fuss{background:color-mix(in srgb,var(--band) 85%,transparent)}
+.seite-unter main{background:linear-gradient(180deg,transparent 0,transparent 240px,color-mix(in srgb,var(--bg) 78%,transparent) 520px,color-mix(in srgb,var(--bg) 86%,transparent) 100%)}
+:root[data-theme="light"] .seite-unter{background:#F6F5F2}
+:root[data-theme="light"] .seite-unter #welt{opacity:.35}
