@@ -288,6 +288,38 @@
           }
         },
         {
+          "typ": "stack",
+          "id": "werkzeuge",
+          "h2": "Womit ich arbeite",
+          "text": "Keine Technologieliste zum Beeindrucken, sondern das, was in den Projekten tatsächlich im Einsatz ist.",
+          "gruppen": [
+            {
+              "h3": "Sprachen und Laufzeit",
+              "punkte": [
+                "Python (FastAPI, Standardbibliothek, pytest)",
+                "JavaScript ohne Framework, HTML, CSS, SVG",
+                "Shell (zsh), AppleScript, launchd"
+              ]
+            },
+            {
+              "h3": "Dokumente und Daten",
+              "punkte": [
+                "Word und PDF auslesen (python-docx, pdfplumber), PDF-Berichte (ReportLab, Chromium)",
+                "JSON als Inhalts- und Regelformat mit Validierung",
+                "Markdown und Git für Protokolle, Wissen und Versionen"
+              ]
+            },
+            {
+              "h3": "Prüfen und Automatisieren",
+              "punkte": [
+                "Playwright/Chromium für Darstellungs-, Link- und Renderprüfungen",
+                "GitHub Actions für Bau und Veröffentlichung",
+                "Claude Code als Arbeitsoberfläche, lokale Modelle über Ollama, wenn Daten das Haus nicht verlassen dürfen"
+              ]
+            }
+          ]
+        },
+        {
           "typ": "band",
           "h2": "Nicht jede Aufgabe benötigt eine neue Software.",
           "text": "Ich prüfe gemeinsam mit dir, welche Lösung zum tatsächlichen Bedarf passt.",
@@ -312,34 +344,89 @@
           "typ": "projektliste",
           "projekte": [
             {
-              "titel": "DocumentCheck & ComplianceCheck",
+              "titel": "Dokumentenprüfer: Vorprüfung technischer Dokumente",
               "bereich": "Technical Documentation · Software",
-              "ausgang": "Technische Dokumentation muss gegen Normen und Checklisten geprüft werden; das geschieht oft manuell und uneinheitlich.",
-              "herausforderung": "Prüfungen nachvollziehbar, wiederholbar und als Bericht dokumentiert machen.",
-              "beitrag": "Mitarbeit an Konzeption und Weiterentwicklung digitaler Prüfwerkzeuge.",
-              "ansatz": "Regelbasierte Prüfung mit nachvollziehbarem Prüfbericht; Rollen und Rechte sind mit FSH Documentation abgegrenzt.",
-              "technologien": "Angaben folgen nach Freigabe.",
-              "status": "In Abstimmung: Produktrechte und Zuordnung werden mit FSH Documentation geklärt. Bis dahin keine weiteren Details, keine Screenshots."
+              "kurz": "Web-App, die Word- und PDF-Dokumente gegen Regelsätze prüft und Berichte in vier Sprachen erzeugt.",
+              "ausgang": "Technische Dokumentation muss gegen Basisanforderungen, DIN EN IEC/IEEE 82079-1 und CE-Konformitätsvorgaben geprüft werden. Das geschah manuell, mit Checklisten und je nach Prüfer unterschiedlich.",
+              "herausforderung": "Eine Vorprüfung, die wiederholbar ist, Fundstellen nennt, mehrere Benutzer mit eigenen Einstellungen trägt und Berichte liefert, die Kunden in ihrer Sprache lesen können.",
+              "beitrag": "Konzeption und Entwicklung der Web-App in Zusammenarbeit mit FSH Documentation: Architektur, Prüflogik, Konten und Rollen, Berichte, Tests, Betriebsanleitung für den Mac.",
+              "ansatz": "Regelsätze als prüfbare JSON-Dateien (24 Regeln mit Bereich, Gewichtung, Empfehlung in de/en/uk/ru), Schlüsselwortsuche mit Score und Ampel, abwählbare Prüfpunkte je Konto, Berichte als PDF. Fachliche Prüfung und Freigabe bleiben ausdrücklich beim Menschen; jeder Bericht sagt das.",
+              "technologien": "Python, FastAPI, Uvicorn, SQLite, python-docx, pdfplumber, ReportLab, Argon2 für Passwörter, pytest; Oberfläche ohne Framework.",
+              "status": "Lauffähig mit Testabdeckung (Konten, Prüfung, Sprachen, Kommandozeile). Produktrechte und Übergabe sind mit FSH Documentation in Abstimmung; deshalb keine Screenshots und kein Zugang.",
+              "ablauf": [
+                "Dokument hochladen",
+                "Regelsätze wählen",
+                "Prüfung mit Fundstellen",
+                "Bericht als PDF (de/en/uk/ru)"
+              ]
             },
             {
-              "titel": "Individuelle Webanwendungen",
+              "titel": "Kader-Manager für eine Vereinswebsite",
               "bereich": "Software & Web Applications",
-              "ausgang": "Interne Abläufe laufen über Tabellen und E-Mails.",
-              "herausforderung": "Informationen strukturieren, Zustände nachvollziehbar machen, wiederkehrende Aufgaben vereinfachen.",
-              "beitrag": "Konzeption und Umsetzung.",
-              "ansatz": "Kleine, zweckgebundene Anwendungen statt großer Plattformen.",
-              "technologien": "Angaben folgen nach Freigabe.",
-              "status": "Beschreibungen einzelner Vorhaben folgen, sobald Vertraulichkeit und Freigabe geklärt sind."
+              "kurz": "Einhängbares Web-Modul mit Spielerkarten, Trikot-Animation und Admin-Pflege, ohne Bibliotheken.",
+              "ausgang": "Ein Floorball-Verein wollte seinen Kader auf der Website zeigen: Trikots an der Stange, Spielerkarte mit Daten, Pflege ohne Programmierkenntnisse.",
+              "herausforderung": "Eine Animation nach Videoreferenz, die auf dem Handy läuft, Daten, die der Verein selbst pflegt, und eine zweisprachige Oberfläche (Deutsch, Ukrainisch).",
+              "beitrag": "Konzeption, Umsetzung, Datenmodell, Admin-Seite, Veröffentlichungsschnittstelle, Prüfbericht mit Befundstatus und Übergabenotiz für den Einbau.",
+              "ansatz": "Reines HTML, CSS und JavaScript ohne Build-Schritt; alle Daten in einer JSON-Datei mit Validierung (Pflichtfelder, eindeutige IDs); Trikots als generierte SVG; Animation nur über transform und opacity mit Rücksicht auf prefers-reduced-motion; kleiner Python-Server mit tokengeschütztem Veröffentlichen und Foto-Upload.",
+              "technologien": "HTML, CSS, JavaScript (ohne Framework), JSON, SVG, Python-Standardbibliothek für den Server, Oswald (OFL) für den Trikotaufdruck.",
+              "status": "Modul fertig und geprüft (Prüfbericht vom 08.10.2026 abgearbeitet). Einbau in die bestehende Vereinswebsite vorbereitet; Vereinsname erst nach Freigabe.",
+              "ablauf": [
+                "kader.json pflegen (Admin)",
+                "Validierung",
+                "Kaderseite mit Trikots",
+                "Veröffentlichen per Token"
+              ]
             },
             {
-              "titel": "Websites & digitale Plattformen",
+              "titel": "Website-Relaunch und wöchentliches SEO-Audit",
+              "bereich": "Software & Web Applications · Automation",
+              "kurz": "Statische Website aus JSON-Inhalten plus automatisierte Prüfroutine mit PDF-Berichten.",
+              "ausgang": "Ein Dienstleister für technische Dokumentation hatte einen veralteten, per Baukasten gepflegten Auftritt ohne saubere Metadaten, Sitemap oder Prüfbarkeit.",
+              "herausforderung": "Eine Website, die ohne Agentur weitergepflegt werden kann, bei jedem Bau automatisch geprüft wird und deren Sichtbarkeit laufend beobachtet wird.",
+              "beitrag": "Seitenplan, Inhalte als Daten, Bausystem mit Prüflauf, Rechtstext-Prüfpaket für den Juristen, DNS- und E-Mail-Checks, Audit-Routine mit Berichten.",
+              "ansatz": "Bau mit Python ohne Pakete: Inhalte als JSON, Ausgabe als statisches HTML mit Title, Description, Canonical, Open Graph, JSON-LD, Sitemap; Prüflauf für Überschriften, Links, Anker und Alt-Texte. Wöchentliches Audit prüft Erreichbarkeit, On-Page, SPF/DMARC und Suchindex, schreibt JSON und zwei PDFs und vergleicht mit dem Vorlauf.",
+              "technologien": "Python (Standardbibliothek), HTML/CSS, JSON, Chromium über Playwright für gerenderte Seiten und PDF-Berichte, GitHub Actions für Bau und Pages, Markdown.",
+              "status": "Website gebaut und geprüft, Livegang liegt beim Betreiber (Domain, Rechtstexte). Audit läuft wöchentlich automatisiert. Name des Betreibers nach schriftlicher Freigabe.",
+              "ablauf": [
+                "Inhalte als JSON",
+                "Bau und Prüflauf",
+                "Statische Seiten",
+                "Wöchentliches Audit mit PDF"
+              ]
+            },
+            {
+              "titel": "Mail-Triage und Tagesrunde (eigenes Werkzeug)",
+              "bereich": "Automation & AI",
+              "kurz": "Tägliche Posteingangs-Sortierung mit Vorschlagstabelle, Freigabewort und lokalem Modell.",
+              "ausgang": "Der eigene Posteingang mischt Kundenmails, Belege, Newsletter und Werbung. Sortieren kostete jeden Morgen Zeit und passierte uneinheitlich.",
+              "herausforderung": "Automatisierung, die nichts eigenmächtig tut: kein Senden, kein Löschen, kein Verschieben ohne ausdrückliche Freigabe, und vertrauliche Inhalte bleiben auf dem Rechner.",
+              "beitrag": "Konzeption der Ablaufregeln, Skripte, Sperrliste, Protokollierung, Zeitplanung, Tests mit Stubs.",
+              "ansatz": "Apple Mail wird per AppleScript nur gelesen; eine Vorschlagstabelle ordnet jede Mail einem Zielordner zu; verschoben wird erst nach dem exakten Freigabewort, und das Skript gleicht vor jeder Aktion Absender und Betreff erneut ab. Unklare Fälle bleiben immer liegen. Wissensfragen beantwortet ein lokales Modell über Ollama, offline.",
+              "technologien": "Shell (zsh), AppleScript, launchd für den Zeitplan, Claude Code als Oberfläche, Ollama mit lokalem Modell, Markdown für Protokolle.",
+              "status": "Täglich im eigenen Einsatz seit September 2026. Zeigt, wie KI-Unterstützung mit festen Haltepunkten aussieht.",
+              "ablauf": [
+                "Mails lesen (nur lesend)",
+                "Vorschlagstabelle",
+                "Freigabewort",
+                "Verschieben und protokollieren"
+              ]
+            },
+            {
+              "titel": "Diese Website",
               "bereich": "Software & Web Applications",
-              "ausgang": "Bestehende Auftritte sind technisch veraltet oder schwer zu pflegen.",
-              "herausforderung": "Struktur, Inhalte und Technik so aufsetzen, dass sie ohne Agentur weitergepflegt werden können.",
-              "beitrag": "Technische Umsetzung, Strukturierung und Weiterentwicklung.",
-              "ansatz": "Statische, schnelle Seiten mit Inhalten als Daten, ohne externe Abhängigkeiten.",
-              "technologien": "Angaben folgen nach Freigabe.",
-              "status": "Referenzen werden erst nach schriftlicher Freigabe der jeweiligen Betreiber genannt."
+              "kurz": "Zweisprachige statische Site mit eigenem Bausystem, Prüflauf und Vektorlogo.",
+              "ausgang": "Für NAHX Technologies sollte ein Auftritt entstehen, der ohne externe Dienste, Tracking oder Formular-Backends auskommt und dauerhaft selbst gepflegt wird.",
+              "herausforderung": "Deutsch und Englisch vollständig, Logo als echter Vektor aus einer Rastervorlage, Domain noch offen, keine erfundenen Angaben.",
+              "beitrag": "Alles: Konzept, Texte, Designsystem, Bausystem, Logo-Rekonstruktion, Prüfungen.",
+              "ansatz": "Inhalte in zwei JSON-Dateien mit identischen Schlüsseln, Bau in Python ohne Pakete, Prüflauf für Sprachkennzeichnung, Überschriften, Metadaten, Links und Anker; ohne Basis-URL werden Canonical, hreflang und Sitemap bewusst weggelassen. Logo aus der Vorlage vermessen und als SVG-Pfade nachgebaut.",
+              "technologien": "Python, HTML/CSS ohne Framework, SVG, lokale Schriften (OFL), Playwright für Darstellungs- und Linkprüfung.",
+              "status": "Du liest sie gerade. Offen: Domain, Impressumsangaben, Freigaben für Referenzen.",
+              "ablauf": [
+                "de.json / en.json",
+                "build.py mit Prüflauf",
+                "dist/ (statisch)",
+                "Hoster"
+              ]
             }
           ],
           "legende": {
@@ -348,9 +435,11 @@
             "beitrag": "Eigener Beitrag",
             "ansatz": "Lösungsansatz",
             "technologien": "Technologien",
-            "status": "Status"
+            "status": "Status",
+            "ablauf": "Ablauf",
+            "mehr": "Details"
           },
-          "hinweis": "Diese Seite zeigt bewusst nur, was belegt und freigegeben ist. Projektrollen, Produktrechte und die Zusammenarbeit mit FSH Documentation werden transparent abgegrenzt; nichts hier ist als ausschließlich eigenes Produkt zu verstehen, solange das nicht dokumentiert ist."
+          "hinweis": "Kundennamen und Produkte Dritter erscheinen erst nach schriftlicher Freigabe. Die Zusammenarbeit mit FSH Documentation ist als solche benannt; nichts hier ist als ausschließlich eigenes Produkt zu verstehen, solange das nicht dokumentiert ist."
         },
         {
           "typ": "band",
@@ -375,9 +464,10 @@
         {
           "typ": "text",
           "absaetze": [
-            "Hinter NAHX Technologies steht eine Person, kein Team und keine Agentur. Das hat Folgen für die Zusammenarbeit: kurze Wege, direkte Absprachen, und wer die Anforderungen aufnimmt, setzt sie auch um.",
-            "Mit NAHX Technologies bündele ich meine eigenen technischen Dienstleistungen, Entwicklungsprojekte und zukünftigen digitalen Lösungen unter einer persönlichen Marke. NAHX ist eine Geschäftsbezeichnung, keine Gesellschaft.",
-            "Meine Arbeitsweise ist pragmatisch: Anforderungen verstehen, eine passende Lösung entwickeln und Ergebnisse nachvollziehbar überprüfen. Ich arbeite direkt, projektbezogen und mit dem Anspruch, technische Komplexität in praktikable Ergebnisse zu übersetzen."
+            "Ich bin Niklas Heinzmann. Hinter NAHX Technologies steht eine Person, kein Team und keine Agentur: kurze Wege, direkte Absprachen, und wer die Anforderungen aufnimmt, setzt sie auch um.",
+            "Ich komme aus der technischen Dokumentation: Dokumentenprüfung und -vergleich, Dokumentencontrolling, Struktur für große Dokumentenmengen, Berichte und Checklisten. Daraus ist die Entwicklung gewachsen, weil die Werkzeuge fehlten, die diese Arbeit prüfbar und wiederholbar machen.",
+            "Ich arbeite mit FSH Documentation zusammen, einem Dienstleister für technische Dokumentation; dort entstehen unter anderem der Dokumentenprüfer und die Website-Automatisierung. Mit NAHX Technologies bündele ich meine eigenen Dienstleistungen, Entwicklungsprojekte und Werkzeuge unter einer persönlichen Marke. NAHX ist eine Geschäftsbezeichnung, keine Gesellschaft.",
+            "Meine Arbeitsweise ist pragmatisch: Anforderungen verstehen, eine passende Lösung entwickeln und Ergebnisse nachvollziehbar überprüfen. Fakten und Annahmen trenne ich, Unsicheres kennzeichne ich, Originale bleiben unverändert, Änderungen sind dokumentiert. Das gilt für Dokumente wie für Code."
           ]
         },
         {
@@ -449,6 +539,29 @@
             }
           ],
           "h2": "Die fünf Schritte"
+        },
+        {
+          "typ": "faq",
+          "id": "fragen",
+          "h2": "Häufige Fragen vor dem Erstgespräch",
+          "fragen": [
+            {
+              "f": "Was brauche ich für ein Erstgespräch?",
+              "a": "Eine kurze Beschreibung der Ausgangslage und, wenn vorhanden, ein Beispiel: ein Dokument, ein Ablauf, eine Tabelle, ein Screenshot. Mehr nicht. Vertrauliches erst nach Absprache."
+            },
+            {
+              "f": "Muss am Ende Software herauskommen?",
+              "a": "Nein. Oft reicht eine klarere Struktur, ein Prüfablauf oder eine kleine Automatisierung. Ob ein eigenes Werkzeug sinnvoll ist, klärt sich in der Anforderungsphase."
+            },
+            {
+              "f": "Wie läuft die Übergabe?",
+              "a": "Mit Quellen, Dokumentation und Anleitung, so dass du oder dein Team ohne mich weiterarbeiten könnt. Bei Software gehören Tests und eine Betriebsanleitung dazu."
+            },
+            {
+              "f": "Was passiert mit vertraulichen Daten?",
+              "a": "Sie bleiben, wo sie sind. Für vertrauliche Dokumente arbeite ich mit lokalen Werkzeugen und Modellen, die Daten nicht nach außen geben. Das wird vorab festgelegt."
+            }
+          ]
         },
         {
           "typ": "band",

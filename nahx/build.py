@@ -190,7 +190,10 @@ class Bau:
             liste = next(x for x in self.sprachen[sprache]["seiten"]["projekte"]["abschnitte"] if x["typ"] == "projektliste")
             karten = []
             for nr, p in enumerate(liste["projekte"]):
-                karten.append(f'<article class="karte projekt-karte reveal" style="--i:{nr}"><p class="bereich">{esc(p["bereich"])}</p><h3>{frag(p["titel"])}</h3><p>{frag(p["herausforderung"])}</p><p class="status"><span>{esc(liste["legende"]["status"])}</span>{frag(p["status"])}</p></article>')
+                if nr >= 3:
+                    break
+                ziel = self.link(pfad, self.pfad(sprache, "projekte")) + f"#projekt-{nr + 1}"
+                karten.append(f'<article class="karte projekt-karte reveal" style="--i:{nr}"><p class="bereich">{esc(p["bereich"])}</p><h3>{frag(p["titel"])}</h3><p>{frag(p.get("kurz", p["herausforderung"]))}</p><p class="klein tech">{esc(p["technologien"].split(";")[0])}</p><a class="mehr" href="{esc(ziel)}">{esc(liste["legende"].get("mehr", "Details"))}</a></article>')
             return f'<section class="abschnitt innen"{ident}>{kopf}<div class="raster">{"".join(karten)}</div>{mehr}</section>'
 
         if typ == "projektliste":
@@ -198,7 +201,11 @@ class Bau:
             eintraege = []
             for nr, p in enumerate(a["projekte"]):
                 felder = "".join(f'<div><dt>{esc(L[k])}</dt><dd>{frag(p[k])}</dd></div>' for k in ("ausgang", "herausforderung", "beitrag", "ansatz", "technologien"))
-                eintraege.append(f'<article class="projekt reveal" id="projekt-{nr + 1}"><header><p class="bereich">{esc(p["bereich"])}</p><h2>{frag(p["titel"])}</h2></header><dl class="felder">{felder}</dl><p class="status"><span>{esc(L["status"])}</span>{frag(p["status"])}</p></article>')
+                fluss = ""
+                if p.get("ablauf"):
+                    schritte = "".join(f'<li>{esc(x)}</li>' for x in p["ablauf"])
+                    fluss = f'<div class="fluss"><p class="fluss-titel">{esc(L.get("ablauf", "Ablauf"))}</p><ol class="fluss-kette">{schritte}</ol></div>'
+                eintraege.append(f'<article class="projekt reveal" id="projekt-{nr + 1}"><header><p class="bereich">{esc(p["bereich"])}</p><h2>{frag(p["titel"])}</h2><p class="projekt-kurz">{frag(p.get("kurz", ""))}</p></header>{fluss}<dl class="felder">{felder}</dl><p class="status"><span>{esc(L["status"])}</span>{frag(p["status"])}</p></article>')
             hinweis = f'<p class="hinweis reveal">{frag(a["hinweis"])}</p>' if a.get("hinweis") else ""
             return f'<section class="abschnitt innen"{ident}>{"".join(eintraege)}{hinweis}</section>'
 
@@ -234,6 +241,14 @@ class Bau:
         if typ == "prinzipien":
             punkte = "".join(f'<li class="reveal" style="--i:{i}"><h3>{frag(x["h3"])}</h3><p>{frag(x["text"])}</p></li>' for i, x in enumerate(a["punkte"]))
             return f'<section class="abschnitt innen"{ident}>{kopf}<ul class="prinzipien">{punkte}</ul></section>'
+
+        if typ == "stack":
+            gruppen = "".join(f'<div class="karte reveal" style="--i:{i}"><h3>{esc(g["h3"])}</h3><ul>{"".join(f"<li>{frag(x)}</li>" for x in g["punkte"])}</ul></div>' for i, g in enumerate(a["gruppen"]))
+            return f'<section class="abschnitt innen"{ident}>{kopf}<div class="raster">{gruppen}</div></section>'
+
+        if typ == "faq":
+            fragen = "".join(f'<details class="frage reveal" style="--i:{i}"><summary><h3>{frag(q["f"])}</h3></summary><p>{frag(q["a"])}</p></details>' for i, q in enumerate(a["fragen"]))
+            return f'<section class="abschnitt innen"{ident}>{kopf}<div class="fragen">{fragen}</div></section>'
 
         if typ == "text":
             absaetze = "".join(f"<p>{frag(p)}</p>" for p in a["absaetze"])

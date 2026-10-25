@@ -288,6 +288,38 @@
           }
         },
         {
+          "typ": "stack",
+          "id": "tools",
+          "h2": "What I work with",
+          "text": "Not a technology list to impress, but what is actually in use in the projects.",
+          "gruppen": [
+            {
+              "h3": "Languages and runtime",
+              "punkte": [
+                "Python (FastAPI, standard library, pytest)",
+                "JavaScript without a framework, HTML, CSS, SVG",
+                "Shell (zsh), AppleScript, launchd"
+              ]
+            },
+            {
+              "h3": "Documents and data",
+              "punkte": [
+                "Reading Word and PDF (python-docx, pdfplumber), PDF reports (ReportLab, Chromium)",
+                "JSON as content and rule format with validation",
+                "Markdown and Git for logs, knowledge and versions"
+              ]
+            },
+            {
+              "h3": "Checking and automating",
+              "punkte": [
+                "Playwright/Chromium for rendering, link and layout checks",
+                "GitHub Actions for build and publishing",
+                "Claude Code as working environment, local models via Ollama when data must not leave the premises"
+              ]
+            }
+          ]
+        },
+        {
           "typ": "band",
           "h2": "Not every challenge requires new software.",
           "text": "I work with you to identify an approach that fits the actual need.",
@@ -312,34 +344,89 @@
           "typ": "projektliste",
           "projekte": [
             {
-              "titel": "DocumentCheck & ComplianceCheck",
+              "titel": "Document checker: pre-review of technical documents",
               "bereich": "Technical Documentation · Software",
-              "ausgang": "Technical documentation has to be checked against standards and checklists; this is often done manually and inconsistently.",
-              "herausforderung": "Make reviews traceable, repeatable and documented as a report.",
-              "beitrag": "Contribution to the design and further development of digital review tools.",
-              "ansatz": "Rule-based checks with a traceable review report; roles and rights are defined together with FSH Documentation.",
-              "technologien": "Details to follow after approval.",
-              "status": "Under clarification: product rights and attribution are being settled with FSH Documentation. No further details or screenshots until then."
+              "kurz": "Web app that checks Word and PDF documents against rule sets and produces reports in four languages.",
+              "ausgang": "Technical documentation has to be checked against basic requirements, DIN EN IEC/IEEE 82079-1 and CE conformity rules. This was done manually, with checklists, and differently by each reviewer.",
+              "herausforderung": "A pre-review that is repeatable, cites locations, supports several users with their own settings and delivers reports customers can read in their language.",
+              "beitrag": "Design and development of the web app together with FSH Documentation: architecture, review logic, accounts and roles, reports, tests, operating instructions for the Mac.",
+              "ansatz": "Rule sets as verifiable JSON files (24 rules with area, weight and recommendation in de/en/uk/ru), keyword search with score and traffic light, rules that can be deselected per account, reports as PDF. Expert review and approval explicitly stay with a person; every report says so.",
+              "technologien": "Python, FastAPI, Uvicorn, SQLite, python-docx, pdfplumber, ReportLab, Argon2 for passwords, pytest; interface without a framework.",
+              "status": "Running with test coverage (accounts, review, languages, command line). Product rights and handover are being settled with FSH Documentation; hence no screenshots and no access.",
+              "ablauf": [
+                "Upload document",
+                "Choose rule sets",
+                "Review with locations",
+                "PDF report (de/en/uk/ru)"
+              ]
             },
             {
-              "titel": "Custom Web Applications",
+              "titel": "Squad manager for a club website",
               "bereich": "Software & Web Applications",
-              "ausgang": "Internal processes run on spreadsheets and emails.",
-              "herausforderung": "Structure information, make states traceable, simplify recurring tasks.",
-              "beitrag": "Design and implementation.",
-              "ansatz": "Small, purpose-built applications instead of large platforms.",
-              "technologien": "Details to follow after approval.",
-              "status": "Descriptions of individual projects will follow once confidentiality and approval are settled."
+              "kurz": "Embeddable web module with player cards, jersey animation and admin editing, no libraries.",
+              "ausgang": "A floorball club wanted to present its squad on the website: jerseys on a rail, player card with data, maintenance without programming skills.",
+              "herausforderung": "An animation after a video reference that runs on phones, data the club maintains itself, and a bilingual interface (German, Ukrainian).",
+              "beitrag": "Concept, implementation, data model, admin page, publishing interface, review report with status per finding and handover note for integration.",
+              "ansatz": "Plain HTML, CSS and JavaScript without a build step; all data in one JSON file with validation (required fields, unique IDs); jerseys as generated SVG; animation only via transform and opacity, respecting prefers-reduced-motion; small Python server with token-protected publishing and photo upload.",
+              "technologien": "HTML, CSS, JavaScript (no framework), JSON, SVG, Python standard library for the server, Oswald (OFL) for the jersey print.",
+              "status": "Module finished and reviewed (review report of 8 Oct 2026 worked through). Integration into the existing club website prepared; club name only after approval.",
+              "ablauf": [
+                "Edit kader.json (admin)",
+                "Validation",
+                "Squad page with jerseys",
+                "Publish via token"
+              ]
             },
             {
-              "titel": "Websites & Digital Platforms",
+              "titel": "Website relaunch and weekly SEO audit",
+              "bereich": "Software & Web Applications · Automation",
+              "kurz": "Static website from JSON content plus an automated audit routine with PDF reports.",
+              "ausgang": "A technical documentation service provider had an outdated site built with a site builder, without clean metadata, sitemap or any way to verify it.",
+              "herausforderung": "A website that can be maintained without an agency, is checked automatically on every build and whose visibility is monitored continuously.",
+              "beitrag": "Site plan, content as data, build system with checks, legal-text review package for the lawyer, DNS and email checks, audit routine with reports.",
+              "ansatz": "Build in Python without packages: content as JSON, output as static HTML with title, description, canonical, Open Graph, JSON-LD, sitemap; checks for headings, links, anchors and alt texts. A weekly audit checks availability, on-page factors, SPF/DMARC and the search index, writes JSON and two PDFs and compares with the previous run.",
+              "technologien": "Python (standard library), HTML/CSS, JSON, Chromium via Playwright for rendered pages and PDF reports, GitHub Actions for build and Pages, Markdown.",
+              "status": "Website built and verified; go-live is with the operator (domain, legal texts). The audit runs weekly and automatically. Operator name after written approval.",
+              "ablauf": [
+                "Content as JSON",
+                "Build and checks",
+                "Static pages",
+                "Weekly audit with PDF"
+              ]
+            },
+            {
+              "titel": "Mail triage and daily round (own tool)",
+              "bereich": "Automation & AI",
+              "kurz": "Daily inbox sorting with a proposal table, release word and a local model.",
+              "ausgang": "My own inbox mixes customer mail, receipts, newsletters and advertising. Sorting cost time every morning and was done inconsistently.",
+              "herausforderung": "Automation that does nothing on its own: no sending, no deleting, no moving without explicit release, and confidential content stays on the machine.",
+              "beitrag": "Design of the workflow rules, scripts, block list, logging, scheduling, tests with stubs.",
+              "ansatz": "Apple Mail is only read via AppleScript; a proposal table assigns each mail to a target folder; moving happens only after the exact release word, and the script re-checks sender and subject before every action. Unclear cases always stay put. Knowledge questions are answered by a local model via Ollama, offline.",
+              "technologien": "Shell (zsh), AppleScript, launchd for scheduling, Claude Code as interface, Ollama with a local model, Markdown for logs.",
+              "status": "In daily personal use since September 2026. Shows what AI support with fixed checkpoints looks like.",
+              "ablauf": [
+                "Read mail (read-only)",
+                "Proposal table",
+                "Release word",
+                "Move and log"
+              ]
+            },
+            {
+              "titel": "This website",
               "bereich": "Software & Web Applications",
-              "ausgang": "Existing sites are technically outdated or hard to maintain.",
-              "herausforderung": "Set up structure, content and technology so that they can be maintained without an agency.",
-              "beitrag": "Technical implementation, structuring and ongoing development.",
-              "ansatz": "Static, fast sites with content as data and no external dependencies.",
-              "technologien": "Details to follow after approval.",
-              "status": "References are named only after written approval by the respective operators."
+              "kurz": "Bilingual static site with its own build system, checks and vector logo.",
+              "ausgang": "NAHX Technologies needed a presence that works without external services, tracking or form back ends and can be maintained permanently by myself.",
+              "herausforderung": "German and English in full, a logo as a true vector from a raster template, domain still open, no invented details.",
+              "beitrag": "Everything: concept, copy, design system, build system, logo reconstruction, checks.",
+              "ansatz": "Content in two JSON files with identical keys, build in Python without packages, checks for language tags, headings, metadata, links and anchors; without a base URL, canonical, hreflang and sitemap are deliberately omitted. Logo measured from the template and rebuilt as SVG paths.",
+              "technologien": "Python, HTML/CSS without a framework, SVG, local fonts (OFL), Playwright for rendering and link checks.",
+              "status": "You are reading it. Open: domain, legal notice details, approvals for references.",
+              "ablauf": [
+                "de.json / en.json",
+                "build.py with checks",
+                "dist/ (static)",
+                "Host"
+              ]
             }
           ],
           "legende": {
@@ -348,9 +435,11 @@
             "beitrag": "My contribution",
             "ansatz": "Approach",
             "technologien": "Technologies",
-            "status": "Status"
+            "status": "Status",
+            "ablauf": "Flow",
+            "mehr": "Details"
           },
-          "hinweis": "This page deliberately shows only what is verified and approved. Project roles, product rights and the collaboration with FSH Documentation are clearly separated; nothing here is to be read as an exclusively own product unless documented."
+          "hinweis": "Customer names and third-party products appear only after written approval. The collaboration with FSH Documentation is named as such; nothing here is to be read as an exclusively own product unless documented."
         },
         {
           "typ": "band",
@@ -375,9 +464,10 @@
         {
           "typ": "text",
           "absaetze": [
-            "Behind NAHX Technologies is one person, not a team or an agency. That shapes the collaboration: short paths, direct agreements, and the person who takes the requirements is the one who implements them.",
-            "With NAHX Technologies, I bring together my own technical services, development projects and future digital solutions under a personal brand. NAHX is a business name, not a company.",
-            "My approach is pragmatic: understand the requirements, develop an appropriate solution and validate the results transparently. I work directly and project by project, with the goal of translating technical complexity into practical outcomes."
+            "I am Niklas Heinzmann. Behind NAHX Technologies is one person, not a team or an agency: short paths, direct agreements, and the person who takes the requirements is the one who implements them.",
+            "My background is technical documentation: document review and comparison, document control, structure for large document sets, reports and checklists. Development grew out of that, because the tools that make this work verifiable and repeatable were missing.",
+            "I work with FSH Documentation, a technical documentation service provider; the document checker and the website automation, among other things, are created there. With NAHX Technologies I bring together my own services, development projects and tools under a personal brand. NAHX is a business name, not a company.",
+            "My approach is pragmatic: understand the requirements, develop a suitable solution and verify the results transparently. I separate facts from assumptions, flag what is uncertain, keep originals unchanged and document changes. That applies to documents as much as to code."
           ]
         },
         {
@@ -449,6 +539,29 @@
             }
           ],
           "h2": "The five steps"
+        },
+        {
+          "typ": "faq",
+          "id": "questions",
+          "h2": "Frequent questions before the first conversation",
+          "fragen": [
+            {
+              "f": "What do I need for a first conversation?",
+              "a": "A short description of the situation and, if available, an example: a document, a workflow, a spreadsheet, a screenshot. Nothing more. Confidential material only after agreement."
+            },
+            {
+              "f": "Does it have to end in software?",
+              "a": "No. Often a clearer structure, a review workflow or a small automation is enough. Whether a dedicated tool makes sense becomes clear in the requirements phase."
+            },
+            {
+              "f": "How does the handover work?",
+              "a": "With sources, documentation and instructions, so that you or your team can continue without me. For software this includes tests and operating instructions."
+            },
+            {
+              "f": "What happens to confidential data?",
+              "a": "It stays where it is. For confidential documents I work with local tools and models that do not pass data outside. This is agreed up front."
+            }
+          ]
         },
         {
           "typ": "band",

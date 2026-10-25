@@ -198,3 +198,28 @@ main.recht .abschnitt{padding-top:22px}
 main.recht .abschnitt:first-of-type{padding-top:40px}
 main.recht .fliess h2{font-size:19px;margin-top:0}
 main.recht .held-innen{padding-bottom:28px}
+
+/* Projekte: Kurztext, Ablaufkette, Technik-Zeile */
+.projekt-kurz{font-size:18px;color:var(--muted);max-width:760px}
+.projekt-karte .tech{color:var(--faint);font-size:13px}
+.fluss{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:var(--bg-2)}
+.fluss-titel{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+.fluss-kette{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px 0;align-items:center;counter-reset:f}
+.fluss-kette li{counter-increment:f;position:relative;background:var(--surface);border:1px solid var(--line-2);border-radius:8px;padding:8px 12px 8px 34px;font-size:14px;color:var(--ink);margin-right:30px}
+.fluss-kette li::before{content:counter(f);position:absolute;left:10px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;background:var(--cyan-soft);color:var(--cyan);font:600 11px/18px var(--titel);text-align:center}
+.fluss-kette li:not(:last-child)::after{content:"";position:absolute;right:-30px;top:50%;width:30px;height:1px;background:var(--cyan);opacity:.6}
+.fluss-kette li:not(:last-child)::after{background:linear-gradient(90deg,var(--cyan) 70%,transparent 70%)}
+.fluss-kette li:last-child{margin-right:0}
+@media (max-width: 599px){.fluss-kette{flex-direction:column;align-items:stretch}.fluss-kette li{margin-right:0}.fluss-kette li:not(:last-child)::after{right:auto;left:18px;top:100%;width:1px;height:8px;background:var(--cyan)}}
+/* FAQ */
+.fragen{display:grid;gap:10px;max-width:820px}
+.frage{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 20px}
+.frage summary{list-style:none;cursor:pointer;padding:16px 0;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.frage summary::-webkit-details-marker{display:none}
+.frage summary::after{content:"+";font:600 22px/1 var(--titel);color:var(--cyan);flex:0 0 auto}
+.frage[open] summary::after{content:"–"}
+.frage h3{font-size:17px}
+.frage p{padding:0 0 18px;color:var(--muted);font-size:16px}
+
+/* Silbentrennung für lange deutsche Wörter in schmalen Karten */
+h2,h3{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
