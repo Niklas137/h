@@ -241,9 +241,9 @@ h2,h3{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
 .held h1{text-shadow:0 2px 18px rgba(0,0,0,.5)}
 
 /* Lesbarkeit über der 3D-Szene */
-.held-innen::before{content:"";position:absolute;inset:-40px -20px;z-index:-1;background:linear-gradient(90deg,rgba(5,7,5,.78) 0,rgba(5,7,5,.55) 45%,rgba(5,7,5,0) 70%);pointer-events:none}
+.held::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(5,7,5,.78) 0,rgba(5,7,5,.5) 42%,rgba(5,7,5,0) 64%);pointer-events:none}
 .held-innen{position:relative}
-@media (max-width:899px){.held-innen::before{background:linear-gradient(180deg,rgba(5,7,5,.82) 0,rgba(5,7,5,.6) 55%,rgba(5,7,5,0) 85%)}}
+@media (max-width:899px){.held::after{background:linear-gradient(180deg,rgba(5,7,5,.82) 0,rgba(5,7,5,.6) 50%,rgba(5,7,5,0) 80%)}}
 .held::before{display:none}
 
 @media (max-width:899px){.held-start .held-innen{min-height:min(96vh,860px)}.held-start .held-text{padding-bottom:40vw}}

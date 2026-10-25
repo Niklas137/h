@@ -71,9 +71,11 @@ Teil der SVG (für eine Claim-Fassung als Vektor fehlt ein Werkzeug, das Schrift
 ## Gestaltung
 
 **3D-Szene im Aufmacher** (`assets/szene3d.js`, WebGL ohne Bibliothek, Entscheidung 2026-10-25 „3D und
-realistisch“): Raymarching einer Distanzfunktion rendert das NAHX-A als extrudierten Körper mit abgerundeten
-Kanten, prozeduraler Oberfläche, Hauptlicht, Fresnel-Kantenglühen in der Markenfarbe, Lichtnebel, Vignette und
-Filmkorn. Reagiert sanft auf Maus und Scrollen, rendert in reduzierter Auflösung (0,8 Desktop, 0,6 Handy),
+realistisch“): Raymarching einer Distanzfunktion rendert das NAHX-A als extrudierten Körper aus dunklem Glasstein
+mit Mikrostruktur und leuchtenden Rissen; Hauptlicht und Gegenlicht mit GGX-Glanz, prozedurale Umgebung für
+Reflexionen, weiche Schatten, Umgebungsverschattung, spiegelnder Boden mit eigener Reflexionsspur, zweites A in der
+Tiefe, Lichtnebel, Staub im Licht, Bloom, Farbsaum, Vignette und Filmkorn; ein zweiter Durchgang glättet zeitlich
+über mehrere Frames. Reagiert sanft auf Maus und Scrollen, rendert in reduzierter Auflösung (0,7 Desktop, 0,55 Handy),
 pausiert außerhalb des Bildes und bei verborgenem Tab; ohne WebGL entfällt sie, bei `prefers-reduced-motion`
 steht ein Standbild. Das frühere statische Diagramm ist im Markup noch vorhanden, aber ausgeblendet.
 
