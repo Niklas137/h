@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 0 300 100" width="300" height="100" role="img" aria-label="NAHX">
+  <g fill="none" stroke="#EEF1EF" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M7 90V10l42 80V10"/>
+    <path d="M159 10v80M201 10v80M159 50h42"/>
+    <path d="M228 10l56 80M284 10l-56 80"/>
+  </g>
+  <g fill="none" stroke="#22B8E0" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M76 90l28-80 28 80M90 62h28"/>
+  </g>
+</svg>

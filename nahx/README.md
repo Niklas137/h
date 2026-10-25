@@ -14,7 +14,7 @@ Abhängigkeiten, fertige Dateien in `dist/`. Kein externes Skript, keine externe
 | `inhalt/de.json`, `inhalt/en.json` | alle Texte je Sprache, gleiche Seitenschlüssel (`start`, `leistungen`, `projekte`, `ueber-mich`, `zusammenarbeit`, `kontakt`, `impressum`, `datenschutz`) |
 | `assets/site.css` | Stylesheet, Farbschema hell/dunkel (automatisch oder per Schalter) |
 | `assets/fonts/` | Poppins und Source Sans 3 als WOFF2 (SIL Open Font License, Lizenztexte liegen dabei) |
-| `assets/img/` | Platzhalter-Monogramm „N“ als Logo und Favicon (SVG) |
+| `assets/img/` | `nahx-wortmarke.svg` (helle Wortmarke, Buchstaben als Pfade, A in Cyan `#22B8E0`), `favicon.svg`, `favicon.ico` (32/16 px), `apple-touch-icon.png` (180 px), `icon-512.png`, `og-nahx.jpg` (1200 × 630) |
 | `dist/` | **fertige Website zum Hochladen** (wird von `build.py` komplett neu erzeugt) |
 
 ## Bauen und prüfen
@@ -48,17 +48,24 @@ Weitere Schalter: `--relativ --ausgabe /tmp/vorschau` (Vorschau ohne Webserver, 
 Jede Seite verweist per `hreflang` auf ihre Entsprechung in der anderen Sprache; der Sprachschalter im Kopf
 führt auf dieselbe Seite in der anderen Sprache. Die Farbschema-Wahl wird nur lokal im Browser gespeichert.
 
+## Marke und Logo
+
+Die Wortmarke „NAHX“ besteht aus vier geometrischen Buchstaben als SVG-Pfade (kein Schriftbedarf), das A in
+Cyan `#22B8E0`, die übrigen Buchstaben in `currentColor`. Im Seitenkopf und in der Fußzeile wird sie inline
+ausgegeben (`WORTMARKE` in `build.py`), damit sie im hellen und dunklen Schema mitfärbt; der Kopf ist fest
+dunkel. `assets/img/nahx-wortmarke.svg` ist die eigenständige helle Fassung für dunklen Grund. Favicon ist
+das cyanblaue A auf Dunkelblau; PNG, ICO und Open-Graph-Bild wurden daraus gerendert. Der Zusatz
+„Technologies“ steht als Text in Poppins daneben und wird unter 1100 px ausgeblendet.
+
 ## Platzhalter und offene Entscheidungen
 
 Alles in eckigen Klammern ist bewusst sichtbarer Platzhalter und wird vor dem Livegang ersetzt:
 
-- **Domain**: `basis_url` in `site.json` steht auf `https://nahx.example`; vor dem Livegang ersetzen oder mit `--basis-url` bauen.
-- **E-Mail-Adresse**: `email` in `de.json` und `en.json`. Solange kein `@` enthalten ist, wird der Text als Platzhalter ohne `mailto`-Link gezeigt.
-- **Kontaktformular**: Felder stehen (Name, Unternehmen optional, E-Mail, Thema, Nachricht), der Senden-Knopf ist deaktiviert, ein Hinweis verweist auf die E-Mail. Für den Versand braucht es einen Dienst (statisches Hosting hat keinen Server) oder ein kleines Backend; die Wahl bestimmt den Text der Datenschutzerklärung.
-- **Impressum und Datenschutz**: Vorlagen mit Platzhaltern, als `noindex` markiert. Keine Rechtsberatung; vor dem Livegang prüfen (siehe `website/pruefpaket-rechtstexte.md` als Muster für die Prüfung).
-- **Logo**: Das Monogramm ist ein Platzhalter, bis eine Wort-Bild-Marke vorliegt.
+- **Domain**: `basis_url` in `site.json` steht auf `https://nahx.example` (Entscheidung: später). Vor dem Livegang ersetzen oder mit `--basis-url` bauen; interne Links sind domainunabhängig.
+- **E-Mail-Adresse**: `email` in `de.json` und `en.json`, derzeit die vorhandene Adresse `niklas.heinzmann@fsh-documentation.de` (Entscheidung: vorerst weiterverwenden). Solange kein `@` enthalten ist, würde der Text als Platzhalter ohne `mailto`-Link gezeigt. Impressum und Datenschutz nennen dieselbe Adresse im Text.
+- **Kontakt**: nur per E-Mail (Entscheidung), kein Formular, kein Versanddienst, keine Eingabeverarbeitung auf der Website.
+- **Impressum und Datenschutz**: Vorlagen mit Platzhaltern (Name, Anschrift, USt, Hosting-Anbieter, Rechtsgrundlage), als `noindex` markiert. Keine Rechtsberatung; vor dem Livegang prüfen.
 - **Projekte**: Nur die drei Kurzbeschreibungen aus dem Konzept. Details zu DocumentCheck & ComplianceCheck kommen erst nach Prüfung von Vertraulichkeit, Rechten und Zuordnung zu FSH Documentation.
-- **Open-Graph-Bild**: noch keines hinterlegt (`og:image` wird nicht ausgegeben), bis ein Bild vorliegt.
 
 ## Veröffentlichen
 

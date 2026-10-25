@@ -4,7 +4,7 @@
   "claim": "Technik verstehen. Lösungen schaffen.",
   "claim_andere": "Understand Technology. Create Solutions.",
   "beschreibung": "NAHX Technologies: Technische Redaktion, Softwareentwicklung und Automatisierung aus einer Hand. Technik verstehen, Anforderungen klären, Lösungen schaffen.",
-  "logo_alt": "NAHX Technologies – Monogramm (Platzhalter-Logo)",
+  "logo_alt": "NAHX Technologies – zur Startseite",
   "ui": {
     "sprung": "Zum Inhalt springen",
     "menue": "Menü",
@@ -342,7 +342,7 @@
       "pfad": "kontakt/",
       "menue": "Kontakt",
       "title": "Kontakt | NAHX Technologies",
-      "description": "Kontakt zu NAHX Technologies: Beschreibe kurz deine Herausforderung oder dein Vorhaben. Ich melde mich, um Anforderungen und nächste Schritte zu besprechen.",
+      "description": "Kontakt zu NAHX Technologies per E-Mail: Beschreibe kurz deine Herausforderung oder dein Vorhaben. Ich melde mich, um die nächsten Schritte zu klären.",
       "kicker": "Kontakt",
       "h1": "Was möchtest du umsetzen?",
       "einleitung": "Beschreibe kurz deine Herausforderung, dein Vorhaben oder die Unterstützung, die du benötigst. Ich melde mich, um die Anforderungen und mögliche nächste Schritte mit dir zu besprechen.",
@@ -350,42 +350,14 @@
         {
           "typ": "kontakt",
           "email_label": "E-Mail",
-          "formular_h2": "Oder per Kontaktformular",
-          "felder": [
-            {
-              "name": "name",
-              "label": "Name",
-              "typ": "text",
-              "pflicht": true
-            },
-            {
-              "name": "unternehmen",
-              "label": "Unternehmen (optional)",
-              "typ": "text",
-              "pflicht": false
-            },
-            {
-              "name": "email",
-              "label": "E-Mail-Adresse",
-              "typ": "email",
-              "pflicht": true
-            },
-            {
-              "name": "thema",
-              "label": "Thema der Anfrage",
-              "typ": "text",
-              "pflicht": true
-            },
-            {
-              "name": "nachricht",
-              "label": "Nachricht",
-              "typ": "textarea",
-              "pflicht": true
-            }
+          "email_text": "Schreib mir direkt. Ich antworte in der Regel innerhalb von zwei Werktagen.",
+          "themen_h2": "Hilfreich für eine erste Einschätzung",
+          "themen": [
+            "Worum geht es: Dokumentation, Software, Automatisierung oder eine Mischung?",
+            "Was ist die Ausgangslage, was soll am Ende anders sein?",
+            "Gibt es einen Zeitrahmen oder feste Rahmenbedingungen?"
           ],
-          "senden": "Anfrage senden",
-          "datenschutz": "Mit dem Absenden werden deine Angaben zur Bearbeitung deiner Anfrage verarbeitet. Näheres in der <a href=\"{datenschutz}\">Datenschutzerklärung</a>.",
-          "formular_hinweis": "Das Formular ist noch nicht an einen Versanddienst angebunden; bis dahin bitte die E-Mail-Adresse nutzen."
+          "datenschutz": "Deine E-Mail wird nur zur Bearbeitung der Anfrage verwendet. Näheres in der <a href=\"{datenschutz}\">Datenschutzerklärung</a>."
         }
       ]
     },
@@ -412,7 +384,7 @@
           "typ": "text",
           "h2": "Kontakt",
           "absaetze": [
-            "E-Mail: [Deine geschäftliche E-Mail-Adresse]<br>Telefon: [optional]"
+            "E-Mail: niklas.heinzmann@fsh-documentation.de<br>Telefon: [optional]"
           ]
         },
         {
@@ -444,7 +416,7 @@
       "typ": "recht",
       "robots": "noindex",
       "title": "Datenschutz | NAHX Technologies",
-      "description": "Datenschutzerklärung von NAHX Technologies: Verantwortlicher, Hosting, Kontakt per E-Mail und Formular, Rechte der Betroffenen. Wird vor dem Livegang geprüft.",
+      "description": "Datenschutzerklärung von NAHX Technologies: Verantwortlicher, Hosting, Kontakt per E-Mail, Rechte der Betroffenen. Wird vor dem Livegang geprüft und ergänzt.",
       "kicker": "Rechtliches",
       "h1": "Datenschutzerklärung",
       "einleitung": "Diese Erklärung beschreibt, welche personenbezogenen Daten beim Besuch dieser Website und bei einer Kontaktaufnahme verarbeitet werden. Die konkrete Datenschutzerklärung muss die tatsächlich eingesetzten Dienste und Datenverarbeitungen abbilden.",
@@ -454,7 +426,7 @@
           "typ": "text",
           "h2": "Verantwortlicher",
           "absaetze": [
-            "[Vor- und Nachname], NAHX Technologies, [Anschrift], E-Mail: [Deine geschäftliche E-Mail-Adresse]"
+            "[Vor- und Nachname], NAHX Technologies, [Anschrift], E-Mail: niklas.heinzmann@fsh-documentation.de"
           ]
         },
         {
@@ -468,7 +440,7 @@
           "typ": "text",
           "h2": "Kontaktaufnahme",
           "absaetze": [
-            "Wenn du per E-Mail oder über das Kontaktformular Kontakt aufnimmst, werden die übermittelten Angaben (Name, gegebenenfalls Unternehmen, E-Mail-Adresse, Thema, Nachricht) zur Bearbeitung der Anfrage verarbeitet und gespeichert, solange dies für die Bearbeitung erforderlich ist. [Dienst für den Formularversand und Rechtsgrundlage eintragen.]"
+            "Wenn du per E-Mail Kontakt aufnimmst, werden die übermittelten Angaben (Absenderadresse, Name, Inhalt der Nachricht) zur Bearbeitung der Anfrage verarbeitet und gespeichert, solange dies für die Bearbeitung erforderlich ist. Ein Kontaktformular gibt es nicht. [Rechtsgrundlage und Speicherdauer eintragen.]"
           ]
         },
         {
@@ -495,5 +467,6 @@
       ]
     }
   },
-  "email": "[Deine geschäftliche E-Mail-Adresse]"
+  "email": "niklas.heinzmann@fsh-documentation.de",
+  "og_bild_alt": "NAHX Technologies – Technik verstehen. Lösungen schaffen."
 }

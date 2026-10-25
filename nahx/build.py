@@ -101,13 +101,12 @@ class Bau:
             ziel = self.link(pfad, self.pfad(c, seite_key))
             name = self.site["sprachen"][c]["name"]
             sprach_links.append(f'<a class="schalter" href="{esc(ziel)}" lang="{c}" hreflang="{c}" title="{esc(name)}">{esc(self.site["sprachen"][c]["kurz"])}</a>')
-        logo = self.link(pfad, self.site["logo"])
         start = self.link(pfad, self.pfad(sprache, "start"))
         kontakt = self.link(pfad, self.pfad(sprache, "kontakt"))
         return f"""<a class="sprung" href="#inhalt">{esc(ui["sprung"])}</a>
 <header class="kopf">
   <div class="innen kopf-innen">
-    <a class="logo" href="{esc(start)}"><img src="{esc(logo)}" alt="{esc(t["logo_alt"])}" width="36" height="36"><span>{esc(self.site["name"])}</span></a>
+    <a class="logo" href="{esc(start)}" aria-label="{esc(t["logo_alt"])}">{WORTMARKE}<span class="logo-zusatz" aria-hidden="true">Technologies</span></a>
     <nav class="nav" id="nav" aria-label="{esc(ui["fuss_navigation"])}">{"".join(nav)}</nav>
     <div class="kopf-aktionen">
       {"".join(sprach_links)}
@@ -131,7 +130,7 @@ class Bau:
   <div class="innen">
     <div class="fuss-spalten">
       <div class="marke">
-        <strong>{esc(self.site["name"])}</strong>
+        <div class="fuss-marke">{WORTMARKE}<span class="logo-zusatz">Technologies</span></div>
         <p>{esc(t["claim"])}</p>
         <p lang="{'en' if sprache == 'de' else 'de'}">{esc(t["claim_andere"])}</p>
       </div>
@@ -195,34 +194,25 @@ class Bau:
         raise ValueError(f"Unbekannter Abschnittstyp: {typ}")
 
     def kontakt(self, sprache: str, pfad: str, a: dict) -> str:
-        felder = []
-        for f in a["felder"]:
-            fid = f"f-{f['name']}"
-            pflicht = " required" if f["pflicht"] else ""
-            if f["typ"] == "textarea":
-                eingabe = f'<textarea id="{fid}" name="{esc(f["name"])}"{pflicht}></textarea>'
-            else:
-                eingabe = f'<input id="{fid}" name="{esc(f["name"])}" type="{esc(f["typ"])}"{pflicht}>'
-            felder.append(f'<div class="feld"><label for="{fid}">{esc(f["label"])}</label>{eingabe}</div>')
-        datenschutz = a["datenschutz"].replace("{datenschutz}", esc(self.link(pfad, self.pfad(sprache, "datenschutz"))))
         email = self.sprachen[sprache]["email"]
-        email_html = (
-            f'<a href="mailto:{esc(email)}">{esc(email)}</a>' if "@" in email else f'<span class="platzhalter">{esc(email)}</span>'
-        )
+        if "@" in email:
+            email_html = f'<a class="email" href="mailto:{esc(email)}">{esc(email)}</a>'
+        else:
+            email_html = f'<span class="platzhalter">{esc(email)}</span>'
+        datenschutz = a["datenschutz"].replace("{datenschutz}", esc(self.link(pfad, self.pfad(sprache, "datenschutz"))))
+        themen = "".join(f"<li>{frag(x)}</li>" for x in a["themen"])
         return f"""<section class="abschnitt innen" id="kontakt">
   <div class="kontakt-raster">
-    <div class="karte email-karte"><h2>{esc(a["email_label"])}</h2><p>{email_html}</p></div>
-    <div class="karte">
-      <h2>{frag(a["formular_h2"])}</h2>
-      <p class="warnung">{frag(a["formular_hinweis"])}</p>
-      <form class="formular" method="post" action="" onsubmit="return false">
-        {"".join(felder)}
-        <p class="klein">{frag(datenschutz)}</p>
-        <button class="cta" type="submit" disabled>{esc(a["senden"])}</button>
-      </form>
-    </div>
+    <div class="karte email-karte"><h2>{esc(a["email_label"])}</h2><p class="email-text">{frag(a["email_text"])}</p><p>{email_html}</p><p class="klein">{frag(datenschutz)}</p></div>
+    <div class="karte"><h2>{frag(a["themen_h2"])}</h2><ul>{themen}</ul></div>
   </div>
 </section>"""
+
+    def icons(self, pfad: str) -> str:
+        l = lambda p: esc(self.link(pfad, p))
+        return (f'<link rel="icon" href="{l("/assets/img/favicon.svg")}" type="image/svg+xml">\n'
+                f'<link rel="icon" href="{l("/assets/img/favicon.ico")}" sizes="32x32">\n'
+                f'<link rel="apple-touch-icon" href="{l("/assets/img/apple-touch-icon.png")}">')
 
     # ------------------------------------------------------------------ Seite
     def seite_html(self, sprache: str, seite_key: str) -> tuple[str, str]:
@@ -273,7 +263,12 @@ class Bau:
 <meta property="og:title" content="{esc(s["title"])}">
 <meta property="og:description" content="{esc(s["description"])}">
 <meta property="og:url" content="{esc(self.absolut(pfad))}">
-<link rel="icon" href="{esc(self.link(pfad, "/assets/img/favicon.svg"))}" type="image/svg+xml">
+<meta property="og:image" content="{esc(self.absolut(self.site["og_bild"]))}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{esc(t["og_bild_alt"])}">
+<meta name="twitter:card" content="summary_large_image">
+{self.icons(pfad)}
 {fonts}
 <link rel="stylesheet" href="{esc(css)}">
 <script>{KOPF_SCRIPT}</script>
@@ -309,7 +304,7 @@ class Bau:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(f["title"])}</title>
 <meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="{esc(self.link(pfad, "/assets/img/favicon.svg"))}" type="image/svg+xml">
+{self.icons(pfad)}
 <link rel="stylesheet" href="{esc(css)}">
 <script>{KOPF_SCRIPT}</script>
 </head>
@@ -371,6 +366,13 @@ class Bau:
             (self.ausgabe / "sitemap.xml").write_text(sitemap, encoding="utf-8")
         return seiten
 
+
+WORTMARKE = (
+    '<svg class="wortmarke" viewBox="-8 0 300 100" aria-hidden="true" focusable="false">'
+    '<g fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter">'
+    '<path d="M7 90V10l42 80V10"/><path d="M159 10v80M201 10v80M159 50h42"/><path d="M228 10l56 80M284 10l-56 80"/></g>'
+    '<g fill="none" stroke="#22B8E0" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path d="M76 90l28-80 28 80M90 62h28"/></g></svg>'
+)
 
 KOPF_SCRIPT = (
     "(function(){var d=document.documentElement;d.classList.add('js');"

@@ -4,7 +4,7 @@
   "claim": "Understand Technology. Create Solutions.",
   "claim_andere": "Technik verstehen. Lösungen schaffen.",
   "beschreibung": "NAHX Technologies: technical documentation, software development and automation from one source. Understand technology, clarify requirements, create solutions.",
-  "logo_alt": "NAHX Technologies – monogram (placeholder logo)",
+  "logo_alt": "NAHX Technologies – home",
   "ui": {
     "sprung": "Skip to content",
     "menue": "Menu",
@@ -342,7 +342,7 @@
       "pfad": "contact/",
       "menue": "Contact",
       "title": "Contact | NAHX Technologies",
-      "description": "Contact NAHX Technologies: briefly describe your challenge, project or support needs. I will get in touch to discuss the requirements and possible next steps.",
+      "description": "Contact NAHX Technologies by email: briefly describe your challenge, project or support needs. I will get in touch to discuss requirements and next steps.",
       "kicker": "Contact",
       "h1": "What Would You Like to Build?",
       "einleitung": "Briefly describe your challenge, project or support needs. I will get in touch to discuss the requirements and possible next steps.",
@@ -350,42 +350,14 @@
         {
           "typ": "kontakt",
           "email_label": "Email",
-          "formular_h2": "Or use the contact form",
-          "felder": [
-            {
-              "name": "name",
-              "label": "Name",
-              "typ": "text",
-              "pflicht": true
-            },
-            {
-              "name": "company",
-              "label": "Company (optional)",
-              "typ": "text",
-              "pflicht": false
-            },
-            {
-              "name": "email",
-              "label": "Email address",
-              "typ": "email",
-              "pflicht": true
-            },
-            {
-              "name": "subject",
-              "label": "Subject",
-              "typ": "text",
-              "pflicht": true
-            },
-            {
-              "name": "message",
-              "label": "Message",
-              "typ": "textarea",
-              "pflicht": true
-            }
+          "email_text": "Write to me directly. I usually reply within two working days.",
+          "themen_h2": "Helpful for a first assessment",
+          "themen": [
+            "What is it about: documentation, software, automation or a mix?",
+            "What is the current situation, and what should be different at the end?",
+            "Is there a time frame or fixed constraints?"
           ],
-          "senden": "Send enquiry",
-          "datenschutz": "Submitted information will be processed to handle your enquiry. See the <a href=\"{datenschutz}\">privacy notice</a> for details.",
-          "formular_hinweis": "The form is not yet connected to a sending service; please use the email address until then."
+          "datenschutz": "Your email is used only to handle your enquiry. See the <a href=\"{datenschutz}\">privacy notice</a> for details."
         }
       ]
     },
@@ -412,7 +384,7 @@
           "typ": "text",
           "h2": "Contact",
           "absaetze": [
-            "Email: [Your business email address]<br>Phone: [optional]"
+            "Email: niklas.heinzmann@fsh-documentation.de<br>Phone: [optional]"
           ]
         },
         {
@@ -444,7 +416,7 @@
       "typ": "recht",
       "robots": "noindex",
       "title": "Privacy Notice | NAHX Technologies",
-      "description": "Privacy notice of NAHX Technologies: controller, hosting, contact by email and form, rights of data subjects. Reviewed before launch to reflect actual services.",
+      "description": "Privacy notice of NAHX Technologies: controller, hosting, contact by email, rights of data subjects. To be reviewed and completed before the website goes live.",
       "kicker": "Legal",
       "h1": "Privacy Notice",
       "einleitung": "This notice describes which personal data is processed when you visit this website and when you get in touch. The privacy notice must accurately reflect the services and data processing actually used.",
@@ -454,7 +426,7 @@
           "typ": "text",
           "h2": "Controller",
           "absaetze": [
-            "[First and last name], NAHX Technologies, [address], email: [Your business email address]"
+            "[First and last name], NAHX Technologies, [address], email: niklas.heinzmann@fsh-documentation.de"
           ]
         },
         {
@@ -468,7 +440,7 @@
           "typ": "text",
           "h2": "Getting in touch",
           "absaetze": [
-            "If you contact me by email or via the contact form, the information submitted (name, company if given, email address, subject, message) is processed to handle the enquiry and stored for as long as necessary for that purpose. [Enter the form-sending service and legal basis.]"
+            "If you contact me by email, the information submitted (sender address, name, content of the message) is processed to handle the enquiry and stored for as long as necessary for that purpose. There is no contact form. [Enter legal basis and retention period.]"
           ]
         },
         {
@@ -495,5 +467,6 @@
       ]
     }
   },
-  "email": "[Your business email address]"
+  "email": "niklas.heinzmann@fsh-documentation.de",
+  "og_bild_alt": "NAHX Technologies – Understand Technology. Create Solutions."
 }
