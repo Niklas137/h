@@ -306,7 +306,7 @@ class Bau:
             f'<link rel="apple-touch-icon" href="{l("/assets/img/apple-touch-icon.png")}">',
         ]
         for f in self.site["fonts_vorladen"]:
-            teile.append(f'<link rel="preload" href="{l("/assets/fonts/" + f)}" as="font" type="font/woff2" crossorigin>')
+            teile.append(f'<link rel="preload" href="{l("/assets/fonts/" + f)}" as="font" type="{'font/ttf' if f.endswith('.ttf') else 'font/woff2'}" crossorigin>')
         teile.append(f'<link rel="stylesheet" href="{l("/assets/site.css")}">')
         teile.append(f"<script>{KOPF_SCRIPT}</script>")
         if json_ld:

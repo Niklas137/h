@@ -5,7 +5,7 @@
   "_basis_url_hinweis": "Leer, solange die Domain nicht entschieden ist (Entscheidung Niklas 2026-10-25). Ohne Basis-URL erzeugt build.py keine Canonical-, hreflang-, og:url-Angaben und keine Sitemap; alles andere ist relativ. Später hier eintragen oder mit --basis-url bauen.",
   "fonts_vorladen": [
     "source-sans-3-latin.woff2",
-    "poppins-700-latin.woff2"
+    "outfit-variable.ttf"
   ],
   "sprachen": {
     "de": {

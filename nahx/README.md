@@ -12,8 +12,8 @@ externen Schriften, kein Tracking, kein Formular.
 | `build.py` | baut die Seiten aus `inhalt/` nach `dist/` (Python 3.8+, keine Pakete) und prüft sie (`--pruefen`) |
 | `inhalt/site.json` | gemeinsame Daten: Name, Basis-URL (leer, solange die Domain offen ist), Sprachen, Reihenfolge der Seiten |
 | `inhalt/de.json`, `inhalt/en.json` | alle Texte je Sprache, gleiche Seitenschlüssel (`start`, `leistungen`, `projekte`, `ueber-mich`, `zusammenarbeit`, `kontakt`, `impressum`, `datenschutz`) |
-| `assets/site.css` | Designsystem: Schwarz/Navy, Cyan-Akzent, Poppins und Source Sans 3 lokal |
-| `assets/fonts/` | Poppins 600/700 und Source Sans 3 als WOFF2 (SIL Open Font License, Lizenztexte liegen dabei) |
+| `assets/site.css` | Designsystem: Schwarz/Navy, Cyan-Akzent, Outfit und Source Sans 3 lokal |
+| `assets/fonts/` | Outfit (variabel, TTF) für Überschriften und Source Sans 3 (WOFF2) für Text, beide SIL Open Font License, Lizenztexte liegen dabei |
 | `assets/img/` | Logo-Satz (siehe unten), Favicons, Open-Graph-Bild, Logo-Vorlage |
 | `dist/` | **fertige Website zum Hochladen** (wird von `build.py` komplett neu erzeugt) |
 
@@ -70,7 +70,7 @@ Teil der SVG (für eine Claim-Fassung als Vektor fehlt ein Werkzeug, das Schrift
 ## Gestaltung
 
 Schwarz `#05070C` und Navy `#0A0F1A`/`#0E1422`, Cyan `#00C2F8` nur als Akzent (Links, Kicker, Buttons, Piktogramme),
-Text Weiß `#F4F6F8` und Hellgrau `#AEB8C6`. Poppins für Überschriften, Source Sans 3 für Text. Dezentes Raster im
+Text Weiß `#F4F6F8` und Hellgrau `#AEB8C6`. Outfit für Überschriften (frei lizenzierte Alternative zur kommerziellen Ancola, Entscheidung 2026-10-25), Source Sans 3 für Text. Dezentes Raster im
 Aufmacher, ein statisches Diagramm der drei Bereiche, Linien-Piktogramme. Einzige Bewegung: Inhalte blenden beim
 ersten Erscheinen einmal weich ein; bei `prefers-reduced-motion` gar nicht. Keine Dauer-Animationen, kein Glühen,
 kein Korn.
