@@ -333,3 +333,23 @@ html[data-palette="acid"]{--bg:#0A0A0A;--surface:#131313;--line:#2A2A2A;--accent
 html[data-palette="mint"] .szene h1 .zeile:nth-child(2),html[data-palette="circuit"] .szene h1 .zeile:nth-child(2),html[data-palette="acid"] .szene h1 .zeile:nth-child(2){color:var(--accent-2);text-shadow:0 0 24px var(--glow),0 0 60px var(--glow)}
 html[data-palette="mint"] .kicker,html[data-palette="circuit"] .kicker,html[data-palette="acid"] .kicker{text-shadow:0 0 14px var(--glow)}
 html[data-palette="circuit"] .cta{background:var(--accent);color:var(--accent-ink)}
+
+/* Palette „Smaragd“: gemessen aus dem Ancola-Beitrag (zbalosch, 2026-09-28): Schwarz mit Grünstich,
+   Glühen #3B6A45 → #559064 → Kante #B2EEC9, Schrift cremeweiß #FDFAF4 */
+html[data-palette="smaragd"]{--bg:#050705;--surface:#0B100C;--line:#1E2E22;--ink:#FDFAF4;--muted:#A9B8AD;--accent:#559064;--accent-ink:#FDFAF4;--accent-2:#B2EEC9;--band:#020302;--soft:#14231A;--kopf:#050705;--kopf-line:#1E2E22;--glow:rgba(85,144,100,.42);--hell-bg:#F3F7F2;--hell-ink:#0B100C;--hell-muted:#3B5A45;--akzent-rgb:85 144 100;--punkt-rgb:178 238 201;--welt-dunkel-rgb:5 7 5;--welt-hell-rgb:243 247 242;--welt-tinte-rgb:11 16 12}
+html[data-palette="smaragd"] body{color:#FDFAF4}
+html[data-palette="smaragd"] .szene h1{color:#FDFAF4;text-shadow:0 0 30px rgba(85,144,100,.55),0 0 90px rgba(59,106,69,.5)}
+html[data-palette="smaragd"] .szene h1 .zeile:nth-child(2){color:#B2EEC9;text-shadow:0 0 24px rgba(178,238,201,.6),0 0 80px rgba(85,144,100,.6)}
+html[data-palette="smaragd"] .szene h2{text-shadow:0 0 30px rgba(85,144,100,.5)}
+html[data-palette="smaragd"] .kicker{color:#B2EEC9;text-shadow:0 0 14px rgba(85,144,100,.7)}
+html[data-palette="smaragd"] .szene-held::after,html[data-palette="smaragd"] .seite-unter .held::after{content:"";position:absolute;inset:-10%;z-index:-1;pointer-events:none;background:
+  radial-gradient(42% 60% at 68% 42%,rgba(85,144,100,.34),transparent 70%),
+  radial-gradient(30% 40% at 22% 78%,rgba(59,106,69,.28),transparent 70%);filter:blur(10px)}
+html[data-palette="smaragd"] .seite-unter .held{position:relative;overflow:hidden}
+/* Körnung wie Filmkorn, als Inline-SVG ohne externe Datei */
+html[data-palette="smaragd"] body::after{content:"";position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.14;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+html[data-palette="smaragd"] .cta{background:#559064;color:#FDFAF4;box-shadow:0 0 30px rgba(85,144,100,.45)}
+html[data-palette="smaragd"] .cta-zweit{border-color:#B2EEC9;color:#FDFAF4}
+html[data-palette="smaragd"] .ringbild .ring{filter:drop-shadow(0 0 22px rgba(85,144,100,.7))}
+html[data-palette="smaragd"] .kontakt-zeile .email{border-bottom-color:#559064}
