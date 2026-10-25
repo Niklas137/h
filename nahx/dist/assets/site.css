@@ -213,7 +213,8 @@ main.fehler .held{min-height:50vh}
 .seite-start .fuss{position:relative;z-index:1;margin-top:0;background:#070C12}
 .szene{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:96px 20px 64px;box-sizing:border-box}
 .szene-held{min-height:100vh}
-.szene-tunnel,.szene-projekte{min-height:120vh}
+.szene-tunnel{min-height:120vh}
+.szene-projekte{min-height:130vh;align-items:flex-start;padding-top:18vh}
 .szene-ringe,.szene-ablauf{min-height:130vh}
 .szene-innen{max-width:760px;width:100%;display:flex;flex-direction:column;gap:22px;text-align:center;align-items:center;opacity:0;transform:translateY(24px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
 .szene-innen.breit{max-width:1040px}

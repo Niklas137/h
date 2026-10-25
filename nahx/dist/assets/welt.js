@@ -86,7 +86,7 @@
     var t = glatt(Math.max(0, (f - 0.45) / 0.55));
     // Helligkeit folgt der nächsten Szene: sie hellt erst auf, wenn diese von unten ins Bild rollt
     var naechste = szenen[Math.min(i + 1, szenen.length - 1)];
-    var th = glatt(Math.max(0, Math.min(1, (window.scrollY + H - naechste.offsetTop) / (H * 0.6))));
+    var th = glatt(Math.max(0, Math.min(1, (window.scrollY + H * 0.85 - naechste.offsetTop) / (H * 0.35))));
     if (i === szenen.length - 1) { th = 1; }
     var cam = {};
     for (var k2 in a) { cam[k2] = mix(a[k2], b[k2], k2 === 'hell' ? th : t); }
