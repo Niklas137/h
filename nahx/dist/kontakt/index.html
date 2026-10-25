@@ -31,7 +31,7 @@
 <a class="sprung" href="#inhalt">Zum Inhalt springen</a>
 <header class="kopf">
   <div class="innen kopf-innen">
-    <a class="logo" href="/" aria-label="NAHX Technologies – zur Startseite"><svg class="wortmarke" viewBox="-8 0 300 100" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path d="M7 90V10l42 80V10"/><path d="M159 10v80M201 10v80M159 50h42"/><path d="M228 10l56 80M284 10l-56 80"/></g><g fill="none" stroke="#22B8E0" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path d="M76 90l28-80 28 80M90 62h28"/></g></svg><span class="logo-zusatz" aria-hidden="true">Technologies</span></a>
+    <a class="logo" href="/" aria-label="NAHX Technologies – zur Startseite"><svg class="wortmarke" viewBox="-8 0 300 100" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path class="zug" style="--i:0" d="M7 90V10l42 80V10"/><path class="zug" style="--i:2" d="M159 10v80M201 10v80M159 50h42"/><path class="zug" style="--i:3" d="M228 10l56 80M284 10l-56 80"/></g><g fill="none" stroke="#22B8E0" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path class="zug" style="--i:1" d="M76 90l28-80 28 80M90 62h28"/></g></svg><span class="logo-zusatz" aria-hidden="true">Technologies</span></a>
     <nav class="nav" id="nav" aria-label="Navigation"><a href="/">Startseite</a><a href="/leistungen/">Leistungen</a><a href="/projekte/">Projekte</a><a href="/ueber-mich/">Über mich</a><a href="/zusammenarbeit/">Zusammenarbeit</a><a href="/kontakt/" aria-current="page">Kontakt</a></nav>
     <div class="kopf-aktionen">
       <a class="schalter" href="/en/contact/" lang="en" hreflang="en" title="English">EN</a>
@@ -41,17 +41,21 @@
     </div>
   </div>
 </header>
+<div class="fortschritt" aria-hidden="true"><span id="fortschritt"></span></div>
 <main id="inhalt" class="seite">
-  <section class="innen held">
-    <p class="kicker">Kontakt</p>
-    <h1>Was möchtest du umsetzen?</h1>
-    <p class="einleitung">Beschreibe kurz deine Herausforderung, dein Vorhaben oder die Unterstützung, die du benötigst. Ich melde mich, um die Anforderungen und mögliche nächste Schritte mit dir zu besprechen.</p>
+  <section class="held">
     
+    <div class="innen held-innen">
+      <p class="kicker tipp" data-text="Kontakt">Kontakt</p>
+      <h1><span class="wort" style="--i:0">Was</span> <span class="wort" style="--i:1">möchtest</span> <span class="wort" style="--i:2">du</span> <span class="wort" style="--i:3">umsetzen?</span></h1>
+      <p class="einleitung reveal">Beschreibe kurz deine Herausforderung, dein Vorhaben oder die Unterstützung, die du benötigst. Ich melde mich, um die Anforderungen und mögliche nächste Schritte mit dir zu besprechen.</p>
+      
+    </div>
   </section>
   <section class="abschnitt innen" id="kontakt">
   <div class="kontakt-raster">
-    <div class="karte email-karte"><h2>E-Mail</h2><p class="email-text">Schreib mir direkt. Ich antworte in der Regel innerhalb von zwei Werktagen.</p><p><a class="email" href="mailto:niklas.heinzmann@fsh-documentation.de">niklas.heinzmann@fsh-documentation.de</a></p><p class="klein">Deine E-Mail wird nur zur Bearbeitung der Anfrage verwendet. Näheres in der <a href="/datenschutz/">Datenschutzerklärung</a>.</p></div>
-    <div class="karte"><h2>Hilfreich für eine erste Einschätzung</h2><ul><li>Worum geht es: Dokumentation, Software, Automatisierung oder eine Mischung?</li><li>Was ist die Ausgangslage, was soll am Ende anders sein?</li><li>Gibt es einen Zeitrahmen oder feste Rahmenbedingungen?</li></ul></div>
+    <div class="karte email-karte reveal"><h2>E-Mail</h2><p class="email-text">Schreib mir direkt. Ich antworte in der Regel innerhalb von zwei Werktagen.</p><p><a class="email" href="mailto:niklas.heinzmann@fsh-documentation.de">niklas.heinzmann@fsh-documentation.de</a></p><p class="klein">Deine E-Mail wird nur zur Bearbeitung der Anfrage verwendet. Näheres in der <a href="/datenschutz/">Datenschutzerklärung</a>.</p></div>
+    <div class="karte reveal" style="--i:1"><h2>Hilfreich für eine erste Einschätzung</h2><ul><li>Worum geht es: Dokumentation, Software, Automatisierung oder eine Mischung?</li><li>Was ist die Ausgangslage, was soll am Ende anders sein?</li><li>Gibt es einen Zeitrahmen oder feste Rahmenbedingungen?</li></ul></div>
   </div>
 </section>
 </main>
@@ -59,7 +63,7 @@
   <div class="innen">
     <div class="fuss-spalten">
       <div class="marke">
-        <div class="fuss-marke"><svg class="wortmarke" viewBox="-8 0 300 100" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path d="M7 90V10l42 80V10"/><path d="M159 10v80M201 10v80M159 50h42"/><path d="M228 10l56 80M284 10l-56 80"/></g><g fill="none" stroke="#22B8E0" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path d="M76 90l28-80 28 80M90 62h28"/></g></svg><span class="logo-zusatz">Technologies</span></div>
+        <div class="fuss-marke"><svg class="wortmarke" viewBox="-8 0 300 100" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path class="zug" style="--i:0" d="M7 90V10l42 80V10"/><path class="zug" style="--i:2" d="M159 10v80M201 10v80M159 50h42"/><path class="zug" style="--i:3" d="M228 10l56 80M284 10l-56 80"/></g><g fill="none" stroke="#22B8E0" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path class="zug" style="--i:1" d="M76 90l28-80 28 80M90 62h28"/></g></svg><span class="logo-zusatz">Technologies</span></div>
         <p>Technik verstehen. Lösungen schaffen.</p>
         <p lang="en">Understand Technology. Create Solutions.</p>
       </div>
@@ -70,6 +74,6 @@
     <p class="fuss-klein">NAHX Technologies ist eine persönliche Geschäftsbezeichnung und keine eigenständige Gesellschaft. Rechtlich erforderliche Anbieterangaben werden im Impressum entsprechend der tatsächlichen Unternehmens- und Tätigkeitssituation ausgewiesen.</p>
   </div>
 </footer>
-<script>(function(){var d=document.documentElement;var b=document.getElementById('thema');var m=document.querySelector('.menue-schalter');var n=document.getElementById('nav');var L=b?{a:b.getAttribute('data-auto')||b.textContent,l:b.getAttribute('data-light'),k:b.getAttribute('data-dark')}:null;function label(){if(!b){return;}var t=d.getAttribute('data-theme');b.textContent=t==='dark'?L.k:t==='light'?L.l:L.a;}if(b){b.hidden=false;label();b.addEventListener('click',function(){var t=d.getAttribute('data-theme');var x=t==='dark'?'light':t==='light'?null:'dark';if(x){d.setAttribute('data-theme',x);}else{d.removeAttribute('data-theme');}try{if(x){localStorage.setItem('nahx-thema',x);}else{localStorage.removeItem('nahx-thema');}}catch(e){}label();});}if(m&&n){m.addEventListener('click',function(){var o=n.classList.toggle('offen');m.setAttribute('aria-expanded',o?'true':'false');});}})();</script>
+<script>(function(){var d=document.documentElement;var b=document.getElementById('thema');var m=document.querySelector('.menue-schalter');var n=document.getElementById('nav');var L=b?{a:b.getAttribute('data-auto')||b.textContent,l:b.getAttribute('data-light'),k:b.getAttribute('data-dark')}:null;function label(){if(!b){return;}var t=d.getAttribute('data-theme');b.textContent=t==='dark'?L.k:t==='light'?L.l:L.a;}if(b){b.hidden=false;label();b.addEventListener('click',function(){var t=d.getAttribute('data-theme');var x=t==='dark'?'light':t==='light'?null:'dark';if(x){d.setAttribute('data-theme',x);}else{d.removeAttribute('data-theme');}try{if(x){localStorage.setItem('nahx-thema',x);}else{localStorage.removeItem('nahx-thema');}}catch(e){}label();});}if(m&&n){m.addEventListener('click',function(){var o=n.classList.toggle('offen');m.setAttribute('aria-expanded',o?'true':'false');});}var ruhig=window.matchMedia('(prefers-reduced-motion: reduce)').matches;var R=document.querySelectorAll('.reveal');if(ruhig||!('IntersectionObserver' in window)){R.forEach(function(e){e.classList.add('sichtbar');});}else{var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('sichtbar');io.unobserve(x.target);}});},{rootMargin:'0px 0px -10% 0px',threshold:0.15});R.forEach(function(e){io.observe(e);});}var T=document.querySelector('.tipp');if(T&&!ruhig){var txt=T.getAttribute('data-text');T.textContent='';T.classList.add('tippt');var i=0;(function tick(){if(i<=txt.length){T.textContent=txt.slice(0,i);i++;setTimeout(tick,i<3?400:28);}else{T.classList.remove('tippt');T.classList.add('fertig');}})();}var F=document.getElementById('fortschritt');function lauf(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;var y=max>0?h.scrollTop/max:0;if(F){F.style.transform='scaleX('+y+')';}h.style.setProperty('--scroll',String(h.scrollTop));}if(!ruhig){window.addEventListener('scroll',lauf,{passive:true});}lauf();})();</script>
 </body>
 </html>

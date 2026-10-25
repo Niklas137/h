@@ -48,6 +48,21 @@ Weitere Schalter: `--relativ --ausgabe /tmp/vorschau` (Vorschau ohne Webserver, 
 Jede Seite verweist per `hreflang` auf ihre Entsprechung in der anderen Sprache; der Sprachschalter im Kopf
 führt auf dieselbe Seite in der anderen Sprache. Die Farbschema-Wahl wird nur lokal im Browser gespeichert.
 
+## Gestaltung und Bewegung
+
+Dunkel ist Standard (Markenvorgabe), hell nur per Schalter im Kopf. Vorbild sind die gespeicherten Beispiele vom
+2026-10-25: gravierte Zahnräder in Cyan auf Schwarz, Schreibmaschinen-Text, Szenen, die beim Scrollen erscheinen,
+und ein heller Kontaktbereich am Schluss. Alles ohne externe Bibliotheken, Bewegung nur per CSS und wenigen Zeilen
+Skript in `build.py` (`FUSS_SCRIPT`); bei `prefers-reduced-motion` steht alles still.
+
+- Zahnräder werden in `build.py` erzeugt (`zahnrad()`, `buehne()`, `ring()`): Zahnkranz als Polygon, gravierte Ringe,
+  Speichen; sie drehen per CSS und zusätzlich mit dem Scrollen (`--scroll`).
+- Die Wortmarke zeichnet sich beim Laden (Stroke-Animation `zeichnen`), die Überschrift erscheint Wort für Wort,
+  die Kicker-Zeile tippt sich mit Cursor, im Hintergrund wandert ein Farbverlauf.
+- Karten, Schritte und Abschnittsköpfe tragen `reveal` und fahren beim Scrollen gestaffelt ein (IntersectionObserver);
+  die Schrittlinie füllt sich cyan. Unter dem Kopf läuft eine Fortschrittsleiste.
+- Das Kontaktband der Startseite ist hell (`band-hell`), Leistungskarten tragen einen Zahnrad-Ring als Ikone.
+
 ## Marke und Logo
 
 Die Wortmarke „NAHX“ besteht aus vier geometrischen Buchstaben als SVG-Pfade (kein Schriftbedarf), das A in

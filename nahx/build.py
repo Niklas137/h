@@ -52,6 +52,57 @@ def lade(pfad: Path) -> dict:
     return {k: v for k, v in daten.items() if not k.startswith("_")}
 
 
+import math
+
+
+def zahnrad(cx: float, cy: float, r: float, zaehne: int, klasse: str, dauer: int, rueckwaerts: bool = False) -> str:
+    """Zahnrad als SVG-Gruppe: Zahnkranz als Polygon, dazu gravierte Ringe und Speichen. Dreht per CSS."""
+    aussen, innen = r, r * 0.84
+    pts = []
+    for i in range(zaehne * 4):
+        w = 2 * math.pi * i / (zaehne * 4)
+        rad = aussen if i % 4 in (0, 1) else innen
+        pts.append(f"{cx + rad * math.cos(w):.1f},{cy + rad * math.sin(w):.1f}")
+    speichen = "".join(
+        f'<line x1="{cx + r*0.22*math.cos(w):.1f}" y1="{cy + r*0.22*math.sin(w):.1f}" x2="{cx + r*0.62*math.cos(w):.1f}" y2="{cy + r*0.62*math.sin(w):.1f}"/>'
+        for w in [2 * math.pi * k / 6 for k in range(6)]
+    )
+    return (
+        f'<g class="zahnrad {klasse}" style="--dauer:{dauer}s;--richtung:{"reverse" if rueckwaerts else "normal"};transform-origin:{cx}px {cy}px">'
+        f'<polygon points="{" ".join(pts)}"/>'
+        f'<circle cx="{cx}" cy="{cy}" r="{r*0.72:.1f}" class="gravur"/>'
+        f'<circle cx="{cx}" cy="{cy}" r="{r*0.64:.1f}" class="gravur fein"/>'
+        f'<circle cx="{cx}" cy="{cy}" r="{r*0.2:.1f}"/>'
+        f'<g class="speichen">{speichen}</g></g>'
+    )
+
+
+def buehne() -> str:
+    """Zahnradgruppe hinter dem Aufmacher (rein dekorativ, dreht sich mit dem Scrollen weiter)."""
+    return (
+        '<svg class="buehne" viewBox="0 0 600 600" aria-hidden="true" focusable="false">'
+        + zahnrad(360, 300, 190, 24, "z1", 60)
+        + zahnrad(135, 150, 92, 14, "z2", 36, True)
+        + zahnrad(150, 470, 70, 11, "z3", 28, True)
+        + "</svg>"
+    )
+
+
+def ring(nr: int) -> str:
+    """Kleiner Zahnrad-Ring als Ikone für die Leistungskarten."""
+    return (
+        '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false">'
+        + zahnrad(50, 50, 44, 12 + nr * 2, f"r{nr}", 40 + nr * 8, nr % 2 == 1)
+        + "</svg>"
+    )
+
+
+def woerter(text: str) -> str:
+    """Zerlegt eine Überschrift in Wörter, die nacheinander einblenden (HTML-Fragment bleibt erlaubt)."""
+    teile = text.split(" ")
+    return " ".join(f'<span class="wort" style="--i:{i}">{w}</span>' for i, w in enumerate(teile))
+
+
 class Bau:
     def __init__(self, site: dict, basis_url: str, relativ: bool, noindex: bool, ausgabe: Path):
         self.site = site
@@ -115,7 +166,8 @@ class Bau:
       <a class="cta kopf-cta" href="{esc(kontakt)}">{esc(ui["kopf_cta"])}</a>
     </div>
   </div>
-</header>"""
+</header>
+<div class="fortschritt" aria-hidden="true"><span id="fortschritt"></span></div>"""
 
     def fuss(self, sprache: str, pfad: str) -> str:
         t = self.sprachen[sprache]
@@ -151,7 +203,7 @@ class Bau:
         ident = f' id="{esc(a["id"])}"' if a.get("id") else ""
         kopf = ""
         if a.get("h2") or a.get("text"):
-            kopf = '<div class="abschnitt-kopf">'
+            kopf = '<div class="abschnitt-kopf reveal">'
             if a.get("h2"):
                 kopf += f'<h2>{frag(a["h2"])}</h2>'
             if a.get("text"):
@@ -159,12 +211,13 @@ class Bau:
             kopf += "</div>"
         if typ == "karten":
             karten = []
-            for k in a["karten"]:
+            ringe = a.get("id") in ("leistungen", "services")
+            for nr, k in enumerate(a["karten"]):
                 mehr = ""
                 if k.get("link"):
                     l = k["link"]
                     mehr = f'<a class="mehr" href="{esc(self.link(pfad, self.pfad(sprache, l["seite"], l.get("anker"))))}">{esc(l["text"])}</a>'
-                karten.append(f'<article class="karte"><h3>{frag(k["h3"])}</h3><p>{frag(k["text"])}</p>{mehr}</article>')
+                karten.append(f'<article class="karte reveal" style="--i:{nr}">{ring(nr) if ringe else ""}<h3>{frag(k["h3"])}</h3><p>{frag(k["text"])}</p>{mehr}</article>')
             hinweis = ""
             if a.get("hinweis") or a.get("link"):
                 teile = []
@@ -176,19 +229,20 @@ class Bau:
             return f'<section class="abschnitt innen"{ident}>{kopf}<div class="raster">{"".join(karten)}</div>{hinweis}</section>'
         if typ == "listen":
             karten = []
-            for k in a["karten"]:
+            for nr, k in enumerate(a["karten"]):
                 punkte = "".join(f"<li>{frag(p)}</li>" for p in k["punkte"])
-                karten.append(f'<article class="karte" id="{esc(k["id"])}"><h2>{frag(k["h2"])}</h2><ul>{punkte}</ul></article>')
+                karten.append(f'<article class="karte reveal" id="{esc(k["id"])}" style="--i:{nr}">{ring(nr)}<h2>{frag(k["h2"])}</h2><ul>{punkte}</ul></article>')
             return f'<section class="abschnitt innen"{ident}>{kopf}<div class="raster">{"".join(karten)}</div></section>'
         if typ == "schritte":
-            schritte = "".join(f'<li><h3>{frag(s["h3"])}</h3><p>{frag(s["text"])}</p></li>' for s in a["schritte"])
-            return f'<section class="abschnitt innen"{ident}>{kopf}<ol class="schritte">{schritte}</ol></section>'
+            schritte = "".join(f'<li class="reveal" style="--i:{i}"><h3>{frag(x["h3"])}</h3><p>{frag(x["text"])}</p></li>' for i, x in enumerate(a["schritte"]))
+            return f'<section class="abschnitt innen"{ident}>{kopf}<div class="schritte-linie" aria-hidden="true"><span></span></div><ol class="schritte">{schritte}</ol></section>'
         if typ == "text":
             absaetze = "".join(f"<p>{frag(p)}</p>" for p in a["absaetze"])
             h2 = f'<h2>{frag(a["h2"])}</h2>' if a.get("h2") else ""
             return f'<section class="abschnitt innen"{ident}><div class="fliess">{h2}{absaetze}</div></section>'
         if typ == "band":
-            return f'<section class="band"{ident}><div class="innen"><h2>{frag(a["h2"])}</h2><p>{frag(a["text"])}</p>{self.cta_html(sprache, pfad, a["cta"])}</div></section>'
+            hell = " band-hell" if a.get("id") in ("kontakt", "contact") else ""
+            return f'<section class="band{hell}"{ident}><div class="innen reveal"><h2>{frag(a["h2"])}</h2><p>{frag(a["text"])}</p>{self.cta_html(sprache, pfad, a["cta"])}</div></section>'
         if typ == "kontakt":
             return self.kontakt(sprache, pfad, a)
         raise ValueError(f"Unbekannter Abschnittstyp: {typ}")
@@ -203,8 +257,8 @@ class Bau:
         themen = "".join(f"<li>{frag(x)}</li>" for x in a["themen"])
         return f"""<section class="abschnitt innen" id="kontakt">
   <div class="kontakt-raster">
-    <div class="karte email-karte"><h2>{esc(a["email_label"])}</h2><p class="email-text">{frag(a["email_text"])}</p><p>{email_html}</p><p class="klein">{frag(datenschutz)}</p></div>
-    <div class="karte"><h2>{frag(a["themen_h2"])}</h2><ul>{themen}</ul></div>
+    <div class="karte email-karte reveal"><h2>{esc(a["email_label"])}</h2><p class="email-text">{frag(a["email_text"])}</p><p>{email_html}</p><p class="klein">{frag(datenschutz)}</p></div>
+    <div class="karte reveal" style="--i:1"><h2>{frag(a["themen_h2"])}</h2><ul>{themen}</ul></div>
   </div>
 </section>"""
 
@@ -233,7 +287,7 @@ class Bau:
         hauptklasse = s.get("typ", "seite")
         cta = ""
         if s.get("cta"):
-            cta = '<div class="cta-reihe">' + self.cta_html(sprache, pfad, s["cta"]["primaer"]) + self.cta_html(sprache, pfad, s["cta"]["sekundaer"], "cta-zweit") + "</div>"
+            cta = '<div class="cta-reihe reveal">' + self.cta_html(sprache, pfad, s["cta"]["primaer"]) + self.cta_html(sprache, pfad, s["cta"]["sekundaer"], "cta-zweit") + "</div>"
         text = f'<p class="abschnitt-text">{frag(s["text"])}</p>' if s.get("text") else ""
         warn = f'<p class="warnung">{esc(ui["platzhalter_hinweis"])}</p>' if s.get("platzhalter") else ""
         abschnitte = "".join(self.abschnitt(sprache, pfad, a) for a in s["abschnitte"])
@@ -277,11 +331,14 @@ class Bau:
 <body>
 {self.kopf(sprache, seite_key, pfad)}
 <main id="inhalt" class="{hauptklasse}">
-  <section class="innen held">
-    <p class="kicker">{esc(s["kicker"])}</p>
-    <h1>{frag(s["h1"])}</h1>
-    <p class="einleitung">{frag(s["einleitung"])}</p>
-    {text}{warn}{cta}
+  <section class="held{" held-start" if seite_key == "start" else ""}">
+    {buehne() if seite_key == "start" else ""}
+    <div class="innen held-innen">
+      <p class="kicker tipp" data-text="{esc(s["kicker"])}">{esc(s["kicker"])}</p>
+      <h1>{woerter(frag(s["h1"]))}</h1>
+      <p class="einleitung reveal">{frag(s["einleitung"])}</p>
+      {text}{warn}{cta}
+    </div>
   </section>
   {abschnitte}
 </main>
@@ -311,12 +368,12 @@ class Bau:
 <body>
 {self.kopf(sprache, "start", pfad).replace(' aria-current="page"', '')}
 <main id="inhalt" class="fehler">
-  <section class="innen held">
+  <section class="held"><div class="innen held-innen">
     <p class="kicker">404</p>
     <h1>{esc(f["h1"])}</h1>
     <p class="einleitung">{esc(f["text"])}</p>
     <div class="cta-reihe">{self.cta_html(sprache, pfad, f["cta"])}</div>
-  </section>
+  </div></section>
 </main>
 {self.fuss(sprache, pfad)}
 <script>{FUSS_SCRIPT}</script>
@@ -370,8 +427,8 @@ class Bau:
 WORTMARKE = (
     '<svg class="wortmarke" viewBox="-8 0 300 100" aria-hidden="true" focusable="false">'
     '<g fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter">'
-    '<path d="M7 90V10l42 80V10"/><path d="M159 10v80M201 10v80M159 50h42"/><path d="M228 10l56 80M284 10l-56 80"/></g>'
-    '<g fill="none" stroke="#22B8E0" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path d="M76 90l28-80 28 80M90 62h28"/></g></svg>'
+    '<path class="zug" style="--i:0" d="M7 90V10l42 80V10"/><path class="zug" style="--i:2" d="M159 10v80M201 10v80M159 50h42"/><path class="zug" style="--i:3" d="M228 10l56 80M284 10l-56 80"/></g>'
+    '<g fill="none" stroke="#22B8E0" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path class="zug" style="--i:1" d="M76 90l28-80 28 80M90 62h28"/></g></svg>'
 )
 
 KOPF_SCRIPT = (
@@ -386,7 +443,18 @@ FUSS_SCRIPT = (
     "if(b){b.hidden=false;label();b.addEventListener('click',function(){var t=d.getAttribute('data-theme');"
     "var x=t==='dark'?'light':t==='light'?null:'dark';if(x){d.setAttribute('data-theme',x);}else{d.removeAttribute('data-theme');}"
     "try{if(x){localStorage.setItem('nahx-thema',x);}else{localStorage.removeItem('nahx-thema');}}catch(e){}label();});}"
-    "if(m&&n){m.addEventListener('click',function(){var o=n.classList.toggle('offen');m.setAttribute('aria-expanded',o?'true':'false');});}})();"
+    "if(m&&n){m.addEventListener('click',function(){var o=n.classList.toggle('offen');m.setAttribute('aria-expanded',o?'true':'false');});}"
+    "var ruhig=window.matchMedia('(prefers-reduced-motion: reduce)').matches;"
+    "var R=document.querySelectorAll('.reveal');"
+    "if(ruhig||!('IntersectionObserver' in window)){R.forEach(function(e){e.classList.add('sichtbar');});}"
+    "else{var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('sichtbar');io.unobserve(x.target);}});},{rootMargin:'0px 0px -10% 0px',threshold:0.15});R.forEach(function(e){io.observe(e);});}"
+    "var T=document.querySelector('.tipp');"
+    "if(T&&!ruhig){var txt=T.getAttribute('data-text');T.textContent='';T.classList.add('tippt');var i=0;"
+    "(function tick(){if(i<=txt.length){T.textContent=txt.slice(0,i);i++;setTimeout(tick,i<3?400:28);}else{T.classList.remove('tippt');T.classList.add('fertig');}})();}"
+    "var F=document.getElementById('fortschritt');"
+    "function lauf(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;var y=max>0?h.scrollTop/max:0;"
+    "if(F){F.style.transform='scaleX('+y+')';}h.style.setProperty('--scroll',String(h.scrollTop));}"
+    "if(!ruhig){window.addEventListener('scroll',lauf,{passive:true});}lauf();})();"
 )
 
 
