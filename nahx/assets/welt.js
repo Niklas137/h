@@ -9,7 +9,14 @@
   var ctx = c.getContext('2d');
   var ruhig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var W = 0, H = 0, dpr = 1, S = 1;
-  var CYAN = [34, 184, 224], WEISS = [238, 241, 239], DUNKEL = [7, 12, 18], HELL = [246, 245, 242], TINTE = [11, 22, 32];
+  function cssRgb(name, fallback) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    if (!v) { return fallback; }
+    var t = v.split(/[\s,]+/).map(Number);
+    return t.length === 3 && !t.some(isNaN) ? t : fallback;
+  }
+  var CYAN = cssRgb('--akzent-rgb', [34, 184, 224]), WEISS = cssRgb('--punkt-rgb', [238, 241, 239]),
+      DUNKEL = cssRgb('--welt-dunkel-rgb', [7, 12, 18]), HELL = cssRgb('--welt-hell-rgb', [246, 245, 242]), TINTE = cssRgb('--welt-tinte-rgb', [11, 22, 32]);
 
   function size() {
     dpr = Math.min(window.devicePixelRatio || 1, 1.5);
