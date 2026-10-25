@@ -324,3 +324,12 @@ html[data-palette] .ablauf li,html[data-palette] .projekte li,html[data-palette]
 html[data-palette] .seite-start{--welt-ink:color-mix(in srgb,var(--hell-ink) calc(var(--welt-hell,0)*100%),#EEF1EF);--welt-muted:color-mix(in srgb,var(--hell-muted) calc(var(--welt-hell,0)*100%),#C7D0D4)}
 html[data-palette] .kontakt-zeile .email{border-bottom-color:var(--accent-2)}
 html[data-palette] .fortschritt span{background:var(--accent-2);box-shadow:0 0 10px var(--accent-2)}
+
+/* Paletten aus den gespeicherten Beiträgen (dopely.colors, 2026-10-03) */
+html[data-palette="mint"]{--bg:#06130F;--surface:#0B1C16;--line:#1B3A30;--accent:#00FFA3;--accent-ink:#04120C;--accent-2:#00FFA3;--band:#040D0A;--soft:#0F2A21;--kopf:#06130F;--kopf-line:#1B3A30;--glow:rgba(0,255,163,.30);--hell-bg:#E8FFF7;--hell-ink:#06130F;--hell-muted:#34524A;--akzent-rgb:0 255 163;--punkt-rgb:140 255 218;--welt-dunkel-rgb:6 19 15;--welt-hell-rgb:232 255 247;--welt-tinte-rgb:6 19 15}
+html[data-palette="circuit"]{--bg:#050B1A;--surface:#0B1328;--line:#1D2B53;--accent:#0066FF;--accent-ink:#FFFFFF;--accent-2:#00D9FF;--band:#03071A;--soft:#111C3C;--kopf:#050B1A;--kopf-line:#1D2B53;--glow:rgba(0,217,255,.30);--hell-bg:#DDF7FF;--hell-ink:#050B1A;--hell-muted:#1D2B53;--akzent-rgb:0 217 255;--punkt-rgb:221 247 255;--welt-dunkel-rgb:5 11 26;--welt-hell-rgb:221 247 255;--welt-tinte-rgb:5 11 26}
+html[data-palette="acid"]{--bg:#0A0A0A;--surface:#131313;--line:#2A2A2A;--accent:#C6FF00;--accent-ink:#0A0A0A;--accent-2:#C6FF00;--band:#050505;--soft:#1C1F12;--kopf:#0A0A0A;--kopf-line:#2A2A2A;--glow:rgba(198,255,0,.26);--hell-bg:#F8FFF0;--hell-ink:#0A0A0A;--hell-muted:#3D3D3D;--akzent-rgb:198 255 0;--punkt-rgb:103 255 218;--welt-dunkel-rgb:10 10 10;--welt-hell-rgb:248 255 240;--welt-tinte-rgb:10 10 10}
+/* Glow-Look wie in den Vorlagen: leuchtende Überschriften und Punkte */
+html[data-palette="mint"] .szene h1 .zeile:nth-child(2),html[data-palette="circuit"] .szene h1 .zeile:nth-child(2),html[data-palette="acid"] .szene h1 .zeile:nth-child(2){color:var(--accent-2);text-shadow:0 0 24px var(--glow),0 0 60px var(--glow)}
+html[data-palette="mint"] .kicker,html[data-palette="circuit"] .kicker,html[data-palette="acid"] .kicker{text-shadow:0 0 14px var(--glow)}
+html[data-palette="circuit"] .cta{background:var(--accent);color:var(--accent-ink)}
