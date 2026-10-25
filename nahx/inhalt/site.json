@@ -1,0 +1,36 @@
+{
+  "_hinweis": "Gemeinsame Daten beider Sprachen. Schlüssel mit Unterstrich ignoriert build.py. Eckige Klammern sind sichtbare Platzhalter, die vor dem Livegang ersetzt werden.",
+  "name": "NAHX Technologies",
+  "basis_url": "https://nahx.example",
+  "_basis_url_hinweis": "Domain noch nicht entschieden; vor dem Livegang ersetzen oder mit --basis-url bauen.",
+  "logo": "/assets/img/nahx-logo.svg",
+  "fonts_vorladen": [
+    "source-sans-3-latin.woff2",
+    "poppins-700-latin.woff2"
+  ],
+  "sprachen": {
+    "de": {
+      "pfad": "/",
+      "name": "Deutsch",
+      "kurz": "DE",
+      "locale": "de_DE"
+    },
+    "en": {
+      "pfad": "/en/",
+      "name": "English",
+      "kurz": "EN",
+      "locale": "en_US"
+    }
+  },
+  "seiten": [
+    "start",
+    "leistungen",
+    "projekte",
+    "ueber-mich",
+    "zusammenarbeit",
+    "kontakt",
+    "impressum",
+    "datenschutz"
+  ],
+  "_email_hinweis": "Die E-Mail-Adresse steht je Sprache in de.json/en.json unter \"email\"; solange kein @ enthalten ist, wird sie als Platzhalter ohne mailto-Link gezeigt."
+}

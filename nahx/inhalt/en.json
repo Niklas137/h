@@ -1,0 +1,499 @@
+{
+  "_hinweis": "English texts, taken verbatim from the NAHX Technologies website concept (2026-10-25).",
+  "sprache": "en",
+  "claim": "Understand Technology. Create Solutions.",
+  "claim_andere": "Technik verstehen. Lösungen schaffen.",
+  "beschreibung": "NAHX Technologies: technical documentation, software development and automation from one source. Understand technology, clarify requirements, create solutions.",
+  "logo_alt": "NAHX Technologies – monogram (placeholder logo)",
+  "ui": {
+    "sprung": "Skip to content",
+    "menue": "Menu",
+    "thema": "Switch colour scheme",
+    "thema_auto": "Auto",
+    "thema_hell": "Light",
+    "thema_dunkel": "Dark",
+    "sprache_wechseln": "Language",
+    "kopf_cta": "Discuss a Project",
+    "fuss_navigation": "Navigation",
+    "fuss_recht": "Legal",
+    "fuss_sprache": "Language",
+    "fuss_hinweis": "NAHX Technologies is a personal business name, not a separate legal entity. Legally required provider information is given in the legal notice according to the actual business and activity situation.",
+    "platzhalter_hinweis": "Placeholder: this text is not final and will be replaced before launch."
+  },
+  "navigation": [
+    {
+      "text": "Home",
+      "seite": "start"
+    },
+    {
+      "text": "Services",
+      "seite": "leistungen"
+    },
+    {
+      "text": "Projects",
+      "seite": "projekte"
+    },
+    {
+      "text": "About",
+      "seite": "ueber-mich"
+    },
+    {
+      "text": "How We Work",
+      "seite": "zusammenarbeit"
+    },
+    {
+      "text": "Contact",
+      "seite": "kontakt"
+    }
+  ],
+  "rechtsseiten": [
+    "impressum",
+    "datenschutz"
+  ],
+  "fehlerseite": {
+    "title": "Page not found | NAHX Technologies",
+    "h1": "This page does not exist",
+    "text": "The address is misspelled or the page has been moved.",
+    "cta": {
+      "text": "Go to the home page",
+      "seite": "start"
+    }
+  },
+  "seiten": {
+    "start": {
+      "pfad": "",
+      "menue": "Home",
+      "title": "NAHX Technologies – Understand Technology. Create Solutions.",
+      "description": "Technical documentation, software development and automation: NAHX Technologies combines technical expertise with digital development to build clear solutions.",
+      "kicker": "Technical Documentation. Software Development. Automation.",
+      "h1": "Complex Technology. Clear Solutions.",
+      "einleitung": "I combine technical expertise with digital development. From technical documentation to custom software and intelligent automation, I work on solutions that address real requirements and improve workflows.",
+      "cta": {
+        "primaer": {
+          "text": "Explore Projects",
+          "seite": "projekte"
+        },
+        "sekundaer": {
+          "text": "Discuss a Project",
+          "seite": "kontakt"
+        }
+      },
+      "abschnitte": [
+        {
+          "typ": "karten",
+          "id": "services",
+          "h2": "What I Do",
+          "karten": [
+            {
+              "h3": "Technical Documentation",
+              "text": "I help turn complex technical information into clear, structured and traceable documentation.",
+              "link": {
+                "text": "More about technical documentation",
+                "seite": "leistungen",
+                "anker": "technical-documentation"
+              }
+            },
+            {
+              "h3": "Software & Web Applications",
+              "text": "I design and develop digital tools that simplify specific tasks and address individual requirements.",
+              "link": {
+                "text": "More about software & web applications",
+                "seite": "leistungen",
+                "anker": "software-web-applications"
+              }
+            },
+            {
+              "h3": "Automation & AI",
+              "text": "I explore and implement practical ways to streamline repetitive processes and support technical workflows.",
+              "link": {
+                "text": "More about automation & AI",
+                "seite": "leistungen",
+                "anker": "automation-ai"
+              }
+            }
+          ]
+        },
+        {
+          "typ": "schritte",
+          "id": "process",
+          "h2": "From Requirements to Solutions",
+          "text": "Good solutions start with understanding the problem. My approach focuses on requirements, practical value and a transparent implementation process.",
+          "schritte": [
+            {
+              "h3": "Understand",
+              "text": "Identify requirements and challenges."
+            },
+            {
+              "h3": "Design",
+              "text": "Develop a suitable approach."
+            },
+            {
+              "h3": "Build",
+              "text": "Implement and validate the solution."
+            },
+            {
+              "h3": "Improve",
+              "text": "Use feedback to refine the result."
+            }
+          ]
+        },
+        {
+          "typ": "karten",
+          "id": "projects",
+          "h2": "Selected Projects",
+          "karten": [
+            {
+              "h3": "DocumentCheck & ComplianceCheck",
+              "text": "Development and improvement of digital tools that support the review of technical documentation. Project roles, product rights and collaboration with FSH Documentation are clearly defined."
+            },
+            {
+              "h3": "Web Applications & Digital Tools",
+              "text": "Design and implementation of custom applications for specific workflows and organizational needs."
+            },
+            {
+              "h3": "Websites & Digital Platforms",
+              "text": "Technical implementation, structuring and ongoing improvement of websites and digital platforms."
+            }
+          ],
+          "hinweis": "Project descriptions will be reviewed for confidentiality, intellectual property and accurate attribution before publication.",
+          "link": {
+            "text": "All projects",
+            "seite": "projekte"
+          }
+        },
+        {
+          "typ": "band",
+          "id": "contact",
+          "h2": "Let’s Discuss Your Project.",
+          "text": "Do you have a technical challenge, a manual process or an idea for a digital tool? I would be happy to learn about your requirements and discuss possible solutions.",
+          "cta": {
+            "text": "Get in Touch",
+            "seite": "kontakt"
+          }
+        }
+      ]
+    },
+    "leistungen": {
+      "pfad": "services/",
+      "menue": "Services",
+      "title": "Services | NAHX Technologies",
+      "description": "Technical documentation, software and web applications, automation and AI: services by NAHX Technologies at the intersection of documentation and software.",
+      "kicker": "Services",
+      "h1": "Technical Understanding Meets Practical Implementation.",
+      "einleitung": "I work at the intersection of technical documentation, software and digital processes. Depending on the requirements, the right solution may be a documentation service, a custom application or an improved workflow.",
+      "abschnitte": [
+        {
+          "typ": "listen",
+          "karten": [
+            {
+              "id": "technical-documentation",
+              "h2": "Technical Documentation",
+              "punkte": [
+                "Creation and revision of technical content",
+                "Documentation structuring and quality assurance",
+                "Support for editorial review processes",
+                "Improvement of documentation workflows"
+              ]
+            },
+            {
+              "id": "software-web-applications",
+              "h2": "Software & Web Applications",
+              "punkte": [
+                "Design of custom digital tools",
+                "Development of web applications and internal tools",
+                "Prototyping and MVP development",
+                "Technical integration and improvement of existing solutions"
+              ]
+            },
+            {
+              "id": "automation-ai",
+              "h2": "Automation & AI",
+              "punkte": [
+                "Analysis of repetitive workflows",
+                "Design and implementation of practical automation",
+                "AI-assisted information and document workflows",
+                "Prototyping and technical validation"
+              ]
+            }
+          ]
+        },
+        {
+          "typ": "band",
+          "h2": "Not every challenge requires new software.",
+          "text": "I work with you to identify an approach that fits the actual need.",
+          "cta": {
+            "text": "Discuss a Project",
+            "seite": "kontakt"
+          }
+        }
+      ]
+    },
+    "projekte": {
+      "pfad": "projects/",
+      "menue": "Projects",
+      "title": "Projects | NAHX Technologies",
+      "description": "Selected projects by NAHX Technologies across technical documentation, software development and digital platforms: challenge, approach and development status.",
+      "kicker": "Projects",
+      "h1": "Solutions Built Around Real Requirements.",
+      "einleitung": "Explore selected projects across technical documentation, software development and digital platforms.",
+      "text": "Each project explains the original challenge, the approach taken and the actual development status. Confidential information and unapproved content will not be published.",
+      "abschnitte": [
+        {
+          "typ": "karten",
+          "karten": [
+            {
+              "h3": "DocumentCheck & ComplianceCheck",
+              "text": "Digital support for quality reviews of technical documentation and document-related review workflows."
+            },
+            {
+              "h3": "Custom Web Applications",
+              "text": "Digital tools designed to support internal processes, structure information and simplify repetitive tasks."
+            },
+            {
+              "h3": "Websites & Platforms",
+              "text": "Technical implementation and ongoing development of websites and digital platforms."
+            }
+          ],
+          "hinweis": "Further details about scope, technologies and results will be added once verified and approved for publication.",
+          "h2": "Selected work"
+        },
+        {
+          "typ": "band",
+          "h2": "A similar project in mind?",
+          "text": "Briefly describe what it is about. Together we will find out whether and how I can help.",
+          "cta": {
+            "text": "Get in Touch",
+            "seite": "kontakt"
+          }
+        }
+      ]
+    },
+    "ueber-mich": {
+      "pfad": "about/",
+      "menue": "About",
+      "title": "About | NAHX Technologies",
+      "description": "About NAHX Technologies: technical services, development projects and digital solutions under one personal brand. Pragmatic, project-based and transparent work.",
+      "kicker": "About",
+      "h1": "Understand Technology. See the Connections. Build Solutions.",
+      "einleitung": "I work at the intersection of technical documentation and digital development. I care not only about whether something works technically, but also whether it is understandable, practical and suitable for integration into existing workflows.",
+      "abschnitte": [
+        {
+          "typ": "text",
+          "absaetze": [
+            "With NAHX Technologies, I bring together my own technical services, development projects and future digital solutions under a personal brand.",
+            "My approach is pragmatic: understand the requirements, develop an appropriate solution and validate the results transparently.",
+            "I work directly and project by project, with the goal of translating technical complexity into practical outcomes."
+          ]
+        },
+        {
+          "typ": "band",
+          "h2": "A Clear Process. Direct Collaboration.",
+          "text": "How a project with me works, from the first conversation to the handover.",
+          "cta": {
+            "text": "How We Work",
+            "seite": "zusammenarbeit"
+          }
+        }
+      ]
+    },
+    "zusammenarbeit": {
+      "pfad": "how-we-work/",
+      "menue": "How We Work",
+      "title": "How We Work | NAHX Technologies",
+      "description": "How a project with NAHX Technologies works: initial discussion, requirements and scope, implementation in clear steps, review and handover. Direct and clear.",
+      "kicker": "How We Work",
+      "h1": "A Clear Process. Direct Collaboration.",
+      "einleitung": "Four steps from the first conversation to the handover. The exact process depends on the scope, complexity and requirements of each project.",
+      "abschnitte": [
+        {
+          "typ": "schritte",
+          "schritte": [
+            {
+              "h3": "Initial Discussion",
+              "text": "We discuss the current situation, your goals and the challenges to be addressed."
+            },
+            {
+              "h3": "Requirements and Scope",
+              "text": "We define the services needed, the expected deliverables and the relevant constraints."
+            },
+            {
+              "h3": "Implementation",
+              "text": "I work through the agreed scope in clear steps and keep important decisions and open issues transparent."
+            },
+            {
+              "h3": "Review and Handover",
+              "text": "We evaluate the outcome against agreed criteria and coordinate the handover and any next steps."
+            }
+          ],
+          "h2": "The four steps"
+        },
+        {
+          "typ": "band",
+          "h2": "What Would You Like to Build?",
+          "text": "Briefly describe your challenge or project. I will get in touch to discuss the next steps.",
+          "cta": {
+            "text": "Get in Touch",
+            "seite": "kontakt"
+          }
+        }
+      ]
+    },
+    "kontakt": {
+      "pfad": "contact/",
+      "menue": "Contact",
+      "title": "Contact | NAHX Technologies",
+      "description": "Contact NAHX Technologies: briefly describe your challenge, project or support needs. I will get in touch to discuss the requirements and possible next steps.",
+      "kicker": "Contact",
+      "h1": "What Would You Like to Build?",
+      "einleitung": "Briefly describe your challenge, project or support needs. I will get in touch to discuss the requirements and possible next steps.",
+      "abschnitte": [
+        {
+          "typ": "kontakt",
+          "email_label": "Email",
+          "formular_h2": "Or use the contact form",
+          "felder": [
+            {
+              "name": "name",
+              "label": "Name",
+              "typ": "text",
+              "pflicht": true
+            },
+            {
+              "name": "company",
+              "label": "Company (optional)",
+              "typ": "text",
+              "pflicht": false
+            },
+            {
+              "name": "email",
+              "label": "Email address",
+              "typ": "email",
+              "pflicht": true
+            },
+            {
+              "name": "subject",
+              "label": "Subject",
+              "typ": "text",
+              "pflicht": true
+            },
+            {
+              "name": "message",
+              "label": "Message",
+              "typ": "textarea",
+              "pflicht": true
+            }
+          ],
+          "senden": "Send enquiry",
+          "datenschutz": "Submitted information will be processed to handle your enquiry. See the <a href=\"{datenschutz}\">privacy notice</a> for details.",
+          "formular_hinweis": "The form is not yet connected to a sending service; please use the email address until then."
+        }
+      ]
+    },
+    "impressum": {
+      "pfad": "legal-notice/",
+      "menue": "Legal Notice",
+      "typ": "recht",
+      "robots": "noindex",
+      "title": "Legal Notice | NAHX Technologies",
+      "description": "Provider identification for NAHX Technologies, a personal business name. The legally required details will be reviewed and completed before the site goes live.",
+      "kicker": "Legal",
+      "h1": "Legal Notice",
+      "einleitung": "NAHX Technologies is a personal business name, not a separate legal entity. The legally required provider information is given here according to the actual business and activity situation.",
+      "platzhalter": true,
+      "abschnitte": [
+        {
+          "typ": "text",
+          "h2": "Provider",
+          "absaetze": [
+            "[First and last name]<br>NAHX Technologies<br>[Street and number]<br>[Postcode, city]<br>[Country]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Contact",
+          "absaetze": [
+            "Email: [Your business email address]<br>Phone: [optional]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "VAT",
+          "absaetze": [
+            "[VAT identification number or note on small-business status, depending on the actual situation]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Responsible for content",
+          "absaetze": [
+            "[First and last name, address as above]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Note",
+          "absaetze": [
+            "Which details are mandatory depends on legal form, registered office and activity. This page is a template, not legal advice; it will be reviewed and completed before launch."
+          ]
+        }
+      ]
+    },
+    "datenschutz": {
+      "pfad": "privacy/",
+      "menue": "Privacy",
+      "typ": "recht",
+      "robots": "noindex",
+      "title": "Privacy Notice | NAHX Technologies",
+      "description": "Privacy notice of NAHX Technologies: controller, hosting, contact by email and form, rights of data subjects. Reviewed before launch to reflect actual services.",
+      "kicker": "Legal",
+      "h1": "Privacy Notice",
+      "einleitung": "This notice describes which personal data is processed when you visit this website and when you get in touch. The privacy notice must accurately reflect the services and data processing actually used.",
+      "platzhalter": true,
+      "abschnitte": [
+        {
+          "typ": "text",
+          "h2": "Controller",
+          "absaetze": [
+            "[First and last name], NAHX Technologies, [address], email: [Your business email address]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Hosting and server log files",
+          "absaetze": [
+            "The website is static and loads no external scripts, fonts or analytics services. When pages are requested, the hosting provider processes technically necessary data (IP address, time, page requested, browser) in server log files. [Enter hosting provider, location and retention period.]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Getting in touch",
+          "absaetze": [
+            "If you contact me by email or via the contact form, the information submitted (name, company if given, email address, subject, message) is processed to handle the enquiry and stored for as long as necessary for that purpose. [Enter the form-sending service and legal basis.]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Colour scheme setting",
+          "absaetze": [
+            "If you choose a colour scheme (light or dark), this setting is stored only locally in your browser. No data is transmitted."
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Your rights",
+          "absaetze": [
+            "You have the right to access, rectification, erasure, restriction of processing, data portability and objection, as well as the right to lodge a complaint with a supervisory authority. [Enter the competent supervisory authority.]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Note",
+          "absaetze": [
+            "This page is a template, not legal advice. It will be adapted to the services actually used and reviewed before launch."
+          ]
+        }
+      ]
+    }
+  },
+  "email": "[Your business email address]"
+}

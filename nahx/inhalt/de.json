@@ -1,0 +1,499 @@
+{
+  "_hinweis": "Deutsche Texte, wörtlich aus dem Website-Konzept NAHX Technologies (Stand 2026-10-25). Textfelder dürfen <strong>, <em>, <a>, <br> enthalten.",
+  "sprache": "de",
+  "claim": "Technik verstehen. Lösungen schaffen.",
+  "claim_andere": "Understand Technology. Create Solutions.",
+  "beschreibung": "NAHX Technologies: Technische Redaktion, Softwareentwicklung und Automatisierung aus einer Hand. Technik verstehen, Anforderungen klären, Lösungen schaffen.",
+  "logo_alt": "NAHX Technologies – Monogramm (Platzhalter-Logo)",
+  "ui": {
+    "sprung": "Zum Inhalt springen",
+    "menue": "Menü",
+    "thema": "Farbschema wechseln",
+    "thema_auto": "Auto",
+    "thema_hell": "Hell",
+    "thema_dunkel": "Dunkel",
+    "sprache_wechseln": "Sprache",
+    "kopf_cta": "Projekt besprechen",
+    "fuss_navigation": "Navigation",
+    "fuss_recht": "Rechtliches",
+    "fuss_sprache": "Sprache",
+    "fuss_hinweis": "NAHX Technologies ist eine persönliche Geschäftsbezeichnung und keine eigenständige Gesellschaft. Rechtlich erforderliche Anbieterangaben werden im Impressum entsprechend der tatsächlichen Unternehmens- und Tätigkeitssituation ausgewiesen.",
+    "platzhalter_hinweis": "Platzhalter: Dieser Text ist noch nicht fertig und wird vor dem Livegang ersetzt."
+  },
+  "navigation": [
+    {
+      "text": "Startseite",
+      "seite": "start"
+    },
+    {
+      "text": "Leistungen",
+      "seite": "leistungen"
+    },
+    {
+      "text": "Projekte",
+      "seite": "projekte"
+    },
+    {
+      "text": "Über mich",
+      "seite": "ueber-mich"
+    },
+    {
+      "text": "Zusammenarbeit",
+      "seite": "zusammenarbeit"
+    },
+    {
+      "text": "Kontakt",
+      "seite": "kontakt"
+    }
+  ],
+  "rechtsseiten": [
+    "impressum",
+    "datenschutz"
+  ],
+  "fehlerseite": {
+    "title": "Seite nicht gefunden | NAHX Technologies",
+    "h1": "Diese Seite gibt es nicht",
+    "text": "Die Adresse ist falsch geschrieben oder die Seite wurde verschoben.",
+    "cta": {
+      "text": "Zur Startseite",
+      "seite": "start"
+    }
+  },
+  "seiten": {
+    "start": {
+      "pfad": "",
+      "menue": "Startseite",
+      "title": "NAHX Technologies – Technik verstehen. Lösungen schaffen.",
+      "description": "Technische Redaktion, Softwareentwicklung und Automatisierung: NAHX Technologies verbindet technisches Verständnis mit digitaler Entwicklung zu klaren Lösungen.",
+      "kicker": "Technische Redaktion. Softwareentwicklung. Automatisierung.",
+      "h1": "Komplexe Technik. Klare Lösungen.",
+      "einleitung": "Ich verbinde technisches Verständnis mit digitaler Entwicklung. Von technischer Dokumentation über individuelle Software bis hin zu intelligenten Automatisierungen entstehen Lösungen, die reale Anforderungen adressieren und Arbeitsabläufe verbessern.",
+      "cta": {
+        "primaer": {
+          "text": "Projekte entdecken",
+          "seite": "projekte"
+        },
+        "sekundaer": {
+          "text": "Projekt besprechen",
+          "seite": "kontakt"
+        }
+      },
+      "abschnitte": [
+        {
+          "typ": "karten",
+          "id": "leistungen",
+          "h2": "Was ich mache",
+          "karten": [
+            {
+              "h3": "Technische Dokumentation",
+              "text": "Ich unterstütze dabei, komplexe technische Inhalte verständlich, strukturiert und nachvollziehbar aufzubereiten.",
+              "link": {
+                "text": "Mehr zur technischen Redaktion",
+                "seite": "leistungen",
+                "anker": "technische-redaktion"
+              }
+            },
+            {
+              "h3": "Software & Webanwendungen",
+              "text": "Ich konzipiere und entwickle digitale Werkzeuge, die konkrete Aufgaben vereinfachen und individuelle Anforderungen abbilden.",
+              "link": {
+                "text": "Mehr zu Software & Webanwendungen",
+                "seite": "leistungen",
+                "anker": "software-webanwendungen"
+              }
+            },
+            {
+              "h3": "Automatisierung & KI",
+              "text": "Ich entwickle Ansätze, mit denen sich wiederkehrende Prozesse effizienter gestalten und technische Arbeitsabläufe sinnvoll unterstützen lassen.",
+              "link": {
+                "text": "Mehr zu Automatisierung & KI",
+                "seite": "leistungen",
+                "anker": "automatisierung-ki"
+              }
+            }
+          ]
+        },
+        {
+          "typ": "schritte",
+          "id": "ablauf",
+          "h2": "Von der Anforderung zur Lösung",
+          "text": "Gute Lösungen beginnen mit dem Verständnis des Problems. Deshalb stehen die Anforderungen, der praktische Nutzen und eine nachvollziehbare Umsetzung im Mittelpunkt meiner Arbeit.",
+          "schritte": [
+            {
+              "h3": "Verstehen",
+              "text": "Anforderungen und Herausforderungen erfassen."
+            },
+            {
+              "h3": "Konzipieren",
+              "text": "Einen passenden Lösungsansatz entwickeln."
+            },
+            {
+              "h3": "Umsetzen",
+              "text": "Die Lösung technisch realisieren und überprüfen."
+            },
+            {
+              "h3": "Weiterentwickeln",
+              "text": "Erfahrungen nutzen, um das Ergebnis zu verbessern."
+            }
+          ]
+        },
+        {
+          "typ": "karten",
+          "id": "projekte",
+          "h2": "Ausgewählte Projekte",
+          "karten": [
+            {
+              "h3": "DocumentCheck & ComplianceCheck",
+              "text": "Entwicklung und Weiterentwicklung digitaler Werkzeuge zur Unterstützung der Prüfung technischer Dokumentation. Projektrollen, Produktrechte und die Zusammenarbeit mit FSH Documentation werden transparent abgegrenzt."
+            },
+            {
+              "h3": "Webanwendungen & digitale Werkzeuge",
+              "text": "Konzeption und Umsetzung individueller Anwendungen für konkrete Arbeitsabläufe und organisatorische Anforderungen."
+            },
+            {
+              "h3": "Websites & digitale Plattformen",
+              "text": "Technische Umsetzung, Strukturierung und Weiterentwicklung digitaler Auftritte und Plattformen."
+            }
+          ],
+          "hinweis": "Projektbeschreibungen werden vor Veröffentlichung auf Vertraulichkeit, Rechte und korrekte Zuordnung geprüft.",
+          "link": {
+            "text": "Alle Projekte",
+            "seite": "projekte"
+          }
+        },
+        {
+          "typ": "band",
+          "id": "kontakt",
+          "h2": "Lass uns über dein Projekt sprechen.",
+          "text": "Du hast eine technische Herausforderung, einen manuellen Prozess oder eine Idee für ein digitales Werkzeug? Ich freue mich darauf, die Anforderungen kennenzulernen und mögliche Lösungen zu besprechen.",
+          "cta": {
+            "text": "Kontakt aufnehmen",
+            "seite": "kontakt"
+          }
+        }
+      ]
+    },
+    "leistungen": {
+      "pfad": "leistungen/",
+      "menue": "Leistungen",
+      "title": "Leistungen | NAHX Technologies",
+      "description": "Technische Redaktion, Software und Webanwendungen, Automatisierung und KI: Leistungen von NAHX Technologies an der Schnittstelle von Dokumentation und Software.",
+      "kicker": "Leistungen",
+      "h1": "Technisches Verständnis trifft praktische Umsetzung.",
+      "einleitung": "Ich arbeite an der Schnittstelle von technischer Redaktion, Software und digitalen Prozessen. Je nach Anforderung kann daraus eine redaktionelle Leistung, eine individuelle Anwendung oder die Optimierung eines bestehenden Ablaufs entstehen.",
+      "abschnitte": [
+        {
+          "typ": "listen",
+          "karten": [
+            {
+              "id": "technische-redaktion",
+              "h2": "Technische Redaktion",
+              "punkte": [
+                "Erstellung und Überarbeitung technischer Inhalte",
+                "Strukturierung und Qualitätssicherung von Dokumentation",
+                "Unterstützung bei redaktionellen Prüfprozessen",
+                "Verbesserung von Dokumentationsabläufen"
+              ]
+            },
+            {
+              "id": "software-webanwendungen",
+              "h2": "Software & Webanwendungen",
+              "punkte": [
+                "Konzeption individueller digitaler Werkzeuge",
+                "Entwicklung von Webanwendungen und internen Tools",
+                "Umsetzung von Prototypen und MVPs",
+                "Technische Integration und Weiterentwicklung bestehender Lösungen"
+              ]
+            },
+            {
+              "id": "automatisierung-ki",
+              "h2": "Automatisierung & KI",
+              "punkte": [
+                "Analyse wiederkehrender Arbeitsabläufe",
+                "Konzeption und Umsetzung sinnvoller Automatisierungen",
+                "KI-gestützte Unterstützung bei Informations- und Dokumentenprozessen",
+                "Prototypische Entwicklung und technische Erprobung"
+              ]
+            }
+          ]
+        },
+        {
+          "typ": "band",
+          "h2": "Nicht jede Aufgabe benötigt eine neue Software.",
+          "text": "Ich prüfe gemeinsam mit dir, welche Lösung zum tatsächlichen Bedarf passt.",
+          "cta": {
+            "text": "Projekt besprechen",
+            "seite": "kontakt"
+          }
+        }
+      ]
+    },
+    "projekte": {
+      "pfad": "projekte/",
+      "menue": "Projekte",
+      "title": "Projekte | NAHX Technologies",
+      "description": "Ausgewählte Projekte von NAHX Technologies aus technischer Dokumentation, Softwareentwicklung und digitalen Plattformen: Herausforderung, Ansatz und Stand.",
+      "kicker": "Projekte",
+      "h1": "Lösungen, die aus konkreten Anforderungen entstehen.",
+      "einleitung": "Hier findest du eine Auswahl an Projekten aus den Bereichen technische Dokumentation, Softwareentwicklung und digitale Plattformen.",
+      "text": "Jedes Projekt beschreibt die ursprüngliche Herausforderung, den Lösungsansatz und den tatsächlichen Entwicklungsstand. Vertrauliche Informationen und nicht freigegebene Inhalte werden nicht veröffentlicht.",
+      "abschnitte": [
+        {
+          "typ": "karten",
+          "karten": [
+            {
+              "h3": "DocumentCheck & ComplianceCheck",
+              "text": "Digitale Unterstützung bei der Qualitätsprüfung technischer Dokumentation und bei dokumentbezogenen Prüfabläufen."
+            },
+            {
+              "h3": "Individuelle Webanwendungen",
+              "text": "Digitale Werkzeuge zur Unterstützung interner Prozesse, zur Strukturierung von Informationen und zur Vereinfachung wiederkehrender Aufgaben."
+            },
+            {
+              "h3": "Websites & Plattformen",
+              "text": "Technische Umsetzung und Weiterentwicklung von Websites und digitalen Plattformen."
+            }
+          ],
+          "hinweis": "Weitere Details zu Umfang, Technologien und Ergebnissen werden ergänzt, sobald sie geprüft und zur Veröffentlichung freigegeben sind.",
+          "h2": "Projektauswahl"
+        },
+        {
+          "typ": "band",
+          "h2": "Ein ähnliches Vorhaben?",
+          "text": "Beschreibe kurz, worum es geht. Wir klären gemeinsam, ob und wie ich unterstützen kann.",
+          "cta": {
+            "text": "Kontakt aufnehmen",
+            "seite": "kontakt"
+          }
+        }
+      ]
+    },
+    "ueber-mich": {
+      "pfad": "ueber-mich/",
+      "menue": "Über mich",
+      "title": "Über mich | NAHX Technologies",
+      "description": "Über NAHX Technologies: technische Dienstleistungen, Entwicklungsprojekte und digitale Lösungen unter einer persönlichen Marke. Pragmatisch und nachvollziehbar.",
+      "kicker": "Über mich",
+      "h1": "Technik verstehen. Zusammenhänge erkennen. Lösungen entwickeln.",
+      "einleitung": "Ich arbeite an der Schnittstelle zwischen technischer Dokumentation und digitaler Entwicklung. Mich interessiert nicht nur, ob etwas technisch funktioniert, sondern auch, ob es verständlich, praktisch nutzbar und sinnvoll in bestehende Abläufe integrierbar ist.",
+      "abschnitte": [
+        {
+          "typ": "text",
+          "absaetze": [
+            "Mit NAHX Technologies bündele ich meine eigenen technischen Dienstleistungen, Entwicklungsprojekte und zukünftigen digitalen Lösungen unter einer persönlichen Marke.",
+            "Meine Arbeitsweise ist pragmatisch: Anforderungen verstehen, eine passende Lösung entwickeln und Ergebnisse nachvollziehbar überprüfen.",
+            "Ich arbeite direkt, projektbezogen und mit dem Anspruch, technische Komplexität in praktikable Ergebnisse zu übersetzen."
+          ]
+        },
+        {
+          "typ": "band",
+          "h2": "Klarer Ablauf. Direkte Zusammenarbeit.",
+          "text": "Wie ein Projekt mit mir abläuft, vom Erstgespräch bis zur Übergabe.",
+          "cta": {
+            "text": "Zur Zusammenarbeit",
+            "seite": "zusammenarbeit"
+          }
+        }
+      ]
+    },
+    "zusammenarbeit": {
+      "pfad": "zusammenarbeit/",
+      "menue": "Zusammenarbeit",
+      "title": "Zusammenarbeit | NAHX Technologies",
+      "description": "So läuft ein Projekt mit NAHX Technologies: Erstgespräch, Anforderungen und Umfang, Umsetzung in nachvollziehbaren Schritten, Prüfung und Übergabe am Ende.",
+      "kicker": "Zusammenarbeit",
+      "h1": "Klarer Ablauf. Direkte Zusammenarbeit.",
+      "einleitung": "Vier Schritte vom ersten Gespräch bis zur Übergabe. Der konkrete Ablauf richtet sich nach Umfang, Komplexität und Anforderungen des jeweiligen Projekts.",
+      "abschnitte": [
+        {
+          "typ": "schritte",
+          "schritte": [
+            {
+              "h3": "Erstgespräch",
+              "text": "Wir besprechen die Ausgangssituation, deine Ziele und die bestehenden Herausforderungen."
+            },
+            {
+              "h3": "Anforderungen und Umfang",
+              "text": "Wir legen fest, welche Leistungen benötigt werden, welche Ergebnisse erwartet werden und welche Rahmenbedingungen gelten."
+            },
+            {
+              "h3": "Umsetzung",
+              "text": "Ich bearbeite das vereinbarte Projekt in nachvollziehbaren Schritten und halte relevante Entscheidungen und offene Punkte transparent."
+            },
+            {
+              "h3": "Prüfung und Übergabe",
+              "text": "Wir überprüfen das Ergebnis anhand der vereinbarten Kriterien und stimmen die Übergabe sowie mögliche weitere Schritte ab."
+            }
+          ],
+          "h2": "Die vier Schritte"
+        },
+        {
+          "typ": "band",
+          "h2": "Was möchtest du umsetzen?",
+          "text": "Beschreibe kurz deine Herausforderung oder dein Vorhaben. Ich melde mich, um die nächsten Schritte zu besprechen.",
+          "cta": {
+            "text": "Kontakt aufnehmen",
+            "seite": "kontakt"
+          }
+        }
+      ]
+    },
+    "kontakt": {
+      "pfad": "kontakt/",
+      "menue": "Kontakt",
+      "title": "Kontakt | NAHX Technologies",
+      "description": "Kontakt zu NAHX Technologies: Beschreibe kurz deine Herausforderung oder dein Vorhaben. Ich melde mich, um Anforderungen und nächste Schritte zu besprechen.",
+      "kicker": "Kontakt",
+      "h1": "Was möchtest du umsetzen?",
+      "einleitung": "Beschreibe kurz deine Herausforderung, dein Vorhaben oder die Unterstützung, die du benötigst. Ich melde mich, um die Anforderungen und mögliche nächste Schritte mit dir zu besprechen.",
+      "abschnitte": [
+        {
+          "typ": "kontakt",
+          "email_label": "E-Mail",
+          "formular_h2": "Oder per Kontaktformular",
+          "felder": [
+            {
+              "name": "name",
+              "label": "Name",
+              "typ": "text",
+              "pflicht": true
+            },
+            {
+              "name": "unternehmen",
+              "label": "Unternehmen (optional)",
+              "typ": "text",
+              "pflicht": false
+            },
+            {
+              "name": "email",
+              "label": "E-Mail-Adresse",
+              "typ": "email",
+              "pflicht": true
+            },
+            {
+              "name": "thema",
+              "label": "Thema der Anfrage",
+              "typ": "text",
+              "pflicht": true
+            },
+            {
+              "name": "nachricht",
+              "label": "Nachricht",
+              "typ": "textarea",
+              "pflicht": true
+            }
+          ],
+          "senden": "Anfrage senden",
+          "datenschutz": "Mit dem Absenden werden deine Angaben zur Bearbeitung deiner Anfrage verarbeitet. Näheres in der <a href=\"{datenschutz}\">Datenschutzerklärung</a>.",
+          "formular_hinweis": "Das Formular ist noch nicht an einen Versanddienst angebunden; bis dahin bitte die E-Mail-Adresse nutzen."
+        }
+      ]
+    },
+    "impressum": {
+      "pfad": "impressum/",
+      "menue": "Impressum",
+      "typ": "recht",
+      "robots": "noindex",
+      "title": "Impressum | NAHX Technologies",
+      "description": "Anbieterkennzeichnung von NAHX Technologies, einer persönlichen Geschäftsbezeichnung. Pflichtangaben werden vor dem Livegang geprüft und vollständig ergänzt.",
+      "kicker": "Rechtliches",
+      "h1": "Impressum",
+      "einleitung": "NAHX Technologies ist eine persönliche Geschäftsbezeichnung und keine eigenständige Gesellschaft. Die rechtlich erforderlichen Anbieterangaben werden hier entsprechend der tatsächlichen Unternehmens- und Tätigkeitssituation ausgewiesen.",
+      "platzhalter": true,
+      "abschnitte": [
+        {
+          "typ": "text",
+          "h2": "Anbieter",
+          "absaetze": [
+            "[Vor- und Nachname]<br>NAHX Technologies<br>[Straße und Hausnummer]<br>[PLZ Ort]<br>[Land]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Kontakt",
+          "absaetze": [
+            "E-Mail: [Deine geschäftliche E-Mail-Adresse]<br>Telefon: [optional]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Umsatzsteuer",
+          "absaetze": [
+            "[Umsatzsteuer-Identifikationsnummer oder Hinweis auf Kleinunternehmerregelung, je nach tatsächlicher Situation]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Verantwortlich für den Inhalt",
+          "absaetze": [
+            "[Vor- und Nachname, Anschrift wie oben]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Hinweis",
+          "absaetze": [
+            "Welche Angaben hier verpflichtend sind, hängt von Rechtsform, Sitz und Tätigkeit ab. Diese Seite ist eine Vorlage und keine Rechtsberatung; sie wird vor dem Livegang geprüft und vervollständigt."
+          ]
+        }
+      ]
+    },
+    "datenschutz": {
+      "pfad": "datenschutz/",
+      "menue": "Datenschutz",
+      "typ": "recht",
+      "robots": "noindex",
+      "title": "Datenschutz | NAHX Technologies",
+      "description": "Datenschutzerklärung von NAHX Technologies: Verantwortlicher, Hosting, Kontakt per E-Mail und Formular, Rechte der Betroffenen. Wird vor dem Livegang geprüft.",
+      "kicker": "Rechtliches",
+      "h1": "Datenschutzerklärung",
+      "einleitung": "Diese Erklärung beschreibt, welche personenbezogenen Daten beim Besuch dieser Website und bei einer Kontaktaufnahme verarbeitet werden. Die konkrete Datenschutzerklärung muss die tatsächlich eingesetzten Dienste und Datenverarbeitungen abbilden.",
+      "platzhalter": true,
+      "abschnitte": [
+        {
+          "typ": "text",
+          "h2": "Verantwortlicher",
+          "absaetze": [
+            "[Vor- und Nachname], NAHX Technologies, [Anschrift], E-Mail: [Deine geschäftliche E-Mail-Adresse]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Hosting und Server-Logdateien",
+          "absaetze": [
+            "Die Website ist statisch und lädt keine externen Skripte, Schriften oder Analysedienste. Beim Abruf verarbeitet der Hosting-Anbieter technisch notwendige Daten (IP-Adresse, Zeitpunkt, aufgerufene Seite, Browser) in Server-Logdateien. [Hosting-Anbieter, Sitz und Speicherdauer eintragen.]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Kontaktaufnahme",
+          "absaetze": [
+            "Wenn du per E-Mail oder über das Kontaktformular Kontakt aufnimmst, werden die übermittelten Angaben (Name, gegebenenfalls Unternehmen, E-Mail-Adresse, Thema, Nachricht) zur Bearbeitung der Anfrage verarbeitet und gespeichert, solange dies für die Bearbeitung erforderlich ist. [Dienst für den Formularversand und Rechtsgrundlage eintragen.]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Farbschema-Einstellung",
+          "absaetze": [
+            "Wählst du ein Farbschema (hell oder dunkel), wird diese Einstellung ausschließlich lokal in deinem Browser gespeichert. Es werden dabei keine Daten übertragen."
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Deine Rechte",
+          "absaetze": [
+            "Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch sowie das Recht, dich bei einer Aufsichtsbehörde zu beschweren. [Zuständige Aufsichtsbehörde eintragen.]"
+          ]
+        },
+        {
+          "typ": "text",
+          "h2": "Hinweis",
+          "absaetze": [
+            "Diese Seite ist eine Vorlage und keine Rechtsberatung. Sie wird vor dem Livegang an die tatsächlich eingesetzten Dienste angepasst und geprüft."
+          ]
+        }
+      ]
+    }
+  },
+  "email": "[Deine geschäftliche E-Mail-Adresse]"
+}
