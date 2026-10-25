@@ -1,21 +1,20 @@
 # NAHX Technologies – Website (statisch, zweisprachig)
 
-Website zur persönlichen Marke NAHX Technologies, gebaut aus dem Website-Konzept vom 2026-10-25
-(Claim „Technik verstehen. Lösungen schaffen.“ / „Understand Technology. Create Solutions.“).
-Gleiche Bauweise wie `website/` (FSH-Documentation): Inhalte als JSON, ein Python-Skript ohne
-Abhängigkeiten, fertige Dateien in `dist/`. Kein externes Skript, keine externen Schriften, kein Tracking.
+Website zur persönlichen Geschäftsmarke NAHX Technologies (keine Gesellschaft). Claim „Technik verstehen. Lösungen
+schaffen.“ / „Understand Technology. Create Solutions.“ Gleiche Bauweise wie `website/` (FSH-Documentation):
+Inhalte als JSON, ein Python-Skript ohne Abhängigkeiten, fertige Dateien in `dist/`. Kein externes Skript, keine
+externen Schriften, kein Tracking, kein Formular.
 
 ## Ordner
 
 | Pfad | Zweck |
 |---|---|
-| `build.py` | baut die Seiten aus `inhalt/` nach `dist/` (Python 3.8+, keine Pakete) |
-| `inhalt/site.json` | gemeinsame Daten: Name, Basis-URL, Sprachen mit Wurzelpfad, Reihenfolge der Seiten |
+| `build.py` | baut die Seiten aus `inhalt/` nach `dist/` (Python 3.8+, keine Pakete) und prüft sie (`--pruefen`) |
+| `inhalt/site.json` | gemeinsame Daten: Name, Basis-URL (leer, solange die Domain offen ist), Sprachen, Reihenfolge der Seiten |
 | `inhalt/de.json`, `inhalt/en.json` | alle Texte je Sprache, gleiche Seitenschlüssel (`start`, `leistungen`, `projekte`, `ueber-mich`, `zusammenarbeit`, `kontakt`, `impressum`, `datenschutz`) |
-| `assets/site.css` | Stylesheet, dunkel als Standard, hell per Schalter (nicht auf der Startseite) |
-| `assets/welt.js` | Live-Animation „Aus Komplexität wird Struktur“ (Canvas, Szenen-Kamera, Schreibmaschine), auf allen Seiten |
-| `assets/fonts/` | Poppins und Source Sans 3 als WOFF2 (SIL Open Font License, Lizenztexte liegen dabei) |
-| `assets/img/` | `nahx-wortmarke.svg` (helle Wortmarke, Buchstaben als Pfade, A in Cyan `#22B8E0`), `favicon.svg`, `favicon.ico` (32/16 px), `apple-touch-icon.png` (180 px), `icon-512.png`, `og-nahx.jpg` (1200 × 630) |
+| `assets/site.css` | Designsystem: Schwarz/Navy, Cyan-Akzent, Poppins und Source Sans 3 lokal |
+| `assets/fonts/` | Poppins 600/700 und Source Sans 3 als WOFF2 (SIL Open Font License, Lizenztexte liegen dabei) |
+| `assets/img/` | Logo-Satz (siehe unten), Favicons, Open-Graph-Bild, Logo-Vorlage |
 | `dist/` | **fertige Website zum Hochladen** (wird von `build.py` komplett neu erzeugt) |
 
 ## Bauen und prüfen
@@ -24,79 +23,69 @@ Abhängigkeiten, fertige Dateien in `dist/`. Kein externes Skript, keine externe
 python3 nahx/build.py --pruefen
 ```
 
-Baut `nahx/dist/` und prüft: genau eine h1 je Seite, Überschriftenfolge, Title bis 60 Zeichen,
-Description 150–160 Zeichen, Alt-Attribut an jedem Bild, Canonical, hreflang (de, en, x-default),
-JSON-LD, alle internen Links und Anker, Sitemap vollständig. Fehler ergeben Exit-Code 1.
+Prüft: `lang`-Attribut, genau eine h1 je Seite, Überschriftenfolge, Title bis 60 Zeichen, Description 150–160 Zeichen,
+Alt-Attribute, JSON-LD, alle internen Links und Anker. Mit gesetzter Basis-URL zusätzlich Canonical, hreflang
+(de, en, x-default) und Sitemap. Fehler ergeben Exit-Code 1.
 
-Weitere Schalter: `--relativ --ausgabe /tmp/vorschau` (Vorschau ohne Webserver, `index.html` per Doppelklick),
-`--basis-url https://…` (Canonical, hreflang, Sitemap), `--noindex` für den Testbetrieb (alle Seiten
-`noindex, nofollow`, `robots.txt` sperrt, keine Sitemap; vor dem Livegang ohne den Schalter neu bauen).
+Schalter: `--relativ --ausgabe /tmp/vorschau` (Vorschau ohne Webserver), `--basis-url https://…` (sobald die
+Domain feststeht), `--noindex` (Testbetrieb: alle Seiten `noindex`, `robots.txt` sperrt).
+
+## Domain offen: was zurückgestellt ist
+
+`basis_url` in `site.json` ist leer (Entscheidung 2026-10-25: Domain später). Solange sie leer ist, erzeugt der Bau
+**keine** Canonical-Links, keine hreflang-Alternates, kein `og:url`, keine Sitemap und keinen Sitemap-Eintrag in
+`robots.txt`; `og:image` ist dann relativ. Alle internen Links sind pfadbezogen und domainunabhängig. Zum Livegang
+die Basis-URL eintragen (oder `--basis-url`), neu bauen; der Prüflauf verlangt dann Canonical, hreflang und Sitemap.
 
 ## Seiten
 
-| Deutsch | English |
-|---|---|
-| `/` | `/en/` |
-| `/leistungen/` | `/en/services/` |
-| `/projekte/` | `/en/projects/` |
-| `/ueber-mich/` | `/en/about/` |
-| `/zusammenarbeit/` | `/en/how-we-work/` |
-| `/kontakt/` | `/en/contact/` |
-| `/impressum/` (noindex) | `/en/legal-notice/` (noindex) |
-| `/datenschutz/` (noindex) | `/en/privacy/` (noindex) |
-| `/404.html` | `/en/404.html` |
-
-Jede Seite verweist per `hreflang` auf ihre Entsprechung in der anderen Sprache; der Sprachschalter im Kopf
-führt auf dieselbe Seite in der anderen Sprache. Die Farbschema-Wahl wird nur lokal im Browser gespeichert.
-
-## Gestaltung und Bewegung
-
-Motiv **„Aus Komplexität wird Struktur“**, abgeleitet aus dem Claim: Eine **Live-Animation auf Canvas**
-(`assets/welt.js`, ohne Bibliotheken) zeigt ein Feld aus Lichtpunkten und Leiterbahnen. Zu Beginn liegen die
-Punkte chaotisch und sind lose verbunden; beim Scrollen ordnen sie sich zu einem klaren Raster, Signale laufen als
-Lichtimpulse über die Bahnen, Lötpunkte bekommen Ringe. Zu den Leistungen bündelt sich das Feld in drei leuchtende
-Knoten mit Umlaufbahn, zum Ablauf laufen Signale auf waagerechten Bahnen, der Schluss wird hell (Kontakt). Das Bild
-ist deterministisch (fester Zufalls-Seed), läuft dauerhaft und reagiert zusätzlich auf das Scrollen.
-
-Startseite: sechs Vollbild-Szenen (`start_main` in `build.py`), jede mit Kamera über `data-zoom`, `data-rot`,
-`data-x/y`, `data-ordnung` (0 = Chaos, 1 = Raster), `data-hubs`, `data-fluss`, `data-hell`; zwischen den Szenen wird
-weich überblendet, die Aufhellung folgt dem Hereinrollen der Kontakt-Szene. Texte tippen sich Satz für Satz mit
-Cursor, sobald die Szene im Bild ist. Kopf und Text färben über `--welt-hell` mit. Navigation auf drei Ziele reduziert.
-
-Unterseiten: dieselbe Animation als ruhige, geordnete Fassung hinter dem Inhalt (Kamera aus Vorgabewerten in
-`welt.js`, halbe Deckkraft), Inhalt auf leicht abgedunkeltem Verlauf, Linien statt Kästen, Knoten-Ikonen,
-getippte Kicker-Zeile und Wort-für-Wort-Überschrift. Die Inhalte kommen unverändert aus `de.json`/`en.json`.
-
-Bei `prefers-reduced-motion` steht die Animation still (Standbild, nur beim Scrollen neu gezeichnet), Texte
-erscheinen sofort. Pixeldichte ist auf 1,5 begrenzt, bei verborgenem Tab pausiert die Zeichenschleife.
+| Deutsch | English | Inhalt |
+|---|---|---|
+| `/` | `/en/` | Aufmacher mit Diagramm der drei Bereiche, Leistungen, Projekte (Kurzkarten), Ablauf, Arbeitsprinzipien, Kontaktaufruf |
+| `/leistungen/` | `/en/services/` | je Bereich: Beschreibung, typische Herausforderungen, Leistungen, Anwendungsfälle, für wen |
+| `/projekte/` | `/en/projects/` | je Projekt: Ausgangssituation, Herausforderung, eigener Beitrag, Lösungsansatz, Technologien, Status |
+| `/ueber-mich/` | `/en/about/` | Person hinter der Marke, Arbeitsweise |
+| `/zusammenarbeit/` | `/en/how-we-work/` | fünf Schritte: Erstgespräch, Anforderungsklärung, Konzeption, Umsetzung, Prüfung und Übergabe |
+| `/kontakt/` | `/en/contact/` | nur E-Mail (mailto), Hinweise für eine erste Anfrage |
+| `/impressum/`, `/datenschutz/` (noindex) | `/en/legal-notice/`, `/en/privacy/` (noindex) | Vorlagen mit Platzhaltern |
+| `/404.html` | `/en/404.html` | Fehlerseite |
 
 ## Marke und Logo
 
-Farbwelt **„Smaragd“** (Entscheidung Niklas 2026-10-25), gemessen aus einer gespeicherten Vorlage: Hintergrund
-Schwarz mit Grünstich `#050705`, Glühen `#3B6A45` bis `#559064` (Akzent, Buttons), Glühkante `#B2EEC9`
-(Lichtpunkte, Kicker, A der Wortmarke), Schrift cremeweiß `#FDFAF4`. Dazu gehören ein weiches grünes Glühen
-hinter Überschriften und ein feines Filmkorn über der Seite (eingebettete SVG-Rauschtextur). Alle Werte stehen als
-Tokens in `:root` von `assets/site.css`; die Canvas-Animation liest sie über `--akzent-rgb`, `--punkt-rgb` und
-`--welt-*-rgb`. Das helle Schema (Schalter auf Unterseiten) ist dieselbe Welt invertiert.
+Vorlage: `assets/img/nahx-logo-vorlage.png` (Rasterbild 1672 × 941, geliefert 2026-10-25). Daraus wurden die
+Buchstaben vermessen und als **echte Vektoren** nachgebaut, nicht verpackt:
 
-Die Wortmarke „NAHX“ besteht aus vier geometrischen Buchstaben als SVG-Pfade (kein Schriftbedarf), das A in der
-Glühkante `#B2EEC9`, die übrigen Buchstaben in `currentColor`. Im Seitenkopf und in der Fußzeile wird sie inline
-ausgegeben (`WORTMARKE` in `build.py`) und zeichnet sich beim Laden. `assets/img/nahx-wortmarke.svg` ist die
-eigenständige helle Fassung. Favicon ist das A auf `#050705`; PNG, ICO und Open-Graph-Bild wurden daraus gerendert.
+| Datei | Verwendung |
+|---|---|
+| `nahx-logo.svg` | Hauptlogo für dunklen Grund: Wortmarke (Silberverlauf `#F9F9F9` → `#C9C8C8`, A in Cyan `#02EEFB` → `#00A4F7`), TECHNOLOGIES als Strichbuchstaben, Cyan-Linie |
+| `nahx-logo-dunkel.svg` | dieselbe Geometrie mit dunklen Buchstaben für hellen Grund |
+| `nahx-wortmarke.svg` | nur „NAHX“ |
+| `favicon.svg`, `favicon.ico` (32/16), `apple-touch-icon.png` (180), `icon-512.png` | das Cyan-A auf Schwarz |
+| `og-nahx.jpg` | Open-Graph-Bild 1200 × 630 aus dem Vektorlogo gerendert |
 
-## Platzhalter und offene Entscheidungen
+Im Seitenkopf und in der Fußzeile steht die Wortmarke inline (`WORTMARKE` in `build.py`, Buchstaben in
+`currentColor`), daneben „Technologies“ als Text; unter 900 px nur die Wortmarke. Der Claim ist echter Text, nicht
+Teil der SVG (für eine Claim-Fassung als Vektor fehlt ein Werkzeug, das Schrift in Pfade wandelt).
 
-Alles in eckigen Klammern ist bewusst sichtbarer Platzhalter und wird vor dem Livegang ersetzt:
+## Gestaltung
 
-- **Domain**: `basis_url` in `site.json` steht auf `https://nahx.example` (Entscheidung: später). Vor dem Livegang ersetzen oder mit `--basis-url` bauen; interne Links sind domainunabhängig.
-- **E-Mail-Adresse**: `email` in `de.json` und `en.json`, derzeit die vorhandene Adresse `niklas.heinzmann@fsh-documentation.de` (Entscheidung: vorerst weiterverwenden). Solange kein `@` enthalten ist, würde der Text als Platzhalter ohne `mailto`-Link gezeigt. Impressum und Datenschutz nennen dieselbe Adresse im Text.
-- **Kontakt**: nur per E-Mail (Entscheidung), kein Formular, kein Versanddienst, keine Eingabeverarbeitung auf der Website.
-- **Impressum und Datenschutz**: Vorlagen mit Platzhaltern (Name, Anschrift, USt, Hosting-Anbieter, Rechtsgrundlage), als `noindex` markiert. Keine Rechtsberatung; vor dem Livegang prüfen.
-- **Projekte**: Nur die drei Kurzbeschreibungen aus dem Konzept. Details zu DocumentCheck & ComplianceCheck kommen erst nach Prüfung von Vertraulichkeit, Rechten und Zuordnung zu FSH Documentation.
+Schwarz `#05070C` und Navy `#0A0F1A`/`#0E1422`, Cyan `#00C2F8` nur als Akzent (Links, Kicker, Buttons, Piktogramme),
+Text Weiß `#F4F6F8` und Hellgrau `#AEB8C6`. Poppins für Überschriften, Source Sans 3 für Text. Dezentes Raster im
+Aufmacher, ein statisches Diagramm der drei Bereiche, Linien-Piktogramme. Einzige Bewegung: Inhalte blenden beim
+ersten Erscheinen einmal weich ein; bei `prefers-reduced-motion` gar nicht. Keine Dauer-Animationen, kein Glühen,
+kein Korn.
+
+## Platzhalter und offene Punkte
+
+- **Domain**: siehe oben.
+- **E-Mail**: `email` in `de.json`/`en.json` ist die vorhandene Adresse `niklas.heinzmann@fsh-documentation.de` (Entscheidung: weiterverwenden). Steht kein `@` im Wert, wird er als sichtbarer Platzhalter ohne `mailto` gezeigt.
+- **Impressum, Datenschutz**: Vorlagen mit Platzhaltern in eckigen Klammern (Name, Anschrift, Umsatzsteuer, Hosting-Anbieter, Rechtsgrundlage, Aufsichtsbehörde), `noindex`. Keine Rechtsberatung; vor dem Livegang prüfen.
+- **Projekte**: nur geprüfte Kurzangaben mit Status; Technologien und Details folgen nach Freigabe. DocumentCheck & ComplianceCheck ist als „in Abstimmung mit FSH Documentation“ gekennzeichnet und wird nicht als eigenes Produkt dargestellt.
+- **Reaktionszeit** „in der Regel innerhalb von zwei Werktagen“ auf der Kontaktseite ist eine Formulierung von 2026-10-25, keine Zusage aus dem Konzept; anpassen, falls sie nicht gelten soll.
 
 ## Veröffentlichen
 
-`dist/` auf einen beliebigen statischen Hoster laden (GitHub Pages, Cloudflare Pages, Netlify, STRATO-Webspace).
-Die Pfade enden mit `/` (Ordner mit `index.html`) und funktionieren ohne Serverkonfiguration; `404.html` im
-Stamm wird von GitHub Pages, Cloudflare Pages und Netlify automatisch als Fehlerseite genommen.
-Für ein GitHub-Pages-Deployment kann `.github/workflows/website.yml` als Vorlage dienen (Pfad `nahx/` statt `website/`).
+`dist/` auf einen statischen Hoster laden (GitHub Pages, Cloudflare Pages, Netlify, Webspace). Pfade enden mit `/`
+(Ordner mit `index.html`), `404.html` im Stamm wird von GitHub Pages, Cloudflare Pages und Netlify als Fehlerseite
+genommen. Vor dem Livegang: Basis-URL setzen, Rechtstexte vervollständigen, ohne `--noindex` bauen und prüfen.
+`.github/workflows/website.yml` kann als Vorlage dienen (Pfad `nahx/` statt `website/`).

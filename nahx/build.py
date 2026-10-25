@@ -3,18 +3,15 @@
 """
 Baut die zweisprachige Website von NAHX Technologies aus `nahx/inhalt/*.json` nach `nahx/dist/`.
 
-Aufruf (aus dem Repo-Wurzelverzeichnis):
-
     python3 nahx/build.py                     # baut nach nahx/dist/, Links site-absolut (/en/services/)
-    python3 nahx/build.py --pruefen           # baut und prüft Titel, Descriptions, Überschriften,
-                                              # Alt-Texte, interne Links und Anker, hreflang, Sitemap (Fehler = Exit 1)
-    python3 nahx/build.py --relativ --ausgabe /tmp/vorschau
-                                              # Vorschau mit relativen Links (index.html per Doppelklick)
-    python3 nahx/build.py --basis-url https://nahx.de --noindex
+    python3 nahx/build.py --pruefen           # baut und prüft (h1, Überschriften, Title, Description, Alt,
+                                              # Links, Anker, hreflang und Sitemap sofern Basis-URL gesetzt); Fehler = Exit 1
+    python3 nahx/build.py --relativ --ausgabe /tmp/vorschau     # Vorschau mit relativen Links
+    python3 nahx/build.py --basis-url https://example.org --noindex
 
-Keine Abhängigkeiten außer Python 3.8+. Inhalte: `inhalt/site.json` (gemeinsame Daten, Sprachen,
-Reihenfolge der Seiten), `inhalt/de.json` und `inhalt/en.json` (Texte je Sprache, gleiche Seitenschlüssel).
-Textfelder sind HTML-Fragmente: erlaubt sind <strong>, <em>, <a>, <br>; ein nacktes „&“ wird zu „&amp;“.
+Keine Abhängigkeiten außer Python 3.8+. Inhalte: `inhalt/site.json` (gemeinsame Daten), `inhalt/de.json`,
+`inhalt/en.json` (gleiche Seitenschlüssel). Textfelder sind HTML-Fragmente (<strong>, <em>, <a>, <br> erlaubt).
+Ohne Basis-URL (Domain noch offen) werden Canonical, hreflang, og:url und Sitemap weggelassen.
 """
 from __future__ import annotations
 
@@ -38,7 +35,6 @@ _AMP = re.compile(r"&(?!(?:[a-zA-Z]+|#\d+|#x[0-9a-fA-F]+);)")
 
 
 def frag(s: str) -> str:
-    """HTML-Fragment aus dem Inhalt: nacktes & maskieren, Rest unverändert (erlaubte Tags)."""
     return _AMP.sub("&amp;", s)
 
 
@@ -52,38 +48,42 @@ def lade(pfad: Path) -> dict:
     return {k: v for k, v in daten.items() if not k.startswith("_")}
 
 
-import math
+# Vektor-Wortmarke (Maße aus der Logo-Vorlage gemessen, Einheiten 1:1), inline mit currentColor
+WORTMARKE = (
+    '<svg class="wortmarke" viewBox="0 0 1100 216" aria-hidden="true" focusable="false">'
+    '<defs><linearGradient id="nahx-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#02EEFB"/><stop offset="1" stop-color="#00A4F7"/></linearGradient></defs>'
+    '<path fill="currentColor" d="M0 0H51V216H0Z M207 0H258V216H207Z M0 0H60L258 216H198Z M578 0H629V216H578Z M760 0H811V216H760Z M578 87H811V132H578Z M824 0H893L1098 216H1029Z M1029 0H1098L893 216H824Z"/>'
+    '<path fill="url(#nahx-c)" fill-rule="evenodd" d="M414 0L562 216H276Z M414 76L504 216H325Z M414 137L465 216H364Z"/></svg>'
+)
 
+# Bereichs-Piktogramme: ruhige Liniengrafiken (Dokument, Fenster, Verzweigung)
+PIKTO = {
+    0: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 6h17l9 9v27H12z"/><path d="M29 6v9h9M18 24h14M18 30h14M18 36h9"/></svg>',
+    1: '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="9" width="36" height="30" rx="2"/><path d="M6 17h36M12 13h2M17 13h2M18 27l-4 4 4 4M30 27l4 4-4 4M26 25l-4 12"/></svg>',
+    2: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="10" cy="24" r="4"/><circle cx="38" cy="12" r="4"/><circle cx="38" cy="36" r="4"/><path d="M14 24h8c4 0 6-2 8-6l4-6M22 24c4 0 6 2 8 6l4 6M14 24h20"/></svg>',
+}
 
-def ring(nr: int) -> str:
-    """Knoten-Ikone: Kern, Umlaufbahn und Satellit (ersetzt das frühere Zahnrad)."""
-    w = [0.6, 2.7, 4.6][nr % 3]
-    sx, sy = 50 + 38 * math.cos(w), 50 + 38 * math.sin(w)
-    return (
-        '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false">'
-        f'<g class="knoten" style="--dauer:{26 + nr * 6}s"><circle cx="50" cy="50" r="38" class="bahn"/>'
-        f'<circle cx="{sx:.1f}" cy="{sy:.1f}" r="3.5" class="satellit"/></g>'
-        '<circle cx="50" cy="50" r="22" class="kern"/><circle cx="50" cy="50" r="5" class="mitte"/></svg>'
-    )
-
-
-def woerter(text: str) -> str:
-    """Zerlegt eine Überschrift in Wörter, die nacheinander einblenden (HTML-Fragment bleibt erlaubt)."""
-    teile = text.split(" ")
-    return " ".join(f'<span class="wort" style="--i:{i}">{w}</span>' for i, w in enumerate(teile))
+KOPF_SCRIPT = "document.documentElement.classList.add('js');"
+FUSS_SCRIPT = (
+    "(function(){var m=document.querySelector('.menue-schalter');var n=document.getElementById('nav');"
+    "if(m&&n){m.addEventListener('click',function(){var o=n.classList.toggle('offen');m.setAttribute('aria-expanded',o?'true':'false');});"
+    "document.addEventListener('keydown',function(e){if(e.key==='Escape'&&n.classList.contains('offen')){n.classList.remove('offen');m.setAttribute('aria-expanded','false');m.focus();}});}"
+    "var ruhig=window.matchMedia('(prefers-reduced-motion: reduce)').matches;var R=document.querySelectorAll('.reveal');"
+    "if(ruhig||!('IntersectionObserver' in window)){R.forEach(function(e){e.classList.add('sichtbar');});}"
+    "else{var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('sichtbar');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.1});R.forEach(function(e){io.observe(e);});}})();"
+)
 
 
 class Bau:
-    def __init__(self, site: dict, basis_url: str, relativ: bool, noindex: bool, ausgabe: Path, palette: str = ""):
+    def __init__(self, site: dict, basis_url: str, relativ: bool, noindex: bool, ausgabe: Path):
         self.site = site
-        self.palette = palette
-        self.basis_url = basis_url.rstrip("/")
+        self.basis_url = (basis_url or "").rstrip("/")
         self.relativ = relativ
         self.noindex = noindex
         self.ausgabe = ausgabe
         self.sprachen = {code: lade(INHALT / f"{code}.json") for code in site["sprachen"]}
         self.heute = dt.date.today().isoformat()
-        self.pfade: dict[tuple[str, str], str] = {}  # (sprache, seite) -> site-absoluter Pfad
+        self.pfade: dict[tuple[str, str], str] = {}
         for code, texte in self.sprachen.items():
             wurzel = site["sprachen"][code]["pfad"]
             for schluessel, seite in texte["seiten"].items():
@@ -91,11 +91,9 @@ class Bau:
 
     # ------------------------------------------------------------------ Links
     def pfad(self, sprache: str, seite: str, anker: str | None = None) -> str:
-        p = self.pfade[(sprache, seite)]
-        return p + (f"#{anker}" if anker else "")
+        return self.pfade[(sprache, seite)] + (f"#{anker}" if anker else "")
 
     def link(self, von: str, ziel: str) -> str:
-        """Macht aus einem site-absoluten Ziel (/en/services/#x) je nach Modus einen relativen Link."""
         if not self.relativ or not ziel.startswith("/"):
             return ziel
         ziel_pfad, _, anker = ziel.partition("#")
@@ -105,72 +103,65 @@ class Bau:
             rel = "index.html" if rel == "." else rel + "/index.html"
         return rel + (f"#{anker}" if anker else "")
 
-    def absolut(self, pfad: str) -> str:
-        return self.basis_url + pfad
+    def absolut(self, pfad: str) -> str | None:
+        return (self.basis_url + pfad) if self.basis_url else None
 
-    # ------------------------------------------------------------------ Bausteine
+    def cta(self, sprache: str, pfad: str, cta: dict, klasse: str = "cta") -> str:
+        ziel = self.link(pfad, self.pfad(sprache, cta["seite"], cta.get("anker")))
+        return f'<a class="{klasse}" href="{esc(ziel)}">{esc(cta["text"])}</a>'
+
+    # ------------------------------------------------------------------ Kopf und Fuß
     def kopf(self, sprache: str, seite_key: str, pfad: str) -> str:
         t = self.sprachen[sprache]
         ui = t["ui"]
         nav = []
-        eintraege = [e for e in t["navigation"] if e["seite"] != "start"]
-        if seite_key == "start":
-            eintraege = [e for e in eintraege if e["seite"] in ("leistungen", "projekte", "kontakt")]
-        for eintrag in eintraege:
-            ziel = self.link(pfad, self.pfad(sprache, eintrag["seite"]))
-            aktuell = ' aria-current="page"' if eintrag["seite"] == seite_key else ""
-            nav.append(f'<a href="{esc(ziel)}"{aktuell}>{esc(eintrag["text"])}</a>')
-        andere = [c for c in self.sprachen if c != sprache]
-        sprach_links = []
-        for c in andere:
-            ziel = self.link(pfad, self.pfad(c, seite_key))
-            name = self.site["sprachen"][c]["name"]
-            sprach_links.append(f'<a class="schalter" href="{esc(ziel)}" lang="{c}" hreflang="{c}" title="{esc(name)}">{esc(self.site["sprachen"][c]["kurz"])}</a>')
+        for e in t["navigation"]:
+            if e["seite"] == "start":
+                continue
+            ziel = self.link(pfad, self.pfad(sprache, e["seite"]))
+            aktuell = ' aria-current="page"' if e["seite"] == seite_key else ""
+            nav.append(f'<a href="{esc(ziel)}"{aktuell}>{esc(e["text"])}</a>')
+        sprach = []
+        for c in self.sprachen:
+            if c == sprache:
+                continue
+            sprach.append(f'<a class="schalter" href="{esc(self.link(pfad, self.pfad(c, seite_key)))}" lang="{c}" hreflang="{c}" aria-label="{esc(self.site["sprachen"][c]["name"])}">{esc(self.site["sprachen"][c]["kurz"])}</a>')
         start = self.link(pfad, self.pfad(sprache, "start"))
         kontakt = self.link(pfad, self.pfad(sprache, "kontakt"))
         return f"""<a class="sprung" href="#inhalt">{esc(ui["sprung"])}</a>
 <header class="kopf">
   <div class="innen kopf-innen">
-    <a class="logo" href="{esc(start)}" aria-label="{esc(t["logo_alt"])}">{WORTMARKE}<span class="logo-zusatz" aria-hidden="true">Technologies</span></a>
-    <nav class="nav" id="nav" aria-label="{esc(ui["fuss_navigation"])}">{"".join(nav)}</nav>
-    <div class="kopf-aktionen">
-      {"".join(sprach_links)}
-      <button class="schalter" id="thema" type="button" aria-label="{esc(ui["thema"])}" data-auto="{esc(ui["thema_auto"])}" data-light="{esc(ui["thema_hell"])}" data-dark="{esc(ui["thema_dunkel"])}" hidden>{esc(ui["thema_auto"])}</button>
-      <button class="schalter menue-schalter" type="button" aria-expanded="false" aria-controls="nav">{esc(ui["menue"])}</button>
-    </div>
+    <a class="logo" href="{esc(start)}" aria-label="{esc(ui["logo_alt"])}">{WORTMARKE}<span class="logo-zusatz" aria-hidden="true">Technologies</span></a>
+    <nav class="nav" id="nav" aria-label="{esc(ui["fuss_navigation"])}">{"".join(nav)}<a class="cta kopf-cta" href="{esc(kontakt)}">{esc(ui["kopf_cta"])}</a></nav>
+    <div class="kopf-aktionen">{"".join(sprach)}<button class="schalter menue-schalter" type="button" aria-expanded="false" aria-controls="nav">{esc(ui["menue"])}</button></div>
   </div>
-</header>
-<div class="fortschritt" aria-hidden="true"><span id="fortschritt"></span></div>"""
+</header>"""
 
     def fuss(self, sprache: str, pfad: str) -> str:
         t = self.sprachen[sprache]
         ui = t["ui"]
         nav = "".join(f'<a href="{esc(self.link(pfad, self.pfad(sprache, e["seite"])))}">{esc(e["text"])}</a>' for e in t["navigation"])
         recht = "".join(f'<a href="{esc(self.link(pfad, self.pfad(sprache, s)))}">{esc(t["seiten"][s]["menue"])}</a>' for s in t["rechtsseiten"])
-        sprachen = "".join(
-            f'<a href="{esc(self.link(pfad, self.pfad(c, "start")))}" lang="{c}" hreflang="{c}">{esc(self.site["sprachen"][c]["name"])}</a>'
-            for c in self.sprachen
-        )
+        sprachen = "".join(f'<a href="{esc(self.link(pfad, self.pfad(c, "start")))}" lang="{c}" hreflang="{c}">{esc(self.site["sprachen"][c]["name"])}</a>' for c in self.sprachen)
+        email = t["email"]
+        email_html = f'<a href="mailto:{esc(email)}">{esc(email)}</a>' if "@" in email else esc(email)
         return f"""<footer class="fuss">
   <div class="innen">
     <div class="fuss-spalten">
       <div class="marke">
         <div class="fuss-marke">{WORTMARKE}<span class="logo-zusatz">Technologies</span></div>
-        <p>{esc(t["claim"])}</p>
-        <p lang="{'en' if sprache == 'de' else 'de'}">{esc(t["claim_andere"])}</p>
+        <p class="fuss-claim">{esc(t["claim"])}</p>
+        <p class="fuss-claim" lang="{'en' if sprache == 'de' else 'de'}">{esc(t["claim_andere"])}</p>
       </div>
       <nav aria-label="{esc(ui["fuss_navigation"])}"><strong>{esc(ui["fuss_navigation"])}</strong>{nav}</nav>
       <nav aria-label="{esc(ui["fuss_recht"])}"><strong>{esc(ui["fuss_recht"])}</strong>{recht}</nav>
-      <nav aria-label="{esc(ui["fuss_sprache"])}"><strong>{esc(ui["fuss_sprache"])}</strong>{sprachen}</nav>
+      <div><strong>{esc(ui["fuss_sprache"])}</strong><nav aria-label="{esc(ui["fuss_sprache"])}">{sprachen}</nav><strong class="fuss-kontakt-titel">{esc(ui.get("fuss_kontakt", "Kontakt"))}</strong><p>{email_html}</p></div>
     </div>
     <p class="fuss-klein">{esc(ui["fuss_hinweis"])}</p>
   </div>
 </footer>"""
 
-    def cta_html(self, sprache: str, pfad: str, cta: dict, klasse: str = "cta") -> str:
-        ziel = self.link(pfad, self.pfad(sprache, cta["seite"], cta.get("anker")))
-        return f'<a class="{klasse}" href="{esc(ziel)}">{esc(cta["text"])}</a>'
-
+    # ------------------------------------------------------------------ Abschnitte
     def abschnitt(self, sprache: str, pfad: str, a: dict) -> str:
         typ = a["typ"]
         ident = f' id="{esc(a["id"])}"' if a.get("id") else ""
@@ -182,50 +173,83 @@ class Bau:
             if a.get("text"):
                 kopf += f'<p class="abschnitt-text">{frag(a["text"])}</p>'
             kopf += "</div>"
+        mehr = ""
+        if a.get("link"):
+            mehr = f'<p class="mehr-zeile reveal">{self.cta(sprache, pfad, a["link"], "mehr")}</p>'
+
         if typ == "karten":
             karten = []
-            ringe = a.get("id") in ("leistungen", "services")
             for nr, k in enumerate(a["karten"]):
-                mehr = ""
-                if k.get("link"):
-                    l = k["link"]
-                    mehr = f'<a class="mehr" href="{esc(self.link(pfad, self.pfad(sprache, l["seite"], l.get("anker"))))}">{esc(l["text"])}</a>'
-                karten.append(f'<article class="karte reveal" style="--i:{nr}">{ring(nr) if ringe else ""}<h3>{frag(k["h3"])}</h3><p>{frag(k["text"])}</p>{mehr}</article>')
-            hinweis = ""
-            if a.get("hinweis") or a.get("link"):
-                teile = []
-                if a.get("hinweis"):
-                    teile.append(frag(a["hinweis"]))
-                if a.get("link"):
-                    teile.append(self.cta_html(sprache, pfad, a["link"], "mehr"))
-                hinweis = f'<p class="hinweis">{" ".join(teile)}</p>'
-            return f'<section class="abschnitt innen"{ident}>{kopf}<div class="raster">{"".join(karten)}</div>{hinweis}</section>'
+                l = k.get("link")
+                kl = f'<a class="mehr" href="{esc(self.link(pfad, self.pfad(sprache, l["seite"], l.get("anker"))))}">{esc(l["text"])}</a>' if l else ""
+                karten.append(f'<article class="karte reveal" style="--i:{nr}"><span class="pikto">{PIKTO[nr % 3]}</span><h3>{frag(k["h3"])}</h3><p>{frag(k["text"])}</p>{kl}</article>')
+            return f'<section class="abschnitt innen"{ident}>{kopf}<div class="raster">{"".join(karten)}</div>{mehr}</section>'
+
+        if typ == "projekte":
+            # Kurzkarten aus der Projektseite derselben Sprache
+            liste = next(x for x in self.sprachen[sprache]["seiten"]["projekte"]["abschnitte"] if x["typ"] == "projektliste")
+            karten = []
+            for nr, p in enumerate(liste["projekte"]):
+                karten.append(f'<article class="karte projekt-karte reveal" style="--i:{nr}"><p class="bereich">{esc(p["bereich"])}</p><h3>{frag(p["titel"])}</h3><p>{frag(p["herausforderung"])}</p><p class="status"><span>{esc(liste["legende"]["status"])}</span>{frag(p["status"])}</p></article>')
+            return f'<section class="abschnitt innen"{ident}>{kopf}<div class="raster">{"".join(karten)}</div>{mehr}</section>'
+
+        if typ == "projektliste":
+            L = a["legende"]
+            eintraege = []
+            for nr, p in enumerate(a["projekte"]):
+                felder = "".join(f'<div><dt>{esc(L[k])}</dt><dd>{frag(p[k])}</dd></div>' for k in ("ausgang", "herausforderung", "beitrag", "ansatz", "technologien"))
+                eintraege.append(f'<article class="projekt reveal" id="projekt-{nr + 1}"><header><p class="bereich">{esc(p["bereich"])}</p><h2>{frag(p["titel"])}</h2></header><dl class="felder">{felder}</dl><p class="status"><span>{esc(L["status"])}</span>{frag(p["status"])}</p></article>')
+            hinweis = f'<p class="hinweis reveal">{frag(a["hinweis"])}</p>' if a.get("hinweis") else ""
+            return f'<section class="abschnitt innen"{ident}>{"".join(eintraege)}{hinweis}</section>'
+
+        if typ == "bereiche":
+            bl = []
+            t = self.sprachen[sprache]["ui"]
+            for nr, b in enumerate(a["bereiche"]):
+                def liste(items):
+                    return "".join(f"<li>{frag(x)}</li>" for x in items)
+                bl.append(f"""<article class="bereich reveal" id="{esc(b["id"])}">
+  <div class="bereich-kopf"><span class="pikto">{PIKTO[nr % 3]}</span><h2>{frag(b["h2"])}</h2><p class="abschnitt-text">{frag(b["text"])}</p></div>
+  <div class="bereich-raster">
+    <div><h3>{esc(t["l_herausforderungen"])}</h3><ul>{liste(b["herausforderungen"])}</ul></div>
+    <div><h3>{esc(t["l_leistungen"])}</h3><ul>{liste(b["leistungen"])}</ul></div>
+    <div><h3>{esc(t["l_faelle"])}</h3><ul>{liste(b["faelle"])}</ul></div>
+  </div>
+  <p class="fuer">{frag(b["fuer"])}</p>
+</article>""")
+            cta = f'<p class="mehr-zeile reveal">{frag(a.get("cta_text", ""))} {self.cta(sprache, pfad, a["cta"], "mehr")}</p>' if a.get("cta") else ""
+            return f'<section class="abschnitt innen"{ident}>{"".join(bl)}{cta}</section>'
+
         if typ == "listen":
             karten = []
             for nr, k in enumerate(a["karten"]):
                 punkte = "".join(f"<li>{frag(p)}</li>" for p in k["punkte"])
-                karten.append(f'<article class="karte reveal" id="{esc(k["id"])}" style="--i:{nr}">{ring(nr)}<h2>{frag(k["h2"])}</h2><ul>{punkte}</ul></article>')
+                karten.append(f'<article class="karte reveal" id="{esc(k["id"])}" style="--i:{nr}"><h2>{frag(k["h2"])}</h2><ul>{punkte}</ul></article>')
             return f'<section class="abschnitt innen"{ident}>{kopf}<div class="raster">{"".join(karten)}</div></section>'
+
         if typ == "schritte":
-            schritte = "".join(f'<li class="reveal" style="--i:{i}"><h3>{frag(x["h3"])}</h3><p>{frag(x["text"])}</p></li>' for i, x in enumerate(a["schritte"]))
-            return f'<section class="abschnitt innen"{ident}>{kopf}<div class="schritte-linie" aria-hidden="true"><span></span></div><ol class="schritte">{schritte}</ol></section>'
+            schritte = "".join(f'<li class="reveal" style="--i:{i}"><span class="nr">0{i + 1}</span><h3>{frag(x["h3"])}</h3><p>{frag(x["text"])}</p></li>' for i, x in enumerate(a["schritte"]))
+            return f'<section class="abschnitt innen"{ident}>{kopf}<ol class="schritte">{schritte}</ol>{mehr}</section>'
+
+        if typ == "prinzipien":
+            punkte = "".join(f'<li class="reveal" style="--i:{i}"><h3>{frag(x["h3"])}</h3><p>{frag(x["text"])}</p></li>' for i, x in enumerate(a["punkte"]))
+            return f'<section class="abschnitt innen"{ident}>{kopf}<ul class="prinzipien">{punkte}</ul></section>'
+
         if typ == "text":
             absaetze = "".join(f"<p>{frag(p)}</p>" for p in a["absaetze"])
             h2 = f'<h2>{frag(a["h2"])}</h2>' if a.get("h2") else ""
-            return f'<section class="abschnitt innen"{ident}><div class="fliess">{h2}{absaetze}</div></section>'
+            return f'<section class="abschnitt innen"{ident}><div class="fliess reveal">{h2}{absaetze}</div></section>'
+
         if typ == "band":
-            hell = " band-hell" if a.get("id") in ("kontakt", "contact") else ""
-            return f'<section class="band{hell}"{ident}><div class="innen reveal"><h2>{frag(a["h2"])}</h2><p>{frag(a["text"])}</p>{self.cta_html(sprache, pfad, a["cta"])}</div></section>'
+            return f'<section class="band"{ident}><div class="innen reveal"><h2>{frag(a["h2"])}</h2><p>{frag(a["text"])}</p>{self.cta(sprache, pfad, a["cta"])}</div></section>'
+
         if typ == "kontakt":
             return self.kontakt(sprache, pfad, a)
         raise ValueError(f"Unbekannter Abschnittstyp: {typ}")
 
     def kontakt(self, sprache: str, pfad: str, a: dict) -> str:
         email = self.sprachen[sprache]["email"]
-        if "@" in email:
-            email_html = f'<a class="email" href="mailto:{esc(email)}">{esc(email)}</a>'
-        else:
-            email_html = f'<span class="platzhalter">{esc(email)}</span>'
+        email_html = f'<a class="email" href="mailto:{esc(email)}">{esc(email)}</a>' if "@" in email else f'<span class="platzhalter">{esc(email)}</span>'
         datenschutz = a["datenschutz"].replace("{datenschutz}", esc(self.link(pfad, self.pfad(sprache, "datenschutz"))))
         themen = "".join(f"<li>{frag(x)}</li>" for x in a["themen"])
         return f"""<section class="abschnitt innen" id="kontakt">
@@ -235,171 +259,102 @@ class Bau:
   </div>
 </section>"""
 
-    def palette_attr(self) -> str:
-        return f' data-palette="{esc(self.palette)}"' if self.palette else ""
-
-    def icons(self, pfad: str) -> str:
-        l = lambda p: esc(self.link(pfad, p))
-        return (f'<link rel="icon" href="{l("/assets/img/favicon.svg")}" type="image/svg+xml">\n'
-                f'<link rel="icon" href="{l("/assets/img/favicon.ico")}" sizes="32x32">\n'
-                f'<link rel="apple-touch-icon" href="{l("/assets/img/apple-touch-icon.png")}">')
-
-    def saetze(self, text: str) -> list[str]:
-        """Zerlegt einen Absatz in Sätze für die Schreibmaschine."""
-        teile = [x.strip() for x in re.split(r"(?<=[.!?])\s+", text) if x.strip()]
-        return teile or [text]
-
-    def tippe(self, zeilen: list[str], klasse: str = "") -> str:
-        return "".join(f'<span class="tippe {klasse}" data-text="{esc(z)}">{esc(z)}</span>' for z in zeilen)
-
-    def start_main(self, sprache: str, pfad: str) -> str:
-        t = self.sprachen[sprache]
-        s = t["seiten"]["start"]
-        ui = t["ui"]
-        karten = [a for a in s["abschnitte"] if a["typ"] == "karten"]
-        leistungen, projekte = karten[0], karten[1]
-        schritte = next(a for a in s["abschnitte"] if a["typ"] == "schritte")
-        band = next(a for a in s["abschnitte"] if a["typ"] == "band")
-        email = t["email"]
-        email_html = f'<a class="email" href="mailto:{esc(email)}">{esc(email)}</a>' if "@" in email else f'<span class="platzhalter">{esc(email)}</span>'
-        ringe = "".join(
-            f'<li class="ringkachel" style="--i:{i}"><span class="ringbild">{ring(i)}</span><h3>{frag(k["h3"])}</h3><p>{frag(k["text"])}</p></li>'
-            for i, k in enumerate(leistungen["karten"])
-        )
-        schritt_html = "".join(
-            f'<li style="--i:{i}"><span class="nr">0{i + 1}</span><h3>{frag(x["h3"])}</h3><p class="tippe" data-text="{esc(x["text"])}">{esc(x["text"])}</p></li>'
-            for i, x in enumerate(schritte["schritte"])
-        )
-        projekt_html = "".join(
-            f'<li style="--i:{i}"><h3 class="tippe" data-text="{esc(k["h3"])}">{esc(k["h3"])}</h3><p>{frag(k["text"])}</p></li>'
-            for i, k in enumerate(projekte["karten"])
-        )
-        weiter = ui.get("weiter", "Scrollen")
-        return f"""<canvas id="welt" aria-hidden="true"></canvas>
-<main id="inhalt" class="start">
-  <section class="szene szene-held" data-zoom="1.1" data-x="0.5" data-y="0.5" data-ordnung="0.05">
-    <div class="szene-innen">
-      <p class="kicker tippe" data-text="{esc(s["kicker"])}">{esc(s["kicker"])}</p>
-      <h1>{self.tippe(self.saetze(s["h1"]), "zeile")}</h1>
-      <p class="weiter" aria-hidden="true">{esc(weiter)}<span class="pfeil"></span></p>
-    </div>
-  </section>
-  <section class="szene szene-tunnel" data-zoom="1.3" data-x="0.5" data-y="0.45" data-ordnung="0.55" data-rot="0.08">
-    <div class="szene-innen"><p class="satz">{self.tippe(self.saetze(s["einleitung"]))}</p></div>
-  </section>
-  <section class="szene szene-ringe" id="{esc(leistungen.get("id", "leistungen"))}" data-zoom="1" data-x="0.5" data-y="0.5" data-ordnung="0.9" data-hubs="1">
-    <div class="szene-innen breit">
-      <h2 class="tippe" data-text="{esc(leistungen["h2"])}">{esc(leistungen["h2"])}</h2>
-      <ul class="ringe">{ringe}</ul>
-      <p class="mehr-zeile"><a href="{esc(self.link(pfad, self.pfad(sprache, "leistungen")))}">{esc(t["seiten"]["leistungen"]["menue"])} →</a></p>
-    </div>
-  </section>
-  <section class="szene szene-ablauf" id="{esc(schritte.get("id", "ablauf"))}" data-zoom="1.2" data-x="0.5" data-y="0.5" data-ordnung="1" data-fluss="1">
-    <div class="szene-innen breit">
-      <h2 class="tippe" data-text="{esc(schritte["h2"])}">{esc(schritte["h2"])}</h2>
-      <p class="satz klein-satz">{frag(schritte["text"])}</p>
-      <ol class="ablauf">{schritt_html}</ol>
-    </div>
-  </section>
-  <section class="szene szene-projekte" id="{esc(projekte.get("id", "projekte"))}" data-zoom="1.6" data-x="0.2" data-y="0.5" data-ordnung="1" data-rot="0.2">
-    <div class="szene-innen breit">
-      <h2 class="tippe" data-text="{esc(projekte["h2"])}">{esc(projekte["h2"])}</h2>
-      <ul class="projekte">{projekt_html}</ul>
-      <p class="mehr-zeile">{frag(projekte.get("hinweis", ""))} <a href="{esc(self.link(pfad, self.pfad(sprache, "projekte")))}">{esc(projekte["link"]["text"])} →</a></p>
-    </div>
-  </section>
-  <section class="szene szene-kontakt" id="{esc(band.get("id", "kontakt"))}" data-zoom="1" data-x="0.5" data-y="0.5" data-ordnung="1" data-hell="1">
-    <div class="szene-innen">
-      <h2 class="tippe" data-text="{esc(band["h2"])}">{esc(band["h2"])}</h2>
-      <p class="satz">{frag(band["text"])}</p>
-      <p class="kontakt-zeile">{email_html}</p>
-      <p class="mehr-zeile"><a class="cta-linie" href="{esc(self.link(pfad, self.pfad(sprache, "kontakt")))}">{esc(band["cta"]["text"])} →</a></p>
-    </div>
-  </section>
-</main>"""
-
     # ------------------------------------------------------------------ Seite
+    def head(self, sprache: str, seite_key: str, pfad: str, title: str, description: str, robots: str, json_ld: dict | None) -> str:
+        t = self.sprachen[sprache]
+        l = lambda p: esc(self.link(pfad, p))
+        teile = [
+            '<meta charset="utf-8">', '<meta name="viewport" content="width=device-width, initial-scale=1">',
+            f"<title>{esc(title)}</title>", f'<meta name="description" content="{esc(description)}">',
+            f'<meta name="robots" content="{robots}">', '<meta name="theme-color" content="#000000">',
+        ]
+        if self.basis_url and seite_key:
+            teile.append(f'<link rel="canonical" href="{esc(self.absolut(pfad))}">')
+            for c in self.sprachen:
+                teile.append(f'<link rel="alternate" hreflang="{c}" href="{esc(self.absolut(self.pfade[(c, seite_key)]))}">')
+            teile.append(f'<link rel="alternate" hreflang="x-default" href="{esc(self.absolut(self.pfade[("de", seite_key)]))}">')
+        teile += [
+            '<meta property="og:type" content="website">', f'<meta property="og:site_name" content="{esc(self.site["name"])}">',
+            f'<meta property="og:locale" content="{esc(self.site["sprachen"][sprache]["locale"])}">',
+            f'<meta property="og:title" content="{esc(title)}">', f'<meta property="og:description" content="{esc(description)}">',
+        ]
+        if self.basis_url:
+            teile.append(f'<meta property="og:url" content="{esc(self.absolut(pfad))}">')
+            teile.append(f'<meta property="og:image" content="{esc(self.absolut(self.site["og_bild"]))}">')
+        else:
+            teile.append(f'<meta property="og:image" content="{l(self.site["og_bild"])}">')
+        teile += [
+            '<meta property="og:image:width" content="1200">', '<meta property="og:image:height" content="630">',
+            f'<meta property="og:image:alt" content="{esc(t["og_bild_alt"])}">', '<meta name="twitter:card" content="summary_large_image">',
+            f'<link rel="icon" href="{l("/assets/img/favicon.svg")}" type="image/svg+xml">',
+            f'<link rel="icon" href="{l("/assets/img/favicon.ico")}" sizes="32x32">',
+            f'<link rel="apple-touch-icon" href="{l("/assets/img/apple-touch-icon.png")}">',
+        ]
+        for f in self.site["fonts_vorladen"]:
+            teile.append(f'<link rel="preload" href="{l("/assets/fonts/" + f)}" as="font" type="font/woff2" crossorigin>')
+        teile.append(f'<link rel="stylesheet" href="{l("/assets/site.css")}">')
+        teile.append(f"<script>{KOPF_SCRIPT}</script>")
+        if json_ld:
+            teile.append('<script type="application/ld+json">' + json.dumps(json_ld, ensure_ascii=False).replace("</", "<\\/") + "</script>")
+        return "\n".join(teile)
+
+    def held(self, sprache: str, seite_key: str, pfad: str, s: dict) -> str:
+        ui = self.sprachen[sprache]["ui"]
+        cta = ""
+        if s.get("cta"):
+            cta = '<div class="cta-reihe">' + self.cta(sprache, pfad, s["cta"]["primaer"]) + self.cta(sprache, pfad, s["cta"]["sekundaer"], "cta-zweit") + "</div>"
+        text = f'<p class="abschnitt-text">{frag(s["text"])}</p>' if s.get("text") else ""
+        warn = f'<p class="warnung">{esc(ui["platzhalter_hinweis"])}</p>' if s.get("platzhalter") else ""
+        diagramm = ""
+        if seite_key == "start":
+            k = [a for a in s["abschnitte"] if a["typ"] == "karten"][0]["karten"]
+            diagramm = f"""<figure class="held-diagramm" aria-hidden="true">
+  <svg viewBox="0 0 420 320" focusable="false">
+    <defs><linearGradient id="d-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#02EEFB"/><stop offset="1" stop-color="#00A4F7"/></linearGradient></defs>
+    <g class="d-raster"><path d="M0 80H420M0 160H420M0 240H420M70 0V320M210 0V320M350 0V320"/></g>
+    <g class="d-linien"><path d="M70 80L210 160L350 80M210 160V250M70 80H350M70 80L210 250L350 80"/></g>
+    <g class="d-knoten"><circle cx="70" cy="80" r="7"/><circle cx="350" cy="80" r="7"/><circle cx="210" cy="250" r="7"/></g>
+    <g class="d-kern"><circle cx="210" cy="160" r="34"/><path d="M210 138L228 170H192Z M210 153L218 170H202Z" fill="url(#d-c)" fill-rule="evenodd"/></g>
+    <g class="d-text"><text x="70" y="58" text-anchor="middle">{esc(k[0].get("kurz", k[0]["h3"]))}</text><text x="350" y="58" text-anchor="middle">{esc(k[1].get("kurz", k[1]["h3"]))}</text><text x="210" y="286" text-anchor="middle">{esc(k[2].get("kurz", k[2]["h3"]))}</text></g>
+  </svg>
+</figure>"""
+        klasse = " held-start" if seite_key == "start" else ""
+        return f"""<section class="held{klasse}"><div class="innen held-innen">
+  <div class="held-text">
+    <p class="kicker">{esc(s["kicker"])}</p>
+    <h1>{frag(s["h1"])}</h1>
+    <p class="einleitung">{frag(s["einleitung"])}</p>
+    {text}{warn}{cta}
+  </div>{diagramm}
+</div></section>"""
+
     def seite_html(self, sprache: str, seite_key: str) -> tuple[str, str]:
         t = self.sprachen[sprache]
         s = t["seiten"][seite_key]
         pfad = self.pfade[(sprache, seite_key)]
-        ui = t["ui"]
         robots = "noindex, nofollow" if (self.noindex or s.get("robots") == "noindex") else "index, follow"
-        alternates = "".join(
-            f'<link rel="alternate" hreflang="{c}" href="{esc(self.absolut(self.pfade[(c, seite_key)]))}">' for c in self.sprachen
-        )
-        alternates += f'<link rel="alternate" hreflang="x-default" href="{esc(self.absolut(self.pfade[("de", seite_key)]))}">'
-        css = self.link(pfad, "/assets/site.css")
-        fonts = "".join(
-            f'<link rel="preload" href="{esc(self.link(pfad, "/assets/fonts/" + f))}" as="font" type="font/woff2" crossorigin>'
-            for f in self.site["fonts_vorladen"]
-        )
-        hauptklasse = s.get("typ", "seite")
-        cta = ""
-        if s.get("cta"):
-            cta = '<div class="cta-reihe reveal">' + self.cta_html(sprache, pfad, s["cta"]["primaer"]) + self.cta_html(sprache, pfad, s["cta"]["sekundaer"], "cta-zweit") + "</div>"
-        text = f'<p class="abschnitt-text">{frag(s["text"])}</p>' if s.get("text") else ""
-        warn = f'<p class="warnung">{esc(ui["platzhalter_hinweis"])}</p>' if s.get("platzhalter") else ""
-        abschnitte = "".join(self.abschnitt(sprache, pfad, a) for a in s["abschnitte"])
-        if seite_key == "start":
-            hauptteil = self.start_main(sprache, pfad)
-            welt = f'<script src="{esc(self.link(pfad, "/assets/welt.js"))}" defer></script>'
-        else:
-            welt = f'<script src="{esc(self.link(pfad, "/assets/welt.js"))}" defer></script>'
-            hauptteil = f"""<canvas id="welt" aria-hidden="true"></canvas>
-<main id="inhalt" class="{hauptklasse}">
-  <section class="held">
-    <div class="innen held-innen">
-      <p class="kicker tipp" data-text="{esc(s["kicker"])}">{esc(s["kicker"])}</p>
-      <h1>{woerter(frag(s["h1"]))}</h1>
-      <p class="einleitung reveal">{frag(s["einleitung"])}</p>
-      {text}{warn}{cta}
-    </div>
-  </section>
-  {abschnitte}
-</main>"""
         json_ld = {
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            "name": s["title"],
-            "description": s["description"],
-            "url": self.absolut(pfad),
-            "inLanguage": sprache,
-            "isPartOf": {"@type": "WebSite", "name": self.site["name"], "url": self.absolut("/")},
+            "@context": "https://schema.org", "@type": "WebPage", "name": s["title"], "description": s["description"], "inLanguage": sprache,
+            "isPartOf": {"@type": "WebSite", "name": self.site["name"]},
             "about": {"@type": "ProfessionalService", "name": self.site["name"], "slogan": t["claim"]},
         }
+        if self.basis_url:
+            json_ld["url"] = self.absolut(pfad)
+            json_ld["isPartOf"]["url"] = self.absolut("/")
+        abschnitte = "".join(self.abschnitt(sprache, pfad, a) for a in s["abschnitte"])
         html_ = f"""<!doctype html>
-<html lang="{sprache}"{self.palette_attr()}>
+<html lang="{sprache}">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{esc(s["title"])}</title>
-<meta name="description" content="{esc(s["description"])}">
-<meta name="robots" content="{robots}">
-<link rel="canonical" href="{esc(self.absolut(pfad))}">
-{alternates}
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="{esc(self.site["name"])}">
-<meta property="og:locale" content="{esc(self.site["sprachen"][sprache]["locale"])}">
-<meta property="og:title" content="{esc(s["title"])}">
-<meta property="og:description" content="{esc(s["description"])}">
-<meta property="og:url" content="{esc(self.absolut(pfad))}">
-<meta property="og:image" content="{esc(self.absolut(self.site["og_bild"]))}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="{esc(t["og_bild_alt"])}">
-<meta name="twitter:card" content="summary_large_image">
-{self.icons(pfad)}
-{fonts}
-<link rel="stylesheet" href="{esc(css)}">
-<script>{KOPF_SCRIPT}</script>
-<script type="application/ld+json">{json.dumps(json_ld, ensure_ascii=False).replace("</", "<\\/")}</script>
+{self.head(sprache, seite_key, pfad, s["title"], s["description"], robots, json_ld)}
 </head>
-<body class="{"seite-start" if seite_key == "start" else "seite-unter"}">
+<body class="seite-{esc(seite_key)}">
 {self.kopf(sprache, seite_key, pfad)}
-{hauptteil}
+<main id="inhalt" class="{esc(s.get("typ", "seite"))}">
+  {self.held(sprache, seite_key, pfad, s)}
+  {abschnitte}
+</main>
 {self.fuss(sprache, pfad)}
-<script>{FUSS_SCRIPT}</script>{welt}
+<script>{FUSS_SCRIPT}</script>
 </body>
 </html>
 """
@@ -409,27 +364,16 @@ class Bau:
         t = self.sprachen[sprache]
         f = t["fehlerseite"]
         pfad = self.site["sprachen"][sprache]["pfad"] + "404.html"
-        css = self.link(pfad, "/assets/site.css")
+        s = {"kicker": "404", "h1": f["h1"], "einleitung": f["text"]}
         html_ = f"""<!doctype html>
-<html lang="{sprache}"{self.palette_attr()}>
+<html lang="{sprache}">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{esc(f["title"])}</title>
-<meta name="robots" content="noindex, nofollow">
-{self.icons(pfad)}
-<link rel="stylesheet" href="{esc(css)}">
-<script>{KOPF_SCRIPT}</script>
+{self.head(sprache, "", pfad, f["title"], f["text"], "noindex, nofollow", None)}
 </head>
-<body>
+<body class="seite-fehler">
 {self.kopf(sprache, "start", pfad).replace(' aria-current="page"', '')}
 <main id="inhalt" class="fehler">
-  <section class="held"><div class="innen held-innen">
-    <p class="kicker">404</p>
-    <h1>{esc(f["h1"])}</h1>
-    <p class="einleitung">{esc(f["text"])}</p>
-    <div class="cta-reihe">{self.cta_html(sprache, pfad, f["cta"])}</div>
-  </div></section>
+  {self.held(sprache, "fehler", pfad, s).replace('</p>\n    \n  </div>', '</p><div class="cta-reihe">' + self.cta(sprache, pfad, f["cta"]) + '</div></div>')}
 </main>
 {self.fuss(sprache, pfad)}
 <script>{FUSS_SCRIPT}</script>
@@ -451,7 +395,7 @@ class Bau:
         if self.ausgabe.exists():
             shutil.rmtree(self.ausgabe)
         self.ausgabe.mkdir(parents=True)
-        shutil.copytree(ASSETS, self.ausgabe / "assets")
+        shutil.copytree(ASSETS, self.ausgabe / "assets", ignore=shutil.ignore_patterns("_*"))
         seiten: list[tuple[str, Path]] = []
         for sprache in self.sprachen:
             for seite_key in self.site["seiten"]:
@@ -459,59 +403,22 @@ class Bau:
                 seiten.append((pfad, self.schreibe(pfad, html_)))
             pfad, html_ = self.fehlerseite_html(sprache)
             seiten.append((pfad, self.schreibe(pfad, html_)))
-        # 404 auf Wurzelebene = deutsche Fehlerseite (GitHub Pages, Netlify, Cloudflare Pages lesen /404.html)
         if self.noindex:
             (self.ausgabe / "robots.txt").write_text("User-agent: *\nDisallow: /\n", encoding="utf-8")
-        else:
+        elif self.basis_url:
             (self.ausgabe / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {self.absolut('/sitemap.xml')}\n", encoding="utf-8")
             urls = []
             for seite_key in self.site["seiten"]:
                 for sprache in self.sprachen:
-                    s = self.sprachen[sprache]["seiten"][seite_key]
-                    if s.get("robots") == "noindex":
+                    if self.sprachen[sprache]["seiten"][seite_key].get("robots") == "noindex":
                         continue
-                    alt = "".join(
-                        f'<xhtml:link rel="alternate" hreflang="{c}" href="{esc(self.absolut(self.pfade[(c, seite_key)]))}"/>' for c in self.sprachen
-                    )
+                    alt = "".join(f'<xhtml:link rel="alternate" hreflang="{c}" href="{esc(self.absolut(self.pfade[(c, seite_key)]))}"/>' for c in self.sprachen)
                     urls.append(f"<url><loc>{esc(self.absolut(self.pfade[(sprache, seite_key)]))}</loc>{alt}<lastmod>{self.heute}</lastmod></url>")
-            sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
-                       'xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + "\n".join(urls) + "\n</urlset>\n")
-            (self.ausgabe / "sitemap.xml").write_text(sitemap, encoding="utf-8")
+            (self.ausgabe / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + "\n".join(urls) + "\n</urlset>\n", encoding="utf-8")
+        else:
+            # Domain offen: keine Sitemap mit erfundenen URLs
+            (self.ausgabe / "robots.txt").write_text("User-agent: *\nAllow: /\n", encoding="utf-8")
         return seiten
-
-
-WORTMARKE = (
-    '<svg class="wortmarke" viewBox="-8 0 300 100" aria-hidden="true" focusable="false">'
-    '<g fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter">'
-    '<path class="zug" style="--i:0" d="M7 90V10l42 80V10"/><path class="zug" style="--i:2" d="M159 10v80M201 10v80M159 50h42"/><path class="zug" style="--i:3" d="M228 10l56 80M284 10l-56 80"/></g>'
-    '<g fill="none" stroke="var(--accent-2,#B2EEC9)" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"><path class="zug" style="--i:1" d="M76 90l28-80 28 80M90 62h28"/></g></svg>'
-)
-
-KOPF_SCRIPT = (
-    "(function(){var d=document.documentElement;d.classList.add('js');"
-    "try{var t=localStorage.getItem('nahx-thema');if(t==='dark'||t==='light'){d.setAttribute('data-theme',t);}}catch(e){}})();"
-)
-FUSS_SCRIPT = (
-    "(function(){var d=document.documentElement;var b=document.getElementById('thema');"
-    "var m=document.querySelector('.menue-schalter');var n=document.getElementById('nav');"
-    "var L=b?{a:b.getAttribute('data-auto')||b.textContent,l:b.getAttribute('data-light'),k:b.getAttribute('data-dark')}:null;"
-    "function label(){if(!b){return;}var t=d.getAttribute('data-theme');b.textContent=t==='dark'?L.k:t==='light'?L.l:L.a;}"
-    "if(b){b.hidden=false;label();b.addEventListener('click',function(){var t=d.getAttribute('data-theme');"
-    "var x=t==='dark'?'light':t==='light'?null:'dark';if(x){d.setAttribute('data-theme',x);}else{d.removeAttribute('data-theme');}"
-    "try{if(x){localStorage.setItem('nahx-thema',x);}else{localStorage.removeItem('nahx-thema');}}catch(e){}label();});}"
-    "if(m&&n){m.addEventListener('click',function(){var o=n.classList.toggle('offen');m.setAttribute('aria-expanded',o?'true':'false');});}"
-    "var ruhig=window.matchMedia('(prefers-reduced-motion: reduce)').matches;"
-    "var R=document.querySelectorAll('.reveal');"
-    "if(ruhig||!('IntersectionObserver' in window)){R.forEach(function(e){e.classList.add('sichtbar');});}"
-    "else{var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('sichtbar');io.unobserve(x.target);}});},{rootMargin:'0px 0px -10% 0px',threshold:0.15});R.forEach(function(e){io.observe(e);});}"
-    "var T=document.querySelector('.tipp');"
-    "if(T&&!ruhig){var txt=T.getAttribute('data-text');T.textContent='';T.classList.add('tippt');var i=0;"
-    "(function tick(){if(i<=txt.length){T.textContent=txt.slice(0,i);i++;setTimeout(tick,i<3?400:28);}else{T.classList.remove('tippt');T.classList.add('fertig');}})();}"
-    "var F=document.getElementById('fortschritt');"
-    "function lauf(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;var y=max>0?h.scrollTop/max:0;"
-    "if(F){F.style.transform='scaleX('+y+')';}h.style.setProperty('--scroll',String(h.scrollTop));}"
-    "if(!ruhig){window.addEventListener('scroll',lauf,{passive:true});}lauf();})();"
-)
 
 
 # ---------------------------------------------------------------------- Prüfung
@@ -527,11 +434,14 @@ class Sammler(HTMLParser):
         self.canonical = None
         self.hreflang: list[str] = []
         self.json_ld = 0
+        self.lang = None
         self._in = None
         self._puffer = ""
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
+        if tag == "html":
+            self.lang = a.get("lang")
         if a.get("id"):
             self.ids.add(a["id"])
         if tag in ("h1", "h2", "h3", "h4", "title"):
@@ -572,6 +482,8 @@ def pruefen(bau: Bau, seiten: list[tuple[str, Path]]) -> list[str]:
         alle[pfad] = s
     for pfad, s in alle.items():
         ist_fehler = pfad.endswith("404.html")
+        if not s.lang:
+            fehler.append(f"{pfad}: lang-Attribut fehlt")
         h1 = [t for n, t in s.h if n == 1]
         if len(h1) != 1:
             fehler.append(f"{pfad}: {len(h1)} h1 (erwartet 1)")
@@ -585,13 +497,16 @@ def pruefen(bau: Bau, seiten: list[tuple[str, Path]]) -> list[str]:
         if not ist_fehler:
             if s.description is None or not (150 <= len(s.description) <= 160):
                 fehler.append(f"{pfad}: Description nicht 150–160 Zeichen ({len(s.description or '')})")
-            if not s.canonical:
-                fehler.append(f"{pfad}: Canonical fehlt")
             if s.json_ld != 1:
                 fehler.append(f"{pfad}: {s.json_ld} JSON-LD-Blöcke (erwartet 1)")
-            erwartet = set(bau.sprachen) | {"x-default"}
-            if set(s.hreflang) != erwartet:
-                fehler.append(f"{pfad}: hreflang {sorted(s.hreflang)} statt {sorted(erwartet)}")
+            if bau.basis_url:
+                if not s.canonical:
+                    fehler.append(f"{pfad}: Canonical fehlt")
+                erwartet = set(bau.sprachen) | {"x-default"}
+                if set(s.hreflang) != erwartet:
+                    fehler.append(f"{pfad}: hreflang {sorted(s.hreflang)} statt {sorted(erwartet)}")
+            elif s.canonical or s.hreflang:
+                fehler.append(f"{pfad}: Canonical/hreflang trotz fehlender Basis-URL")
         if s.bilder_ohne_alt:
             fehler.append(f"{pfad}: {s.bilder_ohne_alt} Bild(er) ohne alt")
         for href in s.links:
@@ -599,7 +514,8 @@ def pruefen(bau: Bau, seiten: list[tuple[str, Path]]) -> list[str]:
                 continue
             ziel, _, anker = href.partition("#")
             if bau.relativ:
-                ziel_abs = posixpath.normpath(posixpath.join(posixpath.dirname(pfad) if not pfad.endswith("/") else pfad, ziel)) if ziel else pfad
+                basis = posixpath.dirname(pfad) if not pfad.endswith("/") else pfad
+                ziel_abs = posixpath.normpath(posixpath.join(basis, ziel)) if ziel else pfad
                 if ziel_abs.endswith("/index.html"):
                     ziel_abs = ziel_abs[: -len("index.html")]
                 elif ziel_abs == "index.html":
@@ -617,19 +533,15 @@ def pruefen(bau: Bau, seiten: list[tuple[str, Path]]) -> list[str]:
                 continue
             if anker and anker not in alle[ziel_abs].ids:
                 fehler.append(f"{pfad}: Anker fehlt: {href}")
-    if not bau.noindex:
+    if bau.basis_url and not bau.noindex:
         sitemap = (bau.ausgabe / "sitemap.xml").read_text(encoding="utf-8")
-        for pfad in alle:
-            s = None
-            for sprache in bau.sprachen:
-                for key, p in bau.pfade.items():
-                    if p == pfad and key[0] == sprache:
-                        s = bau.sprachen[sprache]["seiten"][key[1]]
-            if pfad.endswith("404.html") or (s and s.get("robots") == "noindex"):
+        for (sprache, key), pfad in bau.pfade.items():
+            if bau.sprachen[sprache]["seiten"][key].get("robots") == "noindex":
                 continue
             if f"<loc>{html.escape(bau.absolut(pfad))}</loc>" not in sitemap:
                 fehler.append(f"Sitemap: {pfad} fehlt")
-    # Texte beider Sprachen müssen dieselben Seiten und Anker-IDs der Leistungen tragen
+    elif (bau.ausgabe / "sitemap.xml").exists():
+        fehler.append("Sitemap vorhanden, obwohl keine Basis-URL gesetzt ist")
     de, en = bau.sprachen["de"]["seiten"], bau.sprachen["en"]["seiten"]
     if set(de) != set(en):
         fehler.append(f"Seitenschlüssel DE/EN unterschiedlich: {sorted(set(de) ^ set(en))}")
@@ -640,15 +552,15 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Baut die NAHX-Website.")
     ap.add_argument("--pruefen", action="store_true", help="nach dem Bau prüfen (Fehler = Exit 1)")
     ap.add_argument("--relativ", action="store_true", help="relative Links für Vorschau ohne Webserver")
-    ap.add_argument("--noindex", action="store_true", help="Testbetrieb: alle Seiten noindex, robots.txt sperrt, keine Sitemap")
-    ap.add_argument("--basis-url", default=None, help="Basis-URL für Canonical, hreflang, Sitemap")
+    ap.add_argument("--noindex", action="store_true", help="Testbetrieb: alle Seiten noindex, robots.txt sperrt")
+    ap.add_argument("--basis-url", default=None, help="Basis-URL für Canonical, hreflang, og:url, Sitemap (sonst aus site.json; leer = ohne)")
     ap.add_argument("--ausgabe", default=None, help="Zielordner (Standard: nahx/dist)")
     args = ap.parse_args(argv)
-
     site = lade(INHALT / "site.json")
-    bau = Bau(site, args.basis_url or site["basis_url"], args.relativ, args.noindex, Path(args.ausgabe or STANDARD_AUSGABE))
+    basis = args.basis_url if args.basis_url is not None else site.get("basis_url", "")
+    bau = Bau(site, basis, args.relativ, args.noindex, Path(args.ausgabe or STANDARD_AUSGABE))
     seiten = bau.bauen()
-    print(f"{len(seiten)} Seiten nach {bau.ausgabe} gebaut ({'relativ' if bau.relativ else 'site-absolut'}, Basis {bau.basis_url}).")
+    print(f"{len(seiten)} Seiten nach {bau.ausgabe} gebaut ({'relativ' if bau.relativ else 'site-absolut'}, Basis-URL {bau.basis_url or 'keine, Domain offen'}).")
     if args.pruefen:
         fehler = pruefen(bau, seiten)
         if fehler:
@@ -656,7 +568,7 @@ def main(argv: list[str] | None = None) -> int:
             for f in fehler:
                 print("  -", f)
             return 1
-        print("Prüfung ohne Befund: h1, Überschriftenfolge, Title, Description, Alt, Canonical, hreflang, JSON-LD, Links, Anker, Sitemap.")
+        print("Prüfung ohne Befund: lang, h1, Überschriftenfolge, Title, Description, Alt, JSON-LD, Links, Anker" + (", Canonical, hreflang, Sitemap." if bau.basis_url else "; Canonical/hreflang/Sitemap zurückgestellt (keine Domain)."))
     return 0
 
 

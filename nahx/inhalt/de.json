@@ -19,7 +19,13 @@
     "fuss_sprache": "Sprache",
     "fuss_hinweis": "NAHX Technologies ist eine persönliche Geschäftsbezeichnung und keine eigenständige Gesellschaft. Rechtlich erforderliche Anbieterangaben werden im Impressum entsprechend der tatsächlichen Unternehmens- und Tätigkeitssituation ausgewiesen.",
     "platzhalter_hinweis": "Platzhalter: Dieser Text ist noch nicht fertig und wird vor dem Livegang ersetzt.",
-    "weiter": "Scrollen"
+    "weiter": "Scrollen",
+    "logo_alt": "NAHX Technologies – zur Startseite",
+    "claim_lang": "Technik verstehen. Lösungen schaffen.",
+    "l_herausforderungen": "Typische Herausforderungen",
+    "l_leistungen": "Leistungen",
+    "l_faelle": "Anwendungsfälle",
+    "fuss_kontakt": "Kontakt"
   },
   "navigation": [
     {
@@ -68,7 +74,7 @@
       "description": "Technische Redaktion, Softwareentwicklung und Automatisierung: NAHX Technologies verbindet technisches Verständnis mit digitaler Entwicklung zu klaren Lösungen.",
       "kicker": "Technische Redaktion. Softwareentwicklung. Automatisierung.",
       "h1": "Komplexe Technik. Klare Lösungen.",
-      "einleitung": "Ich verbinde technisches Verständnis mit digitaler Entwicklung. Von technischer Dokumentation über individuelle Software bis hin zu intelligenten Automatisierungen entstehen Lösungen, die reale Anforderungen adressieren und Arbeitsabläufe verbessern.",
+      "einleitung": "Ich verbinde technisches Verständnis mit digitaler Entwicklung – von technischer Dokumentation über individuelle Software bis zu intelligenter Automatisierung.",
       "cta": {
         "primaer": {
           "text": "Projekte entdecken",
@@ -83,84 +89,106 @@
         {
           "typ": "karten",
           "id": "leistungen",
-          "h2": "Was ich mache",
+          "h2": "Drei Bereiche, ein Ansatz",
+          "text": "Dokumentation, Software und Automatisierung greifen in der Praxis ineinander. Deshalb biete ich sie nicht getrennt an, sondern aus einer Hand.",
           "karten": [
             {
-              "h3": "Technische Dokumentation",
-              "text": "Ich unterstütze dabei, komplexe technische Inhalte verständlich, strukturiert und nachvollziehbar aufzubereiten.",
+              "h3": "Technical Documentation",
+              "text": "Technische Inhalte verständlich, strukturiert und prüfbar aufbereiten: Anleitungen, Spezifikationen, Prüfabläufe.",
               "link": {
-                "text": "Mehr zur technischen Redaktion",
+                "text": "Technische Redaktion",
                 "seite": "leistungen",
-                "anker": "technische-redaktion"
-              }
+                "anker": "technical-documentation"
+              },
+              "kurz": "Dokumentation"
             },
             {
-              "h3": "Software & Webanwendungen",
-              "text": "Ich konzipiere und entwickle digitale Werkzeuge, die konkrete Aufgaben vereinfachen und individuelle Anforderungen abbilden.",
+              "h3": "Software & Web Applications",
+              "text": "Individuelle Webanwendungen und interne Werkzeuge, die konkrete Aufgaben vereinfachen, vom Prototyp bis zur Weiterentwicklung.",
               "link": {
-                "text": "Mehr zu Software & Webanwendungen",
+                "text": "Software & Webanwendungen",
                 "seite": "leistungen",
-                "anker": "software-webanwendungen"
-              }
+                "anker": "software-web-applications"
+              },
+              "kurz": "Software"
             },
             {
-              "h3": "Automatisierung & KI",
-              "text": "Ich entwickle Ansätze, mit denen sich wiederkehrende Prozesse effizienter gestalten und technische Arbeitsabläufe sinnvoll unterstützen lassen.",
+              "h3": "Automation & AI",
+              "text": "Wiederkehrende Abläufe analysieren und sinnvoll automatisieren, auch mit KI-Unterstützung bei Informations- und Dokumentenprozessen.",
               "link": {
-                "text": "Mehr zu Automatisierung & KI",
+                "text": "Automatisierung & KI",
                 "seite": "leistungen",
-                "anker": "automatisierung-ki"
-              }
+                "anker": "automation-ai"
+              },
+              "kurz": "Automatisierung"
             }
           ]
+        },
+        {
+          "typ": "projekte",
+          "id": "projekte",
+          "h2": "Ausgewählte Projekte",
+          "text": "Jedes Projekt wird vor Veröffentlichung auf Vertraulichkeit, Rechte und korrekte Zuordnung geprüft. Deshalb stehen hier nur freigegebene Angaben.",
+          "link": {
+            "text": "Alle Projekte",
+            "seite": "projekte"
+          }
         },
         {
           "typ": "schritte",
           "id": "ablauf",
           "h2": "Von der Anforderung zur Lösung",
-          "text": "Gute Lösungen beginnen mit dem Verständnis des Problems. Deshalb stehen die Anforderungen, der praktische Nutzen und eine nachvollziehbare Umsetzung im Mittelpunkt meiner Arbeit.",
+          "text": "Gute Lösungen beginnen mit dem Verständnis des Problems. Der Ablauf ist eine Vorgehensweise, keine Garantie; er richtet sich nach Umfang und Anforderungen.",
           "schritte": [
             {
-              "h3": "Verstehen",
-              "text": "Anforderungen und Herausforderungen erfassen."
+              "h3": "Erstgespräch",
+              "text": "Ausgangssituation, Ziele und Herausforderungen klären."
             },
             {
-              "h3": "Konzipieren",
-              "text": "Einen passenden Lösungsansatz entwickeln."
+              "h3": "Anforderungsklärung",
+              "text": "Leistungen, erwartete Ergebnisse und Rahmenbedingungen festlegen."
             },
             {
-              "h3": "Umsetzen",
-              "text": "Die Lösung technisch realisieren und überprüfen."
+              "h3": "Konzeption",
+              "text": "Einen passenden Lösungsansatz entwickeln und abstimmen."
             },
             {
-              "h3": "Weiterentwickeln",
-              "text": "Erfahrungen nutzen, um das Ergebnis zu verbessern."
-            }
-          ]
-        },
-        {
-          "typ": "karten",
-          "id": "projekte",
-          "h2": "Ausgewählte Projekte",
-          "karten": [
-            {
-              "h3": "DocumentCheck & ComplianceCheck",
-              "text": "Entwicklung und Weiterentwicklung digitaler Werkzeuge zur Unterstützung der Prüfung technischer Dokumentation. Projektrollen, Produktrechte und die Zusammenarbeit mit FSH Documentation werden transparent abgegrenzt."
+              "h3": "Umsetzung",
+              "text": "In nachvollziehbaren Schritten umsetzen, Entscheidungen transparent halten."
             },
             {
-              "h3": "Webanwendungen & digitale Werkzeuge",
-              "text": "Konzeption und Umsetzung individueller Anwendungen für konkrete Arbeitsabläufe und organisatorische Anforderungen."
-            },
-            {
-              "h3": "Websites & digitale Plattformen",
-              "text": "Technische Umsetzung, Strukturierung und Weiterentwicklung digitaler Auftritte und Plattformen."
+              "h3": "Prüfung und Übergabe",
+              "text": "Ergebnis anhand der vereinbarten Kriterien prüfen und übergeben."
             }
           ],
-          "hinweis": "Projektbeschreibungen werden vor Veröffentlichung auf Vertraulichkeit, Rechte und korrekte Zuordnung geprüft.",
           "link": {
-            "text": "Alle Projekte",
-            "seite": "projekte"
+            "text": "Zusammenarbeit im Detail",
+            "seite": "zusammenarbeit"
           }
+        },
+        {
+          "typ": "prinzipien",
+          "id": "arbeitsweise",
+          "h2": "Woran du dich halten kannst",
+          "text": "Keine Kennzahlen, keine Versprechen, sondern Arbeitsprinzipien, die in jedem Projekt gelten.",
+          "punkte": [
+            {
+              "h3": "Direkte Zusammenarbeit",
+              "text": "Du sprichst mit der Person, die auch umsetzt. Keine Zwischenebenen."
+            },
+            {
+              "h3": "Nachvollziehbare Entscheidungen",
+              "text": "Offene Punkte und Entscheidungen werden dokumentiert, nicht stillschweigend getroffen."
+            },
+            {
+              "h3": "Passende Lösung statt neuer Software",
+              "text": "Nicht jede Aufgabe braucht ein neues Werkzeug. Wir prüfen zuerst, was zum tatsächlichen Bedarf passt."
+            },
+            {
+              "h3": "Prüfbare Ergebnisse",
+              "text": "Übergeben wird, was gegen die vereinbarten Kriterien geprüft wurde, mit Quellen und Dokumentation."
+            }
+          ]
         },
         {
           "typ": "band",
@@ -184,39 +212,80 @@
       "einleitung": "Ich arbeite an der Schnittstelle von technischer Redaktion, Software und digitalen Prozessen. Je nach Anforderung kann daraus eine redaktionelle Leistung, eine individuelle Anwendung oder die Optimierung eines bestehenden Ablaufs entstehen.",
       "abschnitte": [
         {
-          "typ": "listen",
-          "karten": [
+          "typ": "bereiche",
+          "bereiche": [
             {
-              "id": "technische-redaktion",
-              "h2": "Technische Redaktion",
-              "punkte": [
+              "id": "technical-documentation",
+              "h2": "Technical Documentation",
+              "text": "Technische Inhalte so aufbereiten, dass sie verständlich, strukturiert und prüfbar sind. Das betrifft neue Dokumente ebenso wie die Überarbeitung bestehender Unterlagen und die Abläufe dahinter.",
+              "herausforderungen": [
+                "Dokumente sind historisch gewachsen, Struktur und Terminologie sind uneinheitlich.",
+                "Prüf- und Freigabeschritte sind nicht festgelegt oder nicht nachvollziehbar.",
+                "Inhalte liegen verstreut vor und werden mehrfach gepflegt."
+              ],
+              "leistungen": [
                 "Erstellung und Überarbeitung technischer Inhalte",
                 "Strukturierung und Qualitätssicherung von Dokumentation",
                 "Unterstützung bei redaktionellen Prüfprozessen",
                 "Verbesserung von Dokumentationsabläufen"
-              ]
+              ],
+              "faelle": [
+                "Eine Anleitung wird neu gegliedert und terminologisch vereinheitlicht.",
+                "Ein Prüfablauf für Dokumente wird definiert und mit Checklisten unterlegt.",
+                "Verstreute Inhalte werden in eine wiederverwendbare Struktur überführt."
+              ],
+              "fuer": "Sinnvoll für technische Betriebe, Entwicklungsteams und Dienstleister, die Dokumentation erstellen, prüfen oder übergeben müssen."
             },
             {
-              "id": "software-webanwendungen",
-              "h2": "Software & Webanwendungen",
-              "punkte": [
+              "id": "software-web-applications",
+              "h2": "Software & Web Applications",
+              "text": "Digitale Werkzeuge, die eine konkrete Aufgabe vereinfachen: vom internen Hilfsmittel bis zur Webanwendung mit Konten und Berichten. Konzeption, Umsetzung und Weiterentwicklung aus einer Hand.",
+              "herausforderungen": [
+                "Ein Ablauf läuft über Tabellen, E-Mails und Zuruf und ist fehleranfällig.",
+                "Eine Idee soll als Prototyp greifbar werden, bevor investiert wird.",
+                "Eine bestehende Anwendung muss erweitert oder an eine Schnittstelle angebunden werden."
+              ],
+              "leistungen": [
                 "Konzeption individueller digitaler Werkzeuge",
                 "Entwicklung von Webanwendungen und internen Tools",
                 "Umsetzung von Prototypen und MVPs",
-                "Technische Integration und Weiterentwicklung bestehender Lösungen"
-              ]
+                "Datenverarbeitung, Schnittstellen und Weiterentwicklung bestehender Lösungen"
+              ],
+              "faelle": [
+                "Ein internes Werkzeug ersetzt eine Tabellenlösung und macht Zustände nachvollziehbar.",
+                "Ein Prototyp zeigt in wenigen Wochen, ob ein Ansatz trägt.",
+                "Eine Webanwendung erzeugt aus strukturierten Eingaben prüfbare Berichte."
+              ],
+              "fuer": "Sinnvoll für Teams, die einen klaren Bedarf haben, aber keine eigene Entwicklung."
             },
             {
-              "id": "automatisierung-ki",
-              "h2": "Automatisierung & KI",
-              "punkte": [
+              "id": "automation-ai",
+              "h2": "Automation & AI",
+              "text": "Wiederkehrende Arbeit erkennen und dort automatisieren, wo es sich lohnt. KI kommt zum Einsatz, wenn sie einen nachvollziehbaren Nutzen hat, etwa bei der Auswertung von Dokumenten, nicht als Selbstzweck.",
+              "herausforderungen": [
+                "Wiederkehrende Schritte kosten Zeit und werden uneinheitlich erledigt.",
+                "Informationen stecken in Dokumenten und müssen manuell herausgesucht werden.",
+                "Ein KI-Ansatz soll erprobt werden, ohne Daten unkontrolliert herauszugeben."
+              ],
+              "leistungen": [
                 "Analyse wiederkehrender Arbeitsabläufe",
-                "Konzeption und Umsetzung sinnvoller Automatisierungen",
-                "KI-gestützte Unterstützung bei Informations- und Dokumentenprozessen",
+                "Konzeption und Umsetzung praktischer Automatisierungen",
+                "KI-gestützte Informations- und Dokumentenprozesse",
                 "Prototypische Entwicklung und technische Erprobung"
-              ]
+              ],
+              "faelle": [
+                "Ein Dokumentenprüfschritt wird teilautomatisiert, das Ergebnis bleibt nachvollziehbar.",
+                "Eingehende Unterlagen werden vorsortiert und zusammengefasst, die Entscheidung bleibt beim Menschen.",
+                "Ein lokaler KI-Ansatz wird erprobt, bei dem Daten das Haus nicht verlassen."
+              ],
+              "fuer": "Sinnvoll für Organisationen mit wiederkehrenden Informations- und Dokumentenaufgaben."
             }
-          ]
+          ],
+          "cta_text": "Welcher Bereich passt, zeigt sich im Gespräch.",
+          "cta": {
+            "text": "Projekt besprechen",
+            "seite": "kontakt"
+          }
         },
         {
           "typ": "band",
@@ -240,23 +309,48 @@
       "text": "Jedes Projekt beschreibt die ursprüngliche Herausforderung, den Lösungsansatz und den tatsächlichen Entwicklungsstand. Vertrauliche Informationen und nicht freigegebene Inhalte werden nicht veröffentlicht.",
       "abschnitte": [
         {
-          "typ": "karten",
-          "karten": [
+          "typ": "projektliste",
+          "projekte": [
             {
-              "h3": "DocumentCheck & ComplianceCheck",
-              "text": "Digitale Unterstützung bei der Qualitätsprüfung technischer Dokumentation und bei dokumentbezogenen Prüfabläufen."
+              "titel": "DocumentCheck & ComplianceCheck",
+              "bereich": "Technical Documentation · Software",
+              "ausgang": "Technische Dokumentation muss gegen Normen und Checklisten geprüft werden; das geschieht oft manuell und uneinheitlich.",
+              "herausforderung": "Prüfungen nachvollziehbar, wiederholbar und als Bericht dokumentiert machen.",
+              "beitrag": "Mitarbeit an Konzeption und Weiterentwicklung digitaler Prüfwerkzeuge.",
+              "ansatz": "Regelbasierte Prüfung mit nachvollziehbarem Prüfbericht; Rollen und Rechte sind mit FSH Documentation abgegrenzt.",
+              "technologien": "Angaben folgen nach Freigabe.",
+              "status": "In Abstimmung: Produktrechte und Zuordnung werden mit FSH Documentation geklärt. Bis dahin keine weiteren Details, keine Screenshots."
             },
             {
-              "h3": "Individuelle Webanwendungen",
-              "text": "Digitale Werkzeuge zur Unterstützung interner Prozesse, zur Strukturierung von Informationen und zur Vereinfachung wiederkehrender Aufgaben."
+              "titel": "Individuelle Webanwendungen",
+              "bereich": "Software & Web Applications",
+              "ausgang": "Interne Abläufe laufen über Tabellen und E-Mails.",
+              "herausforderung": "Informationen strukturieren, Zustände nachvollziehbar machen, wiederkehrende Aufgaben vereinfachen.",
+              "beitrag": "Konzeption und Umsetzung.",
+              "ansatz": "Kleine, zweckgebundene Anwendungen statt großer Plattformen.",
+              "technologien": "Angaben folgen nach Freigabe.",
+              "status": "Beschreibungen einzelner Vorhaben folgen, sobald Vertraulichkeit und Freigabe geklärt sind."
             },
             {
-              "h3": "Websites & Plattformen",
-              "text": "Technische Umsetzung und Weiterentwicklung von Websites und digitalen Plattformen."
+              "titel": "Websites & digitale Plattformen",
+              "bereich": "Software & Web Applications",
+              "ausgang": "Bestehende Auftritte sind technisch veraltet oder schwer zu pflegen.",
+              "herausforderung": "Struktur, Inhalte und Technik so aufsetzen, dass sie ohne Agentur weitergepflegt werden können.",
+              "beitrag": "Technische Umsetzung, Strukturierung und Weiterentwicklung.",
+              "ansatz": "Statische, schnelle Seiten mit Inhalten als Daten, ohne externe Abhängigkeiten.",
+              "technologien": "Angaben folgen nach Freigabe.",
+              "status": "Referenzen werden erst nach schriftlicher Freigabe der jeweiligen Betreiber genannt."
             }
           ],
-          "hinweis": "Weitere Details zu Umfang, Technologien und Ergebnissen werden ergänzt, sobald sie geprüft und zur Veröffentlichung freigegeben sind.",
-          "h2": "Projektauswahl"
+          "legende": {
+            "ausgang": "Ausgangssituation",
+            "herausforderung": "Herausforderung",
+            "beitrag": "Eigener Beitrag",
+            "ansatz": "Lösungsansatz",
+            "technologien": "Technologien",
+            "status": "Status"
+          },
+          "hinweis": "Diese Seite zeigt bewusst nur, was belegt und freigegeben ist. Projektrollen, Produktrechte und die Zusammenarbeit mit FSH Documentation werden transparent abgegrenzt; nichts hier ist als ausschließlich eigenes Produkt zu verstehen, solange das nicht dokumentiert ist."
         },
         {
           "typ": "band",
@@ -281,9 +375,9 @@
         {
           "typ": "text",
           "absaetze": [
-            "Mit NAHX Technologies bündele ich meine eigenen technischen Dienstleistungen, Entwicklungsprojekte und zukünftigen digitalen Lösungen unter einer persönlichen Marke.",
-            "Meine Arbeitsweise ist pragmatisch: Anforderungen verstehen, eine passende Lösung entwickeln und Ergebnisse nachvollziehbar überprüfen.",
-            "Ich arbeite direkt, projektbezogen und mit dem Anspruch, technische Komplexität in praktikable Ergebnisse zu übersetzen."
+            "Hinter NAHX Technologies steht eine Person: Ich arbeite an der Schnittstelle zwischen technischer Dokumentation und digitaler Entwicklung. Mich interessiert nicht nur, ob etwas technisch funktioniert, sondern auch, ob es verständlich, praktisch nutzbar und sinnvoll in bestehende Abläufe integrierbar ist.",
+            "Mit NAHX Technologies bündele ich meine eigenen technischen Dienstleistungen, Entwicklungsprojekte und zukünftigen digitalen Lösungen unter einer persönlichen Marke. NAHX ist eine Geschäftsbezeichnung, keine Gesellschaft.",
+            "Meine Arbeitsweise ist pragmatisch: Anforderungen verstehen, eine passende Lösung entwickeln und Ergebnisse nachvollziehbar überprüfen. Ich arbeite direkt, projektbezogen und mit dem Anspruch, technische Komplexität in praktikable Ergebnisse zu übersetzen."
           ]
         },
         {
@@ -304,7 +398,7 @@
       "description": "So läuft ein Projekt mit NAHX Technologies: Erstgespräch, Anforderungen und Umfang, Umsetzung in nachvollziehbaren Schritten, Prüfung und Übergabe am Ende.",
       "kicker": "Zusammenarbeit",
       "h1": "Klarer Ablauf. Direkte Zusammenarbeit.",
-      "einleitung": "Vier Schritte vom ersten Gespräch bis zur Übergabe. Der konkrete Ablauf richtet sich nach Umfang, Komplexität und Anforderungen des jeweiligen Projekts.",
+      "einleitung": "Fünf Schritte vom ersten Gespräch bis zur Übergabe. Der Ablauf ist eine flexible Vorgehensweise, keine Garantie; er richtet sich nach Umfang, Komplexität und Anforderungen des jeweiligen Projekts.",
       "abschnitte": [
         {
           "typ": "schritte",
@@ -314,19 +408,23 @@
               "text": "Wir besprechen die Ausgangssituation, deine Ziele und die bestehenden Herausforderungen."
             },
             {
-              "h3": "Anforderungen und Umfang",
+              "h3": "Anforderungsklärung",
               "text": "Wir legen fest, welche Leistungen benötigt werden, welche Ergebnisse erwartet werden und welche Rahmenbedingungen gelten."
             },
             {
+              "h3": "Konzeption",
+              "text": "Ich entwickle einen Lösungsansatz, benenne Alternativen und offene Punkte, und wir stimmen die Richtung ab."
+            },
+            {
               "h3": "Umsetzung",
-              "text": "Ich bearbeite das vereinbarte Projekt in nachvollziehbaren Schritten und halte relevante Entscheidungen und offene Punkte transparent."
+              "text": "Ich bearbeite das vereinbarte Projekt in nachvollziehbaren Schritten und halte relevante Entscheidungen transparent."
             },
             {
               "h3": "Prüfung und Übergabe",
               "text": "Wir überprüfen das Ergebnis anhand der vereinbarten Kriterien und stimmen die Übergabe sowie mögliche weitere Schritte ab."
             }
           ],
-          "h2": "Die vier Schritte"
+          "h2": "Die fünf Schritte"
         },
         {
           "typ": "band",

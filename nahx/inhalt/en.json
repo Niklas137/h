@@ -19,7 +19,13 @@
     "fuss_sprache": "Language",
     "fuss_hinweis": "NAHX Technologies is a personal business name, not a separate legal entity. Legally required provider information is given in the legal notice according to the actual business and activity situation.",
     "platzhalter_hinweis": "Placeholder: this text is not final and will be replaced before launch.",
-    "weiter": "Scroll"
+    "weiter": "Scroll",
+    "logo_alt": "NAHX Technologies – home",
+    "claim_lang": "Understand Technology. Create Solutions.",
+    "l_herausforderungen": "Typical challenges",
+    "l_leistungen": "Services",
+    "l_faelle": "Use cases",
+    "fuss_kontakt": "Contact"
   },
   "navigation": [
     {
@@ -68,7 +74,7 @@
       "description": "Technical documentation, software development and automation: NAHX Technologies combines technical expertise with digital development to build clear solutions.",
       "kicker": "Technical Documentation. Software Development. Automation.",
       "h1": "Complex Technology. Clear Solutions.",
-      "einleitung": "I combine technical expertise with digital development. From technical documentation to custom software and intelligent automation, I work on solutions that address real requirements and improve workflows.",
+      "einleitung": "I combine technical expertise with digital development – from technical documentation to custom software and intelligent automation.",
       "cta": {
         "primaer": {
           "text": "Explore Projects",
@@ -83,84 +89,106 @@
         {
           "typ": "karten",
           "id": "services",
-          "h2": "What I Do",
+          "h2": "Three areas, one approach",
+          "text": "Documentation, software and automation are intertwined in practice. That is why I offer them together, from one source.",
           "karten": [
             {
               "h3": "Technical Documentation",
-              "text": "I help turn complex technical information into clear, structured and traceable documentation.",
+              "text": "Make technical content clear, structured and verifiable: manuals, specifications, review workflows.",
               "link": {
-                "text": "More about technical documentation",
+                "text": "Technical documentation",
                 "seite": "leistungen",
                 "anker": "technical-documentation"
-              }
+              },
+              "kurz": "Documentation"
             },
             {
               "h3": "Software & Web Applications",
-              "text": "I design and develop digital tools that simplify specific tasks and address individual requirements.",
+              "text": "Custom web applications and internal tools that simplify specific tasks, from prototype to ongoing development.",
               "link": {
-                "text": "More about software & web applications",
+                "text": "Software & web applications",
                 "seite": "leistungen",
                 "anker": "software-web-applications"
-              }
+              },
+              "kurz": "Software"
             },
             {
               "h3": "Automation & AI",
-              "text": "I explore and implement practical ways to streamline repetitive processes and support technical workflows.",
+              "text": "Analyse recurring workflows and automate them where it makes sense, including AI support for information and document processes.",
               "link": {
-                "text": "More about automation & AI",
+                "text": "Automation & AI",
                 "seite": "leistungen",
                 "anker": "automation-ai"
-              }
+              },
+              "kurz": "Automation"
             }
           ]
+        },
+        {
+          "typ": "projekte",
+          "id": "projects",
+          "h2": "Selected Projects",
+          "text": "Every project is reviewed for confidentiality, rights and accurate attribution before publication. Only approved details appear here.",
+          "link": {
+            "text": "All projects",
+            "seite": "projekte"
+          }
         },
         {
           "typ": "schritte",
           "id": "process",
           "h2": "From Requirements to Solutions",
-          "text": "Good solutions start with understanding the problem. My approach focuses on requirements, practical value and a transparent implementation process.",
+          "text": "Good solutions start with understanding the problem. The process is an approach, not a guarantee; it adapts to scope and requirements.",
           "schritte": [
             {
-              "h3": "Understand",
-              "text": "Identify requirements and challenges."
+              "h3": "Initial Discussion",
+              "text": "Clarify the current situation, goals and challenges."
             },
             {
-              "h3": "Design",
-              "text": "Develop a suitable approach."
+              "h3": "Requirements",
+              "text": "Define services, expected deliverables and constraints."
             },
             {
-              "h3": "Build",
-              "text": "Implement and validate the solution."
+              "h3": "Concept",
+              "text": "Develop and agree on a suitable approach."
             },
             {
-              "h3": "Improve",
-              "text": "Use feedback to refine the result."
-            }
-          ]
-        },
-        {
-          "typ": "karten",
-          "id": "projects",
-          "h2": "Selected Projects",
-          "karten": [
-            {
-              "h3": "DocumentCheck & ComplianceCheck",
-              "text": "Development and improvement of digital tools that support the review of technical documentation. Project roles, product rights and collaboration with FSH Documentation are clearly defined."
+              "h3": "Implementation",
+              "text": "Build in clear steps and keep decisions transparent."
             },
             {
-              "h3": "Web Applications & Digital Tools",
-              "text": "Design and implementation of custom applications for specific workflows and organizational needs."
-            },
-            {
-              "h3": "Websites & Digital Platforms",
-              "text": "Technical implementation, structuring and ongoing improvement of websites and digital platforms."
+              "h3": "Review and Handover",
+              "text": "Evaluate the result against agreed criteria and hand it over."
             }
           ],
-          "hinweis": "Project descriptions will be reviewed for confidentiality, intellectual property and accurate attribution before publication.",
           "link": {
-            "text": "All projects",
-            "seite": "projekte"
+            "text": "How we work in detail",
+            "seite": "zusammenarbeit"
           }
+        },
+        {
+          "typ": "prinzipien",
+          "id": "principles",
+          "h2": "What you can count on",
+          "text": "No metrics, no promises, just working principles that apply to every project.",
+          "punkte": [
+            {
+              "h3": "Direct collaboration",
+              "text": "You talk to the person who does the work. No intermediate layers."
+            },
+            {
+              "h3": "Traceable decisions",
+              "text": "Open issues and decisions are documented, not made silently."
+            },
+            {
+              "h3": "The right solution, not new software by default",
+              "text": "Not every task needs a new tool. We first check what fits the actual need."
+            },
+            {
+              "h3": "Verifiable results",
+              "text": "What is handed over has been checked against the agreed criteria, with sources and documentation."
+            }
+          ]
         },
         {
           "typ": "band",
@@ -184,39 +212,80 @@
       "einleitung": "I work at the intersection of technical documentation, software and digital processes. Depending on the requirements, the right solution may be a documentation service, a custom application or an improved workflow.",
       "abschnitte": [
         {
-          "typ": "listen",
-          "karten": [
+          "typ": "bereiche",
+          "bereiche": [
             {
               "id": "technical-documentation",
               "h2": "Technical Documentation",
-              "punkte": [
+              "text": "Prepare technical content so that it is understandable, structured and verifiable. This covers new documents as well as revising existing material and the workflows behind it.",
+              "herausforderungen": [
+                "Documents have grown over time; structure and terminology are inconsistent.",
+                "Review and approval steps are undefined or not traceable.",
+                "Content is scattered and maintained in several places."
+              ],
+              "leistungen": [
                 "Creation and revision of technical content",
                 "Documentation structuring and quality assurance",
                 "Support for editorial review processes",
                 "Improvement of documentation workflows"
-              ]
+              ],
+              "faelle": [
+                "A manual is restructured and its terminology unified.",
+                "A document review workflow is defined and backed by checklists.",
+                "Scattered content is moved into a reusable structure."
+              ],
+              "fuer": "Useful for technical companies, development teams and service providers that create, review or hand over documentation."
             },
             {
               "id": "software-web-applications",
               "h2": "Software & Web Applications",
-              "punkte": [
+              "text": "Digital tools that simplify a specific task: from an internal helper to a web application with accounts and reports. Concept, implementation and ongoing development from one source.",
+              "herausforderungen": [
+                "A process runs on spreadsheets, emails and shouting across the room, and is error-prone.",
+                "An idea should become tangible as a prototype before investing.",
+                "An existing application must be extended or connected to an interface."
+              ],
+              "leistungen": [
                 "Design of custom digital tools",
                 "Development of web applications and internal tools",
                 "Prototyping and MVP development",
-                "Technical integration and improvement of existing solutions"
-              ]
+                "Data processing, interfaces and improvement of existing solutions"
+              ],
+              "faelle": [
+                "An internal tool replaces a spreadsheet and makes states traceable.",
+                "A prototype shows within weeks whether an approach holds.",
+                "A web application turns structured input into verifiable reports."
+              ],
+              "fuer": "Useful for teams with a clear need but no in-house development."
             },
             {
               "id": "automation-ai",
               "h2": "Automation & AI",
-              "punkte": [
+              "text": "Identify recurring work and automate it where it pays off. AI is used when it brings a traceable benefit, for example when evaluating documents, not as an end in itself.",
+              "herausforderungen": [
+                "Recurring steps cost time and are done inconsistently.",
+                "Information is buried in documents and has to be extracted manually.",
+                "An AI approach should be tested without handing out data uncontrolled."
+              ],
+              "leistungen": [
                 "Analysis of repetitive workflows",
                 "Design and implementation of practical automation",
                 "AI-assisted information and document workflows",
                 "Prototyping and technical validation"
-              ]
+              ],
+              "faelle": [
+                "A document review step is partly automated; the result stays traceable.",
+                "Incoming documents are pre-sorted and summarised; the decision stays with a person.",
+                "A local AI approach is tested where data does not leave the premises."
+              ],
+              "fuer": "Useful for organisations with recurring information and document tasks."
             }
-          ]
+          ],
+          "cta_text": "Which area fits becomes clear in a conversation.",
+          "cta": {
+            "text": "Discuss a Project",
+            "seite": "kontakt"
+          }
         },
         {
           "typ": "band",
@@ -240,23 +309,48 @@
       "text": "Each project explains the original challenge, the approach taken and the actual development status. Confidential information and unapproved content will not be published.",
       "abschnitte": [
         {
-          "typ": "karten",
-          "karten": [
+          "typ": "projektliste",
+          "projekte": [
             {
-              "h3": "DocumentCheck & ComplianceCheck",
-              "text": "Digital support for quality reviews of technical documentation and document-related review workflows."
+              "titel": "DocumentCheck & ComplianceCheck",
+              "bereich": "Technical Documentation · Software",
+              "ausgang": "Technical documentation has to be checked against standards and checklists; this is often done manually and inconsistently.",
+              "herausforderung": "Make reviews traceable, repeatable and documented as a report.",
+              "beitrag": "Contribution to the design and further development of digital review tools.",
+              "ansatz": "Rule-based checks with a traceable review report; roles and rights are defined together with FSH Documentation.",
+              "technologien": "Details to follow after approval.",
+              "status": "Under clarification: product rights and attribution are being settled with FSH Documentation. No further details or screenshots until then."
             },
             {
-              "h3": "Custom Web Applications",
-              "text": "Digital tools designed to support internal processes, structure information and simplify repetitive tasks."
+              "titel": "Custom Web Applications",
+              "bereich": "Software & Web Applications",
+              "ausgang": "Internal processes run on spreadsheets and emails.",
+              "herausforderung": "Structure information, make states traceable, simplify recurring tasks.",
+              "beitrag": "Design and implementation.",
+              "ansatz": "Small, purpose-built applications instead of large platforms.",
+              "technologien": "Details to follow after approval.",
+              "status": "Descriptions of individual projects will follow once confidentiality and approval are settled."
             },
             {
-              "h3": "Websites & Platforms",
-              "text": "Technical implementation and ongoing development of websites and digital platforms."
+              "titel": "Websites & Digital Platforms",
+              "bereich": "Software & Web Applications",
+              "ausgang": "Existing sites are technically outdated or hard to maintain.",
+              "herausforderung": "Set up structure, content and technology so that they can be maintained without an agency.",
+              "beitrag": "Technical implementation, structuring and ongoing development.",
+              "ansatz": "Static, fast sites with content as data and no external dependencies.",
+              "technologien": "Details to follow after approval.",
+              "status": "References are named only after written approval by the respective operators."
             }
           ],
-          "hinweis": "Further details about scope, technologies and results will be added once verified and approved for publication.",
-          "h2": "Selected work"
+          "legende": {
+            "ausgang": "Starting point",
+            "herausforderung": "Challenge",
+            "beitrag": "My contribution",
+            "ansatz": "Approach",
+            "technologien": "Technologies",
+            "status": "Status"
+          },
+          "hinweis": "This page deliberately shows only what is verified and approved. Project roles, product rights and the collaboration with FSH Documentation are clearly separated; nothing here is to be read as an exclusively own product unless documented."
         },
         {
           "typ": "band",
@@ -281,9 +375,9 @@
         {
           "typ": "text",
           "absaetze": [
-            "With NAHX Technologies, I bring together my own technical services, development projects and future digital solutions under a personal brand.",
-            "My approach is pragmatic: understand the requirements, develop an appropriate solution and validate the results transparently.",
-            "I work directly and project by project, with the goal of translating technical complexity into practical outcomes."
+            "Behind NAHX Technologies is one person: I work at the intersection of technical documentation and digital development. I care not only about whether something works technically, but also whether it is understandable, practical and suitable for integration into existing workflows.",
+            "With NAHX Technologies, I bring together my own technical services, development projects and future digital solutions under a personal brand. NAHX is a business name, not a company.",
+            "My approach is pragmatic: understand the requirements, develop an appropriate solution and validate the results transparently. I work directly and project by project, with the goal of translating technical complexity into practical outcomes."
           ]
         },
         {
@@ -304,7 +398,7 @@
       "description": "How a project with NAHX Technologies works: initial discussion, requirements and scope, implementation in clear steps, review and handover. Direct and clear.",
       "kicker": "How We Work",
       "h1": "A Clear Process. Direct Collaboration.",
-      "einleitung": "Four steps from the first conversation to the handover. The exact process depends on the scope, complexity and requirements of each project.",
+      "einleitung": "Five steps from the first conversation to the handover. The process is a flexible approach, not a guarantee; it depends on the scope, complexity and requirements of each project.",
       "abschnitte": [
         {
           "typ": "schritte",
@@ -314,19 +408,23 @@
               "text": "We discuss the current situation, your goals and the challenges to be addressed."
             },
             {
-              "h3": "Requirements and Scope",
+              "h3": "Requirements",
               "text": "We define the services needed, the expected deliverables and the relevant constraints."
             },
             {
+              "h3": "Concept",
+              "text": "I develop an approach, name alternatives and open issues, and we agree on the direction."
+            },
+            {
               "h3": "Implementation",
-              "text": "I work through the agreed scope in clear steps and keep important decisions and open issues transparent."
+              "text": "I work through the agreed scope in clear steps and keep important decisions transparent."
             },
             {
               "h3": "Review and Handover",
               "text": "We evaluate the outcome against agreed criteria and coordinate the handover and any next steps."
             }
           ],
-          "h2": "The four steps"
+          "h2": "The five steps"
         },
         {
           "typ": "band",
