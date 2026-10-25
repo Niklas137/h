@@ -142,7 +142,10 @@ class Bau:
         t = self.sprachen[sprache]
         ui = t["ui"]
         nav = []
-        for eintrag in t["navigation"]:
+        eintraege = [e for e in t["navigation"] if e["seite"] != "start"]
+        if seite_key == "start":
+            eintraege = [e for e in eintraege if e["seite"] in ("leistungen", "projekte", "kontakt")]
+        for eintrag in eintraege:
             ziel = self.link(pfad, self.pfad(sprache, eintrag["seite"]))
             aktuell = ' aria-current="page"' if eintrag["seite"] == seite_key else ""
             nav.append(f'<a href="{esc(ziel)}"{aktuell}>{esc(eintrag["text"])}</a>')
@@ -163,7 +166,6 @@ class Bau:
       {"".join(sprach_links)}
       <button class="schalter" id="thema" type="button" aria-label="{esc(ui["thema"])}" data-auto="{esc(ui["thema_auto"])}" data-light="{esc(ui["thema_hell"])}" data-dark="{esc(ui["thema_dunkel"])}" hidden>{esc(ui["thema_auto"])}</button>
       <button class="schalter menue-schalter" type="button" aria-expanded="false" aria-controls="nav">{esc(ui["menue"])}</button>
-      <a class="cta kopf-cta" href="{esc(kontakt)}">{esc(ui["kopf_cta"])}</a>
     </div>
   </div>
 </header>
@@ -268,6 +270,80 @@ class Bau:
                 f'<link rel="icon" href="{l("/assets/img/favicon.ico")}" sizes="32x32">\n'
                 f'<link rel="apple-touch-icon" href="{l("/assets/img/apple-touch-icon.png")}">')
 
+    def saetze(self, text: str) -> list[str]:
+        """Zerlegt einen Absatz in Sätze für die Schreibmaschine."""
+        teile = [x.strip() for x in re.split(r"(?<=[.!?])\s+", text) if x.strip()]
+        return teile or [text]
+
+    def tippe(self, zeilen: list[str], klasse: str = "") -> str:
+        return "".join(f'<span class="tippe {klasse}" data-text="{esc(z)}">{esc(z)}</span>' for z in zeilen)
+
+    def start_main(self, sprache: str, pfad: str) -> str:
+        t = self.sprachen[sprache]
+        s = t["seiten"]["start"]
+        ui = t["ui"]
+        karten = [a for a in s["abschnitte"] if a["typ"] == "karten"]
+        leistungen, projekte = karten[0], karten[1]
+        schritte = next(a for a in s["abschnitte"] if a["typ"] == "schritte")
+        band = next(a for a in s["abschnitte"] if a["typ"] == "band")
+        email = t["email"]
+        email_html = f'<a class="email" href="mailto:{esc(email)}">{esc(email)}</a>' if "@" in email else f'<span class="platzhalter">{esc(email)}</span>'
+        ringe = "".join(
+            f'<li class="ringkachel" style="--i:{i}"><span class="ringbild">{ring(i)}</span><h3>{frag(k["h3"])}</h3><p>{frag(k["text"])}</p></li>'
+            for i, k in enumerate(leistungen["karten"])
+        )
+        schritt_html = "".join(
+            f'<li style="--i:{i}"><span class="nr">0{i + 1}</span><h3>{frag(x["h3"])}</h3><p class="tippe" data-text="{esc(x["text"])}">{esc(x["text"])}</p></li>'
+            for i, x in enumerate(schritte["schritte"])
+        )
+        projekt_html = "".join(
+            f'<li style="--i:{i}"><h3 class="tippe" data-text="{esc(k["h3"])}">{esc(k["h3"])}</h3><p>{frag(k["text"])}</p></li>'
+            for i, k in enumerate(projekte["karten"])
+        )
+        weiter = ui.get("weiter", "Scrollen")
+        return f"""<canvas id="welt" aria-hidden="true"></canvas>
+<main id="inhalt" class="start">
+  <section class="szene szene-held" data-zoom="1" data-x="0.64" data-y="0.5">
+    <div class="szene-innen">
+      <p class="kicker tippe" data-text="{esc(s["kicker"])}">{esc(s["kicker"])}</p>
+      <h1>{self.tippe(self.saetze(s["h1"]), "zeile")}</h1>
+      <p class="weiter" aria-hidden="true">{esc(weiter)}<span class="pfeil"></span></p>
+    </div>
+  </section>
+  <section class="szene szene-tunnel" data-zoom="1.4" data-x="0.5" data-y="0.5" data-tunnel="1" data-rot="0.4">
+    <div class="szene-innen"><p class="satz">{self.tippe(self.saetze(s["einleitung"]))}</p></div>
+  </section>
+  <section class="szene szene-ringe" id="{esc(leistungen.get("id", "leistungen"))}" data-zoom="0.75" data-x="0.5" data-y="0.62" data-rot="0.9" data-dichte="1.5">
+    <div class="szene-innen breit">
+      <h2 class="tippe" data-text="{esc(leistungen["h2"])}">{esc(leistungen["h2"])}</h2>
+      <ul class="ringe">{ringe}</ul>
+      <p class="mehr-zeile"><a href="{esc(self.link(pfad, self.pfad(sprache, "leistungen")))}">{esc(t["seiten"]["leistungen"]["menue"])} →</a></p>
+    </div>
+  </section>
+  <section class="szene szene-ablauf" id="{esc(schritte.get("id", "ablauf"))}" data-zoom="2.2" data-x="0.15" data-y="0.2" data-wellen="1" data-rot="-0.5">
+    <div class="szene-innen breit">
+      <h2 class="tippe" data-text="{esc(schritte["h2"])}">{esc(schritte["h2"])}</h2>
+      <p class="satz klein-satz">{frag(schritte["text"])}</p>
+      <ol class="ablauf">{schritt_html}</ol>
+    </div>
+  </section>
+  <section class="szene szene-projekte" id="{esc(projekte.get("id", "projekte"))}" data-zoom="1.1" data-x="0.85" data-y="0.5" data-rot="1.6" data-wellen="0.4">
+    <div class="szene-innen breit">
+      <h2 class="tippe" data-text="{esc(projekte["h2"])}">{esc(projekte["h2"])}</h2>
+      <ul class="projekte">{projekt_html}</ul>
+      <p class="mehr-zeile">{frag(projekte.get("hinweis", ""))} <a href="{esc(self.link(pfad, self.pfad(sprache, "projekte")))}">{esc(projekte["link"]["text"])} →</a></p>
+    </div>
+  </section>
+  <section class="szene szene-kontakt" id="{esc(band.get("id", "kontakt"))}" data-zoom="0.9" data-x="0.5" data-y="0.5" data-hell="1" data-rot="2.4">
+    <div class="szene-innen">
+      <h2 class="tippe" data-text="{esc(band["h2"])}">{esc(band["h2"])}</h2>
+      <p class="satz">{frag(band["text"])}</p>
+      <p class="kontakt-zeile">{email_html}</p>
+      <p class="mehr-zeile"><a class="cta-linie" href="{esc(self.link(pfad, self.pfad(sprache, "kontakt")))}">{esc(band["cta"]["text"])} →</a></p>
+    </div>
+  </section>
+</main>"""
+
     # ------------------------------------------------------------------ Seite
     def seite_html(self, sprache: str, seite_key: str) -> tuple[str, str]:
         t = self.sprachen[sprache]
@@ -291,6 +367,22 @@ class Bau:
         text = f'<p class="abschnitt-text">{frag(s["text"])}</p>' if s.get("text") else ""
         warn = f'<p class="warnung">{esc(ui["platzhalter_hinweis"])}</p>' if s.get("platzhalter") else ""
         abschnitte = "".join(self.abschnitt(sprache, pfad, a) for a in s["abschnitte"])
+        if seite_key == "start":
+            hauptteil = self.start_main(sprache, pfad)
+            welt = f'<script src="{esc(self.link(pfad, "/assets/welt.js"))}" defer></script>'
+        else:
+            hauptteil = f"""<main id="inhalt" class="{hauptklasse}">
+  <section class="held">
+    <div class="innen held-innen">
+      <p class="kicker tipp" data-text="{esc(s["kicker"])}">{esc(s["kicker"])}</p>
+      <h1>{woerter(frag(s["h1"]))}</h1>
+      <p class="einleitung reveal">{frag(s["einleitung"])}</p>
+      {text}{warn}{cta}
+    </div>
+  </section>
+  {abschnitte}
+</main>"""
+            welt = ""
         json_ld = {
             "@context": "https://schema.org",
             "@type": "WebPage",
@@ -328,22 +420,11 @@ class Bau:
 <script>{KOPF_SCRIPT}</script>
 <script type="application/ld+json">{json.dumps(json_ld, ensure_ascii=False).replace("</", "<\\/")}</script>
 </head>
-<body>
+<body class="{"seite-start" if seite_key == "start" else "seite-unter"}">
 {self.kopf(sprache, seite_key, pfad)}
-<main id="inhalt" class="{hauptklasse}">
-  <section class="held{" held-start" if seite_key == "start" else ""}">
-    {buehne() if seite_key == "start" else ""}
-    <div class="innen held-innen">
-      <p class="kicker tipp" data-text="{esc(s["kicker"])}">{esc(s["kicker"])}</p>
-      <h1>{woerter(frag(s["h1"]))}</h1>
-      <p class="einleitung reveal">{frag(s["einleitung"])}</p>
-      {text}{warn}{cta}
-    </div>
-  </section>
-  {abschnitte}
-</main>
+{hauptteil}
 {self.fuss(sprache, pfad)}
-<script>{FUSS_SCRIPT}</script>
+<script>{FUSS_SCRIPT}</script>{welt}
 </body>
 </html>
 """

@@ -12,7 +12,8 @@ Abhängigkeiten, fertige Dateien in `dist/`. Kein externes Skript, keine externe
 | `build.py` | baut die Seiten aus `inhalt/` nach `dist/` (Python 3.8+, keine Pakete) |
 | `inhalt/site.json` | gemeinsame Daten: Name, Basis-URL, Sprachen mit Wurzelpfad, Reihenfolge der Seiten |
 | `inhalt/de.json`, `inhalt/en.json` | alle Texte je Sprache, gleiche Seitenschlüssel (`start`, `leistungen`, `projekte`, `ueber-mich`, `zusammenarbeit`, `kontakt`, `impressum`, `datenschutz`) |
-| `assets/site.css` | Stylesheet, Farbschema hell/dunkel (automatisch oder per Schalter) |
+| `assets/site.css` | Stylesheet, dunkel als Standard, hell per Schalter (nicht auf der Startseite) |
+| `assets/welt.js` | Live-Animation der Startseite (Canvas, Szenen-Kamera, Schreibmaschine) |
 | `assets/fonts/` | Poppins und Source Sans 3 als WOFF2 (SIL Open Font License, Lizenztexte liegen dabei) |
 | `assets/img/` | `nahx-wortmarke.svg` (helle Wortmarke, Buchstaben als Pfade, A in Cyan `#22B8E0`), `favicon.svg`, `favicon.ico` (32/16 px), `apple-touch-icon.png` (180 px), `icon-512.png`, `og-nahx.jpg` (1200 × 630) |
 | `dist/` | **fertige Website zum Hochladen** (wird von `build.py` komplett neu erzeugt) |
@@ -50,18 +51,21 @@ führt auf dieselbe Seite in der anderen Sprache. Die Farbschema-Wahl wird nur l
 
 ## Gestaltung und Bewegung
 
-Dunkel ist Standard (Markenvorgabe), hell nur per Schalter im Kopf. Vorbild sind die gespeicherten Beispiele vom
-2026-10-25: gravierte Zahnräder in Cyan auf Schwarz, Schreibmaschinen-Text, Szenen, die beim Scrollen erscheinen,
-und ein heller Kontaktbereich am Schluss. Alles ohne externe Bibliotheken, Bewegung nur per CSS und wenigen Zeilen
-Skript in `build.py` (`FUSS_SCRIPT`); bei `prefers-reduced-motion` steht alles still.
+Die Startseite ist eine Scroll-Inszenierung nach dem Vorbild der gespeicherten Beispiele vom 2026-10-25: eine
+**Live-Animation auf Canvas** (`assets/welt.js`, ohne Bibliotheken) läuft dauerhaft hinter sechs Vollbild-Szenen.
+Gravierte Zahnräder, ein Ring-Tunnel und Wellenlinien in Cyan auf Schwarz drehen sich aus eigener Kraft und
+zusätzlich mit dem Scrollen; jede Szene hat eine Kamera (`data-zoom`, `data-rot`, `data-x/y`, `data-tunnel`,
+`data-wellen`, `data-hell`), zwischen den Szenen wird weich überblendet. Texte tippen sich Satz für Satz mit Cursor,
+sobald die Szene im Bild ist. Die letzte Szene wird hell (Kontakt mit E-Mail), Kopf und Text färben über `--welt-hell`
+mit. Navigation ist auf drei Ziele reduziert, kein Button im Kopf.
 
-- Zahnräder werden in `build.py` erzeugt (`zahnrad()`, `buehne()`, `ring()`): Zahnkranz als Polygon, gravierte Ringe,
-  Speichen; sie drehen per CSS und zusätzlich mit dem Scrollen (`--scroll`).
-- Die Wortmarke zeichnet sich beim Laden (Stroke-Animation `zeichnen`), die Überschrift erscheint Wort für Wort,
-  die Kicker-Zeile tippt sich mit Cursor, im Hintergrund wandert ein Farbverlauf.
-- Karten, Schritte und Abschnittsköpfe tragen `reveal` und fahren beim Scrollen gestaffelt ein (IntersectionObserver);
-  die Schrittlinie füllt sich cyan. Unter dem Kopf läuft eine Fortschrittsleiste.
-- Das Kontaktband der Startseite ist hell (`band-hell`), Leistungskarten tragen einen Zahnrad-Ring als Ikone.
+Szenen in `build.py` (`start_main`): Aufmacher · Einleitung im Tunnel · drei Leistungs-Ringe · Ablauf auf Wellen ·
+Projekte als Zeilen · heller Kontakt-Schluss. Die Inhalte kommen unverändert aus `start.json`-Abschnitten in
+`de.json`/`en.json`. Unterseiten teilen Kopf, Fußzeile und Typografie, ohne Kästen (Linien statt Karten), mit
+getippter Kicker-Zeile und Wort-für-Wort-Überschrift.
+
+Bei `prefers-reduced-motion` steht die Animation still (ein Standbild, das nur beim Scrollen neu gezeichnet wird),
+Texte erscheinen sofort. Pixeldichte ist auf 1,5 begrenzt, bei verborgenem Tab pausiert die Zeichenschleife.
 
 ## Marke und Logo
 
