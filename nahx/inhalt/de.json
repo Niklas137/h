@@ -375,9 +375,33 @@
         {
           "typ": "text",
           "absaetze": [
-            "Hinter NAHX Technologies steht eine Person: Ich arbeite an der Schnittstelle zwischen technischer Dokumentation und digitaler Entwicklung. Mich interessiert nicht nur, ob etwas technisch funktioniert, sondern auch, ob es verständlich, praktisch nutzbar und sinnvoll in bestehende Abläufe integrierbar ist.",
+            "Hinter NAHX Technologies steht eine Person, kein Team und keine Agentur. Das hat Folgen für die Zusammenarbeit: kurze Wege, direkte Absprachen, und wer die Anforderungen aufnimmt, setzt sie auch um.",
             "Mit NAHX Technologies bündele ich meine eigenen technischen Dienstleistungen, Entwicklungsprojekte und zukünftigen digitalen Lösungen unter einer persönlichen Marke. NAHX ist eine Geschäftsbezeichnung, keine Gesellschaft.",
             "Meine Arbeitsweise ist pragmatisch: Anforderungen verstehen, eine passende Lösung entwickeln und Ergebnisse nachvollziehbar überprüfen. Ich arbeite direkt, projektbezogen und mit dem Anspruch, technische Komplexität in praktikable Ergebnisse zu übersetzen."
+          ]
+        },
+        {
+          "typ": "prinzipien",
+          "id": "arbeitsweise",
+          "h2": "Arbeitsweise",
+          "text": "Was in jedem Projekt gilt, unabhängig von Umfang und Thema.",
+          "punkte": [
+            {
+              "h3": "Direkte Zusammenarbeit",
+              "text": "Du sprichst mit der Person, die auch umsetzt. Keine Zwischenebenen."
+            },
+            {
+              "h3": "Nachvollziehbare Entscheidungen",
+              "text": "Offene Punkte und Entscheidungen werden dokumentiert, nicht stillschweigend getroffen."
+            },
+            {
+              "h3": "Passende Lösung statt neuer Software",
+              "text": "Nicht jede Aufgabe braucht ein neues Werkzeug. Wir prüfen zuerst, was zum tatsächlichen Bedarf passt."
+            },
+            {
+              "h3": "Prüfbare Ergebnisse",
+              "text": "Übergeben wird, was gegen die vereinbarten Kriterien geprüft wurde, mit Quellen und Dokumentation."
+            }
           ]
         },
         {
@@ -532,7 +556,7 @@
           "typ": "text",
           "h2": "Hosting und Server-Logdateien",
           "absaetze": [
-            "Die Website ist statisch und lädt keine externen Skripte, Schriften oder Analysedienste. Beim Abruf verarbeitet der Hosting-Anbieter technisch notwendige Daten (IP-Adresse, Zeitpunkt, aufgerufene Seite, Browser) in Server-Logdateien. [Hosting-Anbieter, Sitz und Speicherdauer eintragen.]"
+            "Die Website ist statisch und lädt keine externen Skripte, Schriften oder Analysedienste und speichert nichts im Browser. Beim Abruf verarbeitet der Hosting-Anbieter technisch notwendige Daten (IP-Adresse, Zeitpunkt, aufgerufene Seite, Browser) in Server-Logdateien. [Hosting-Anbieter, Sitz und Speicherdauer eintragen.]"
           ]
         },
         {
@@ -540,13 +564,6 @@
           "h2": "Kontaktaufnahme",
           "absaetze": [
             "Wenn du per E-Mail Kontakt aufnimmst, werden die übermittelten Angaben (Absenderadresse, Name, Inhalt der Nachricht) zur Bearbeitung der Anfrage verarbeitet und gespeichert, solange dies für die Bearbeitung erforderlich ist. Ein Kontaktformular gibt es nicht. [Rechtsgrundlage und Speicherdauer eintragen.]"
-          ]
-        },
-        {
-          "typ": "text",
-          "h2": "Farbschema-Einstellung",
-          "absaetze": [
-            "Wählst du ein Farbschema (hell oder dunkel), wird diese Einstellung ausschließlich lokal in deinem Browser gespeichert. Es werden dabei keine Daten übertragen."
           ]
         },
         {

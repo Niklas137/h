@@ -375,9 +375,33 @@
         {
           "typ": "text",
           "absaetze": [
-            "Behind NAHX Technologies is one person: I work at the intersection of technical documentation and digital development. I care not only about whether something works technically, but also whether it is understandable, practical and suitable for integration into existing workflows.",
+            "Behind NAHX Technologies is one person, not a team or an agency. That shapes the collaboration: short paths, direct agreements, and the person who takes the requirements is the one who implements them.",
             "With NAHX Technologies, I bring together my own technical services, development projects and future digital solutions under a personal brand. NAHX is a business name, not a company.",
             "My approach is pragmatic: understand the requirements, develop an appropriate solution and validate the results transparently. I work directly and project by project, with the goal of translating technical complexity into practical outcomes."
+          ]
+        },
+        {
+          "typ": "prinzipien",
+          "id": "how-i-work",
+          "h2": "How I work",
+          "text": "What applies in every project, regardless of scope and topic.",
+          "punkte": [
+            {
+              "h3": "Direct collaboration",
+              "text": "You talk to the person who does the work. No intermediate layers."
+            },
+            {
+              "h3": "Traceable decisions",
+              "text": "Open issues and decisions are documented, not made silently."
+            },
+            {
+              "h3": "The right solution, not new software by default",
+              "text": "Not every task needs a new tool. We first check what fits the actual need."
+            },
+            {
+              "h3": "Verifiable results",
+              "text": "What is handed over has been checked against the agreed criteria, with sources and documentation."
+            }
           ]
         },
         {
@@ -532,7 +556,7 @@
           "typ": "text",
           "h2": "Hosting and server log files",
           "absaetze": [
-            "The website is static and loads no external scripts, fonts or analytics services. When pages are requested, the hosting provider processes technically necessary data (IP address, time, page requested, browser) in server log files. [Enter hosting provider, location and retention period.]"
+            "The website is static and loads no external scripts, fonts or analytics services and stores nothing in the browser. When pages are requested, the hosting provider processes technically necessary data (IP address, time, page requested, browser) in server log files. [Enter hosting provider, location and retention period.]"
           ]
         },
         {
@@ -540,13 +564,6 @@
           "h2": "Getting in touch",
           "absaetze": [
             "If you contact me by email, the information submitted (sender address, name, content of the message) is processed to handle the enquiry and stored for as long as necessary for that purpose. There is no contact form. [Enter legal basis and retention period.]"
-          ]
-        },
-        {
-          "typ": "text",
-          "h2": "Colour scheme setting",
-          "absaetze": [
-            "If you choose a colour scheme (light or dark), this setting is stored only locally in your browser. No data is transmitted."
           ]
         },
         {

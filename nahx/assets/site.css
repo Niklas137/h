@@ -135,7 +135,7 @@ article.bereich:first-of-type{border-top:0;padding-top:0}
 .projekt:first-of-type{border-top:0;padding-top:0}
 .projekt header{display:grid;gap:8px}
 .projekt h2{font-size:clamp(24px,2.8vw,32px)}
-.felder{margin:0;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.felder{margin:0;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,196px),1fr))}
 .felder>div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
 .felder dt{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
 .felder dd{margin:0;font-size:15px;color:var(--muted)}
@@ -147,7 +147,7 @@ article.bereich:first-of-type{border-top:0;padding-top:0}
 .schritte .nr{font-family:var(--titel);font-size:13px;letter-spacing:.2em;color:var(--cyan)}
 .schritte h3{font-size:18px}
 .schritte p{font-size:15px;color:var(--muted)}
-.prinzipien{list-style:none;padding:0;margin:0;display:grid;gap:0 32px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.prinzipien{list-style:none;padding:0;margin:0;display:grid;gap:0 40px;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
 .prinzipien li{border-top:1px solid var(--line);padding:20px 0;display:grid;gap:6px}
 .prinzipien p{font-size:16px;color:var(--muted)}
 
@@ -192,3 +192,9 @@ main.recht .fliess{font-size:16px;gap:12px}
 main.fehler .held-innen{min-height:50vh}
 
 @media print{.kopf,.fuss,.cta-reihe,.schalter,.sprung,.band,.held::before{display:none}body{background:#fff;color:#000}}
+
+/* Rechtstexte kompakt */
+main.recht .abschnitt{padding-top:22px}
+main.recht .abschnitt:first-of-type{padding-top:40px}
+main.recht .fliess h2{font-size:19px;margin-top:0}
+main.recht .held-innen{padding-bottom:28px}
