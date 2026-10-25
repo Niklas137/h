@@ -57,10 +57,11 @@ Buchstaben vermessen und als **echte Vektoren** nachgebaut, nicht verpackt:
 
 | Datei | Verwendung |
 |---|---|
-| `nahx-logo.svg` | Hauptlogo für dunklen Grund: Wortmarke (Silberverlauf `#F9F9F9` → `#C9C8C8`, A in Cyan `#02EEFB` → `#00A4F7`), TECHNOLOGIES als Strichbuchstaben, Cyan-Linie |
+| `nahx-logo.svg` | Hauptlogo in der gelieferten Originalfarbe für dunklen Grund: Wortmarke (Silberverlauf `#F9F9F9` → `#C9C8C8`, A in Cyan `#02EEFB` → `#00A4F7`), TECHNOLOGIES als Strichbuchstaben, Linie |
+| `nahx-logo-gruen.svg` | dieselbe Geometrie in der Website-Farbwelt (A `#B2EEC9` → `#559064`), wird für das Open-Graph-Bild genutzt |
 | `nahx-logo-dunkel.svg` | dieselbe Geometrie mit dunklen Buchstaben für hellen Grund |
-| `nahx-wortmarke.svg` | nur „NAHX“ |
-| `favicon.svg`, `favicon.ico` (32/16), `apple-touch-icon.png` (180), `icon-512.png` | das Cyan-A auf Schwarz |
+| `nahx-wortmarke.svg` | nur „NAHX“, grüne Fassung |
+| `favicon.svg`, `favicon.ico` (32/16), `apple-touch-icon.png` (180), `icon-512.png` | das A in Grün auf `#050705` |
 | `og-nahx.jpg` | Open-Graph-Bild 1200 × 630 aus dem Vektorlogo gerendert |
 
 Im Seitenkopf und in der Fußzeile steht die Wortmarke inline (`WORTMARKE` in `build.py`, Buchstaben in
@@ -69,8 +70,9 @@ Teil der SVG (für eine Claim-Fassung als Vektor fehlt ein Werkzeug, das Schrift
 
 ## Gestaltung
 
-Schwarz `#05070C` und Navy `#0A0F1A`/`#0E1422`, Cyan `#00C2F8` nur als Akzent (Links, Kicker, Buttons, Piktogramme),
-Text Weiß `#F4F6F8` und Hellgrau `#AEB8C6`. Outfit für Überschriften (frei lizenzierte Alternative zur kommerziellen Ancola, Entscheidung 2026-10-25), Source Sans 3 für Text. Dezentes Raster im
+Farben aus der Ancola-Vorlage gemessen (Entscheidung 2026-10-25): Schwarz mit Grünstich `#050705`, Flächen `#0D1410`,
+Akzent Grün `#559064` (Buttons) und Glühkante `#B2EEC9` (Links, Kicker, A der Wortmarke), Text cremeweiß `#FDFAF4` und
+Hellgrau `#B4C0B6`; dazu ein weiches grünes Glühen hinter dem Aufmacher. Outfit für Überschriften (frei lizenzierte Alternative zur kommerziellen Ancola, Entscheidung 2026-10-25), Source Sans 3 für Text. Dezentes Raster im
 Aufmacher, ein statisches Diagramm der drei Bereiche, Linien-Piktogramme. Einzige Bewegung: Inhalte blenden beim
 ersten Erscheinen einmal weich ein; bei `prefers-reduced-motion` gar nicht. Keine Dauer-Animationen, kein Glühen,
 kein Korn.

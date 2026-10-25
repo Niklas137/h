@@ -51,7 +51,7 @@ def lade(pfad: Path) -> dict:
 # Vektor-Wortmarke (Maße aus der Logo-Vorlage gemessen, Einheiten 1:1), inline mit currentColor
 WORTMARKE = (
     '<svg class="wortmarke" viewBox="0 0 1100 216" aria-hidden="true" focusable="false">'
-    '<defs><linearGradient id="nahx-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#02EEFB"/><stop offset="1" stop-color="#00A4F7"/></linearGradient></defs>'
+    '<defs><linearGradient id="nahx-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B2EEC9"/><stop offset="1" stop-color="#559064"/></linearGradient></defs>'
     '<path fill="currentColor" d="M0 0H51V216H0Z M207 0H258V216H207Z M0 0H60L258 216H198Z M578 0H629V216H578Z M760 0H811V216H760Z M578 87H811V132H578Z M824 0H893L1098 216H1029Z M1029 0H1098L893 216H824Z"/>'
     '<path fill="url(#nahx-c)" fill-rule="evenodd" d="M414 0L562 216H276Z M414 76L504 216H325Z M414 137L465 216H364Z"/></svg>'
 )
@@ -281,7 +281,7 @@ class Bau:
         teile = [
             '<meta charset="utf-8">', '<meta name="viewport" content="width=device-width, initial-scale=1">',
             f"<title>{esc(title)}</title>", f'<meta name="description" content="{esc(description)}">',
-            f'<meta name="robots" content="{robots}">', '<meta name="theme-color" content="#000000">',
+            f'<meta name="robots" content="{robots}">', '<meta name="theme-color" content="#050705">',
         ]
         if self.basis_url and seite_key:
             teile.append(f'<link rel="canonical" href="{esc(self.absolut(pfad))}">')
@@ -325,7 +325,7 @@ class Bau:
             k = [a for a in s["abschnitte"] if a["typ"] == "karten"][0]["karten"]
             diagramm = f"""<figure class="held-diagramm" aria-hidden="true">
   <svg viewBox="0 0 420 320" focusable="false">
-    <defs><linearGradient id="d-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#02EEFB"/><stop offset="1" stop-color="#00A4F7"/></linearGradient></defs>
+    <defs><linearGradient id="d-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B2EEC9"/><stop offset="1" stop-color="#559064"/></linearGradient></defs>
     <g class="d-raster"><path d="M0 80H420M0 160H420M0 240H420M70 0V320M210 0V320M350 0V320"/></g>
     <g class="d-linien"><path d="M70 80L210 160L350 80M210 160V250M70 80H350M70 80L210 250L350 80"/></g>
     <g class="d-knoten"><circle cx="70" cy="80" r="7"/><circle cx="350" cy="80" r="7"/><circle cx="210" cy="250" r="7"/></g>
