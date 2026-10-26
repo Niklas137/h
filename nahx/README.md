@@ -69,13 +69,23 @@ Im Seitenkopf und in der Fußzeile steht die Wortmarke inline (`WORTMARKE` in `b
 `currentColor`), daneben „Technologies“ als Text; unter 900 px nur die Wortmarke. Der Claim ist echter Text, nicht
 Teil der SVG (für eine Claim-Fassung als Vektor fehlt ein Werkzeug, das Schrift in Pfade wandelt).
 
-## Gestaltung (Visual Master Direction, 2026-10-26)
+## Gestaltung („Leinwand“, nach Referenzvideo 2026-10-26)
 
-Filmische, fotografische Markenpräsentation: dunkle Farbräume (Schwarz `#05070B`, Navy `#0D121C`), kontrollierte
-Cyan-Akzente aus dem Logo (`#17B8E6`, Verlauf `#00A4F7` → `#02EEFB` im A), Weiß und Hellgrau für Text, Outfit für
-Überschriften, Source Sans 3 für Text. Redaktionelles Layout statt Kartenraster: Aufmacher mit großflächiger
-Fotografie und dunkler Überlagerung für Lesbarkeit, Leistungsbereiche als wechselseitige Bild-Text-Reihen, Projekte
-als Bildblöcke mit eigener Bildidentität, Foto-Bänder mit Überlagerung, Markenbühne mit der 3D-Szene.
+Umsetzung nach dem Referenzvideo (Luxus-Architekturseite auf einem Laptop): jede Hauptszene ist eine Vollbild-Leinwand
+(`.leinwand`, `min-height: 100svh`, auf der Startseite `scroll-snap-type: y proximity`). Aufbau einer Leinwand wie in
+der Vorlage: transparenter Kopf mit kleiner Wortmarke links, Navigation rechts und Haarlinie darunter (wird beim
+Scrollen zur dunklen Glasleiste), kurzer Absatz oben rechts, große leichte Versal-Überschrift unten links
+(Outfit 300, Zeile für Zeile maskiert eingeblendet), Glaskarte unten rechts (`.glas`, Blur, Haarlinienrahmen),
+Pfeil-Links statt Buttons. Startseite in sechs Szenen: Aufmacher (Foto), Collage „Drei Bereiche, ein Ansatz“
+(drei Bilder mit unterschiedlichem Parallaxe-Tempo über `data-tempo`, dazwischen zählbare Angaben der Website
+selbst: 03 Bereiche, 05 Projekte, DE · EN – keine Leistungskennzahlen), Bühne „Projekte“ (Vollbildfoto mit
+Glas-Markierungen auf drei echte Projekte, mobil als Liste), Ablauf und Prinzipien als Haarlinienlisten,
+Markenbühne mit 3D-Szene, Abschlussszene „Kontakt“ (Vollbildfoto, Überschrift unten links, Pfeil-Link unten rechts).
+Unterseiten tragen denselben Aufmacher und darunter Haarlinien statt Kacheln. Farben: Schwarz `#05070B`,
+Navy `#0D121C`, Cyan-Akzente aus dem Logo (`#17B8E6`, `#5FD6F7`), Weiß und Hellgrau für Text.
+
+Nicht übernommen aus der Vorlage: erfundene Kennzahlen („10+ years“, „50+ people“), Buchungs-Schaltflächen,
+Script-Smooth-Scroll (nur natives Scrollen und Scroll-Snap, damit Tastatur und Bildschirmleser normal arbeiten).
 
 **Fotografie**: sieben Fotografien von Unsplash unter der Unsplash License (kommerziell nutzbar, keine Namensnennung
 verpflichtend, geprüft 2026-10-25; keine Unsplash+-Bilder). Fotografen und Quellen in `assets/img/foto/QUELLEN.md`
@@ -83,9 +93,10 @@ und im Bildnachweis der Fußzeile. Die Bilder zeigen Orte und Motive, keine Kund
 Breiten als WebP und JPEG (`<picture>` mit `srcset`/`sizes`), Aufmacherbild `eager` mit `fetchpriority="high"`,
 alle übrigen `loading="lazy"`; Zuordnung über `bild` in den JSON-Dateien, Alt-Texte je Sprache in `site.json`.
 
-**Bewegung**: einmaliges Einblenden beim Scrollen, leichte Parallaxe auf großen Bildern (nur `transform`,
-`requestAnimationFrame`), Bildzoom beim Überfahren, Unterstreichung in der Navigation, Scroll-Hinweis im Aufmacher.
-Bei `prefers-reduced-motion` entfällt alles davon.
+**Bewegung**: Zeileneinlauf der Überschriften, langsamer Zoom des Aufmacherfotos beim Laden, einmaliges Einblenden
+beim Scrollen, Parallaxe der Collage-Bilder und großer Fotos (nur `transform`, `requestAnimationFrame`), Bildzoom beim
+Überfahren, Unterstreichung in der Navigation, Scroll-Hinweis im Aufmacher. Bei `prefers-reduced-motion` entfällt
+alles davon, auch das Scroll-Snap.
 
 **3D-Szene** (`assets/szene3d.js`, WebGL ohne Bibliothek) auf der Startseite in der Markenbühne „Das A steht für
 den Anspruch“: Raymarching des NAHX-A als Körper aus dunklem Glasstein mit Mikrostruktur und leuchtenden Rissen,

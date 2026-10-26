@@ -118,7 +118,7 @@
     // 1) Szene in Textur A
     gl.bindFramebuffer(gl.FRAMEBUFFER, fA); gl.viewport(0, 0, W, H); gl.useProgram(P1); attr(P1);
     gl.uniform2f(u1.R, W, H); gl.uniform1f(u1.T, (now - start) / 1000); gl.uniform2f(u1.M, mx, my); gl.uniform1f(u1.S, Math.min(1, window.scrollY / 900));
-    gl.uniform2f(u1.O, breit ? 1.15 : 0.25, breit ? 0.0 : -0.75); gl.uniform1f(u1.Z, breit ? 1.5 : 1.8); gl.uniform1f(u1.J, j[0]);
+    var asp = W / H; gl.uniform2f(u1.O, breit ? Math.min(1.15, asp * 0.44) : 0.25, breit ? 0.0 : -0.75); gl.uniform1f(u1.Z, breit ? (asp < 1.9 ? 1.7 : 1.5) : 1.8); gl.uniform1f(u1.J, j[0]);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     // 2) zeitliche Mischung mit Vorbild in Historie
     gl.bindFramebuffer(gl.FRAMEBUFFER, fH[ping]); gl.useProgram(P2); attr(P2);

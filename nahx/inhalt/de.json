@@ -74,9 +74,9 @@
       "menue": "Startseite",
       "title": "NAHX Technologies – Technik verstehen. Lösungen schaffen.",
       "description": "Technische Redaktion, Softwareentwicklung und Automatisierung: NAHX Technologies verbindet technisches Verständnis mit digitaler Entwicklung zu klaren Lösungen.",
-      "kicker": "Technische Redaktion. Softwareentwicklung. Automatisierung.",
-      "h1": "Komplexe Technik. Klare Lösungen.",
-      "einleitung": "Ich verbinde technisches Verständnis mit digitaler Entwicklung – von technischer Dokumentation über individuelle Software bis zu intelligenter Automatisierung.",
+      "kicker": "NAHX Technologies",
+      "h1": "Technik<br>verstehen.<br>Lösungen<br>schaffen.",
+      "einleitung": "Technische Redaktion, Softwareentwicklung und Automatisierung aus einer Hand. Ich verbinde technisches Verständnis mit digitaler Entwicklung – von der Anleitung über individuelle Werkzeuge bis zum automatisierten Ablauf.",
       "cta": {
         "primaer": {
           "text": "Projekte entdecken",
@@ -89,52 +89,99 @@
       },
       "abschnitte": [
         {
-          "typ": "bereiche-start",
+          "typ": "collage",
           "id": "leistungen",
           "h2": "Drei Bereiche, ein Ansatz",
-          "text": "Dokumentation, Software und Automatisierung greifen in der Praxis ineinander. Deshalb biete ich sie nicht getrennt an, sondern aus einer Hand.",
-          "karten": [
+          "text": "Dokumentation, Software und Automatisierung greifen in der Praxis ineinander. Deshalb biete ich sie nicht getrennt an, sondern aus einer Hand – mit nachvollziehbaren Entscheidungen statt Versprechen.",
+          "bilder": [
             {
-              "h3": "Technical Documentation",
-              "text": "Technische Inhalte verständlich, strukturiert und prüfbar aufbereiten: Anleitungen, Spezifikationen, Prüfabläufe.",
+              "bild": "blaupause",
+              "label": "Technical Documentation",
+              "tempo": 0.5,
               "link": {
-                "text": "Technische Redaktion",
                 "seite": "leistungen",
                 "anker": "technical-documentation"
-              },
-              "kurz": "Dokumentation",
-              "bild": "blaupause"
+              }
             },
             {
-              "h3": "Software & Web Applications",
-              "text": "Individuelle Webanwendungen und interne Werkzeuge, die konkrete Aufgaben vereinfachen, vom Prototyp bis zur Weiterentwicklung.",
+              "bild": "code",
+              "label": "Software & Web Applications",
+              "tempo": 0.25,
               "link": {
-                "text": "Software & Webanwendungen",
                 "seite": "leistungen",
                 "anker": "software-web-applications"
-              },
-              "kurz": "Software",
-              "bild": "code"
+              }
             },
             {
-              "h3": "Automation & AI",
-              "text": "Wiederkehrende Abläufe analysieren und sinnvoll automatisieren, auch mit KI-Unterstützung bei Informations- und Dokumentenprozessen.",
+              "bild": "faser",
+              "label": "Automation & AI",
+              "tempo": 0.7,
               "link": {
-                "text": "Automatisierung & KI",
                 "seite": "leistungen",
                 "anker": "automation-ai"
-              },
-              "kurz": "Automatisierung",
-              "bild": "faser"
+              }
             }
-          ]
+          ],
+          "fakten": [
+            {
+              "wert": "03",
+              "text": "Leistungsbereiche: Dokumentation, Software, Automatisierung"
+            },
+            {
+              "wert": "05",
+              "text": "dokumentierte Projekte mit Ausgangslage, Beitrag und Status"
+            },
+            {
+              "wert": "DE · EN",
+              "text": "zweisprachig in Dokumentation, Software und auf dieser Website"
+            }
+          ],
+          "cta": {
+            "text": "Leistungen ansehen",
+            "seite": "leistungen"
+          }
         },
         {
-          "typ": "projekte",
+          "typ": "buehne",
           "id": "projekte",
-          "h2": "Ausgewählte Projekte",
+          "kicker": "Projekte",
+          "h2": "Lösungen aus<br>konkreten<br>Anforderungen.",
           "text": "Jedes Projekt wird vor Veröffentlichung auf Vertraulichkeit, Rechte und korrekte Zuordnung geprüft. Deshalb stehen hier nur freigegebene Angaben.",
-          "link": {
+          "bild": "fabrik",
+          "punkte_label": "Ausgewählte Projekte",
+          "punkte": [
+            {
+              "x": "20%",
+              "y": "27%",
+              "titel": "Dokumentenprüfer",
+              "text": "Web-App zur Prüfung technischer Dokumente, PDF-Berichte in vier Sprachen",
+              "link": {
+                "seite": "projekte",
+                "anker": "projekt-1"
+              }
+            },
+            {
+              "x": "52%",
+              "y": "40%",
+              "titel": "Kader-Manager",
+              "text": "Web-Modul mit Trikot-Animation, Admin-Seite und geschütztem Veröffentlichen",
+              "link": {
+                "seite": "projekte",
+                "anker": "projekt-2"
+              }
+            },
+            {
+              "x": "71%",
+              "y": "60%",
+              "titel": "Mail-Triage und Tagesrunde",
+              "text": "Skriptgestützter Ablauf mit festen Freigabestopps, nur lesend ohne Freigabe",
+              "link": {
+                "seite": "projekte",
+                "anker": "projekt-4"
+              }
+            }
+          ],
+          "cta": {
             "text": "Alle Projekte",
             "seite": "projekte"
           }
@@ -175,7 +222,7 @@
           "typ": "prinzipien",
           "id": "arbeitsweise",
           "h2": "Woran du dich halten kannst",
-          "text": "Keine Kennzahlen, keine Versprechen, sondern Arbeitsprinzipien, die in jedem Projekt gelten.",
+          "text": "Keine Erfolgszahlen, keine Versprechen, sondern Arbeitsprinzipien, die in jedem Projekt gelten.",
           "punkte": [
             {
               "h3": "Direkte Zusammenarbeit",
@@ -205,16 +252,22 @@
         {
           "typ": "band",
           "id": "kontakt",
-          "h2": "Lass uns über dein Projekt sprechen.",
+          "h2": "Lass uns über<br>dein Projekt<br>sprechen.",
           "text": "Du hast eine technische Herausforderung, einen manuellen Prozess oder eine Idee für ein digitales Werkzeug? Ich freue mich darauf, die Anforderungen kennenzulernen und mögliche Lösungen zu besprechen.",
           "cta": {
             "text": "Kontakt aufnehmen",
             "seite": "kontakt"
           },
-          "bild": "fabrik"
+          "bild": "faser",
+          "kicker": "Kontakt"
         }
       ],
-      "bild": "kopenhagen"
+      "bild": "kopenhagen",
+      "karte": {
+        "titel": "03",
+        "label": "Drei Leistungsbereiche",
+        "text": "Drei Bereiche, ein Ansatz: Technical Documentation, Software & Web Applications, Automation & AI."
+      }
     },
     "leistungen": {
       "pfad": "leistungen/",
@@ -222,7 +275,7 @@
       "title": "Leistungen | NAHX Technologies",
       "description": "Technische Redaktion, Software und Webanwendungen, Automatisierung und KI: Leistungen von NAHX Technologies an der Schnittstelle von Dokumentation und Software.",
       "kicker": "Leistungen",
-      "h1": "Technisches Verständnis trifft praktische Umsetzung.",
+      "h1": "Technisches<br>Verständnis trifft<br>Umsetzung.",
       "einleitung": "Ich arbeite an der Schnittstelle von technischer Redaktion, Software und digitalen Prozessen. Je nach Anforderung kann daraus eine redaktionelle Leistung, eine individuelle Anwendung oder die Optimierung eines bestehenden Ablaufs entstehen.",
       "abschnitte": [
         {
@@ -347,7 +400,12 @@
           "bild": "kopenhagen"
         }
       ],
-      "bild": "blaupause"
+      "bild": "blaupause",
+      "karte": {
+        "titel": "03",
+        "label": "Drei Bereiche",
+        "text": "Technical Documentation, Software & Web Applications, Automation & AI – einzeln oder kombiniert."
+      }
     },
     "projekte": {
       "pfad": "projekte/",
@@ -355,9 +413,8 @@
       "title": "Projekte | NAHX Technologies",
       "description": "Ausgewählte Projekte von NAHX Technologies aus technischer Dokumentation, Softwareentwicklung und digitalen Plattformen: Herausforderung, Ansatz und Stand.",
       "kicker": "Projekte",
-      "h1": "Lösungen, die aus konkreten Anforderungen entstehen.",
+      "h1": "Lösungen aus<br>konkreten<br>Anforderungen.",
       "einleitung": "Hier findest du eine Auswahl an Projekten aus den Bereichen technische Dokumentation, Softwareentwicklung und digitale Plattformen.",
-      "text": "Jedes Projekt beschreibt die ursprüngliche Herausforderung, den Lösungsansatz und den tatsächlichen Entwicklungsstand. Vertrauliche Informationen und nicht freigegebene Inhalte werden nicht veröffentlicht.",
       "abschnitte": [
         {
           "typ": "projektliste",
@@ -476,7 +533,12 @@
           "bild": "faser"
         }
       ],
-      "bild": "fabrik"
+      "bild": "fabrik",
+      "karte": {
+        "titel": "05",
+        "label": "Fünf Projekte",
+        "text": "Jedes mit Ausgangssituation, Herausforderung, Beitrag, Lösungsansatz, Technologien und Status."
+      }
     },
     "ueber-mich": {
       "pfad": "ueber-mich/",
@@ -484,7 +546,7 @@
       "title": "Über mich | NAHX Technologies",
       "description": "Über NAHX Technologies: technische Dienstleistungen, Entwicklungsprojekte und digitale Lösungen unter einer persönlichen Marke. Pragmatisch und nachvollziehbar.",
       "kicker": "Über mich",
-      "h1": "Technik verstehen. Zusammenhänge erkennen. Lösungen entwickeln.",
+      "h1": "Technik<br>verstehen.<br>Zusammenhänge<br>erkennen.",
       "einleitung": "Ich arbeite an der Schnittstelle zwischen technischer Dokumentation und digitaler Entwicklung. Mich interessiert nicht nur, ob etwas technisch funktioniert, sondern auch, ob es verständlich, praktisch nutzbar und sinnvoll in bestehende Abläufe integrierbar ist.",
       "abschnitte": [
         {
@@ -531,7 +593,12 @@
           "bild": "kopenhagen"
         }
       ],
-      "bild": "designer"
+      "bild": "designer",
+      "karte": {
+        "titel": "Niklas Heinzmann",
+        "label": "Person",
+        "text": "Technische Redaktion und digitale Entwicklung – eine Person, keine Agentur."
+      }
     },
     "zusammenarbeit": {
       "pfad": "zusammenarbeit/",
@@ -539,7 +606,7 @@
       "title": "Zusammenarbeit | NAHX Technologies",
       "description": "So läuft ein Projekt mit NAHX Technologies: Erstgespräch, Anforderungen und Umfang, Umsetzung in nachvollziehbaren Schritten, Prüfung und Übergabe am Ende.",
       "kicker": "Zusammenarbeit",
-      "h1": "Klarer Ablauf. Direkte Zusammenarbeit.",
+      "h1": "Klarer Ablauf.<br>Direkte<br>Zusammenarbeit.",
       "einleitung": "Fünf Schritte vom ersten Gespräch bis zur Übergabe. Der Ablauf ist eine flexible Vorgehensweise, keine Garantie; er richtet sich nach Umfang, Komplexität und Anforderungen des jeweiligen Projekts.",
       "abschnitte": [
         {
@@ -602,7 +669,12 @@
           "bild": "kopenhagen"
         }
       ],
-      "bild": "kopenhagen"
+      "bild": "kopenhagen",
+      "karte": {
+        "titel": "05",
+        "label": "Fünf Schritte",
+        "text": "Vom Erstgespräch bis zur Übergabe, mit dokumentierten Entscheidungen."
+      }
     },
     "kontakt": {
       "pfad": "kontakt/",
@@ -610,7 +682,7 @@
       "title": "Kontakt | NAHX Technologies",
       "description": "Kontakt zu NAHX Technologies per E-Mail: Beschreibe kurz deine Herausforderung oder dein Vorhaben. Ich melde mich, um die nächsten Schritte zu klären.",
       "kicker": "Kontakt",
-      "h1": "Was möchtest du umsetzen?",
+      "h1": "Was möchtest<br>du umsetzen?",
       "einleitung": "Beschreibe kurz deine Herausforderung, dein Vorhaben oder die Unterstützung, die du benötigst. Ich melde mich, um die Anforderungen und mögliche nächste Schritte mit dir zu besprechen.",
       "abschnitte": [
         {
@@ -626,7 +698,12 @@
           "datenschutz": "Deine E-Mail wird nur zur Bearbeitung der Anfrage verwendet. Näheres in der <a href=\"{datenschutz}\">Datenschutzerklärung</a>."
         }
       ],
-      "bild": "faser"
+      "bild": "faser",
+      "karte": {
+        "titel": "E-Mail",
+        "label": "Kontaktweg",
+        "text": "Kein Formular, keine Dienste: eine E-Mail genügt. Ich melde mich zur Abstimmung der Anforderungen."
+      }
     },
     "impressum": {
       "pfad": "impressum/",

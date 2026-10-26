@@ -74,9 +74,9 @@
       "menue": "Home",
       "title": "NAHX Technologies – Understand Technology. Create Solutions.",
       "description": "Technical documentation, software development and automation: NAHX Technologies combines technical expertise with digital development to build clear solutions.",
-      "kicker": "Technical Documentation. Software Development. Automation.",
-      "h1": "Complex Technology. Clear Solutions.",
-      "einleitung": "I combine technical expertise with digital development – from technical documentation to custom software and intelligent automation.",
+      "kicker": "NAHX Technologies",
+      "h1": "Understand<br>Technology.<br>Create<br>Solutions.",
+      "einleitung": "Technical documentation, software development and automation from one source. I combine technical understanding with digital development – from manuals and custom tools to automated workflows.",
       "cta": {
         "primaer": {
           "text": "Explore Projects",
@@ -89,52 +89,99 @@
       },
       "abschnitte": [
         {
-          "typ": "bereiche-start",
+          "typ": "collage",
           "id": "services",
           "h2": "Three areas, one approach",
-          "text": "Documentation, software and automation are intertwined in practice. That is why I offer them together, from one source.",
-          "karten": [
+          "text": "Documentation, software and automation are intertwined in practice. That is why I offer them together, from one source – with traceable decisions instead of promises.",
+          "bilder": [
             {
-              "h3": "Technical Documentation",
-              "text": "Make technical content clear, structured and verifiable: manuals, specifications, review workflows.",
+              "bild": "blaupause",
+              "label": "Technical Documentation",
+              "tempo": 0.5,
               "link": {
-                "text": "Technical documentation",
                 "seite": "leistungen",
                 "anker": "technical-documentation"
-              },
-              "kurz": "Documentation",
-              "bild": "blaupause"
+              }
             },
             {
-              "h3": "Software & Web Applications",
-              "text": "Custom web applications and internal tools that simplify specific tasks, from prototype to ongoing development.",
+              "bild": "code",
+              "label": "Software & Web Applications",
+              "tempo": 0.25,
               "link": {
-                "text": "Software & web applications",
                 "seite": "leistungen",
                 "anker": "software-web-applications"
-              },
-              "kurz": "Software",
-              "bild": "code"
+              }
             },
             {
-              "h3": "Automation & AI",
-              "text": "Analyse recurring workflows and automate them where it makes sense, including AI support for information and document processes.",
+              "bild": "faser",
+              "label": "Automation & AI",
+              "tempo": 0.7,
               "link": {
-                "text": "Automation & AI",
                 "seite": "leistungen",
                 "anker": "automation-ai"
-              },
-              "kurz": "Automation",
-              "bild": "faser"
+              }
             }
-          ]
+          ],
+          "fakten": [
+            {
+              "wert": "03",
+              "text": "service areas: documentation, software, automation"
+            },
+            {
+              "wert": "05",
+              "text": "documented projects with context, contribution and status"
+            },
+            {
+              "wert": "DE · EN",
+              "text": "bilingual in documentation, software and on this website"
+            }
+          ],
+          "cta": {
+            "text": "View services",
+            "seite": "leistungen"
+          }
         },
         {
-          "typ": "projekte",
+          "typ": "buehne",
           "id": "projects",
-          "h2": "Selected Projects",
+          "kicker": "Projects",
+          "h2": "Solutions built<br>around real<br>requirements.",
           "text": "Every project is reviewed for confidentiality, rights and accurate attribution before publication. Only approved details appear here.",
-          "link": {
+          "bild": "fabrik",
+          "punkte_label": "Selected projects",
+          "punkte": [
+            {
+              "x": "20%",
+              "y": "27%",
+              "titel": "Document Checker",
+              "text": "Web app for checking technical documents, PDF reports in four languages",
+              "link": {
+                "seite": "projekte",
+                "anker": "projekt-1"
+              }
+            },
+            {
+              "x": "52%",
+              "y": "40%",
+              "titel": "Squad Manager",
+              "text": "Web module with jersey animation, admin page and protected publishing",
+              "link": {
+                "seite": "projekte",
+                "anker": "projekt-2"
+              }
+            },
+            {
+              "x": "71%",
+              "y": "60%",
+              "titel": "Mail Triage and Daily Round",
+              "text": "Script-based workflow with fixed approval stops, read-only without approval",
+              "link": {
+                "seite": "projekte",
+                "anker": "projekt-4"
+              }
+            }
+          ],
+          "cta": {
             "text": "All projects",
             "seite": "projekte"
           }
@@ -175,7 +222,7 @@
           "typ": "prinzipien",
           "id": "principles",
           "h2": "What you can count on",
-          "text": "No metrics, no promises, just working principles that apply to every project.",
+          "text": "No performance figures, no promises, just working principles that apply to every project.",
           "punkte": [
             {
               "h3": "Direct collaboration",
@@ -205,16 +252,22 @@
         {
           "typ": "band",
           "id": "contact",
-          "h2": "Let’s Discuss Your Project.",
+          "h2": "Let’s talk<br>about your<br>project.",
           "text": "Do you have a technical challenge, a manual process or an idea for a digital tool? I would be happy to learn about your requirements and discuss possible solutions.",
           "cta": {
             "text": "Get in Touch",
             "seite": "kontakt"
           },
-          "bild": "fabrik"
+          "bild": "faser",
+          "kicker": "Contact"
         }
       ],
-      "bild": "kopenhagen"
+      "bild": "kopenhagen",
+      "karte": {
+        "titel": "03",
+        "label": "Three service areas",
+        "text": "Three areas, one approach: Technical Documentation, Software & Web Applications, Automation & AI."
+      }
     },
     "leistungen": {
       "pfad": "services/",
@@ -222,7 +275,7 @@
       "title": "Services | NAHX Technologies",
       "description": "Technical documentation, software and web applications, automation and AI: services by NAHX Technologies at the intersection of documentation and software.",
       "kicker": "Services",
-      "h1": "Technical Understanding Meets Practical Implementation.",
+      "h1": "Technical<br>understanding<br>meets practice.",
       "einleitung": "I work at the intersection of technical documentation, software and digital processes. Depending on the requirements, the right solution may be a documentation service, a custom application or an improved workflow.",
       "abschnitte": [
         {
@@ -347,7 +400,12 @@
           "bild": "kopenhagen"
         }
       ],
-      "bild": "blaupause"
+      "bild": "blaupause",
+      "karte": {
+        "titel": "03",
+        "label": "Three areas",
+        "text": "Technical Documentation, Software & Web Applications, Automation & AI – individually or combined."
+      }
     },
     "projekte": {
       "pfad": "projects/",
@@ -355,9 +413,8 @@
       "title": "Projects | NAHX Technologies",
       "description": "Selected projects by NAHX Technologies across technical documentation, software development and digital platforms: challenge, approach and development status.",
       "kicker": "Projects",
-      "h1": "Solutions Built Around Real Requirements.",
+      "h1": "Solutions built<br>around real<br>requirements.",
       "einleitung": "Explore selected projects across technical documentation, software development and digital platforms.",
-      "text": "Each project explains the original challenge, the approach taken and the actual development status. Confidential information and unapproved content will not be published.",
       "abschnitte": [
         {
           "typ": "projektliste",
@@ -476,7 +533,12 @@
           "bild": "faser"
         }
       ],
-      "bild": "fabrik"
+      "bild": "fabrik",
+      "karte": {
+        "titel": "05",
+        "label": "Five projects",
+        "text": "Each with starting point, challenge, contribution, approach, technologies and status."
+      }
     },
     "ueber-mich": {
       "pfad": "about/",
@@ -484,7 +546,7 @@
       "title": "About | NAHX Technologies",
       "description": "About NAHX Technologies: technical services, development projects and digital solutions under one personal brand. Pragmatic, project-based and transparent work.",
       "kicker": "About",
-      "h1": "Understand Technology. See the Connections. Build Solutions.",
+      "h1": "Understand<br>technology.<br>See the<br>connections.",
       "einleitung": "I work at the intersection of technical documentation and digital development. I care not only about whether something works technically, but also whether it is understandable, practical and suitable for integration into existing workflows.",
       "abschnitte": [
         {
@@ -531,7 +593,12 @@
           "bild": "kopenhagen"
         }
       ],
-      "bild": "designer"
+      "bild": "designer",
+      "karte": {
+        "titel": "Niklas Heinzmann",
+        "label": "Person",
+        "text": "Technical documentation and digital development – one person, not an agency."
+      }
     },
     "zusammenarbeit": {
       "pfad": "how-we-work/",
@@ -539,7 +606,7 @@
       "title": "How We Work | NAHX Technologies",
       "description": "How a project with NAHX Technologies works: initial discussion, requirements and scope, implementation in clear steps, review and handover. Direct and clear.",
       "kicker": "How We Work",
-      "h1": "A Clear Process. Direct Collaboration.",
+      "h1": "A clear process.<br>Direct<br>collaboration.",
       "einleitung": "Five steps from the first conversation to the handover. The process is a flexible approach, not a guarantee; it depends on the scope, complexity and requirements of each project.",
       "abschnitte": [
         {
@@ -602,7 +669,12 @@
           "bild": "kopenhagen"
         }
       ],
-      "bild": "kopenhagen"
+      "bild": "kopenhagen",
+      "karte": {
+        "titel": "05",
+        "label": "Five steps",
+        "text": "From the first conversation to the handover, with documented decisions."
+      }
     },
     "kontakt": {
       "pfad": "contact/",
@@ -610,7 +682,7 @@
       "title": "Contact | NAHX Technologies",
       "description": "Contact NAHX Technologies by email: briefly describe your challenge, project or support needs. I will get in touch to discuss requirements and next steps.",
       "kicker": "Contact",
-      "h1": "What Would You Like to Build?",
+      "h1": "What would<br>you like<br>to build?",
       "einleitung": "Briefly describe your challenge, project or support needs. I will get in touch to discuss the requirements and possible next steps.",
       "abschnitte": [
         {
@@ -626,7 +698,12 @@
           "datenschutz": "Your email is used only to handle your enquiry. See the <a href=\"{datenschutz}\">privacy notice</a> for details."
         }
       ],
-      "bild": "faser"
+      "bild": "faser",
+      "karte": {
+        "titel": "Email",
+        "label": "Contact",
+        "text": "No form, no services: one email is enough. I will get in touch to discuss the requirements."
+      }
     },
     "impressum": {
       "pfad": "legal-notice/",

@@ -42,6 +42,12 @@ def esc(s: str) -> str:
     return html.escape(s, quote=True)
 
 
+def zeilen(h: str) -> str:
+    """Zerlegt eine Überschrift an <br> in maskierte Zeilen für den gestaffelten Einlauf (wie im Referenzvideo)."""
+    teile = [t.strip() for t in re.split(r"<br\s*/?>", h) if t.strip()]
+    return "".join(f'<span class="zeile" style="--z:{i}"><span>{frag(t)}</span></span>' for i, t in enumerate(teile))
+
+
 def lade(pfad: Path) -> dict:
     with pfad.open(encoding="utf-8") as f:
         daten = json.load(f)
@@ -66,13 +72,17 @@ PIKTO = {
 KOPF_SCRIPT = "document.documentElement.classList.add('js');"
 FUSS_SCRIPT = (
     "(function(){var m=document.querySelector('.menue-schalter');var n=document.getElementById('nav');"
-    "if(m&&n){m.addEventListener('click',function(){var o=n.classList.toggle('offen');m.setAttribute('aria-expanded',o?'true':'false');});"
-    "document.addEventListener('keydown',function(e){if(e.key==='Escape'&&n.classList.contains('offen')){n.classList.remove('offen');m.setAttribute('aria-expanded','false');m.focus();}});}"
+    "if(m&&n){m.addEventListener('click',function(){var o=n.classList.toggle('offen');m.setAttribute('aria-expanded',o?'true':'false');m.closest('.kopf').classList.toggle('kopf-offen',o);});"
+    "document.addEventListener('keydown',function(e){if(e.key==='Escape'&&n.classList.contains('offen')){n.classList.remove('offen');m.setAttribute('aria-expanded','false');m.closest('.kopf').classList.remove('kopf-offen');m.focus();}});}"
     "var ruhig=window.matchMedia('(prefers-reduced-motion: reduce)').matches;var R=document.querySelectorAll('.reveal');"
     "if(ruhig||!('IntersectionObserver' in window)){R.forEach(function(e){e.classList.add('sichtbar');});}"
     "else{var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('sichtbar');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.1});R.forEach(function(e){io.observe(e);});}"
     "var P=document.querySelectorAll('.parallax img');if(P.length&&!ruhig){var tick=false;function lauf(){tick=false;var vh=window.innerHeight;P.forEach(function(im){var r=im.parentElement.getBoundingClientRect();if(r.bottom<0||r.top>vh)return;var f=(r.top+r.height/2-vh/2)/vh;im.style.transform='translate3d(0,'+(f*-6).toFixed(2)+'%,0) scale(1.12)';});}"
-    "window.addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(lauf);}},{passive:true});lauf();}})();"
+    "window.addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(lauf);}},{passive:true});lauf();}"
+    "var K=document.querySelector('.kopf');function kopf(){if(K)K.classList.toggle('kopf-fest',window.scrollY>40);}window.addEventListener('scroll',kopf,{passive:true});kopf();"
+    "var T=document.querySelectorAll('[data-tempo]');if(T.length&&!ruhig){var t2=false;function lauf2(){t2=false;var vh=window.innerHeight;T.forEach(function(el){var s=el.closest('section')||el.parentElement;var r=s.getBoundingClientRect();if(r.bottom<-vh||r.top>2*vh)return;var f=(r.top+r.height/2-vh/2)/vh;el.style.transform='translate3d(0,'+(f*parseFloat(el.dataset.tempo)*-60).toFixed(1)+'px,0)';});}"
+    "window.addEventListener('scroll',function(){if(!t2){t2=true;requestAnimationFrame(lauf2);}},{passive:true});lauf2();}"
+    "requestAnimationFrame(function(){document.documentElement.classList.add('bereit');});})();"
 )
 
 
@@ -201,9 +211,37 @@ class Bau:
 </article>""")
             return f'<section class="abschnitt abschnitt-breit"{ident}><div class="innen">{kopf}</div><div class="reihen">{"".join(reihen)}</div></section>'
 
+        if typ == "collage":
+            # Bildcollage mit Fakten (nur zählbare Angaben aus der Website selbst, keine Leistungskennzahlen)
+            teile = []
+            for nr, b in enumerate(a["bilder"]):
+                l = b.get("link")
+                ziel = self.link(pfad, self.pfad(sprache, l["seite"], l.get("anker"))) if l else ""
+                inner = self.bild(sprache, pfad, b["bild"], "(min-width: 900px) 34vw, 60vw") + (f'<span class="collage-label">{esc(b["label"])}</span>' if b.get("label") else "")
+                teile.append((f'<a class="collage-bild cb{nr + 1} reveal" href="{esc(ziel)}" data-tempo="{b.get("tempo", 0.4)}" aria-label="{esc(b.get("label", ""))}">{inner}</a>') if l else f'<div class="collage-bild cb{nr + 1} reveal" data-tempo="{b.get("tempo", 0.4)}">{inner}</div>')
+            for nr, f in enumerate(a["fakten"]):
+                teile.append(f'<div class="fakt fk{nr + 1} reveal" style="--i:{nr + 1}"><p class="fakt-wert">{frag(f["wert"])}</p><p class="fakt-text">{frag(f["text"])}</p></div>')
+            absatz = f'<p class="collage-absatz reveal">{frag(a["text"])}</p>' if a.get("text") else ""
+            cta = f'<p class="collage-cta reveal">{self.cta(sprache, pfad, a["cta"], "pfeil")}</p>' if a.get("cta") else ""
+            return f'<section class="leinwand collage"{ident}><div class="innen collage-innen"><h2 class="collage-titel reveal">{frag(a["h2"])}</h2><div class="collage-raster">{"".join(teile)}{absatz}{cta}</div></div></section>'
+
+        if typ == "buehne":
+            # Vollbildfoto mit Glas-Markierungen (Hotspots) auf echte Projekte; mobil als Liste
+            punkte = []
+            for nr, pkt in enumerate(a["punkte"]):
+                l = pkt["link"]
+                ziel = self.link(pfad, self.pfad(sprache, l["seite"], l.get("anker")))
+                punkte.append(f'<li class="punkt reveal" style="--x:{pkt["x"]};--y:{pkt["y"]};--i:{nr + 1}"><a class="glas punkt-glas" href="{esc(ziel)}"><span class="punkt-dot" aria-hidden="true"></span><span class="punkt-titel">{frag(pkt["titel"])}</span><span class="punkt-text">{frag(pkt["text"])}</span></a></li>')
+            cta = f'<p class="buehne-cta reveal">{self.cta(sprache, pfad, a["cta"], "pfeil")}</p>' if a.get("cta") else ""
+            absatz = f'<p class="buehne-absatz reveal">{frag(a["text"])}</p>' if a.get("text") else ""
+            return f"""<section class="leinwand buehne"{ident}><div class="buehne-foto">{self.bild(sprache, pfad, a["bild"], "100vw", True, "parallax")}</div>
+  <ul class="punkte" aria-label="{esc(a.get("punkte_label", ""))}">{"".join(punkte)}</ul>
+  <div class="innen buehne-innen"><div class="buehne-text"><p class="kicker reveal">{esc(a.get("kicker", ""))}</p><h2 class="zeilen reveal">{zeilen(a["h2"])}</h2>{absatz}</div>{cta}</div>
+</section>"""
+
         if typ == "marke":
-            return f"""<section class="markenbuehne"{ident}><canvas id="szene3d" class="szene3d" aria-hidden="true"></canvas>
-  <div class="innen buehne-innen reveal"><p class="kicker">NAHX</p><h2>{frag(a["h2"])}</h2><p class="abschnitt-text">{frag(a["text"])}</p><p class="marke-claim">{esc(a["claim"])}</p></div>
+            return f"""<section class="markenbuehne leinwand"{ident}><canvas id="szene3d" class="szene3d" aria-hidden="true"></canvas>
+  <div class="innen marke-innen reveal"><p class="kicker">NAHX</p><h2 class="zeilen">{zeilen(a["h2"])}</h2><p class="abschnitt-text">{frag(a["text"])}</p><p class="marke-claim">{esc(a["claim"])}</p></div>
 </section>"""
 
         if typ == "karten":
@@ -289,7 +327,7 @@ class Bau:
 
         if typ == "band":
             foto = f'<div class="band-foto">{self.bild(sprache, pfad, a["bild"], "100vw", True, "parallax")}</div>' if a.get("bild") else ""
-            return f'<section class="band{" band-mit-foto" if a.get("bild") else ""}"{ident}>{foto}<div class="innen reveal"><h2>{frag(a["h2"])}</h2><p>{frag(a["text"])}</p>{self.cta(sprache, pfad, a["cta"])}</div></section>'
+            return f'<section class="band leinwand{" band-mit-foto" if a.get("bild") else ""}"{ident}>{foto}<div class="innen band-innen"><div class="band-text reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2 class="zeilen">{zeilen(a["h2"])}</h2><p>{frag(a["text"])}</p></div><p class="band-cta reveal">{self.cta(sprache, pfad, a["cta"], "pfeil")}</p></div></section>'
 
         if typ == "kontakt":
             return self.kontakt(sprache, pfad, a)
@@ -347,22 +385,27 @@ class Bau:
         return "\n".join(teile)
 
     def held(self, sprache: str, seite_key: str, pfad: str, s: dict) -> str:
+        """Aufmacher als Vollbild-Leinwand: Foto, Absatz oben rechts, große Zeilenüberschrift unten links, Glaskarte unten rechts."""
         ui = self.sprachen[sprache]["ui"]
         cta = ""
         if s.get("cta"):
             cta = '<div class="cta-reihe">' + self.cta(sprache, pfad, s["cta"]["primaer"]) + self.cta(sprache, pfad, s["cta"]["sekundaer"], "cta-zweit") + "</div>"
-        text = f'<p class="abschnitt-text">{frag(s["text"])}</p>' if s.get("text") else ""
+        text = f'<p class="held-klein">{frag(s["text"])}</p>' if s.get("text") else ""
         warn = f'<p class="warnung">{esc(ui["platzhalter_hinweis"])}</p>' if s.get("platzhalter") else ""
         klasse = " held-start" if seite_key == "start" else ""
-        foto = f'<div class="held-foto">{self.bild(sprache, pfad, s["bild"], "100vw", False, "", True)}</div>' if s.get("bild") else ""
-        weiter = f'<a class="weiter" href="#inhalt-weiter" aria-label="{esc(ui.get("weiter", "Scrollen"))}"><span>{esc(ui.get("weiter", "Scrollen"))}</span><i></i></a>' if seite_key == "start" else ""
-        return f"""<section class="held{klasse}{" held-foto-seite" if s.get("bild") else ""}">{foto}<div class="innen held-innen">
+        foto = f'<div class="held-foto parallax-held">{self.bild(sprache, pfad, s["bild"], "100vw", False, "", True)}</div>' if s.get("bild") else ""
+        karte = ""
+        if s.get("karte"):
+            k = s["karte"]
+            karte = f'<aside class="glas held-karte" aria-label="{esc(k.get("label", k["titel"]))}"><p class="glas-titel">{frag(k["titel"])}</p><p>{frag(k["text"])}</p></aside>'
+        weiter = f'<a class="weiter" href="#inhalt-weiter" aria-label="{esc(ui.get("weiter", "Scrollen"))}"><span>{esc(ui.get("weiter", "Scrollen"))}</span><i></i></a>' if s.get("bild") else ""
+        return f"""<section class="held leinwand{klasse}{" held-foto-seite" if s.get("bild") else ""}">{foto}<div class="innen held-innen">
+  <p class="held-absatz">{frag(s["einleitung"])}</p>
   <div class="held-text">
     <p class="kicker">{esc(s["kicker"])}</p>
-    <h1>{frag(s["h1"])}</h1>
-    <p class="einleitung">{frag(s["einleitung"])}</p>
+    <h1 class="zeilen">{zeilen(s["h1"])}</h1>
     {text}{warn}{cta}
-  </div>{weiter}
+  </div>{karte}{weiter}
 </div></section><span id="inhalt-weiter"></span>"""
 
     def seite_html(self, sprache: str, seite_key: str) -> tuple[str, str]:
