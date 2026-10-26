@@ -15,6 +15,8 @@ externen Schriften, kein Tracking, kein Formular.
 | `assets/site.css` | Designsystem: Schwarz/Navy, Cyan-Akzent, Outfit und Source Sans 3 lokal |
 | `assets/fonts/` | Outfit (variabel, TTF) für Überschriften und Source Sans 3 (WOFF2) für Text, beide SIL Open Font License, Lizenztexte liegen dabei |
 | `assets/img/` | Logo-Satz (siehe unten), Favicons, Open-Graph-Bild, Logo-Vorlage |
+| `assets/img/foto/` | Fotografien in responsiven Varianten, `QUELLEN.md` mit Fotografen und Lizenz |
+| `assets/szene3d.js` | 3D-Szene der Markenbühne (WebGL) |
 | `dist/` | **fertige Website zum Hochladen** (wird von `build.py` komplett neu erzeugt) |
 
 ## Bauen und prüfen
@@ -57,33 +59,40 @@ Buchstaben vermessen und als **echte Vektoren** nachgebaut, nicht verpackt:
 
 | Datei | Verwendung |
 |---|---|
-| `nahx-logo.svg` | Hauptlogo in der gelieferten Originalfarbe für dunklen Grund: Wortmarke (Silberverlauf `#F9F9F9` → `#C9C8C8`, A in Cyan `#02EEFB` → `#00A4F7`), TECHNOLOGIES als Strichbuchstaben, Linie |
-| `nahx-logo-gruen.svg` | dieselbe Geometrie in der Website-Farbwelt (A `#B2EEC9` → `#559064`), wird für das Open-Graph-Bild genutzt |
+| `nahx-logo.svg` | Hauptlogo für dunklen Grund (auch Open-Graph-Bild): Wortmarke (Silberverlauf `#F9F9F9` → `#C9C8C8`, A in Cyan `#02EEFB` → `#00A4F7`), TECHNOLOGIES als Strichbuchstaben, Linie |
 | `nahx-logo-dunkel.svg` | dieselbe Geometrie mit dunklen Buchstaben für hellen Grund |
-| `nahx-wortmarke.svg` | nur „NAHX“, grüne Fassung |
-| `favicon.svg`, `favicon.ico` (32/16), `apple-touch-icon.png` (180), `icon-512.png` | das A in Grün auf `#050705` |
+| `nahx-wortmarke.svg` | nur „NAHX“ |
+| `favicon.svg`, `favicon.ico` (32/16), `apple-touch-icon.png` (180), `icon-512.png` | das Cyan-A auf Schwarz |
 | `og-nahx.jpg` | Open-Graph-Bild 1200 × 630 aus dem Vektorlogo gerendert |
 
 Im Seitenkopf und in der Fußzeile steht die Wortmarke inline (`WORTMARKE` in `build.py`, Buchstaben in
 `currentColor`), daneben „Technologies“ als Text; unter 900 px nur die Wortmarke. Der Claim ist echter Text, nicht
 Teil der SVG (für eine Claim-Fassung als Vektor fehlt ein Werkzeug, das Schrift in Pfade wandelt).
 
-## Gestaltung
+## Gestaltung (Visual Master Direction, 2026-10-26)
 
-**3D-Szene im Aufmacher** (`assets/szene3d.js`, WebGL ohne Bibliothek, Entscheidung 2026-10-25 „3D und
-realistisch“): Raymarching einer Distanzfunktion rendert das NAHX-A als extrudierten Körper aus dunklem Glasstein
-mit Mikrostruktur und leuchtenden Rissen; Hauptlicht und Gegenlicht mit GGX-Glanz, prozedurale Umgebung für
-Reflexionen, weiche Schatten, Umgebungsverschattung, spiegelnder Boden mit eigener Reflexionsspur, zweites A in der
-Tiefe, Lichtnebel, Staub im Licht, Bloom, Farbsaum, Vignette und Filmkorn; ein zweiter Durchgang glättet zeitlich
-über mehrere Frames. Reagiert sanft auf Maus und Scrollen, rendert in reduzierter Auflösung (0,7 Desktop, 0,55 Handy),
-pausiert außerhalb des Bildes und bei verborgenem Tab; ohne WebGL entfällt sie, bei `prefers-reduced-motion`
-steht ein Standbild. Das frühere statische Diagramm ist im Markup noch vorhanden, aber ausgeblendet.
+Filmische, fotografische Markenpräsentation: dunkle Farbräume (Schwarz `#05070B`, Navy `#0D121C`), kontrollierte
+Cyan-Akzente aus dem Logo (`#17B8E6`, Verlauf `#00A4F7` → `#02EEFB` im A), Weiß und Hellgrau für Text, Outfit für
+Überschriften, Source Sans 3 für Text. Redaktionelles Layout statt Kartenraster: Aufmacher mit großflächiger
+Fotografie und dunkler Überlagerung für Lesbarkeit, Leistungsbereiche als wechselseitige Bild-Text-Reihen, Projekte
+als Bildblöcke mit eigener Bildidentität, Foto-Bänder mit Überlagerung, Markenbühne mit der 3D-Szene.
 
+**Fotografie**: sieben Fotografien von Unsplash unter der Unsplash License (kommerziell nutzbar, keine Namensnennung
+verpflichtend, geprüft 2026-10-25; keine Unsplash+-Bilder). Fotografen und Quellen in `assets/img/foto/QUELLEN.md`
+und im Bildnachweis der Fußzeile. Die Bilder zeigen Orte und Motive, keine Kundenprojekte. Je Bild drei bis vier
+Breiten als WebP und JPEG (`<picture>` mit `srcset`/`sizes`), Aufmacherbild `eager` mit `fetchpriority="high"`,
+alle übrigen `loading="lazy"`; Zuordnung über `bild` in den JSON-Dateien, Alt-Texte je Sprache in `site.json`.
 
-Farben aus der Ancola-Vorlage gemessen (Entscheidung 2026-10-25): Schwarz mit Grünstich `#050705`, Flächen `#0D1410`,
-Akzent Grün `#559064` (Buttons) und Glühkante `#B2EEC9` (Links, Kicker, A der Wortmarke), Text cremeweiß `#FDFAF4` und
-Hellgrau `#B4C0B6`; dazu ein weiches grünes Glühen hinter dem Aufmacher. Outfit für Überschriften (frei lizenzierte Alternative zur kommerziellen Ancola, Entscheidung 2026-10-25), Source Sans 3 für Text. Dezentes Raster im
-Aufmacher, ein statisches Diagramm der drei Bereiche, Linien-Piktogramme. Inhalte blenden beim ersten Erscheinen einmal weich ein; bei `prefers-reduced-motion` gar nicht.
+**Bewegung**: einmaliges Einblenden beim Scrollen, leichte Parallaxe auf großen Bildern (nur `transform`,
+`requestAnimationFrame`), Bildzoom beim Überfahren, Unterstreichung in der Navigation, Scroll-Hinweis im Aufmacher.
+Bei `prefers-reduced-motion` entfällt alles davon.
+
+**3D-Szene** (`assets/szene3d.js`, WebGL ohne Bibliothek) auf der Startseite in der Markenbühne „Das A steht für
+den Anspruch“: Raymarching des NAHX-A als Körper aus dunklem Glasstein mit Mikrostruktur und leuchtenden Rissen,
+Haupt- und Gegenlicht mit GGX-Glanz, Umgebungsreflexionen, weiche Schatten, Umgebungsverschattung, spiegelnder
+Boden, zweites A in der Tiefe, Lichtnebel, Staub, Bloom, Farbsaum, Vignette, Filmkorn, zeitliche Glättung.
+Reduzierte Auflösung (0,7 Desktop, 0,55 Handy), pausiert außerhalb des Bildes, Standbild bei reduzierter Bewegung,
+ohne WebGL entfällt sie.
 
 ## Platzhalter und offene Punkte
 

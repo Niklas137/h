@@ -25,7 +25,9 @@
     "l_herausforderungen": "Typical challenges",
     "l_leistungen": "Services",
     "l_faelle": "Use cases",
-    "fuss_kontakt": "Contact"
+    "fuss_kontakt": "Contact",
+    "bildnachweis": "Image credits",
+    "fotos_hinweis": "Photographs from Unsplash (Unsplash License), photographers in the image credits. They show places and motifs, not customer projects."
   },
   "navigation": [
     {
@@ -87,7 +89,7 @@
       },
       "abschnitte": [
         {
-          "typ": "karten",
+          "typ": "bereiche-start",
           "id": "services",
           "h2": "Three areas, one approach",
           "text": "Documentation, software and automation are intertwined in practice. That is why I offer them together, from one source.",
@@ -100,7 +102,8 @@
                 "seite": "leistungen",
                 "anker": "technical-documentation"
               },
-              "kurz": "Documentation"
+              "kurz": "Documentation",
+              "bild": "blaupause"
             },
             {
               "h3": "Software & Web Applications",
@@ -110,7 +113,8 @@
                 "seite": "leistungen",
                 "anker": "software-web-applications"
               },
-              "kurz": "Software"
+              "kurz": "Software",
+              "bild": "code"
             },
             {
               "h3": "Automation & AI",
@@ -120,7 +124,8 @@
                 "seite": "leistungen",
                 "anker": "automation-ai"
               },
-              "kurz": "Automation"
+              "kurz": "Automation",
+              "bild": "faser"
             }
           ]
         },
@@ -191,6 +196,13 @@
           ]
         },
         {
+          "typ": "marke",
+          "id": "brand",
+          "h2": "The A stands for the standard.",
+          "text": "Understanding technology means knowing it from the inside: structure, material, load. The A in the name is a closed, load-bearing body, nothing decorative. The results should be the same: robust, verifiable, clear.",
+          "claim": "Understand Technology. Create Solutions."
+        },
+        {
           "typ": "band",
           "id": "contact",
           "h2": "Let’s Discuss Your Project.",
@@ -198,9 +210,11 @@
           "cta": {
             "text": "Get in Touch",
             "seite": "kontakt"
-          }
+          },
+          "bild": "fabrik"
         }
-      ]
+      ],
+      "bild": "kopenhagen"
     },
     "leistungen": {
       "pfad": "services/",
@@ -234,7 +248,8 @@
                 "A document review workflow is defined and backed by checklists.",
                 "Scattered content is moved into a reusable structure."
               ],
-              "fuer": "Useful for technical companies, development teams and service providers that create, review or hand over documentation."
+              "fuer": "Useful for technical companies, development teams and service providers that create, review or hand over documentation.",
+              "bild": "blaupause"
             },
             {
               "id": "software-web-applications",
@@ -256,7 +271,8 @@
                 "A prototype shows within weeks whether an approach holds.",
                 "A web application turns structured input into verifiable reports."
               ],
-              "fuer": "Useful for teams with a clear need but no in-house development."
+              "fuer": "Useful for teams with a clear need but no in-house development.",
+              "bild": "code"
             },
             {
               "id": "automation-ai",
@@ -278,7 +294,8 @@
                 "Incoming documents are pre-sorted and summarised; the decision stays with a person.",
                 "A local AI approach is tested where data does not leave the premises."
               ],
-              "fuer": "Useful for organisations with recurring information and document tasks."
+              "fuer": "Useful for organisations with recurring information and document tasks.",
+              "bild": "faser"
             }
           ],
           "cta_text": "Which area fits becomes clear in a conversation.",
@@ -326,9 +343,11 @@
           "cta": {
             "text": "Discuss a Project",
             "seite": "kontakt"
-          }
+          },
+          "bild": "kopenhagen"
         }
-      ]
+      ],
+      "bild": "blaupause"
     },
     "projekte": {
       "pfad": "projects/",
@@ -358,7 +377,8 @@
                 "Choose rule sets",
                 "Review with locations",
                 "PDF report (de/en/uk/ru)"
-              ]
+              ],
+              "bild": "fabrik"
             },
             {
               "titel": "Squad manager for a club website",
@@ -375,7 +395,8 @@
                 "Validation",
                 "Squad page with jerseys",
                 "Publish via token"
-              ]
+              ],
+              "bild": "code"
             },
             {
               "titel": "Website relaunch and weekly SEO audit",
@@ -392,7 +413,8 @@
                 "Build and checks",
                 "Static pages",
                 "Weekly audit with PDF"
-              ]
+              ],
+              "bild": "kopenhagen"
             },
             {
               "titel": "Mail triage and daily round (own tool)",
@@ -409,7 +431,8 @@
                 "Proposal table",
                 "Release word",
                 "Move and log"
-              ]
+              ],
+              "bild": "bokeh"
             },
             {
               "titel": "This website",
@@ -426,7 +449,8 @@
                 "build.py with checks",
                 "dist/ (static)",
                 "Host"
-              ]
+              ],
+              "bild": "designer"
             }
           ],
           "legende": {
@@ -448,9 +472,11 @@
           "cta": {
             "text": "Get in Touch",
             "seite": "kontakt"
-          }
+          },
+          "bild": "faser"
         }
-      ]
+      ],
+      "bild": "fabrik"
     },
     "ueber-mich": {
       "pfad": "about/",
@@ -501,9 +527,11 @@
           "cta": {
             "text": "How We Work",
             "seite": "zusammenarbeit"
-          }
+          },
+          "bild": "kopenhagen"
         }
-      ]
+      ],
+      "bild": "designer"
     },
     "zusammenarbeit": {
       "pfad": "how-we-work/",
@@ -570,9 +598,11 @@
           "cta": {
             "text": "Get in Touch",
             "seite": "kontakt"
-          }
+          },
+          "bild": "kopenhagen"
         }
-      ]
+      ],
+      "bild": "kopenhagen"
     },
     "kontakt": {
       "pfad": "contact/",
@@ -595,7 +625,8 @@
           ],
           "datenschutz": "Your email is used only to handle your enquiry. See the <a href=\"{datenschutz}\">privacy notice</a> for details."
         }
-      ]
+      ],
+      "bild": "faser"
     },
     "impressum": {
       "pfad": "legal-notice/",

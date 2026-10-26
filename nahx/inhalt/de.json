@@ -25,7 +25,9 @@
     "l_herausforderungen": "Typische Herausforderungen",
     "l_leistungen": "Leistungen",
     "l_faelle": "Anwendungsfälle",
-    "fuss_kontakt": "Kontakt"
+    "fuss_kontakt": "Kontakt",
+    "bildnachweis": "Bildnachweis",
+    "fotos_hinweis": "Fotografien von Unsplash (Unsplash License), Fotografen siehe Bildnachweis. Sie zeigen Orte und Motive, keine Kundenprojekte."
   },
   "navigation": [
     {
@@ -87,7 +89,7 @@
       },
       "abschnitte": [
         {
-          "typ": "karten",
+          "typ": "bereiche-start",
           "id": "leistungen",
           "h2": "Drei Bereiche, ein Ansatz",
           "text": "Dokumentation, Software und Automatisierung greifen in der Praxis ineinander. Deshalb biete ich sie nicht getrennt an, sondern aus einer Hand.",
@@ -100,7 +102,8 @@
                 "seite": "leistungen",
                 "anker": "technical-documentation"
               },
-              "kurz": "Dokumentation"
+              "kurz": "Dokumentation",
+              "bild": "blaupause"
             },
             {
               "h3": "Software & Web Applications",
@@ -110,7 +113,8 @@
                 "seite": "leistungen",
                 "anker": "software-web-applications"
               },
-              "kurz": "Software"
+              "kurz": "Software",
+              "bild": "code"
             },
             {
               "h3": "Automation & AI",
@@ -120,7 +124,8 @@
                 "seite": "leistungen",
                 "anker": "automation-ai"
               },
-              "kurz": "Automatisierung"
+              "kurz": "Automatisierung",
+              "bild": "faser"
             }
           ]
         },
@@ -191,6 +196,13 @@
           ]
         },
         {
+          "typ": "marke",
+          "id": "marke",
+          "h2": "Das A steht für den Anspruch.",
+          "text": "Technik verstehen heißt, sie von innen zu kennen: Struktur, Material, Belastung. Das A im Namen ist ein geschlossener, tragfähiger Körper, nichts Dekoratives. So sollen auch die Ergebnisse sein: belastbar, prüfbar, klar.",
+          "claim": "Technik verstehen. Lösungen schaffen."
+        },
+        {
           "typ": "band",
           "id": "kontakt",
           "h2": "Lass uns über dein Projekt sprechen.",
@@ -198,9 +210,11 @@
           "cta": {
             "text": "Kontakt aufnehmen",
             "seite": "kontakt"
-          }
+          },
+          "bild": "fabrik"
         }
-      ]
+      ],
+      "bild": "kopenhagen"
     },
     "leistungen": {
       "pfad": "leistungen/",
@@ -234,7 +248,8 @@
                 "Ein Prüfablauf für Dokumente wird definiert und mit Checklisten unterlegt.",
                 "Verstreute Inhalte werden in eine wiederverwendbare Struktur überführt."
               ],
-              "fuer": "Sinnvoll für technische Betriebe, Entwicklungsteams und Dienstleister, die Dokumentation erstellen, prüfen oder übergeben müssen."
+              "fuer": "Sinnvoll für technische Betriebe, Entwicklungsteams und Dienstleister, die Dokumentation erstellen, prüfen oder übergeben müssen.",
+              "bild": "blaupause"
             },
             {
               "id": "software-web-applications",
@@ -256,7 +271,8 @@
                 "Ein Prototyp zeigt in wenigen Wochen, ob ein Ansatz trägt.",
                 "Eine Webanwendung erzeugt aus strukturierten Eingaben prüfbare Berichte."
               ],
-              "fuer": "Sinnvoll für Teams, die einen klaren Bedarf haben, aber keine eigene Entwicklung."
+              "fuer": "Sinnvoll für Teams, die einen klaren Bedarf haben, aber keine eigene Entwicklung.",
+              "bild": "code"
             },
             {
               "id": "automation-ai",
@@ -278,7 +294,8 @@
                 "Eingehende Unterlagen werden vorsortiert und zusammengefasst, die Entscheidung bleibt beim Menschen.",
                 "Ein lokaler KI-Ansatz wird erprobt, bei dem Daten das Haus nicht verlassen."
               ],
-              "fuer": "Sinnvoll für Organisationen mit wiederkehrenden Informations- und Dokumentenaufgaben."
+              "fuer": "Sinnvoll für Organisationen mit wiederkehrenden Informations- und Dokumentenaufgaben.",
+              "bild": "faser"
             }
           ],
           "cta_text": "Welcher Bereich passt, zeigt sich im Gespräch.",
@@ -326,9 +343,11 @@
           "cta": {
             "text": "Projekt besprechen",
             "seite": "kontakt"
-          }
+          },
+          "bild": "kopenhagen"
         }
-      ]
+      ],
+      "bild": "blaupause"
     },
     "projekte": {
       "pfad": "projekte/",
@@ -358,7 +377,8 @@
                 "Regelsätze wählen",
                 "Prüfung mit Fundstellen",
                 "Bericht als PDF (de/en/uk/ru)"
-              ]
+              ],
+              "bild": "fabrik"
             },
             {
               "titel": "Kader-Manager für eine Vereinswebsite",
@@ -375,7 +395,8 @@
                 "Validierung",
                 "Kaderseite mit Trikots",
                 "Veröffentlichen per Token"
-              ]
+              ],
+              "bild": "code"
             },
             {
               "titel": "Website-Relaunch und wöchentliches SEO-Audit",
@@ -392,7 +413,8 @@
                 "Bau und Prüflauf",
                 "Statische Seiten",
                 "Wöchentliches Audit mit PDF"
-              ]
+              ],
+              "bild": "kopenhagen"
             },
             {
               "titel": "Mail-Triage und Tagesrunde (eigenes Werkzeug)",
@@ -409,7 +431,8 @@
                 "Vorschlagstabelle",
                 "Freigabewort",
                 "Verschieben und protokollieren"
-              ]
+              ],
+              "bild": "bokeh"
             },
             {
               "titel": "Diese Website",
@@ -426,7 +449,8 @@
                 "build.py mit Prüflauf",
                 "dist/ (statisch)",
                 "Hoster"
-              ]
+              ],
+              "bild": "designer"
             }
           ],
           "legende": {
@@ -448,9 +472,11 @@
           "cta": {
             "text": "Kontakt aufnehmen",
             "seite": "kontakt"
-          }
+          },
+          "bild": "faser"
         }
-      ]
+      ],
+      "bild": "fabrik"
     },
     "ueber-mich": {
       "pfad": "ueber-mich/",
@@ -501,9 +527,11 @@
           "cta": {
             "text": "Zur Zusammenarbeit",
             "seite": "zusammenarbeit"
-          }
+          },
+          "bild": "kopenhagen"
         }
-      ]
+      ],
+      "bild": "designer"
     },
     "zusammenarbeit": {
       "pfad": "zusammenarbeit/",
@@ -570,9 +598,11 @@
           "cta": {
             "text": "Kontakt aufnehmen",
             "seite": "kontakt"
-          }
+          },
+          "bild": "kopenhagen"
         }
-      ]
+      ],
+      "bild": "kopenhagen"
     },
     "kontakt": {
       "pfad": "kontakt/",
@@ -595,7 +625,8 @@
           ],
           "datenschutz": "Deine E-Mail wird nur zur Bearbeitung der Anfrage verwendet. Näheres in der <a href=\"{datenschutz}\">Datenschutzerklärung</a>."
         }
-      ]
+      ],
+      "bild": "faser"
     },
     "impressum": {
       "pfad": "impressum/",

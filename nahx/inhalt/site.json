@@ -34,5 +34,113 @@
   "_email_hinweis": "Die E-Mail-Adresse steht je Sprache in de.json/en.json unter \"email\"; solange kein @ enthalten ist, wird sie als Platzhalter ohne mailto-Link gezeigt.",
   "og_bild": "/assets/img/og-nahx.jpg",
   "_logo_hinweis": "Wortmarke: assets/img/nahx-wortmarke.svg (helle Fassung für dunklen Grund, Open Graph); im Seitenkopf wird dieselbe Geometrie inline mit currentColor ausgegeben (build.py WORTMARKE).",
-  "logo_vorlage": "/assets/img/nahx-logo-vorlage.png"
+  "logo_vorlage": "/assets/img/nahx-logo-vorlage.png",
+  "fotos": {
+    "kopenhagen": {
+      "breiten": [
+        640,
+        1000,
+        1600,
+        2400
+      ],
+      "seitenverhaeltnis": "3/2",
+      "fotograf": "Sandro Katalina",
+      "quelle": "https://unsplash.com/photos/-A3Kb429mgY",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Beleuchtetes Bürogebäude aus Beton und Glas bei Nacht am Wasser, Kopenhagen",
+        "en": "Illuminated concrete and glass office building at night by the water, Copenhagen"
+      }
+    },
+    "fabrik": {
+      "breiten": [
+        700,
+        1200,
+        2000
+      ],
+      "seitenverhaeltnis": "3/2",
+      "fotograf": "Yusuf Onuk",
+      "quelle": "https://unsplash.com/photos/StFoqVNGFG4",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Dunkle Industriehalle mit Stahlträgern, Zahnrad und Lichteinfall durch hohe Fenster",
+        "en": "Dark industrial hall with steel beams, a gear wheel and light falling through tall windows"
+      }
+    },
+    "blaupause": {
+      "breiten": [
+        640,
+        1000,
+        1600
+      ],
+      "seitenverhaeltnis": "16/9",
+      "fotograf": "EnCata PD",
+      "quelle": "https://unsplash.com/photos/SRqJ3eli-4I",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Zwei gefräste Metallteile auf technischen Zeichnungen",
+        "en": "Two machined metal parts on engineering drawings"
+      }
+    },
+    "code": {
+      "breiten": [
+        640,
+        1000,
+        1600
+      ],
+      "seitenverhaeltnis": "3/2",
+      "fotograf": "Mohammad Rahmani",
+      "quelle": "https://unsplash.com/photos/8qEB0fTe9Vw",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Laptop-Bildschirm mit Quellcode in dunkler Umgebung",
+        "en": "Laptop screen showing source code in a dark room"
+      }
+    },
+    "faser": {
+      "breiten": [
+        640,
+        1000,
+        1600
+      ],
+      "seitenverhaeltnis": "3/2",
+      "fotograf": "Compare Fibre",
+      "quelle": "https://unsplash.com/photos/INNsF0Zz_kQ",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Blau leuchtendes Glasfaserbündel vor schwarzem Hintergrund",
+        "en": "Blue glowing bundle of optical fibres on a black background"
+      }
+    },
+    "bokeh": {
+      "breiten": [
+        640,
+        1000,
+        1600
+      ],
+      "seitenverhaeltnis": "2/3",
+      "fotograf": "Kashish Lamba",
+      "quelle": "https://unsplash.com/photos/DGwunSOMMbk",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Blaue Lichtpunkte von Glasfasern mit Unschärfe",
+        "en": "Blue points of light from optical fibres, out of focus"
+      }
+    },
+    "designer": {
+      "breiten": [
+        640,
+        1000,
+        1600
+      ],
+      "seitenverhaeltnis": "3/2",
+      "fotograf": "Vooglam Eyewear",
+      "quelle": "https://unsplash.com/photos/0dhIl78b__o",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Arbeitsplatz mit Laptop, technischen Skizzen, Messschieber und Stiften",
+        "en": "Workspace with laptop, technical sketches, caliper and pens"
+      }
+    }
+  }
 }

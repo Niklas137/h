@@ -51,7 +51,7 @@ def lade(pfad: Path) -> dict:
 # Vektor-Wortmarke (Maße aus der Logo-Vorlage gemessen, Einheiten 1:1), inline mit currentColor
 WORTMARKE = (
     '<svg class="wortmarke" viewBox="0 0 1100 216" aria-hidden="true" focusable="false">'
-    '<defs><linearGradient id="nahx-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B2EEC9"/><stop offset="1" stop-color="#559064"/></linearGradient></defs>'
+    '<defs><linearGradient id="nahx-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#02EEFB"/><stop offset="1" stop-color="#00A4F7"/></linearGradient></defs>'
     '<path fill="currentColor" d="M0 0H51V216H0Z M207 0H258V216H207Z M0 0H60L258 216H198Z M578 0H629V216H578Z M760 0H811V216H760Z M578 87H811V132H578Z M824 0H893L1098 216H1029Z M1029 0H1098L893 216H824Z"/>'
     '<path fill="url(#nahx-c)" fill-rule="evenodd" d="M414 0L562 216H276Z M414 76L504 216H325Z M414 137L465 216H364Z"/></svg>'
 )
@@ -70,7 +70,9 @@ FUSS_SCRIPT = (
     "document.addEventListener('keydown',function(e){if(e.key==='Escape'&&n.classList.contains('offen')){n.classList.remove('offen');m.setAttribute('aria-expanded','false');m.focus();}});}"
     "var ruhig=window.matchMedia('(prefers-reduced-motion: reduce)').matches;var R=document.querySelectorAll('.reveal');"
     "if(ruhig||!('IntersectionObserver' in window)){R.forEach(function(e){e.classList.add('sichtbar');});}"
-    "else{var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('sichtbar');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.1});R.forEach(function(e){io.observe(e);});}})();"
+    "else{var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('sichtbar');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.1});R.forEach(function(e){io.observe(e);});}"
+    "var P=document.querySelectorAll('.parallax img');if(P.length&&!ruhig){var tick=false;function lauf(){tick=false;var vh=window.innerHeight;P.forEach(function(im){var r=im.parentElement.getBoundingClientRect();if(r.bottom<0||r.top>vh)return;var f=(r.top+r.height/2-vh/2)/vh;im.style.transform='translate3d(0,'+(f*-6).toFixed(2)+'%,0) scale(1.12)';});}"
+    "window.addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(lauf);}},{passive:true});lauf();}})();"
 )
 
 
@@ -105,6 +107,16 @@ class Bau:
 
     def absolut(self, pfad: str) -> str | None:
         return (self.basis_url + pfad) if self.basis_url else None
+
+    def bild(self, sprache: str, pfad: str, name: str, sizes: str, lazy: bool = True, klasse: str = "", prio: bool = False) -> str:
+        f = self.site["fotos"][name]
+        breiten = f["breiten"]
+        l = lambda w, ext: esc(self.link(pfad, f"/assets/img/foto/{name}-{w}.{ext}"))
+        webp = ", ".join(f"{l(w, 'webp')} {w}w" for w in breiten)
+        jpg = ", ".join(f"{l(w, 'jpg')} {w}w" for w in breiten)
+        attrs = f'loading="{"lazy" if lazy else "eager"}" decoding="async"' + (' fetchpriority="high"' if prio else "")
+        return (f'<picture class="foto {klasse}".strip()><source type="image/webp" srcset="{webp}" sizes="{sizes}">'
+                f'<img src="{l(breiten[-2] if len(breiten) > 1 else breiten[-1], "jpg")}" srcset="{jpg}" sizes="{sizes}" alt="{esc(f["alt"][sprache])}" {attrs} style="aspect-ratio:{f["seitenverhaeltnis"]}"></picture>')
 
     def cta(self, sprache: str, pfad: str, cta: dict, klasse: str = "cta") -> str:
         ziel = self.link(pfad, self.pfad(sprache, cta["seite"], cta.get("anker")))
@@ -158,6 +170,7 @@ class Bau:
       <div><strong>{esc(ui["fuss_sprache"])}</strong><nav aria-label="{esc(ui["fuss_sprache"])}">{sprachen}</nav><strong class="fuss-kontakt-titel">{esc(ui.get("fuss_kontakt", "Kontakt"))}</strong><p>{email_html}</p></div>
     </div>
     <p class="fuss-klein">{esc(ui["fuss_hinweis"])}</p>
+    <details class="bildnachweis"><summary>{esc(ui.get("bildnachweis", "Bildnachweis"))}</summary><p class="fuss-klein">{esc(ui.get("fotos_hinweis", ""))} {" · ".join(f'<a href="{esc(f["quelle"])}" rel="noopener">{esc(f["fotograf"])}</a>' for f in self.site["fotos"].values())}</p></details>
   </div>
 </footer>"""
 
@@ -177,6 +190,22 @@ class Bau:
         if a.get("link"):
             mehr = f'<p class="mehr-zeile reveal">{self.cta(sprache, pfad, a["link"], "mehr")}</p>'
 
+        if typ == "bereiche-start":
+            reihen = []
+            for nr, k in enumerate(a["karten"]):
+                l = k["link"]
+                ziel = self.link(pfad, self.pfad(sprache, l["seite"], l.get("anker")))
+                reihen.append(f"""<article class="reihe reveal{" reihe-umgekehrt" if nr % 2 else ""}">
+  <a class="reihe-bild" href="{esc(ziel)}" tabindex="-1" aria-hidden="true">{self.bild(sprache, pfad, k["bild"], "(min-width: 900px) 56vw, 100vw", True, "parallax")}</a>
+  <div class="reihe-text"><p class="nr">0{nr + 1}</p><h3>{frag(k["h3"])}</h3><p>{frag(k["text"])}</p><a class="mehr" href="{esc(ziel)}">{esc(l["text"])}</a></div>
+</article>""")
+            return f'<section class="abschnitt abschnitt-breit"{ident}><div class="innen">{kopf}</div><div class="reihen">{"".join(reihen)}</div></section>'
+
+        if typ == "marke":
+            return f"""<section class="markenbuehne"{ident}><canvas id="szene3d" class="szene3d" aria-hidden="true"></canvas>
+  <div class="innen buehne-innen reveal"><p class="kicker">NAHX</p><h2>{frag(a["h2"])}</h2><p class="abschnitt-text">{frag(a["text"])}</p><p class="marke-claim">{esc(a["claim"])}</p></div>
+</section>"""
+
         if typ == "karten":
             karten = []
             for nr, k in enumerate(a["karten"]):
@@ -186,15 +215,17 @@ class Bau:
             return f'<section class="abschnitt innen"{ident}>{kopf}<div class="raster">{"".join(karten)}</div>{mehr}</section>'
 
         if typ == "projekte":
-            # Kurzkarten aus der Projektseite derselben Sprache
             liste = next(x for x in self.sprachen[sprache]["seiten"]["projekte"]["abschnitte"] if x["typ"] == "projektliste")
-            karten = []
+            bloecke = []
             for nr, p in enumerate(liste["projekte"]):
                 if nr >= 3:
                     break
                 ziel = self.link(pfad, self.pfad(sprache, "projekte")) + f"#projekt-{nr + 1}"
-                karten.append(f'<article class="karte projekt-karte reveal" style="--i:{nr}"><p class="bereich">{esc(p["bereich"])}</p><h3>{frag(p["titel"])}</h3><p>{frag(p.get("kurz", p["herausforderung"]))}</p><p class="klein tech">{esc(p["technologien"].split(";")[0])}</p><a class="mehr" href="{esc(ziel)}">{esc(liste["legende"].get("mehr", "Details"))}</a></article>')
-            return f'<section class="abschnitt innen"{ident}>{kopf}<div class="raster">{"".join(karten)}</div>{mehr}</section>'
+                bloecke.append(f"""<article class="projekt-block reveal" style="--i:{nr}">
+  <a class="projekt-bild" href="{esc(ziel)}" tabindex="-1" aria-hidden="true">{self.bild(sprache, pfad, p["bild"], "(min-width: 900px) 33vw, 100vw")}</a>
+  <p class="bereich">{esc(p["bereich"])}</p><h3>{frag(p["titel"])}</h3><p>{frag(p.get("kurz", p["herausforderung"]))}</p><p class="klein tech">{esc(p["technologien"].split(";")[0])}</p><a class="mehr" href="{esc(ziel)}">{esc(liste["legende"].get("mehr", "Details"))}</a>
+</article>""")
+            return f'<section class="abschnitt innen"{ident}>{kopf}<div class="projekt-bloecke">{"".join(bloecke)}</div>{mehr}</section>'
 
         if typ == "projektliste":
             L = a["legende"]
@@ -205,7 +236,8 @@ class Bau:
                 if p.get("ablauf"):
                     schritte = "".join(f'<li>{esc(x)}</li>' for x in p["ablauf"])
                     fluss = f'<div class="fluss"><p class="fluss-titel">{esc(L.get("ablauf", "Ablauf"))}</p><ol class="fluss-kette">{schritte}</ol></div>'
-                eintraege.append(f'<article class="projekt reveal" id="projekt-{nr + 1}"><header><p class="bereich">{esc(p["bereich"])}</p><h2>{frag(p["titel"])}</h2><p class="projekt-kurz">{frag(p.get("kurz", ""))}</p></header>{fluss}<dl class="felder">{felder}</dl><p class="status"><span>{esc(L["status"])}</span>{frag(p["status"])}</p></article>')
+                bild = self.bild(sprache, pfad, p["bild"], "(min-width: 900px) 42vw, 100vw") if p.get("bild") else ""
+                eintraege.append(f'<article class="projekt reveal{" projekt-umgekehrt" if nr % 2 else ""}" id="projekt-{nr + 1}"><div class="projekt-kopf"><div class="projekt-foto">{bild}</div><header><p class="bereich">{esc(p["bereich"])}</p><h2>{frag(p["titel"])}</h2><p class="projekt-kurz">{frag(p.get("kurz", ""))}</p></header></div>{fluss}<dl class="felder">{felder}</dl><p class="status"><span>{esc(L["status"])}</span>{frag(p["status"])}</p></article>')
             hinweis = f'<p class="hinweis reveal">{frag(a["hinweis"])}</p>' if a.get("hinweis") else ""
             return f'<section class="abschnitt innen"{ident}>{"".join(eintraege)}{hinweis}</section>'
 
@@ -216,7 +248,7 @@ class Bau:
                 def liste(items):
                     return "".join(f"<li>{frag(x)}</li>" for x in items)
                 bl.append(f"""<article class="bereich reveal" id="{esc(b["id"])}">
-  <div class="bereich-kopf"><span class="pikto">{PIKTO[nr % 3]}</span><h2>{frag(b["h2"])}</h2><p class="abschnitt-text">{frag(b["text"])}</p></div>
+  <div class="bereich-kopf"><div class="bereich-foto">{self.bild(sprache, pfad, b["bild"], "(min-width: 900px) 40vw, 100vw") if b.get("bild") else ""}</div><div><span class="pikto">{PIKTO[nr % 3]}</span><h2>{frag(b["h2"])}</h2><p class="abschnitt-text">{frag(b["text"])}</p></div></div>
   <div class="bereich-raster">
     <div><h3>{esc(t["l_herausforderungen"])}</h3><ul>{liste(b["herausforderungen"])}</ul></div>
     <div><h3>{esc(t["l_leistungen"])}</h3><ul>{liste(b["leistungen"])}</ul></div>
@@ -256,7 +288,8 @@ class Bau:
             return f'<section class="abschnitt innen"{ident}><div class="fliess reveal">{h2}{absaetze}</div></section>'
 
         if typ == "band":
-            return f'<section class="band"{ident}><div class="innen reveal"><h2>{frag(a["h2"])}</h2><p>{frag(a["text"])}</p>{self.cta(sprache, pfad, a["cta"])}</div></section>'
+            foto = f'<div class="band-foto">{self.bild(sprache, pfad, a["bild"], "100vw", True, "parallax")}</div>' if a.get("bild") else ""
+            return f'<section class="band{" band-mit-foto" if a.get("bild") else ""}"{ident}>{foto}<div class="innen reveal"><h2>{frag(a["h2"])}</h2><p>{frag(a["text"])}</p>{self.cta(sprache, pfad, a["cta"])}</div></section>'
 
         if typ == "kontakt":
             return self.kontakt(sprache, pfad, a)
@@ -281,7 +314,7 @@ class Bau:
         teile = [
             '<meta charset="utf-8">', '<meta name="viewport" content="width=device-width, initial-scale=1">',
             f"<title>{esc(title)}</title>", f'<meta name="description" content="{esc(description)}">',
-            f'<meta name="robots" content="{robots}">', '<meta name="theme-color" content="#050705">',
+            f'<meta name="robots" content="{robots}">', '<meta name="theme-color" content="#05070B">',
         ]
         if self.basis_url and seite_key:
             teile.append(f'<link rel="canonical" href="{esc(self.absolut(pfad))}">')
@@ -320,28 +353,17 @@ class Bau:
             cta = '<div class="cta-reihe">' + self.cta(sprache, pfad, s["cta"]["primaer"]) + self.cta(sprache, pfad, s["cta"]["sekundaer"], "cta-zweit") + "</div>"
         text = f'<p class="abschnitt-text">{frag(s["text"])}</p>' if s.get("text") else ""
         warn = f'<p class="warnung">{esc(ui["platzhalter_hinweis"])}</p>' if s.get("platzhalter") else ""
-        diagramm = ""
-        if seite_key == "start":
-            k = [a for a in s["abschnitte"] if a["typ"] == "karten"][0]["karten"]
-            diagramm = f"""<figure class="held-diagramm" aria-hidden="true">
-  <svg viewBox="0 0 420 320" focusable="false">
-    <defs><linearGradient id="d-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B2EEC9"/><stop offset="1" stop-color="#559064"/></linearGradient></defs>
-    <g class="d-raster"><path d="M0 80H420M0 160H420M0 240H420M70 0V320M210 0V320M350 0V320"/></g>
-    <g class="d-linien"><path d="M70 80L210 160L350 80M210 160V250M70 80H350M70 80L210 250L350 80"/></g>
-    <g class="d-knoten"><circle cx="70" cy="80" r="7"/><circle cx="350" cy="80" r="7"/><circle cx="210" cy="250" r="7"/></g>
-    <g class="d-kern"><circle cx="210" cy="160" r="34"/><path d="M210 138L228 170H192Z M210 153L218 170H202Z" fill="url(#d-c)" fill-rule="evenodd"/></g>
-    <g class="d-text"><text x="70" y="58" text-anchor="middle">{esc(k[0].get("kurz", k[0]["h3"]))}</text><text x="350" y="58" text-anchor="middle">{esc(k[1].get("kurz", k[1]["h3"]))}</text><text x="210" y="286" text-anchor="middle">{esc(k[2].get("kurz", k[2]["h3"]))}</text></g>
-  </svg>
-</figure>"""
         klasse = " held-start" if seite_key == "start" else ""
-        return f"""<section class="held{klasse}"><canvas id="szene3d" class="szene3d" aria-hidden="true"></canvas><div class="innen held-innen">
+        foto = f'<div class="held-foto">{self.bild(sprache, pfad, s["bild"], "100vw", False, "", True)}</div>' if s.get("bild") else ""
+        weiter = f'<a class="weiter" href="#inhalt-weiter" aria-label="{esc(ui.get("weiter", "Scrollen"))}"><span>{esc(ui.get("weiter", "Scrollen"))}</span><i></i></a>' if seite_key == "start" else ""
+        return f"""<section class="held{klasse}{" held-foto-seite" if s.get("bild") else ""}">{foto}<div class="innen held-innen">
   <div class="held-text">
     <p class="kicker">{esc(s["kicker"])}</p>
     <h1>{frag(s["h1"])}</h1>
     <p class="einleitung">{frag(s["einleitung"])}</p>
     {text}{warn}{cta}
-  </div>{diagramm}
-</div></section>"""
+  </div>{weiter}
+</div></section><span id="inhalt-weiter"></span>"""
 
     def seite_html(self, sprache: str, seite_key: str) -> tuple[str, str]:
         t = self.sprachen[sprache]
