@@ -93,10 +93,16 @@ und im Bildnachweis der Fußzeile. Die Bilder zeigen Orte und Motive, keine Kund
 Breiten als WebP und JPEG (`<picture>` mit `srcset`/`sizes`), Aufmacherbild `eager` mit `fetchpriority="high"`,
 alle übrigen `loading="lazy"`; Zuordnung über `bild` in den JSON-Dateien, Alt-Texte je Sprache in `site.json`.
 
-**Bewegung**: Zeileneinlauf der Überschriften, langsamer Zoom des Aufmacherfotos beim Laden, einmaliges Einblenden
-beim Scrollen, Parallaxe der Collage-Bilder und großer Fotos (nur `transform`, `requestAnimationFrame`), Bildzoom beim
-Überfahren, Unterstreichung in der Navigation, Scroll-Hinweis im Aufmacher. Bei `prefers-reduced-motion` entfällt
-alles davon, auch das Scroll-Snap.
+**Bewegung** (`assets/bewegung.js`, ohne Bibliothek): ein Scroll-Takt setzt je Szene den Fortschritt `--p`, der Rest
+ist CSS. Eigene Bewegungssprache: der Aufmacher bleibt festgeklemmt, die nächste Szene schiebt sich wie ein Vorhang
+darüber, während Text und Foto des Aufmachers leicht zurückweichen; Überschriften laufen Zeile für Zeile aus der
+Unschärfe scharf ein (Schärfe-Einlauf, passend zu „Technik verstehen“); Fotos der Szenen ziehen mit dem Scrollen,
+Collage-Bilder mit eigenem Tempo und leichter Neigung zum Zeiger, Bilder öffnen sich mit einem Wischen; Zahlen in
+Glaskarten und Collage zählen einmal hoch; die Projektmarkierungen erscheinen nacheinander (Punkt, gezeichnete
+Linie, Glaskarte); ein Inspektionslicht folgt dem Zeiger über Fotoszenen und hellt eine weiche Stelle auf (nur mit
+Maus, nie bei Touch); Seitenwechsel blenden über (View Transitions, wo der Browser es kann). Keine Dauerbewegung:
+der einzige Pulsring der Markierungen läuft dreimal und stoppt. Bei `prefers-reduced-motion` ist alles davon aus,
+Zahlen stehen sofort, der Aufmacher klemmt nicht, kein Scroll-Snap.
 
 **3D-Szene** (`assets/szene3d.js`, WebGL ohne Bibliothek) auf der Startseite in der Markenbühne „Das A steht für
 den Anspruch“: Raymarching des NAHX-A als Körper aus dunklem Glasstein mit Mikrostruktur und leuchtenden Rissen,

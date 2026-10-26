@@ -70,20 +70,7 @@ PIKTO = {
 }
 
 KOPF_SCRIPT = "document.documentElement.classList.add('js');"
-FUSS_SCRIPT = (
-    "(function(){var m=document.querySelector('.menue-schalter');var n=document.getElementById('nav');"
-    "if(m&&n){m.addEventListener('click',function(){var o=n.classList.toggle('offen');m.setAttribute('aria-expanded',o?'true':'false');m.closest('.kopf').classList.toggle('kopf-offen',o);});"
-    "document.addEventListener('keydown',function(e){if(e.key==='Escape'&&n.classList.contains('offen')){n.classList.remove('offen');m.setAttribute('aria-expanded','false');m.closest('.kopf').classList.remove('kopf-offen');m.focus();}});}"
-    "var ruhig=window.matchMedia('(prefers-reduced-motion: reduce)').matches;var R=document.querySelectorAll('.reveal');"
-    "if(ruhig||!('IntersectionObserver' in window)){R.forEach(function(e){e.classList.add('sichtbar');});}"
-    "else{var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('sichtbar');io.unobserve(x.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.1});R.forEach(function(e){io.observe(e);});}"
-    "var P=document.querySelectorAll('.parallax img');if(P.length&&!ruhig){var tick=false;function lauf(){tick=false;var vh=window.innerHeight;P.forEach(function(im){var r=im.parentElement.getBoundingClientRect();if(r.bottom<0||r.top>vh)return;var f=(r.top+r.height/2-vh/2)/vh;im.style.transform='translate3d(0,'+(f*-6).toFixed(2)+'%,0) scale(1.12)';});}"
-    "window.addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(lauf);}},{passive:true});lauf();}"
-    "var K=document.querySelector('.kopf');function kopf(){if(K)K.classList.toggle('kopf-fest',window.scrollY>40);}window.addEventListener('scroll',kopf,{passive:true});kopf();"
-    "var T=document.querySelectorAll('[data-tempo]');if(T.length&&!ruhig){var t2=false;function lauf2(){t2=false;var vh=window.innerHeight;T.forEach(function(el){var s=el.closest('section')||el.parentElement;var r=s.getBoundingClientRect();if(r.bottom<-vh||r.top>2*vh)return;var f=(r.top+r.height/2-vh/2)/vh;el.style.transform='translate3d(0,'+(f*parseFloat(el.dataset.tempo)*-60).toFixed(1)+'px,0)';});}"
-    "window.addEventListener('scroll',function(){if(!t2){t2=true;requestAnimationFrame(lauf2);}},{passive:true});lauf2();}"
-    "requestAnimationFrame(function(){document.documentElement.classList.add('bereit');});})();"
-)
+FUSS_SCRIPT = ""  # Bewegung und Menü liegen in assets/bewegung.js
 
 
 class Bau:
@@ -220,10 +207,12 @@ class Bau:
                 inner = self.bild(sprache, pfad, b["bild"], "(min-width: 900px) 34vw, 60vw") + (f'<span class="collage-label">{esc(b["label"])}</span>' if b.get("label") else "")
                 teile.append((f'<a class="collage-bild cb{nr + 1} reveal" href="{esc(ziel)}" data-tempo="{b.get("tempo", 0.4)}" aria-label="{esc(b.get("label", ""))}">{inner}</a>') if l else f'<div class="collage-bild cb{nr + 1} reveal" data-tempo="{b.get("tempo", 0.4)}">{inner}</div>')
             for nr, f in enumerate(a["fakten"]):
-                teile.append(f'<div class="fakt fk{nr + 1} reveal" style="--i:{nr + 1}"><p class="fakt-wert">{frag(f["wert"])}</p><p class="fakt-text">{frag(f["text"])}</p></div>')
+                wert = f["wert"]
+                zahl = f' data-zahl="{esc(wert)}"' if re.fullmatch(r"\d+", wert) else ""
+                teile.append(f'<div class="fakt fk{nr + 1} reveal" style="--i:{nr + 1}"><p class="fakt-wert"{zahl}>{frag("0" * len(wert) if zahl else wert)}</p><p class="fakt-text">{frag(f["text"])}</p></div>')
             absatz = f'<p class="collage-absatz reveal">{frag(a["text"])}</p>' if a.get("text") else ""
             cta = f'<p class="collage-cta reveal">{self.cta(sprache, pfad, a["cta"], "pfeil")}</p>' if a.get("cta") else ""
-            return f'<section class="leinwand collage"{ident}><div class="innen collage-innen"><h2 class="collage-titel reveal">{frag(a["h2"])}</h2><div class="collage-raster">{"".join(teile)}{absatz}{cta}</div></div></section>'
+            return f'<section class="leinwand collage szene"{ident}><div class="innen collage-innen"><h2 class="collage-titel reveal">{frag(a["h2"])}</h2><div class="collage-raster">{"".join(teile)}{absatz}{cta}</div></div></section>'
 
         if typ == "buehne":
             # Vollbildfoto mit Glas-Markierungen (Hotspots) auf echte Projekte; mobil als Liste
@@ -231,10 +220,10 @@ class Bau:
             for nr, pkt in enumerate(a["punkte"]):
                 l = pkt["link"]
                 ziel = self.link(pfad, self.pfad(sprache, l["seite"], l.get("anker")))
-                punkte.append(f'<li class="punkt reveal" style="--x:{pkt["x"]};--y:{pkt["y"]};--i:{nr + 1}"><a class="glas punkt-glas" href="{esc(ziel)}"><span class="punkt-dot" aria-hidden="true"></span><span class="punkt-titel">{frag(pkt["titel"])}</span><span class="punkt-text">{frag(pkt["text"])}</span></a></li>')
+                punkte.append(f'<li class="punkt reveal" style="--x:{pkt["x"]};--y:{pkt["y"]};--i:{nr + 1}"><span class="punkt-dot" aria-hidden="true"></span><span class="punkt-linie" aria-hidden="true"></span><a class="glas punkt-glas" href="{esc(ziel)}"><span class="punkt-titel">{frag(pkt["titel"])}</span><span class="punkt-text">{frag(pkt["text"])}</span></a></li>')
             cta = f'<p class="buehne-cta reveal">{self.cta(sprache, pfad, a["cta"], "pfeil")}</p>' if a.get("cta") else ""
             absatz = f'<p class="buehne-absatz reveal">{frag(a["text"])}</p>' if a.get("text") else ""
-            return f"""<section class="leinwand buehne"{ident}><div class="buehne-foto">{self.bild(sprache, pfad, a["bild"], "100vw", True, "parallax")}</div>
+            return f"""<section class="leinwand buehne szene licht"{ident}><div class="licht-ring" aria-hidden="true"></div><div class="buehne-foto">{self.bild(sprache, pfad, a["bild"], "100vw", True, "parallax")}</div>
   <ul class="punkte" aria-label="{esc(a.get("punkte_label", ""))}">{"".join(punkte)}</ul>
   <div class="innen buehne-innen"><div class="buehne-text"><p class="kicker reveal">{esc(a.get("kicker", ""))}</p><h2 class="zeilen reveal">{zeilen(a["h2"])}</h2>{absatz}</div>{cta}</div>
 </section>"""
@@ -275,7 +264,7 @@ class Bau:
                     schritte = "".join(f'<li>{esc(x)}</li>' for x in p["ablauf"])
                     fluss = f'<div class="fluss"><p class="fluss-titel">{esc(L.get("ablauf", "Ablauf"))}</p><ol class="fluss-kette">{schritte}</ol></div>'
                 bild = self.bild(sprache, pfad, p["bild"], "(min-width: 900px) 42vw, 100vw") if p.get("bild") else ""
-                eintraege.append(f'<article class="projekt reveal{" projekt-umgekehrt" if nr % 2 else ""}" id="projekt-{nr + 1}"><div class="projekt-kopf"><div class="projekt-foto">{bild}</div><header><p class="bereich">{esc(p["bereich"])}</p><h2>{frag(p["titel"])}</h2><p class="projekt-kurz">{frag(p.get("kurz", ""))}</p></header></div>{fluss}<dl class="felder">{felder}</dl><p class="status"><span>{esc(L["status"])}</span>{frag(p["status"])}</p></article>')
+                eintraege.append(f'<article class="projekt reveal{" projekt-umgekehrt" if nr % 2 else ""}" id="projekt-{nr + 1}"><div class="projekt-kopf"><div class="projekt-foto szene">{bild}</div><header><p class="bereich">{esc(p["bereich"])}</p><h2>{frag(p["titel"])}</h2><p class="projekt-kurz">{frag(p.get("kurz", ""))}</p></header></div>{fluss}<dl class="felder">{felder}</dl><p class="status"><span>{esc(L["status"])}</span>{frag(p["status"])}</p></article>')
             hinweis = f'<p class="hinweis reveal">{frag(a["hinweis"])}</p>' if a.get("hinweis") else ""
             return f'<section class="abschnitt innen"{ident}>{"".join(eintraege)}{hinweis}</section>'
 
@@ -286,7 +275,7 @@ class Bau:
                 def liste(items):
                     return "".join(f"<li>{frag(x)}</li>" for x in items)
                 bl.append(f"""<article class="bereich reveal" id="{esc(b["id"])}">
-  <div class="bereich-kopf"><div class="bereich-foto">{self.bild(sprache, pfad, b["bild"], "(min-width: 900px) 40vw, 100vw") if b.get("bild") else ""}</div><div><span class="pikto">{PIKTO[nr % 3]}</span><h2>{frag(b["h2"])}</h2><p class="abschnitt-text">{frag(b["text"])}</p></div></div>
+  <div class="bereich-kopf"><div class="bereich-foto szene">{self.bild(sprache, pfad, b["bild"], "(min-width: 900px) 40vw, 100vw") if b.get("bild") else ""}</div><div><span class="pikto">{PIKTO[nr % 3]}</span><h2>{frag(b["h2"])}</h2><p class="abschnitt-text">{frag(b["text"])}</p></div></div>
   <div class="bereich-raster">
     <div><h3>{esc(t["l_herausforderungen"])}</h3><ul>{liste(b["herausforderungen"])}</ul></div>
     <div><h3>{esc(t["l_leistungen"])}</h3><ul>{liste(b["leistungen"])}</ul></div>
@@ -327,7 +316,7 @@ class Bau:
 
         if typ == "band":
             foto = f'<div class="band-foto">{self.bild(sprache, pfad, a["bild"], "100vw", True, "parallax")}</div>' if a.get("bild") else ""
-            return f'<section class="band leinwand{" band-mit-foto" if a.get("bild") else ""}"{ident}>{foto}<div class="innen band-innen"><div class="band-text reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2 class="zeilen">{zeilen(a["h2"])}</h2><p>{frag(a["text"])}</p></div><p class="band-cta reveal">{self.cta(sprache, pfad, a["cta"], "pfeil")}</p></div></section>'
+            return f'<section class="band leinwand szene{" band-mit-foto licht" if a.get("bild") else ""}"{ident}>{foto}<div class="innen band-innen"><div class="band-text reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2 class="zeilen">{zeilen(a["h2"])}</h2><p>{frag(a["text"])}</p></div><p class="band-cta reveal">{self.cta(sprache, pfad, a["cta"], "pfeil")}</p></div></section>'
 
         if typ == "kontakt":
             return self.kontakt(sprache, pfad, a)
@@ -397,9 +386,10 @@ class Bau:
         karte = ""
         if s.get("karte"):
             k = s["karte"]
-            karte = f'<aside class="glas held-karte" aria-label="{esc(k.get("label", k["titel"]))}"><p class="glas-titel">{frag(k["titel"])}</p><p>{frag(k["text"])}</p></aside>'
+            zahl = f' data-zahl="{esc(k["titel"])}"' if re.fullmatch(r"\d+", k["titel"]) else ""
+            karte = f'<aside class="glas held-karte reveal" aria-label="{esc(k.get("label", k["titel"]))}"><p class="glas-titel"{zahl}>{frag("0" * len(k["titel"]) if zahl else k["titel"])}</p><p>{frag(k["text"])}</p></aside>'
         weiter = f'<a class="weiter" href="#inhalt-weiter" aria-label="{esc(ui.get("weiter", "Scrollen"))}"><span>{esc(ui.get("weiter", "Scrollen"))}</span><i></i></a>' if s.get("bild") else ""
-        return f"""<section class="held leinwand{klasse}{" held-foto-seite" if s.get("bild") else ""}">{foto}<div class="innen held-innen">
+        return f"""<section class="held leinwand szene{" licht" if s.get("bild") else ""}{klasse}{" held-foto-seite" if s.get("bild") else ""}">{foto}<div class="licht-ring" aria-hidden="true"></div><div class="held-schleier" aria-hidden="true"></div><div class="innen held-innen">
   <p class="held-absatz">{frag(s["einleitung"])}</p>
   <div class="held-text">
     <p class="kicker">{esc(s["kicker"])}</p>
@@ -434,7 +424,7 @@ class Bau:
   {abschnitte}
 </main>
 {self.fuss(sprache, pfad)}
-<script>{FUSS_SCRIPT}</script>
+<script src="{esc(self.link(pfad, "/assets/bewegung.js"))}" defer></script>
 <script src="{esc(self.link(pfad, "/assets/szene3d.js"))}" defer></script>
 </body>
 </html>
