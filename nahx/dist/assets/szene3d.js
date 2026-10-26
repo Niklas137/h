@@ -4,7 +4,8 @@
    spiegelnder Boden mit Reflexion, Staub im Licht, Lichtnebel, Hintergrund-A in Tiefenunschärfe, Bloom,
    Farbsaum, Vignette, Filmkorn. Zweiter Durchgang mischt das Bild zeitlich (leichte Glättung).
    Mint-Kontur auf Vorder- und Rückseite wie im Logo, ACES-Tonkurve. Auflösung nach Pixeldichte mit Leistungsregelung.
-   Reagiert sanft auf Maus und Scrollen, pausiert außerhalb des Bildes; bei
+   Bewegt sich nur aus sich heraus (ruhiges Pendeln um ±31°, leichtes Schweben), nicht mit Maus, Finger oder Scrollen;
+   kein Pixelversatz pro Bild, kein Korn (kein Zittern). Pausiert außerhalb des Bildes; bei
    prefers-reduced-motion ein Standbild. */
 (function () {
   var c = document.getElementById('szene3d');
@@ -28,7 +29,7 @@
     'float sdBody(vec3 q){float d2=sdA(q.xy);float dz=abs(q.z)-.22;vec2 w=vec2(d2,dz);return min(max(w.x,w.y),0.)+length(max(w,0.))-.035;}',
     'mat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}',
     'const float FLOOR=-1.45;',
-    'vec3 xf(vec3 p){p.xy-=O;p*=Z;p.yz*=rot(-.14+M.y*.14);p.xz*=rot(.42+M.x*.26+T*.05+S*.5);return p;}',
+    'vec3 xf(vec3 p){p.xy-=O+vec2(0.,sin(T*.5)*.035);p*=Z;p.yz*=rot(-.14+sin(T*.31)*.035);p.xz*=rot(.3+sin(T*.16)*.55);return p;}',
     'float mapA(vec3 p){return sdBody(xf(p))/Z;}',
     // Hintergrund-A: weit hinten, größer, anders gedreht
     'float mapB(vec3 p){p-=vec3(-1.6,.9,-5.5);p*=.55;p.xz*=rot(-.9+T*.03);p.yz*=rot(.3);return sdBody(p)/.55;}',
@@ -45,8 +46,10 @@
     ' float veins=smoothstep(.62,.7,fbm(uv*1.4+3.3));',
     ' vec2 e=vec2(.02,0.);float dx=fbm((uv+e.xy)*6.)-micro,dy=fbm((uv+e.yx)*6.)-micro;n=normalize(n+vec3(dx,dy,0.)*.45+vec3(cracks)*.25);',
     ' alb=mix(vec3(.03,.045,.04),vec3(.08,.13,.11),micro)+veins*vec3(.0,.16,.11);rough=mix(.14,.4,micro);',
-    ' emis=GLOW*cracks*2.2+EDGE*cracks*cracks*1.0;',
-    ' float kd=-sdA(q.xy),face=smoothstep(.16,.215,abs(q.z));emis+=EDGE*(1.-smoothstep(.0,.026,kd))*face*1.5+GLOW*(1.-smoothstep(.0,.09,kd))*face*.3;}',
+    ' float kd=-sdA(q.xy),face=smoothstep(.16,.215,abs(q.z));float cw=mix(.35,1.,face);',
+    // Leuchtlinien dezenter (Wunsch 2026-10-26): Risse schwächer, auf den Seitenflächen kaum, Kontur feiner
+    ' emis=(GLOW*cracks*1.35+EDGE*cracks*cracks*.55)*cw;',
+    ' emis+=EDGE*(1.-smoothstep(.0,.022,kd))*face*.95+GLOW*(1.-smoothstep(.0,.08,kd))*face*.16;}',
     'vec3 shadeHit(vec3 p,vec3 rd,float id,out float refl){vec3 n=nrm(p);vec3 V=-rd;vec3 L1=normalize(vec3(.6,.9,.6));vec3 L2=normalize(vec3(-.9,.3,-.2));',
     ' vec3 alb;float rough;vec3 emis=vec3(0.);refl=0.;',
     ' if(id==2.){float g=fbm(p.xz*1.5);alb=vec3(.008,.016,.013)*(0.8+.4*g);rough=.08+.1*g;n=normalize(n+vec3(fbm(p.xz*9.)-.5,0.,fbm(p.zx*9.+2.)-.5)*.02);refl=.55;}',
@@ -57,7 +60,7 @@
     ' vec3 col=alb*(vec3(.06,.08,.07)*occ+d1*vec3(1.1,1.2,1.1)*.9+d2*vec3(.2,.24,.26));',
     ' col+=ggx(n,V,L1,rough)*sh*EDGE*.22+ggx(n,V,L2,rough+.1)*vec3(.3,.38,.35)*.12;',
     ' float fre=pow(1.-max(dot(n,V),0.),4.);vec3 Rv=reflect(rd,n);col+=env(Rv)*mix(.08,.7,fre)*refl*.8;',
-    ' col+=fre*GLOW*1.15*occ;col+=emis*(.8+.4*sin(T*.7+p.y*3.));if(id==2.){col*=.38;}return col;}',
+    ' col+=fre*GLOW*.85*occ;col+=emis*(.8+.4*sin(T*.7+p.y*3.));if(id==2.){col*=.38;}return col;}',
     'vec3 render(vec2 uv,vec3 ro,vec3 rd,out float depth){float t=.0,dmin=9.;float id=0.;bool hit=false;',
     ' for(int i=0;i<84;i++){vec3 q0=ro+rd*t;vec2 m=map(q0);dmin=min(dmin,mapA(q0)/max(t,.6));if(m.x<.0012){hit=true;id=m.y;break;}t+=m.x*.85;if(t>14.)break;}',
     ' depth=t;vec3 col=env(rd)*.35+BG0;',
@@ -68,7 +71,7 @@
     '  col=mix(col,BG0*1.2,smoothstep(3.,13.,t));',
     '  if(id==3.){col=mix(col,BG0*1.3,.965);}}',
     ' float g=0.;float tt=.8;for(int i=0;i<18;i++){vec3 q=ro+rd*tt;float dd=mapA(q);g+=exp(-dd*7.)*.004;tt+=.24;}col+=g*GLOW*(1.05+.3*sin(T*.4));',
-    ' if(!hit||id!=1.){col+=EDGE*exp(-dmin*70.)*.6+GLOW*exp(-dmin*14.)*.18;}',
+    ' if(!hit||id!=1.){col+=EDGE*exp(-dmin*70.)*.4+GLOW*exp(-dmin*14.)*.12;}',
     ' return col;}',
     'void main(){vec2 pix=gl_FragCoord.xy+J;vec2 uv=(pix-.5*R)/R.y;',
     ' vec3 ro=vec3(0.,.1,3.9);vec3 rd=normalize(vec3(uv,-1.9));',
@@ -84,7 +87,7 @@
     'precision highp float;varying vec2 v;uniform sampler2D A;uniform sampler2D B;uniform float W;uniform vec2 R;uniform float T;uniform float K;',
     'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
     'void main(){vec2 d=(v-.5)*.0012*length(v-.5)*2.;vec3 cur=vec3(texture2D(A,v+d).r,texture2D(A,v).g,texture2D(A,v-d).b);vec3 prev=texture2D(B,v).rgb;vec3 col=mix(cur,prev,W);',
-    ' vec3 bl=vec3(0.);vec2 px=1./R;for(int i=-2;i<=2;i++)for(int j=-2;j<=2;j++){vec3 s=texture2D(A,v+vec2(float(i),float(j))*px*3.).rgb;bl+=max(s-.62,0.);}bl/=25.;col+=bl*.85;',
+    ' vec3 bl=vec3(0.);vec2 px=1./R;for(int i=-2;i<=2;i++)for(int j=-2;j<=2;j++){vec3 s=texture2D(A,v+vec2(float(i),float(j))*px*3.).rgb;bl+=max(s-.66,0.);}bl/=25.;col+=bl*.6;',
     ' col+=(hash(gl_FragCoord.xy+fract(T)*100.)-.5)*K;gl_FragColor=vec4(col,1.);}'
   ].join('\n');
   var FSC = 'precision highp float;varying vec2 v;uniform sampler2D A;void main(){gl_FragColor=texture2D(A,v);}';
@@ -101,17 +104,19 @@
   var uc = { A: U(PC, 'A') };
   function tex(w, h) { var t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); return t; }
   function fbo(t) { var f = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, f); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0); return f; }
-  // Auflösung nach Pixeldichte (scharf auf Retina), regelt bei Ruckeln herunter und bei Reserve vorsichtig hoch
+  // Auflösung nach Pixeldichte (scharf auf Retina); nur bei anhaltendem Ruckeln höchstens zweimal herunter, nie wieder hoch
   var dpr = Math.min(window.devicePixelRatio || 1, 2), handy = window.innerWidth < 900;
-  var skalaMax = handy ? Math.min(dpr, 1.5) : dpr, skalaMin = handy ? 0.5 : 0.6;
+  var skalaMin = handy ? 0.5 : 0.6;
   var skala = handy ? Math.min(dpr, 1) : Math.min(dpr, 1.25), MAXPIX = handy ? 1.4e6 : 3.2e6;
-  var W = 0, H = 0, tA, fA, tH = [], fH = [], ping = 0, zuletzt = 0, summe = 0, anzahl = 0, fest = false, hoch = false;
+  var W = 0, H = 0, tA, fA, tH = [], fH = [], ping = 0, zuletzt = 0, summe = 0, anzahl = 0, fest = false, stufen = 0;
   function regeln(now) {
     if (fest || !zuletzt) { zuletzt = now; return; }
     var dt = now - zuletzt; zuletzt = now; if (dt > 200) { return; }   // Tab gewechselt, Scrollpause: nicht werten
     summe += dt; anzahl++;
-    if (anzahl >= 30 && summe / anzahl > 24 && skala > skalaMin) { skala = Math.max(skalaMin, skala * 0.85); if (hoch) { fest = true; } summe = anzahl = 0; }
-    else if (anzahl >= 90) { if (summe / anzahl < 18.5 && skala < skalaMax) { skala = Math.min(skalaMax, skala * 1.1); hoch = true; } summe = anzahl = 0; }
+    if (anzahl < 90) { return; }                                         // erst nach 1,5 s eingeschwungen werten
+    if (summe / anzahl > 26 && skala > skalaMin) { skala = Math.max(skalaMin, skala * 0.8); stufen++; if (stufen >= 2) { fest = true; } }
+    else { fest = true; }                                                   // läuft flüssig: Auflösung bleibt
+    summe = anzahl = 0;
   }
   function size() {
     var r = c.getBoundingClientRect(), k = Math.min(skala, Math.sqrt(MAXPIX / Math.max(1, r.width * r.height)));
@@ -121,25 +126,22 @@
     tA = tex(W, H); fA = fbo(tA); tH = [tex(W, H), tex(W, H)]; fH = [fbo(tH[0]), fbo(tH[1])];
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   }
-  var mx = 0, my = 0, tx = 0, ty = 0, sichtbar = true, start = performance.now(), frames = 0;
-  window.addEventListener('pointermove', function (e) { tx = (e.clientX / window.innerWidth - .5) * 2; ty = (e.clientY / window.innerHeight - .5) * 2; }, { passive: true });
+  var sichtbar = true, start = performance.now(), frames = 0;
   if ('IntersectionObserver' in window) { new IntersectionObserver(function (es) { sichtbar = es[0].isIntersecting; if (sichtbar && !ruhig) { requestAnimationFrame(frame); } }).observe(c); }
-  var jit = [[.25, .25], [-.25, .25], [.25, -.25], [-.25, -.25]];
   function frame(now) {
     if (!ruhig) { regeln(now); }
     size();
-    mx += (tx - mx) * .05; my += (ty - my) * .05;
-    var breit = W / H > 1.15, j = jit[frames % 4];
+    var breit = W / H > 1.15;
     // 1) Szene in Textur A
     gl.bindFramebuffer(gl.FRAMEBUFFER, fA); gl.viewport(0, 0, W, H); gl.useProgram(P1); attr(P1);
-    gl.uniform2f(u1.R, W, H); gl.uniform1f(u1.T, (now - start) / 1000); gl.uniform2f(u1.M, mx, my); gl.uniform1f(u1.S, Math.min(1, window.scrollY / 900));
-    var asp = W / H; gl.uniform2f(u1.O, breit ? Math.min(1.15, asp * 0.44) : 0.25, breit ? 0.0 : -0.75); gl.uniform1f(u1.Z, breit ? (asp < 1.9 ? 1.7 : 1.5) : 1.8); gl.uniform1f(u1.J, j[0]);
+    gl.uniform2f(u1.R, W, H); gl.uniform1f(u1.T, (now - start) / 1000); gl.uniform2f(u1.M, 0, 0); gl.uniform1f(u1.S, 0);
+    var asp = W / H; gl.uniform2f(u1.O, breit ? Math.min(1.15, asp * 0.44) : 0.25, breit ? 0.0 : -0.75); gl.uniform1f(u1.Z, breit ? (asp < 1.9 ? 1.7 : 1.5) : 1.8); gl.uniform1f(u1.J, 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     // 2) zeitliche Mischung mit Vorbild in Historie
     gl.bindFramebuffer(gl.FRAMEBUFFER, fH[ping]); gl.useProgram(P2); attr(P2);
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tA); gl.uniform1i(u2.A, 0);
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, tH[1 - ping]); gl.uniform1i(u2.B, 1);
-    gl.uniform1f(u2.W, frames < 2 ? 0 : 0.3); gl.uniform2f(u2.R, W, H); gl.uniform1f(u2.T, (now - start) / 1000); gl.uniform1f(u2.K, ruhig ? 0 : 0.012);
+    gl.uniform1f(u2.W, frames < 2 ? 0 : 0.2); gl.uniform2f(u2.R, W, H); gl.uniform1f(u2.T, (now - start) / 1000); gl.uniform1f(u2.K, 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     // 3) auf den Bildschirm
     gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.useProgram(PC); attr(PC);

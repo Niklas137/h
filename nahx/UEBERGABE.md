@@ -52,7 +52,8 @@ Canonical, hreflang, og:url und Sitemap bewusst weggelassen, weil die Domain noc
 - **Keine erfundenen Fakten:** keine erfundenen Kunden, Mitarbeiter, Referenzen, Kennzahlen oder
   Erfolgsversprechen. Kundennamen aus den Repos (z. B. aus FSH-Projekten) werden nicht genannt.
   Der Wohnsitz wird nicht erwähnt.
-- **Dokumentenprüfer** nicht als ausschließlich eigenes Produkt bewerben (entstanden mit FSH Documentation).
+- **Dokumentenprüfer heißt „614 One“** (Entscheidung Niklas 2026-10-26): Produkt aus dem Hause NAHX Technologies,
+  erster Pilotkunde und Tester ist FSH Documentation. Ersetzt die frühere Regel, ihn nicht als eigenes Produkt zu zeigen.
 - **Keine Secrets**, kein automatisch abgespieltes Video mit Ton.
 
 ## 4. Verlauf der Gestaltung (damit klar ist, was schon verworfen wurde)
@@ -95,7 +96,7 @@ Platzhalter). Drei Leistungsbereiche: Technical Documentation, Software & Web Ap
 
 Fünf echte Projekte auf der Projektseite (je Ausgangssituation, Herausforderung, Beitrag, Lösungsansatz,
 Technologien, Status, Ablaufkette):
-1. Dokumentenprüfer: Vorprüfung technischer Dokumente (mit FSH Documentation; Rechte in Abstimmung)
+1. 614 One – Dokumentenprüfung von NAHX Technologies (Pilotkunde und Tester: FSH Documentation)
 2. Trikotwand – interaktive Kaderseite für einen Floorballverein (bis 2026-10-26 „Kader-Manager“, umbenannt:
    „ist was Individuelles und sollte nicht als Kader-Manager verkauft werden“)
 3. Website-Relaunch und wöchentliches SEO-Audit
@@ -154,7 +155,10 @@ Scrollen, das A bewegt sich nur von selbst; Leuchtlinien dezenter. Auch der Flug
 - Mint-Stand: Board-Leitsatz „Weiterentwickeln“ statt „Prüfen“? (Heute „Prüfen“, passend zu den fünf freigegebenen Schritten.)
 - Mint-Stand: Foto „Industriehalle“ (Projektbühne, Projekteseite) behalten oder ersetzen? Zeigt ein Zahnrad.
 
-## 11. Nebenthema: Name für den Dokumentenprüfer („614 One“)
+## 11. Name für den Dokumentenprüfer: „614 One“ (entschieden 2026-10-26)
+
+Niklas: „Das Dokumentenprüftool bekommt den Namen 614 One aus dem Hause NAHX Technologies, erster Pilotkunde und
+Tester ist FSH.“ Auf der Website umgesetzt (Projektbühne, Projekteseite, Über mich, DE/EN). Die Abwägung von vorher:
 
 Falk schlug „614 One“ vor. Abgleich mit dem Code (`dokumentenpruefer/`):
 - **4** passt: Berichte in Deutsch, Englisch, Ukrainisch, Russisch.
@@ -164,4 +168,6 @@ Falk schlug „614 One“ vor. Abgleich mit dem Code (`dokumentenpruefer/`):
 - Versteckte Lesart: 6 = F, 14 = N, also Falk und Niklas; einzeln 6-1-4 = F-A-D.
 - EN 614 existiert („Sicherheit von Maschinen – Ergonomische Gestaltungsgrundsätze“), das Tool prüft
   aber nicht danach. Verwechslungsgefahr bei Fachkunden.
-- Empfehlung: Untertitel „614 One – Dokumentenprüfung“, vorher Marken- und Domaincheck (DPMA, EUIPO).
+- Empfehlung (weiter offen): Untertitel „614 One – Dokumentenprüfung“ ist so umgesetzt; Marken- und Domaincheck
+  (DPMA, EUIPO) steht noch aus. Keine Rechtsberatung.
+- Offen: ob der Name auch in der App selbst (Oberfläche, PDF-Berichte, Branch `claude/dokumentenpruefer-webapp`) erscheint.

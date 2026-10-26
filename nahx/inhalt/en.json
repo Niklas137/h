@@ -100,8 +100,8 @@
             {
               "x": "20%",
               "y": "27%",
-              "titel": "Document Checker",
-              "text": "Web app for checking technical documents, PDF reports in four languages",
+              "titel": "614 One",
+              "text": "Document review by NAHX Technologies, first pilot customer: FSH Documentation",
               "link": {
                 "seite": "projekte",
                 "anker": "projekt-1"
@@ -416,15 +416,15 @@
           "typ": "projektliste",
           "projekte": [
             {
-              "titel": "Document checker: pre-review of technical documents",
+              "titel": "614 One – document review by NAHX Technologies",
               "bereich": "Technical Documentation · Software",
-              "kurz": "Web app that checks Word and PDF documents against rule sets and produces reports in four languages.",
+              "kurz": "Web app that pre-reviews Word and PDF documents against rule sets and produces reports in four languages. First pilot customer and tester is FSH Documentation.",
               "ausgang": "Technical documentation has to be checked against basic requirements, DIN EN IEC/IEEE 82079-1 and CE conformity rules. This was done manually, with checklists, and differently by each reviewer.",
               "herausforderung": "A pre-review that is repeatable, cites locations, supports several users with their own settings and delivers reports customers can read in their language.",
-              "beitrag": "Design and development of the web app together with FSH Documentation: architecture, review logic, accounts and roles, reports, tests, operating instructions for the Mac.",
+              "beitrag": "Design and development of the web app: architecture, review logic, accounts and roles, reports, tests, operating instructions for the Mac. Trialled in a pilot with FSH Documentation.",
               "ansatz": "Rule sets as verifiable JSON files (24 rules with area, weight and recommendation in de/en/uk/ru), keyword search with score and traffic light, rules that can be deselected per account, reports as PDF. Expert review and approval explicitly stay with a person; every report says so.",
               "technologien": "Python, FastAPI, Uvicorn, SQLite, python-docx, pdfplumber, ReportLab, Argon2 for passwords, pytest; interface without a framework.",
-              "status": "Running with test coverage (accounts, review, languages, command line). Product rights and handover are being settled with FSH Documentation; hence no screenshots and no access.",
+              "status": "Running with test coverage (accounts, review, languages, command line). In pilot use with FSH Documentation as first customer and tester; screenshots and access are not public yet.",
               "ablauf": [
                 "Upload document",
                 "Choose rule sets",
@@ -516,7 +516,7 @@
             "ablauf": "Flow",
             "mehr": "Details"
           },
-          "hinweis": "Customer names and third-party products appear only after written approval. The collaboration with FSH Documentation is named as such; nothing here is to be read as an exclusively own product unless documented."
+          "hinweis": "Customer names and third-party products appear only after approval. FSH Documentation is named as pilot customer and tester of 614 One; for the other projects, the collaboration with FSH Documentation is named as such."
         },
         {
           "typ": "band",
@@ -550,7 +550,7 @@
           "absaetze": [
             "I am Niklas Heinzmann. Behind NAHX Technologies is one person, not a team or an agency: short paths, direct agreements, and the person who takes the requirements is the one who implements them.",
             "My background is technical documentation: document review and comparison, document control, structure for large document sets, reports and checklists. Development grew out of that, because the tools that make this work verifiable and repeatable were missing.",
-            "I work with FSH Documentation, a technical documentation service provider; the document checker and the website automation, among other things, are created there. With NAHX Technologies I bring together my own services, development projects and tools under a personal brand. NAHX is a business name, not a company.",
+            "I work with FSH Documentation, a technical documentation service provider; the website automation, among other things, is created there, and FSH is the first pilot customer and tester of 614 One, the document review tool by NAHX Technologies. With NAHX Technologies I bring together my own services, development projects and tools under a personal brand. NAHX is a business name, not a company.",
             "My approach is pragmatic: understand the requirements, develop a suitable solution and verify the results transparently. I separate facts from assumptions, flag what is uncertain, keep originals unchanged and document changes. That applies to documents as much as to code."
           ]
         },

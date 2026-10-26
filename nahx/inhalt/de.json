@@ -100,8 +100,8 @@
             {
               "x": "20%",
               "y": "27%",
-              "titel": "Dokumentenprüfer",
-              "text": "Web-App zur Prüfung technischer Dokumente, PDF-Berichte in vier Sprachen",
+              "titel": "614 One",
+              "text": "Dokumentenprüfung von NAHX Technologies, erster Pilotkunde: FSH Documentation",
               "link": {
                 "seite": "projekte",
                 "anker": "projekt-1"
@@ -416,15 +416,15 @@
           "typ": "projektliste",
           "projekte": [
             {
-              "titel": "Dokumentenprüfer: Vorprüfung technischer Dokumente",
+              "titel": "614 One – Dokumentenprüfung von NAHX Technologies",
               "bereich": "Technical Documentation · Software",
-              "kurz": "Web-App, die Word- und PDF-Dokumente gegen Regelsätze prüft und Berichte in vier Sprachen erzeugt.",
+              "kurz": "Web-App, die Word- und PDF-Dokumente gegen Regelsätze vorprüft und Berichte in vier Sprachen erzeugt. Erster Pilotkunde und Tester ist FSH Documentation.",
               "ausgang": "Technische Dokumentation muss gegen Basisanforderungen, DIN EN IEC/IEEE 82079-1 und CE-Konformitätsvorgaben geprüft werden. Das geschah manuell, mit Checklisten und je nach Prüfer unterschiedlich.",
               "herausforderung": "Eine Vorprüfung, die wiederholbar ist, Fundstellen nennt, mehrere Benutzer mit eigenen Einstellungen trägt und Berichte liefert, die Kunden in ihrer Sprache lesen können.",
-              "beitrag": "Konzeption und Entwicklung der Web-App in Zusammenarbeit mit FSH Documentation: Architektur, Prüflogik, Konten und Rollen, Berichte, Tests, Betriebsanleitung für den Mac.",
+              "beitrag": "Konzeption und Entwicklung der Web-App: Architektur, Prüflogik, Konten und Rollen, Berichte, Tests, Betriebsanleitung für den Mac. Erprobung im Pilotbetrieb mit FSH Documentation.",
               "ansatz": "Regelsätze als prüfbare JSON-Dateien (24 Regeln mit Bereich, Gewichtung, Empfehlung in de/en/uk/ru), Schlüsselwortsuche mit Score und Ampel, abwählbare Prüfpunkte je Konto, Berichte als PDF. Fachliche Prüfung und Freigabe bleiben ausdrücklich beim Menschen; jeder Bericht sagt das.",
               "technologien": "Python, FastAPI, Uvicorn, SQLite, python-docx, pdfplumber, ReportLab, Argon2 für Passwörter, pytest; Oberfläche ohne Framework.",
-              "status": "Lauffähig mit Testabdeckung (Konten, Prüfung, Sprachen, Kommandozeile). Produktrechte und Übergabe sind mit FSH Documentation in Abstimmung; deshalb keine Screenshots und kein Zugang.",
+              "status": "Lauffähig mit Testabdeckung (Konten, Prüfung, Sprachen, Kommandozeile). Im Pilotbetrieb mit FSH Documentation als erstem Kunden und Tester; Screenshots und Zugang sind noch nicht öffentlich.",
               "ablauf": [
                 "Dokument hochladen",
                 "Regelsätze wählen",
@@ -516,7 +516,7 @@
             "ablauf": "Ablauf",
             "mehr": "Details"
           },
-          "hinweis": "Kundennamen und Produkte Dritter erscheinen erst nach schriftlicher Freigabe. Die Zusammenarbeit mit FSH Documentation ist als solche benannt; nichts hier ist als ausschließlich eigenes Produkt zu verstehen, solange das nicht dokumentiert ist."
+          "hinweis": "Kundennamen und Produkte Dritter erscheinen erst nach Freigabe. FSH Documentation ist als Pilotkunde und Tester von 614 One genannt; bei den übrigen Projekten ist die Zusammenarbeit mit FSH Documentation als solche benannt."
         },
         {
           "typ": "band",
@@ -550,7 +550,7 @@
           "absaetze": [
             "Ich bin Niklas Heinzmann. Hinter NAHX Technologies steht eine Person, kein Team und keine Agentur: kurze Wege, direkte Absprachen, und wer die Anforderungen aufnimmt, setzt sie auch um.",
             "Ich komme aus der technischen Dokumentation: Dokumentenprüfung und -vergleich, Dokumentencontrolling, Struktur für große Dokumentenmengen, Berichte und Checklisten. Daraus ist die Entwicklung gewachsen, weil die Werkzeuge fehlten, die diese Arbeit prüfbar und wiederholbar machen.",
-            "Ich arbeite mit FSH Documentation zusammen, einem Dienstleister für technische Dokumentation; dort entstehen unter anderem der Dokumentenprüfer und die Website-Automatisierung. Mit NAHX Technologies bündele ich meine eigenen Dienstleistungen, Entwicklungsprojekte und Werkzeuge unter einer persönlichen Marke. NAHX ist eine Geschäftsbezeichnung, keine Gesellschaft.",
+            "Ich arbeite mit FSH Documentation zusammen, einem Dienstleister für technische Dokumentation; dort entsteht unter anderem die Website-Automatisierung, und FSH ist erster Pilotkunde und Tester von 614 One, der Dokumentenprüfung von NAHX Technologies. Mit NAHX Technologies bündele ich meine eigenen Dienstleistungen, Entwicklungsprojekte und Werkzeuge unter einer persönlichen Marke. NAHX ist eine Geschäftsbezeichnung, keine Gesellschaft.",
             "Meine Arbeitsweise ist pragmatisch: Anforderungen verstehen, eine passende Lösung entwickeln und Ergebnisse nachvollziehbar überprüfen. Fakten und Annahmen trenne ich, Unsicheres kennzeichne ich, Originale bleiben unverändert, Änderungen sind dokumentiert. Das gilt für Dokumente wie für Code."
           ]
         },
