@@ -17,7 +17,7 @@
     "fuss_navigation": "Navigation",
     "fuss_recht": "Legal",
     "fuss_sprache": "Language",
-    "fuss_hinweis": "NAHX Technologies is a personal business name, not a separate legal entity. Legally required provider information is given in the legal notice according to the actual business and activity situation.",
+    "fuss_hinweis": "NAHX Technologies is the business name of Niklas Heinzmann. Provider details in the legal notice.",
     "platzhalter_hinweis": "Placeholder: this text is not final and will be replaced before launch.",
     "weiter": "Discover more",
     "logo_alt": "NAHX Technologies – home",
@@ -27,7 +27,8 @@
     "l_faelle": "Use cases",
     "fuss_kontakt": "Contact",
     "bildnachweis": "Image credits",
-    "fotos_hinweis": "Photographs from Unsplash (Unsplash License), photographers in the image credits. They show places and motifs, not customer projects."
+    "fotos_hinweis": "Photographs from Unsplash (Unsplash License), photographers in the image credits. They show places and motifs, not customer projects.",
+    "flug_ueberspringen": "Skip intro"
   },
   "navigation": [
     {
@@ -72,7 +73,7 @@
     "start": {
       "pfad": "",
       "menue": "Home",
-      "title": "NAHX Technologies – Understand Technology. Create Solutions.",
+      "title": "NAHX Technologies – Documentation, Software, Automation",
       "description": "Technical documentation, software development and automation: NAHX Technologies combines technical expertise with digital development to build clear solutions.",
       "kicker": "Understand Technology. Create Solutions.",
       "h1": "Complex<br>technology.<br><em>Clear solutions.</em>",
@@ -89,19 +90,77 @@
       },
       "abschnitte": [
         {
+          "typ": "angebote",
+          "id": "angebote",
+          "kicker": "Getting started",
+          "h2": "Three ways to start.",
+          "text": "Clearly scoped starter offers with a fixed frame. Larger projects are planned together afterwards.",
+          "karten": [
+            {
+              "kicker": "Technical Documentation",
+              "h3": "Document check with 614 One",
+              "text": "Pre-review of a manual or technical document against basic requirements, DIN EN IEC/IEEE 82079-1 and CE rules, with an expert read-through.",
+              "punkte": [
+                "Client report with score, traffic light and to-do list",
+                "Report in English, German, Ukrainian or Russian",
+                "Exact locations instead of a blanket verdict"
+              ],
+              "rahmen": "Fixed price per document<br><mark class=\"test\">from €190</mark> · <mark class=\"test\">3 working days</mark>",
+              "link": {
+                "text": "Request a check",
+                "seite": "kontakt"
+              }
+            },
+            {
+              "kicker": "Software & Web Applications",
+              "h3": "Prototype in a few weeks",
+              "text": "A spreadsheet, a workflow or an idea becomes a working prototype that shows whether further development pays off.",
+              "punkte": [
+                "Requirements clarified in one workshop",
+                "A working prototype instead of slides",
+                "Handover with code, instructions and tests"
+              ],
+              "rahmen": "Fixed price by scope<br><mark class=\"test\">from €2,400</mark> · <mark class=\"test\">2–4 weeks</mark>",
+              "link": {
+                "text": "Discuss a prototype",
+                "seite": "kontakt"
+              }
+            },
+            {
+              "kicker": "Automation & AI",
+              "h3": "Automation assessment",
+              "text": "I map a recurring workflow, assess what can be automated and show an implementation path with effort and risks.",
+              "punkte": [
+                "Current workflow as a diagram",
+                "Assessment by benefit and effort",
+                "Implementation plan, optionally with a local AI approach"
+              ],
+              "rahmen": "Fixed price<br><mark class=\"test\">from €690</mark> · <mark class=\"test\">1 week</mark>",
+              "link": {
+                "text": "Request an assessment",
+                "seite": "kontakt"
+              }
+            }
+          ],
+          "link": {
+            "text": "Services in detail",
+            "seite": "leistungen"
+          }
+        },
+        {
           "typ": "buehne",
           "id": "projects",
           "kicker": "Projects",
           "h2": "Solutions built<br>around real<br>requirements.",
-          "text": "Every project is reviewed for confidentiality, rights and accurate attribution before publication. Only approved details appear here.",
-          "bild": "fabrik",
+          "text": "Three examples from practice: a review tool in pilot use, a web module for a sports club and a website relaunch with an automated SEO audit.",
+          "bild": "code",
           "punkte_label": "Selected projects",
           "punkte": [
             {
               "x": "20%",
               "y": "27%",
               "titel": "614 One",
-              "text": "Document review by NAHX Technologies, first pilot customer: FSH Documentation",
+              "text": "Document review with reports in four languages, in pilot use at FSH Documentation",
               "link": {
                 "seite": "projekte",
                 "anker": "projekt-1"
@@ -111,7 +170,7 @@
               "x": "52%",
               "y": "40%",
               "titel": "Jersey Wall",
-              "text": "Custom squad page with jersey animation, admin page and protected publishing",
+              "text": "Squad page where visitors take jerseys off the rail and discover players",
               "link": {
                 "seite": "projekte",
                 "anker": "projekt-2"
@@ -120,11 +179,11 @@
             {
               "x": "71%",
               "y": "60%",
-              "titel": "Mail Triage and Daily Round",
-              "text": "Script-based workflow with fixed approval stops, read-only without approval",
+              "titel": "Website relaunch",
+              "text": "Static website with a weekly SEO audit as a PDF report",
               "link": {
                 "seite": "projekte",
-                "anker": "projekt-4"
+                "anker": "projekt-3"
               }
             }
           ],
@@ -134,11 +193,28 @@
           }
         },
         {
+          "typ": "stimmen",
+          "id": "stimmen",
+          "kicker": "Feedback",
+          "h2": "What pilot clients say",
+          "text": "Real feedback appears here once approved.",
+          "stimmen": [
+            {
+              "text": "<mark class=\"test\">Placeholder for feedback from FSH Documentation on the 614 One pilot.</mark>",
+              "von": "FSH Documentation · 614 One pilot client · approval pending"
+            },
+            {
+              "text": "<mark class=\"test\">Placeholder for feedback on the Jersey Wall.</mark>",
+              "von": "Sports club · name after approval"
+            }
+          ]
+        },
+        {
           "typ": "ablauf",
           "id": "ablauf",
           "kicker": "From Requirements to Solutions",
           "h2": "Understand.<br>Design. <em>Build.</em><br>Review.",
-          "text": "Good solutions start with understanding the problem. The process is an approach, not a guarantee; it adapts to scope and requirements.",
+          "text": "Good solutions start with understanding the problem. Five steps, each ending with a clear decision.",
           "bild": "designer",
           "schritte": [
             {
@@ -166,30 +242,6 @@
             "text": "How I work",
             "seite": "zusammenarbeit"
           }
-        },
-        {
-          "typ": "prinzipien",
-          "id": "principles",
-          "h2": "What you can count on",
-          "text": "No performance figures, no promises, just working principles that apply to every project.",
-          "punkte": [
-            {
-              "h3": "Direct collaboration",
-              "text": "You talk to the person who does the work. No intermediate layers."
-            },
-            {
-              "h3": "Traceable decisions",
-              "text": "Open issues and decisions are documented, not made silently."
-            },
-            {
-              "h3": "The right solution, not new software by default",
-              "text": "Not every task needs a new tool. We first check what fits the actual need."
-            },
-            {
-              "h3": "Verifiable results",
-              "text": "What is handed over has been checked against the agreed criteria, with sources and documentation."
-            }
-          ]
         },
         {
           "typ": "marke",
@@ -263,7 +315,8 @@
             "seite": "leistungen"
           }
         }
-      }
+      },
+      "fakten": "<mark class=\"test\">Remote for clients across Europe</mark> · English and German"
     },
     "leistungen": {
       "pfad": "services/",
@@ -357,7 +410,7 @@
           "typ": "stack",
           "id": "tools",
           "h2": "What I work with",
-          "text": "Not a technology list to impress, but what is actually in use in the projects.",
+          "text": "What is actually in use in the projects.",
           "gruppen": [
             {
               "h3": "Languages and runtime",
@@ -418,7 +471,7 @@
             {
               "titel": "614 One – document review by NAHX Technologies",
               "bereich": "Technical Documentation · Software",
-              "kurz": "Web app that pre-reviews Word and PDF documents against rule sets and produces reports in four languages. First pilot customer and tester is FSH Documentation.",
+              "kurz": "Web app that pre-reviews Word and PDF documents against rule sets and produces reports in four languages. First pilot customer and tester is FSH Documentation. Pictured: client report from a fictitious test document.",
               "ausgang": "Technical documentation has to be checked against basic requirements, DIN EN IEC/IEEE 82079-1 and CE conformity rules. This was done manually, with checklists, and differently by each reviewer.",
               "herausforderung": "A pre-review that is repeatable, cites locations, supports several users with their own settings and delivers reports customers can read in their language.",
               "beitrag": "Design and development of the web app: architecture, review logic, accounts and roles, reports, tests, operating instructions for the Mac. Trialled in a pilot with FSH Documentation.",
@@ -431,12 +484,12 @@
                 "Review with locations",
                 "PDF report (de/en/uk/ru)"
               ],
-              "bild": "fabrik"
+              "bild": "bericht614"
             },
             {
               "titel": "Jersey Wall – interactive squad page for a floorball club",
               "bereich": "Software & Web Applications",
-              "kurz": "Custom web module: jerseys on a rail, player card with jersey animation and editing via an admin page, no libraries.",
+              "kurz": "Custom web module: jerseys on a rail, player card with jersey animation and editing via an admin page, no libraries. Pictured: preview with test players.",
               "ausgang": "A floorball club wanted to present its squad on the website: jerseys on a rail, player card with data, maintenance without programming skills.",
               "herausforderung": "An animation after a video reference that runs on phones, data the club maintains itself, and a bilingual interface (German, Ukrainian).",
               "beitrag": "Concept, implementation, data model, admin page, publishing interface, review report with status per finding and handover note for integration.",
@@ -449,7 +502,7 @@
                 "Squad page with jerseys",
                 "Publish via token"
               ],
-              "bild": "code"
+              "bild": "trikotwand"
             },
             {
               "titel": "Website relaunch and weekly SEO audit",
@@ -470,9 +523,9 @@
               "bild": "lichtleiter"
             },
             {
-              "titel": "Mail triage and daily round (own tool)",
+              "titel": "Email pre-sorting with approval (own tool)",
               "bereich": "Automation & AI",
-              "kurz": "Daily inbox sorting with a proposal table, release word and a local model.",
+              "kurz": "The inbox is pre-sorted daily; nothing is moved or answered without my approval.",
               "ausgang": "My own inbox mixes customer mail, receipts, newsletters and advertising. Sorting cost time every morning and was done inconsistently.",
               "herausforderung": "Automation that does nothing on its own: no sending, no deleting, no moving without explicit release, and confidential content stays on the machine.",
               "beitrag": "Design of the workflow rules, scripts, block list, logging, scheduling, tests with stubs.",
@@ -480,7 +533,7 @@
               "technologien": "Shell (zsh), AppleScript, launchd for scheduling, Claude Code as interface, Ollama with a local model, Markdown for logs.",
               "status": "In daily personal use since September 2026. Shows what AI support with fixed checkpoints looks like.",
               "ablauf": [
-                "Read mail (read-only)",
+                "Read mail",
                 "Proposal table",
                 "Release word",
                 "Move and log"
@@ -488,22 +541,22 @@
               "bild": "bokeh"
             },
             {
-              "titel": "This website",
+              "titel": "NAHX website: flight through A portals",
               "bereich": "Software & Web Applications",
-              "kurz": "Bilingual static site with its own build system, checks and vector logo.",
+              "kurz": "Bilingual website with its own build system, checks, a 3D flight without a framework and a vector logo.",
               "ausgang": "NAHX Technologies needed a presence that works without external services, tracking or form back ends and can be maintained permanently by myself.",
-              "herausforderung": "German and English in full, a logo as a true vector from a raster template, domain still open, no invented details.",
+              "herausforderung": "German and English in full, a logo as a true vector from a raster template, fast loading without tracking or external services.",
               "beitrag": "Everything: concept, copy, design system, build system, logo reconstruction, checks.",
               "ansatz": "Content in two JSON files with identical keys, build in Python without packages, checks for language tags, headings, metadata, links and anchors; without a base URL, canonical, hreflang and sitemap are deliberately omitted. Logo measured from the template and rebuilt as SVG paths.",
               "technologien": "Python, HTML/CSS without a framework, SVG, local fonts (OFL), Playwright for rendering and link checks.",
-              "status": "You are reading it. Open: domain, legal notice details, approvals for references.",
+              "status": "You are looking at it, as a preview with test data.",
               "ablauf": [
                 "de.json / en.json",
                 "build.py with checks",
                 "dist/ (static)",
                 "Host"
               ],
-              "bild": "designer"
+              "bild": "nahxweb"
             }
           ],
           "legende": {
@@ -529,7 +582,7 @@
           "bild": "faser"
         }
       ],
-      "bild": "fabrik",
+      "bild": "code",
       "karte": {
         "titel": "05",
         "label": "Five projects",
@@ -548,10 +601,38 @@
         {
           "typ": "text",
           "absaetze": [
-            "I am Niklas Heinzmann. Behind NAHX Technologies is one person, not a team or an agency: short paths, direct agreements, and the person who takes the requirements is the one who implements them.",
+            "I am Niklas Heinzmann. NAHX Technologies is my personal brand: short paths, direct agreements, and the person who takes the requirements is the one who implements them.",
             "My background is technical documentation: document review and comparison, document control, structure for large document sets, reports and checklists. Development grew out of that, because the tools that make this work verifiable and repeatable were missing.",
-            "I work with FSH Documentation, a technical documentation service provider; the website automation, among other things, is created there, and FSH is the first pilot customer and tester of 614 One, the document review tool by NAHX Technologies. With NAHX Technologies I bring together my own services, development projects and tools under a personal brand. NAHX is a business name, not a company.",
+            "I work with FSH Documentation, a technical documentation service provider; the website automation, among other things, is created there, and FSH is the first pilot customer and tester of 614 One, the document review tool by NAHX Technologies. With NAHX Technologies I bring together my own services, development projects and tools under a personal brand.",
             "My approach is pragmatic: understand the requirements, develop a suitable solution and verify the results transparently. I separate facts from assumptions, flag what is uncertain, keep originals unchanged and document changes. That applies to documents as much as to code."
+          ]
+        },
+        {
+          "typ": "portraet",
+          "id": "person",
+          "kicker": "Person",
+          "h2": "Niklas Heinzmann",
+          "text": "Technical writing and digital development.",
+          "bild_label": "Placeholder for a portrait photo",
+          "bild_text": "<mark class=\"test\">Portrait photo to follow</mark>",
+          "monogramm": "NH",
+          "fakten": [
+            [
+              "Focus",
+              "Technical documentation, web applications, automation"
+            ],
+            [
+              "Languages",
+              "English, German <mark class=\"test\">more on request</mark>"
+            ],
+            [
+              "Way of working",
+              "<mark class=\"test\">Remote, on-site meetings by arrangement</mark>"
+            ],
+            [
+              "Profile",
+              "<mark class=\"test\">LinkedIn profile to follow</mark>"
+            ]
           ]
         },
         {
@@ -570,7 +651,7 @@
             },
             {
               "h3": "The right solution, not new software by default",
-              "text": "Not every task needs a new tool. We first check what fits the actual need."
+              "text": "Not every task needs a new tool. I first check what fits the actual need."
             },
             {
               "h3": "Verifiable results",
@@ -593,7 +674,7 @@
       "karte": {
         "titel": "Niklas Heinzmann",
         "label": "Person",
-        "text": "Technical documentation and digital development – one person, not an agency."
+        "text": "Technical writing and digital development from one source."
       }
     },
     "zusammenarbeit": {
@@ -603,7 +684,7 @@
       "description": "How a project with NAHX Technologies works: initial discussion, requirements and scope, implementation in clear steps, review and handover. Direct and clear.",
       "kicker": "How We Work",
       "h1": "A clear process.<br>Direct<br>collaboration.",
-      "einleitung": "Five steps from the first conversation to the handover. The process is a flexible approach, not a guarantee; it depends on the scope, complexity and requirements of each project.",
+      "einleitung": "Five steps from the first conversation to the handover. The process adapts to the scope, complexity and requirements of each project.",
       "abschnitte": [
         {
           "typ": "schritte",
@@ -684,21 +765,25 @@
         {
           "typ": "kontakt",
           "email_label": "Email",
-          "email_text": "Write to me directly. I usually reply within two working days.",
+          "email_text": "Write to me directly. I usually reply <mark class=\"test\">within two working days</mark>.",
           "themen_h2": "Helpful for a first assessment",
           "themen": [
             "What is it about: documentation, software, automation or a mix?",
             "What is the current situation, and what should be different at the end?",
             "Is there a time frame or fixed constraints?"
           ],
-          "datenschutz": "Your email is used only to handle your enquiry. See the <a href=\"{datenschutz}\">privacy notice</a> for details."
+          "datenschutz": "Your email is used only to handle your enquiry. See the <a href=\"{datenschutz}\">privacy notice</a> for details.",
+          "wege": [
+            "<mark class=\"test\">LinkedIn: profile link to follow</mark>",
+            "<mark class=\"test\">Book a 30-minute intro call online: link to follow</mark>"
+          ]
         }
       ],
       "bild": "faser",
       "karte": {
         "titel": "Email",
         "label": "Contact",
-        "text": "No form, no services: one email is enough. I will get in touch to discuss the requirements."
+        "text": "A short email is enough. I will get back to you to align on the requirements."
       }
     },
     "impressum": {
@@ -711,41 +796,40 @@
       "kicker": "Legal",
       "h1": "Legal Notice",
       "einleitung": "NAHX Technologies is a personal business name, not a separate legal entity. The legally required provider information is given here according to the actual business and activity situation.",
-      "platzhalter": true,
       "abschnitte": [
         {
           "typ": "text",
           "h2": "Provider",
           "absaetze": [
-            "[First and last name]<br>NAHX Technologies<br>[Street and number]<br>[Postcode, city]<br>[Country]"
+            "Niklas Heinzmann<br>NAHX Technologies<br><mark class=\"test\">Musterstraße 1</mark><br><mark class=\"test\">12345 Musterstadt</mark><br><mark class=\"test\">Germany</mark>"
           ]
         },
         {
           "typ": "text",
           "h2": "Contact",
           "absaetze": [
-            "Email: niklas.heinzmann@fsh-documentation.de<br>Phone: [optional]"
+            "Email: <mark class=\"test\">hello@nahx-technologies.example</mark><br>Phone: <mark class=\"test\">+49 000 0000000</mark>"
           ]
         },
         {
           "typ": "text",
           "h2": "VAT",
           "absaetze": [
-            "[VAT identification number or note on small-business status, depending on the actual situation]"
+            "<mark class=\"test\">Small business under § 19 UStG, therefore no VAT shown</mark>"
           ]
         },
         {
           "typ": "text",
           "h2": "Responsible for content",
           "absaetze": [
-            "[First and last name, address as above]"
+            "Niklas Heinzmann, address as above"
           ]
         },
         {
           "typ": "text",
           "h2": "Note",
           "absaetze": [
-            "Which details are mandatory depends on legal form, registered office and activity. This page is a template, not legal advice; it will be reviewed and completed before launch."
+            "The marked details are test data and will be replaced with the actual details and reviewed before launch. Not legal advice."
           ]
         }
       ]
@@ -760,46 +844,45 @@
       "kicker": "Legal",
       "h1": "Privacy Notice",
       "einleitung": "This notice describes which personal data is processed when you visit this website and when you get in touch. The privacy notice must accurately reflect the services and data processing actually used.",
-      "platzhalter": true,
       "abschnitte": [
         {
           "typ": "text",
           "h2": "Controller",
           "absaetze": [
-            "[First and last name], NAHX Technologies, [address], email: niklas.heinzmann@fsh-documentation.de"
+            "Niklas Heinzmann, NAHX Technologies, <mark class=\"test\">Musterstraße 1, 12345 Musterstadt</mark>, email: <mark class=\"test\">hello@nahx-technologies.example</mark>"
           ]
         },
         {
           "typ": "text",
           "h2": "Hosting and server log files",
           "absaetze": [
-            "The website is static and loads no external scripts, fonts or analytics services and stores nothing in the browser. When pages are requested, the hosting provider processes technically necessary data (IP address, time, page requested, browser) in server log files. [Enter hosting provider, location and retention period.]"
+            "The website is static and loads no external scripts, fonts or analytics services and stores nothing in the browser. When pages are requested, the hosting provider processes technically necessary data (IP address, time, page requested, browser) in server log files. Hosting: <mark class=\"test\">provider and location to follow</mark>. Retention: <mark class=\"test\">7 days</mark>. Legal basis: <mark class=\"test\">Art. 6(1)(f) GDPR</mark>."
           ]
         },
         {
           "typ": "text",
           "h2": "Getting in touch",
           "absaetze": [
-            "If you contact me by email, the information submitted (sender address, name, content of the message) is processed to handle the enquiry and stored for as long as necessary for that purpose. There is no contact form. [Enter legal basis and retention period.]"
+            "If you contact me by email, the information submitted (sender address, name, content of the message) is processed to handle the enquiry and stored for as long as necessary for that purpose. There is no contact form. Legal basis: <mark class=\"test\">Art. 6(1)(b) and (f) GDPR</mark>."
           ]
         },
         {
           "typ": "text",
           "h2": "Your rights",
           "absaetze": [
-            "You have the right to access, rectification, erasure, restriction of processing, data portability and objection, as well as the right to lodge a complaint with a supervisory authority. [Enter the competent supervisory authority.]"
+            "You have the right to access, rectification, erasure, restriction of processing, data portability and objection, as well as the right to lodge a complaint with a supervisory authority. Competent authority: <mark class=\"test\">data protection authority of the federal state of residence</mark>."
           ]
         },
         {
           "typ": "text",
           "h2": "Note",
           "absaetze": [
-            "This page is a template, not legal advice. It will be adapted to the services actually used and reviewed before launch."
+            "The marked details are test data. This page will be adapted to the services actually used and reviewed before launch. Not legal advice."
           ]
         }
       ]
     }
   },
-  "email": "niklas.heinzmann@fsh-documentation.de",
+  "email": "hello@nahx-technologies.example",
   "og_bild_alt": "NAHX Technologies – Understand Technology. Create Solutions."
 }

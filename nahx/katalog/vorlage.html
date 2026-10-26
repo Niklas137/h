@@ -1,0 +1,268 @@
+<title>NAHX Aufgabenkatalog</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+/* Layout: eine ruhige Spalte wie eine Prüfliste, oben ein fester Balken mit Fortschritt und Personenfilter,
+   darunter je Person ein Block; Status wird wie ein Stempel gesetzt (Offen, Läuft, Erledigt). */
+:root{
+  --bg:#030907; --surface:#0A1713; --surface-2:#0E1F1A; --line:#1A332C; --ink:#F2FAF7; --muted:#A3B8B0;
+  --mint:#00F0BE; --mint-soft:rgba(0,240,190,.12); --on-mint:#03110D; --warn:#F2C46D; --warn-soft:rgba(242,196,109,.14);
+  --display:"Outfit",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --text:"Source Sans 3","Source Sans Pro",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#F1F6F4; --surface:#FFFFFF; --surface-2:#F6FAF8; --line:#D5E3DD; --ink:#06130F; --muted:#4A6058;
+  --mint:#007D62; --mint-soft:rgba(0,125,98,.10); --on-mint:#FFFFFF; --warn:#8A5A00; --warn-soft:rgba(138,90,0,.10); color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#F1F6F4; --surface:#FFFFFF; --surface-2:#F6FAF8; --line:#D5E3DD; --ink:#06130F; --muted:#4A6058;
+  --mint:#007D62; --mint-soft:rgba(0,125,98,.10); --on-mint:#FFFFFF; --warn:#8A5A00; --warn-soft:rgba(138,90,0,.10); color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--text);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.kopf{padding-block:40px 20px}
+.eyebrow{font:500 12px/1.3 var(--display);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{font:600 clamp(30px,7vw,44px)/1.05 var(--display);letter-spacing:-.02em;margin:0 0 12px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--mint)}
+.lead{margin:0;color:var(--muted);max-width:60ch}
+.lead a{color:var(--mint);text-underline-offset:3px}
+.leiste{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.leiste .wrap{padding-block:12px;display:grid;gap:10px}
+.fortschritt{display:flex;align-items:center;gap:12px;font:500 14px/1 var(--display);font-variant-numeric:tabular-nums}
+.balken{flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.balken i{display:block;height:100%;width:0;background:var(--mint);transition:width .4s ease}
+.filter{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{font:500 13px/1 var(--display);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:8px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;font-variant-numeric:tabular-nums}
+.chip b{font-weight:500;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--mint);border-color:var(--mint);color:var(--on-mint)}
+.chip[aria-pressed="true"] b{color:var(--on-mint);opacity:.75}
+.schalter{margin-left:auto;display:inline-flex;gap:8px;align-items:center;font-size:14px;color:var(--muted);cursor:pointer}
+.schalter input{accent-color:var(--mint);width:16px;height:16px}
+.verbindung{font-size:13px;color:var(--muted);margin:0}
+.verbindung[data-art="aktiv"]::before{content:"● ";color:var(--mint)}
+.verbindung[data-art="lesen"]::before{content:"● ";color:var(--warn)}
+main{padding-block:8px 64px}
+section.gruppe{margin-top:28px}
+.gruppe-kopf{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 10px}
+h2{font:600 22px/1.2 var(--display);margin:0;letter-spacing:-.01em}
+.gruppe-kopf span{font:500 13px/1 var(--display);color:var(--muted);font-variant-numeric:tabular-nums}
+.gruppe-text{margin:-4px 0 12px;color:var(--muted);font-size:15px}
+ol.liste{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+li.aufgabe{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:10px;min-width:0;border-left:3px solid var(--line)}
+li.aufgabe[data-status="laeuft"]{border-left-color:var(--warn)}
+li.aufgabe[data-status="erledigt"]{border-left-color:var(--mint)}
+li.aufgabe[data-status="erledigt"] h3{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--mint);text-decoration-thickness:2px}
+.zeile1{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{font:500 11.5px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:4px 6px}
+.tag.vor{color:var(--mint);border-color:var(--mint-soft);background:var(--mint-soft)}
+h3{font:600 17.5px/1.3 var(--display);margin:0;text-wrap:balance}
+.text{margin:0;color:var(--muted);font-size:15.5px;min-width:0}
+.liefern{margin:0;font-size:14.5px}
+.liefern span{font:500 11.5px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+.unten{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.status{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.status input{position:absolute;opacity:0;pointer-events:none}
+.status label{font:500 13px/1 var(--display);padding:9px 12px;cursor:pointer;color:var(--muted);border-right:1px solid var(--line);user-select:none}
+.status label:last-of-type{border-right:0}
+.status input:checked+label[data-w="offen"]{background:var(--surface-2);color:var(--ink)}
+.status input:checked+label[data-w="laeuft"]{background:var(--warn-soft);color:var(--warn)}
+.status input:checked+label[data-w="erledigt"]{background:var(--mint);color:var(--on-mint)}
+.status input:focus-visible+label{outline:2px solid var(--mint);outline-offset:-2px}
+.status input:disabled+label{cursor:default;opacity:.6}
+.meta{font-size:13px;color:var(--muted);margin:0}
+details.notiz summary{cursor:pointer;font:500 13px/1 var(--display);color:var(--mint);list-style:none;padding:4px 0}
+details.notiz summary::-webkit-details-marker{display:none}
+details.notiz summary::before{content:"+ "}
+details.notiz[open] summary::before{content:"– "}
+details.notiz textarea{margin-top:8px;width:100%;min-height:72px;resize:vertical;font:400 15px/1.45 var(--text);color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px}
+details.notiz textarea:focus{outline:2px solid var(--mint);outline-offset:0}
+details.notiz .gespeichert{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+.chip:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+.leer{color:var(--muted);font-size:15px;margin:8px 0 0}
+footer{color:var(--muted);font-size:13px;padding-block:0 40px}
+@media (max-width:520px){.schalter{margin-left:0}.status label{padding:9px 10px}}
+@media (prefers-reduced-motion:reduce){.balken i{transition:none}}
+</style>
+
+<header class="kopf wrap">
+  <p class="eyebrow">NAHX Technologies · Stand 26.10.2026</p>
+  <h1>Bis zum <em>Livegang</em></h1>
+  <p class="lead">Was Niklas und Falk noch liefern oder entscheiden, damit die Testdaten aus der <a href="https://claude.ai/artifact/Gr2LmKRN3EEmCko43L77bh" target="_blank" rel="noopener">Website-Vorschau</a> verschwinden. Status und Notizen speichern sich hier für alle, die die Seite öffnen.</p>
+</header>
+
+<div class="leiste">
+  <div class="wrap">
+    <div class="fortschritt"><span id="zaehler">0 von 0 erledigt</span><div class="balken" role="presentation"><i id="balken"></i></div></div>
+    <div class="filter" role="group" aria-label="Nach Person filtern">
+      <button class="chip" type="button" data-filter="alle" aria-pressed="true">Alle <b id="n-alle"></b></button>
+      <button class="chip" type="button" data-filter="niklas" aria-pressed="false">Niklas <b id="n-niklas"></b></button>
+      <button class="chip" type="button" data-filter="falk" aria-pressed="false">Falk <b id="n-falk"></b></button>
+      <button class="chip" type="button" data-filter="beide" aria-pressed="false">Gemeinsam <b id="n-beide"></b></button>
+      <button class="chip" type="button" data-filter="claude" aria-pressed="false">Claude <b id="n-claude"></b></button>
+      <label class="schalter"><input type="checkbox" id="ausblenden"> Erledigte ausblenden</label>
+    </div>
+    <p class="verbindung" id="verbindung" data-art="warten">Speicher wird verbunden …</p>
+  </div>
+</div>
+
+<main class="wrap" id="inhalt"></main>
+<footer class="wrap">Angaben, die du lieferst, trage ich danach in die Website ein. Rechtstexte und Markenfragen sind keine Rechtsberatung.</footer>
+
+<script>
+var AUFGABEN = /*AUFGABEN*/[];
+var GRUPPEN = [
+  {wer:"niklas", titel:"Niklas", text:"Entscheidungen und Angaben für Auftritt, Angebot und Rechtstexte."},
+  {wer:"falk", titel:"Falk · FSH Documentation", text:"Freigaben und Rückmeldungen als Pilotkunde von 614 One."},
+  {wer:"beide", titel:"Gemeinsam", text:"Zwischen NAHX und FSH zu klären, am besten in einem kurzen Termin."},
+  {wer:"claude", titel:"Claude", text:"Setze ich um, sobald die Angaben da sind."}
+];
+var STATUS = [["offen","Offen"],["laeuft","Läuft"],["erledigt","Erledigt"]];
+var zustand = {};          // id -> {status, notiz, von, am}
+var filter = "alle", ausblenden = false;
+var db = null, nutzer = null, ichId = null, schreibbar = false, namen = {};
+var warteschlange = {};    // id -> Promise (eine Schreiboperation je Dokument)
+var el = {};
+
+try { var g = localStorage.getItem("nahx-katalog-filter"); if (g) { var o = JSON.parse(g); filter = o.filter || "alle"; ausblenden = !!o.ausblenden; } } catch (e) {}
+
+function st(id) { return (zustand[id] && zustand[id].status) || "offen"; }
+function merke() { try { localStorage.setItem("nahx-katalog-filter", JSON.stringify({filter: filter, ausblenden: ausblenden})); } catch (e) {} }
+
+function baue() {
+  var main = document.getElementById("inhalt");
+  GRUPPEN.forEach(function (gr) {
+    var sec = document.createElement("section"); sec.className = "gruppe"; sec.dataset.wer = gr.wer;
+    sec.innerHTML = '<div class="gruppe-kopf"><h2></h2><span></span></div><p class="gruppe-text"></p><ol class="liste"></ol><p class="leer" hidden>Hier ist alles erledigt.</p>';
+    sec.querySelector("h2").textContent = gr.titel;
+    sec.querySelector(".gruppe-text").textContent = gr.text;
+    var ol = sec.querySelector("ol");
+    AUFGABEN.filter(function (a) { return a.wer === gr.wer; })
+      .sort(function (a, b) { return (a.wann === "vor" ? 0 : 1) - (b.wann === "vor" ? 0 : 1); })
+      .forEach(function (a) { ol.appendChild(karte(a)); });
+    main.appendChild(sec);
+    el["gruppe-" + gr.wer] = sec;
+  });
+}
+
+function karte(a) {
+  var li = document.createElement("li"); li.className = "aufgabe"; li.id = "a-" + a.id; li.dataset.status = "offen";
+  var z1 = document.createElement("div"); z1.className = "zeile1";
+  var t1 = document.createElement("span"); t1.className = "tag" + (a.wann === "vor" ? " vor" : ""); t1.textContent = a.wann === "vor" ? "Vor dem Livegang" : "Nach dem Livegang";
+  var t2 = document.createElement("span"); t2.className = "tag"; t2.textContent = a.bereich;
+  z1.append(t1, t2);
+  var h = document.createElement("h3"); h.textContent = a.titel;
+  var p = document.createElement("p"); p.className = "text"; p.textContent = a.text;
+  li.append(z1, h, p);
+  if (a.liefern) { var l = document.createElement("p"); l.className = "liefern"; l.innerHTML = "<span>Liefern</span>"; l.appendChild(document.createTextNode(a.liefern)); li.appendChild(l); }
+  var unten = document.createElement("div"); unten.className = "unten";
+  var grp = document.createElement("div"); grp.className = "status"; grp.setAttribute("role", "radiogroup"); grp.setAttribute("aria-label", "Status: " + a.titel);
+  STATUS.forEach(function (s) {
+    var inp = document.createElement("input"); inp.type = "radio"; inp.name = "st-" + a.id; inp.id = "st-" + a.id + "-" + s[0]; inp.value = s[0]; inp.disabled = true;
+    if (s[0] === "offen") inp.checked = true;
+    var lab = document.createElement("label"); lab.htmlFor = inp.id; lab.dataset.w = s[0]; lab.textContent = s[1];
+    inp.addEventListener("change", function () { if (inp.checked) setze(a.id, {status: s[0]}); });
+    grp.append(inp, lab);
+  });
+  var meta = document.createElement("p"); meta.className = "meta"; meta.id = "meta-" + a.id;
+  unten.append(grp, meta);
+  var det = document.createElement("details"); det.className = "notiz";
+  det.innerHTML = '<summary>Notiz</summary><textarea id="no-' + a.id + '" placeholder="z. B. erledigt am …, Link, Rückfrage" disabled></textarea><p class="gespeichert" id="gs-' + a.id + '"></p>';
+  var ta = det.querySelector("textarea"), zeit = null; ta.setAttribute("aria-label", "Notiz zu: " + a.titel);
+  ta.addEventListener("input", function () { clearTimeout(zeit); document.getElementById("gs-" + a.id).textContent = "…"; zeit = setTimeout(function () { setze(a.id, {notiz: ta.value}); }, 900); });
+  ta.addEventListener("blur", function () { clearTimeout(zeit); var alt = (zustand[a.id] && zustand[a.id].notiz) || ""; if (ta.value !== alt) setze(a.id, {notiz: ta.value}); });
+  li.append(unten, det);
+  return li;
+}
+
+function datum(iso) { try { var d = new Date(iso); return d.toLocaleDateString("de-DE", {day: "2-digit", month: "2-digit"}) + ", " + d.toLocaleTimeString("de-DE", {hour: "2-digit", minute: "2-digit"}); } catch (e) { return ""; } }
+
+function zeige(id) {
+  var z = zustand[id] || {}, s = st(id), li = document.getElementById("a-" + id); if (!li) return;
+  li.dataset.status = s;
+  var r = document.getElementById("st-" + id + "-" + s); if (r && !r.checked) r.checked = true;
+  var ta = document.getElementById("no-" + id);
+  if (ta && document.activeElement !== ta && ta.value !== (z.notiz || "")) { ta.value = z.notiz || ""; }
+  if (z.notiz) { var det = ta.closest("details"); det.querySelector("summary").textContent = "Notiz vorhanden"; }
+  var m = document.getElementById("meta-" + id);
+  if (z.am) { var wer = z.von ? (namen[z.von] || "") : ""; m.textContent = (wer ? wer + " · " : "") + datum(z.am); } else m.textContent = "";
+}
+
+function zusammenfassung() {
+  var gesamt = 0, fertig = 0, je = {alle: 0, niklas: 0, falk: 0, beide: 0, claude: 0};
+  AUFGABEN.forEach(function (a) { var o = st(a.id) !== "erledigt"; je.alle += o ? 1 : 0; je[a.wer] += o ? 1 : 0; gesamt++; if (!o) fertig++; });
+  Object.keys(je).forEach(function (k) { var b = document.getElementById("n-" + k); if (b) b.textContent = je[k]; });
+  document.getElementById("zaehler").textContent = fertig + " von " + gesamt + " erledigt";
+  document.getElementById("balken").style.width = (gesamt ? fertig / gesamt * 100 : 0).toFixed(1) + "%";
+  GRUPPEN.forEach(function (gr) {
+    var sec = el["gruppe-" + gr.wer], alle = AUFGABEN.filter(function (a) { return a.wer === gr.wer; });
+    var f = alle.filter(function (a) { return st(a.id) === "erledigt"; }).length;
+    sec.querySelector(".gruppe-kopf span").textContent = f + " / " + alle.length;
+    sec.hidden = !(filter === "alle" || filter === gr.wer);
+    var sichtbar = 0;
+    alle.forEach(function (a) { var li = document.getElementById("a-" + a.id); var weg = ausblenden && st(a.id) === "erledigt"; li.hidden = weg; if (!weg) sichtbar++; });
+    sec.querySelector(".leer").hidden = sichtbar > 0;
+  });
+  document.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c.dataset.filter === filter ? "true" : "false"); });
+  document.getElementById("ausblenden").checked = ausblenden;
+}
+
+function alles() { AUFGABEN.forEach(function (a) { zeige(a.id); }); zusammenfassung(); }
+
+function verbindung(art, text) { var v = document.getElementById("verbindung"); v.dataset.art = art; v.textContent = text; }
+
+function freigeben(an) {
+  document.querySelectorAll(".status input, .notiz textarea").forEach(function (i) { i.disabled = !an; });
+}
+
+function setze(id, teil) {
+  if (!db || !schreibbar) return;
+  var alt = zustand[id] || {status: "offen", notiz: ""};
+  var neu = {status: teil.status || alt.status || "offen", notiz: teil.notiz !== undefined ? teil.notiz : (alt.notiz || ""), am: new Date().toISOString()};
+  if (ichId) neu.von = ichId;
+  zustand[id] = neu; zeige(id); zusammenfassung();
+  var gs = document.getElementById("gs-" + id);
+  var vorher = warteschlange[id] || Promise.resolve();
+  warteschlange[id] = vorher.then(function () {
+    return db.collection("status").doc(id).set(neu).then(function () { if (gs && teil.notiz !== undefined) gs.textContent = "Gespeichert"; })
+      .catch(function (e) {
+        if (e && e.code === "invalid_argument") { schreibbar = false; freigeben(false); verbindung("lesen", "Nur Ansicht: Mit deinem Zugang lässt sich hier nichts speichern."); }
+        else if (e && e.code === "quota_exceeded") { verbindung("lesen", "Speicher ist voll. Änderung nicht gespeichert."); }
+        else { verbindung("lesen", "Änderung nicht gespeichert. Bitte später erneut versuchen."); }
+        if (gs) gs.textContent = "Nicht gespeichert";
+      });
+  });
+}
+
+function namenAufloesen() {
+  if (!nutzer) return;
+  var ids = []; Object.keys(zustand).forEach(function (k) { var v = zustand[k].von; if (v && ids.indexOf(v) < 0) ids.push(v); });
+  if (!ids.length) return;
+  nutzer.profiles(ids).then(function (ps) { ids.forEach(function (i) { namen[i] = (ps[i] && ps[i].name) || ""; }); alles(); }).catch(function () {});
+}
+
+document.querySelectorAll(".chip").forEach(function (c) { c.addEventListener("click", function () { filter = c.dataset.filter; merke(); zusammenfassung(); }); });
+document.getElementById("ausblenden").addEventListener("change", function (e) { ausblenden = e.target.checked; merke(); zusammenfassung(); });
+
+baue(); alles();
+
+(async function () {
+  var c = window.claude;
+  if (!c || typeof c.use !== "function") { verbindung("lesen", "Nur Ansicht: Status speichert sich, wenn die Seite in claude.ai geöffnet ist."); return; }
+  try { db = await c.use("db"); } catch (e) { db = null; }
+  if (!db) { verbindung("lesen", "Nur Ansicht: Zum Speichern bei claude.ai angemeldet öffnen."); return; }
+  try { nutzer = await c.use("user"); } catch (e) { nutzer = null; }
+  if (nutzer) { try { ichId = await nutzer.id(); } catch (e) { ichId = null; } }
+  var darf = nutzer ? await nutzer.can("data.write").catch(function () { return null; }) : null;
+  schreibbar = darf !== false;
+  db.collection("status").onSnapshot(function (snap) {
+    snap.docs.forEach(function (d) { var x = d.data(); if (x) zustand[d.id] = {status: x.status, notiz: x.notiz || "", von: x.von, am: x.am}; });
+    snap.docChanges().forEach(function (ch) { if (ch.type === "removed") delete zustand[ch.doc.id]; });
+    alles(); namenAufloesen();
+  }, function () { verbindung("lesen", "Verbindung zum Speicher unterbrochen. Seite neu laden."); });
+  freigeben(schreibbar);
+  verbindung(schreibbar ? "aktiv" : "lesen", schreibbar ? "Änderungen werden für alle gespeichert." : "Nur Ansicht: Mit deinem Zugang lässt sich hier nichts speichern.");
+})();
+</script>

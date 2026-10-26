@@ -8,17 +8,17 @@
     "outfit-variable.ttf"
   ],
   "sprachen": {
-    "de": {
-      "pfad": "/",
-      "name": "Deutsch",
-      "kurz": "DE",
-      "locale": "de_DE"
-    },
     "en": {
-      "pfad": "/en/",
+      "pfad": "/",
       "name": "English",
       "kurz": "EN",
       "locale": "en_US"
+    },
+    "de": {
+      "pfad": "/de/",
+      "name": "Deutsch",
+      "kurz": "DE",
+      "locale": "de_DE"
     }
   },
   "seiten": [
@@ -36,21 +36,6 @@
   "_logo_hinweis": "Wortmarke: assets/img/nahx-wortmarke.svg (helle Fassung für dunklen Grund, Open Graph); im Seitenkopf wird dieselbe Geometrie inline mit currentColor ausgegeben (build.py WORTMARKE).",
   "logo_vorlage": "/assets/img/nahx-logo-vorlage.png",
   "fotos": {
-    "fabrik": {
-      "breiten": [
-        700,
-        1200,
-        2000
-      ],
-      "seitenverhaeltnis": "3/2",
-      "fotograf": "Yusuf Onuk",
-      "quelle": "https://unsplash.com/photos/StFoqVNGFG4",
-      "lizenz": "Unsplash License",
-      "alt": {
-        "de": "Dunkle Industriehalle mit Stahlträgern, Zahnrad und Lichteinfall durch hohe Fenster",
-        "en": "Dark industrial hall with steel beams, a gear wheel and light falling through tall windows"
-      }
-    },
     "blaupause": {
       "breiten": [
         640,
@@ -141,6 +126,59 @@
         "de": "Arbeitsplatz mit Laptop, technischen Skizzen, Messschieber und Stiften",
         "en": "Workspace with laptop, technical sketches, caliper and pens"
       }
+    },
+    "bericht614": {
+      "breiten": [
+        640,
+        1000,
+        1600
+      ],
+      "seitenverhaeltnis": "8/5",
+      "fotograf": "NAHX Technologies (Screenshot)",
+      "quelle": "",
+      "lizenz": "eigen",
+      "eigen": true,
+      "alt": {
+        "de": "Zwei Seiten eines Fachberichts von 614 One auf Deutsch und Englisch, erzeugt aus einem frei erfundenen Testdokument",
+        "en": "Two pages of a 614 One client report in German and English, generated from a fictitious test document"
+      }
+    },
+    "trikotwand": {
+      "breiten": [
+        640,
+        1000,
+        1600
+      ],
+      "seitenverhaeltnis": "16/9",
+      "fotograf": "NAHX Technologies (Screenshot)",
+      "quelle": "",
+      "lizenz": "eigen",
+      "eigen": true,
+      "alt": {
+        "de": "Trikotwand: Trikots mit Namen und Nummern an einer Kleiderstange, Vorschau mit Testspielern",
+        "en": "Jersey Wall: jerseys with names and numbers on a rail, preview with test players"
+      }
+    },
+    "nahxweb": {
+      "breiten": [
+        640,
+        1000,
+        1600
+      ],
+      "seitenverhaeltnis": "8/5",
+      "fotograf": "NAHX Technologies (Screenshot)",
+      "quelle": "",
+      "lizenz": "eigen",
+      "eigen": true,
+      "alt": {
+        "de": "Diese Website: Flug durch ein A-Portal mit Text und Foto-Tafel",
+        "en": "This website: flight through an A portal with text and photo panel"
+      }
     }
+  },
+  "_sprachen_hinweis": "Seit 2026-10-26 ist Englisch Startsprache unter /, Deutsch unter /de/ (Zielmarkt außerhalb Deutschlands).",
+  "testdaten": {
+    "de": "Vorschau mit Testdaten · markierte Angaben werden ersetzt",
+    "en": "Preview with test data · marked details will be replaced"
   }
 }

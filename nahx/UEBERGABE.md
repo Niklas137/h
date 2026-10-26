@@ -1,4 +1,4 @@
-# NAHX Technologies – Übergabe (Stand 2026-10-26, nach Umstellung auf Mint)
+# NAHX Technologies – Übergabe (Stand 2026-10-26, Überarbeitung mit Testdaten)
 
 Diese Datei fasst den kompletten bisherigen Claude-Code-Chat zur Website von **NAHX Technologies** zusammen,
 damit ein neues Projekt ohne Zugriff auf den alten Chat nahtlos weiterarbeiten kann.
@@ -8,21 +8,25 @@ damit ein neues Projekt ohne Zugriff auf den alten Chat nahtlos weiterarbeiten k
 - **Repository:** `Niklas137/h`, Ordner `nahx/`. Cyan-Stand: Branch `claude/nahx-website-concept-34tlvk`.
   **Mint-Stand (aktuell):** Branch `claude/nahx-mint` (abgezweigt von `f9464cf`), Flug ab Commit `a0da6c6`.
 - **Vorschau (Claude-Artefakt, für jeden mit dem Link freigegeben, noindex):** https://claude.ai/artifact/Gr2LmKRN3EEmCko43L77bh
-  (Version 22 = Mint mit Flug durch A-Portale; 21 = Mint ohne Flug; 20 = letzter Cyan-Stand, alle über den Versionsverlauf).
+  (Version 27 = Überarbeitung nach Kundensicht-Prüfbericht mit Testdaten; 22 = Mint mit Flug durch A-Portale;
+  21 = Mint ohne Flug; 20 = letzter Cyan-Stand, alle über den Versionsverlauf).
+- **Aufgabenkatalog für Niklas und Falk (Claude-Artefakt, privat, Status und Notizen gemeinsam gespeichert):**
+  https://claude.ai/artifact/KsKynwTEwnXxWeXT1Qdw4u – Quelle `nahx/katalog/` (Daten `aufgaben.json`, Lesefassung `KATALOG.md`).
 - **Kein Pull Request**, kein Merge nach `main`. Beides nur nach ausdrücklicher Freigabe durch Niklas.
 
 ```
 nahx/
   build.py            Generator (Python 3, nur Standardbibliothek)
   inhalt/site.json    gemeinsame Daten: Sprachen, Seitenreihenfolge, Fotos mit Alt-Texten, Schriften
-  inhalt/de.json      alle deutschen Texte (Standardsprache)
-  inhalt/en.json      alle englischen Texte (gleiche Seitenschlüssel wie de.json)
+  inhalt/de.json      alle deutschen Texte (unter /de/)
+  inhalt/en.json      alle englischen Texte (Startsprache unter /, gleiche Seitenschlüssel wie de.json)
   assets/site.css     Designsystem „Leinwand“
   assets/bewegung.js  Menü, Einblenden, Scroll-Fortschritt, Zähler, Inspektionslicht
   assets/szene3d.js   WebGL-3D-Szene des NAHX-A (ohne Bibliothek)
   assets/fonts/       Outfit (Titel) und Source Sans 3 (Text), beide SIL Open Font License
   assets/img/         Logo-Set (SVG, Favicon, Apple-Touch, 512er Icon, OG-Bild), foto/ mit 7 Fotos
   dist/               fertige Website (wird von build.py erzeugt und mit eingecheckt)
+  katalog/            Aufgabenkatalog Niklas/Falk (aufgaben.json, vorlage.html, bauen.py, KATALOG.md)
   README.md           ausführliche Anleitung
 ```
 
@@ -42,9 +46,11 @@ Canonical, hreflang, og:url und Sitemap bewusst weggelassen, weil die Domain noc
 
 - **Marke:** NAHX Technologies, persönliche Geschäftsbezeichnung, keine Gesellschaft.
 - **Claim:** „Technik verstehen. Lösungen schaffen.“ / „Understand Technology. Create Solutions.“
-- **Sprachen:** Deutsch Standard unter `/`, Englisch unter `/en/`.
+- **Sprachen:** seit 2026-10-26 Englisch Startsprache unter `/`, Deutsch unter `/de/` (Zielmarkt außerhalb Deutschlands,
+  Befund 4 des Prüfberichts; Bestätigung durch Niklas steht im Katalog). Vorher Deutsch unter `/`, Englisch unter `/en/`.
 - **Domain:** später. Keine Domain im Code einbauen.
-- **E-Mail:** vorhandene Adresse `niklas.heinzmann@fsh-documentation.de`. Keine Adresse erfinden.
+- **E-Mail:** echte Adresse folgt mit der Domain. Bis dahin steht in der Vorschau die als Test markierte Adresse
+  `hello@nahx-technologies.example` (Auftrag „Testdaten einfüllen“). Keine echte Adresse erfinden.
 - **Kontakt:** nur per E-Mail. Kein Formular, keine externen Dienste.
 - **Logo:** Geometrie beibehalten. Wortmarke NAHX mit silbernen Buchstaben, **mintfarbenem A**
   (Verlauf `#2BFFD3` → `#00C99A`, seit 2026-10-26; vorher Cyan), Schriftzug TECHNOLOGIES, Mint-Linie, dunkler Grund.
@@ -144,7 +150,7 @@ Leistungsregelung, Mint-Kontur wie im Logo, ACES-Tonkurve.
 Danach: kein Zittern mehr (Pixelversatz, Korn und Hoch-/Runterregeln entfernt), keine Reaktion auf Maus, Finger oder
 Scrollen, das A bewegt sich nur von selbst; Leuchtlinien dezenter. Auch der Flug neigt sich nicht mehr mit der Maus.
 
-## 10. Offene Punkte (Entscheidung Niklas)
+## 10. Offene Punkte (Entscheidung Niklas) – Stand vor der Überarbeitung, heute im Katalog gepflegt
 
 - Domain festlegen, dann mit `--basis-url` bauen (Canonical, hreflang, Sitemap kommen automatisch).
 - Impressum und Datenschutz mit echten Angaben füllen (keine Rechtsberatung).
@@ -171,3 +177,32 @@ Falk schlug „614 One“ vor. Abgleich mit dem Code (`dokumentenpruefer/`):
 - Empfehlung (weiter offen): Untertitel „614 One – Dokumentenprüfung“ ist so umgesetzt; Marken- und Domaincheck
   (DPMA, EUIPO) steht noch aus. Keine Rechtsberatung.
 - Offen: ob der Name auch in der App selbst (Oberfläche, PDF-Berichte, Branch `claude/dokumentenpruefer-webapp`) erscheint.
+
+## 12. Überarbeitung mit Testdaten (2026-10-26, Version 27)
+
+Auftrag Niklas: „Überarbeite einmal alles, fülle noch mal Testdaten ein … den Rest tauschen wir dann, wenn alles
+feststeht … setze dazu einen Katalog für mich (Niklas) und Falk zum Abarbeiten auf.“ Grundlage: Prüfbericht
+`claude/NAHX_KUNDENSICHT_PRUEFBERICHT.md`. Umgesetzt:
+
+- **Testdaten-Kennzeichnung:** `<mark class="test">` (gestrichelt, hochgestelltes „Test“) plus Hinweis unten auf
+  jeder Seite (`site.json` → `testdaten`). Markiert sind Preise, Lieferzeiten, Anschrift, Telefon, E-Mail,
+  Antwortzeit, Steuerstatus, Hosting, Speicherdauer, Rechtsgrundlagen, Aufsichtsbehörde, Porträt, LinkedIn, Termin.
+- **Englisch als Startsprache**, Deutsch unter `/de/`; `x-default` folgt der ersten Sprache in `site.json`.
+- **Startseite:** Flug mit „Intro überspringen“ und Zeile „Remote für Kunden in Europa · Deutsch und Englisch“,
+  danach drei Einstiegsangebote (neuer Abschnittstyp `angebote`), Projektbühne mit Foto „code“, „Stimmen“ mit zwei
+  Platzhaltern (Typ `stimmen`), Ablauf, 3D-Markenbühne, Kontaktband. Arbeitsprinzipien nur noch auf „Über mich“.
+- **Kopf:** Taste „Projekt besprechen“ / „Discuss a Project“ ab 1100 px fest im Kopf.
+- **Über mich:** Porträt-Block mit NH-Monogramm und Fakten (Typ `portraet`), Texte ohne „keine Agentur/Gesellschaft“.
+- **Kontakt:** weitere Wege als Platzhalter (LinkedIn, Erstgespräch), Antwortzeit als Testwert.
+- **Projekte:** eigene Bilder statt Stockfotos bei 614 One (Fachbericht aus erfundenem Testdokument), Trikotwand
+  (Testspieler) und NAHX-Website (Screenshot); Fabrikfoto entfernt; Mail-Triage heißt „E-Mail-Vorsortierung mit
+  Freigabe“. Ein FSH-Website-Screenshot liegt nicht im Repo und wird erst nach Freigabe durch FSH erstellt.
+- **Ton:** „keine Garantie“, „keine Agentur“, „keine Technologieliste“ u. ä. ersetzt; „Wir prüfen“ → „Ich prüfe“.
+- **Fehler behoben:** Zähler zeigen ohne JavaScript die echte Zahl statt „00“; Pfeil in der Kopf-Taste.
+- **Seitentitel:** „NAHX Technologies – Documentation, Software, Automation“ (DE analog).
+
+Prüfung: `build.py --pruefen` ohne Befund, Playwright 18 Seiten × 5 Breiten ohne Überlauf und ohne Konsolenfehler,
+reduzierte Bewegung, Tastatur und Menü geprüft, Sichtprüfung der neuen Abschnitte auf 1440 und 390 px.
+
+**Livegang-Weg:** alle `mark class="test"` ersetzen, `testdaten` aus `site.json` löschen, Basis-URL setzen, ohne
+`--noindex` bauen. Was dafür fehlt, steht im Katalog (32 Punkte: Niklas 18, Falk 6, gemeinsam 3, Claude 5).

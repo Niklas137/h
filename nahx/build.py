@@ -150,7 +150,12 @@ class Bau:
     <nav class="nav" id="nav" aria-label="{esc(ui["fuss_navigation"])}">{"".join(nav)}<a class="cta kopf-cta" href="{esc(kontakt)}">{esc(ui["kopf_cta"])}</a></nav>
     <div class="kopf-aktionen">{"".join(sprach)}<button class="schalter menue-schalter" type="button" aria-expanded="false" aria-controls="nav">{esc(ui["menue"])}</button></div>
   </div>
-</header>"""
+</header>{self.testhinweis(sprache)}"""
+
+    def testhinweis(self, sprache: str) -> str:
+        """Sichtbarer Hinweis, solange Testdaten im Spiel sind (site.json „testdaten“)."""
+        t = self.site.get("testdaten") or {}
+        return f'<p class="testband" role="note"><span>{frag(t[sprache])}</span></p>' if t.get(sprache) else ""
 
     def fuss(self, sprache: str, pfad: str) -> str:
         t = self.sprachen[sprache]
@@ -173,7 +178,7 @@ class Bau:
       <div><strong>{esc(ui["fuss_sprache"])}</strong><nav aria-label="{esc(ui["fuss_sprache"])}">{sprachen}</nav><strong class="fuss-kontakt-titel">{esc(ui.get("fuss_kontakt", "Kontakt"))}</strong><p>{email_html}</p></div>
     </div>
     <p class="fuss-klein">{esc(ui["fuss_hinweis"])}</p>
-    <details class="bildnachweis"><summary>{esc(ui.get("bildnachweis", "Bildnachweis"))}</summary><p class="fuss-klein">{esc(ui.get("fotos_hinweis", ""))} {" · ".join(f'<a href="{esc(f["quelle"])}" rel="noopener">{esc(f["fotograf"])}</a>' for f in self.site["fotos"].values() if not f.get("variante_von"))}</p></details>
+    <details class="bildnachweis"><summary>{esc(ui.get("bildnachweis", "Bildnachweis"))}</summary><p class="fuss-klein">{esc(ui.get("fotos_hinweis", ""))} {" · ".join(f'<a href="{esc(f["quelle"])}" rel="noopener">{esc(f["fotograf"])}</a>' for f in self.site["fotos"].values() if not f.get("variante_von") and not f.get("eigen"))}</p></details>
   </div>
 </footer>"""
 
@@ -203,6 +208,28 @@ class Bau:
   <div class="reihe-text"><p class="nr">0{nr + 1}</p><h3>{frag(k["h3"])}</h3><p>{frag(k["text"])}</p><a class="mehr" href="{esc(ziel)}">{esc(l["text"])}</a></div>
 </article>""")
             return f'<section class="abschnitt abschnitt-breit"{ident}><div class="innen">{kopf}</div><div class="reihen">{"".join(reihen)}</div></section>'
+
+        if typ == "angebote":
+            karten = []
+            for nr, k in enumerate(a["karten"]):
+                punkte = "".join(f"<li>{frag(x)}</li>" for x in k.get("punkte", []))
+                l = k.get("link")
+                kl = self.cta(sprache, pfad, l, "cta-zweit") if l else ""
+                karten.append(f'<article class="angebot reveal" style="--i:{nr}"><p class="kicker">{esc(k.get("kicker", ""))}</p><h3>{frag(k["h3"])}</h3>'
+                              f'<p>{frag(k["text"])}</p><ul>{punkte}</ul><p class="angebot-rahmen">{frag(k.get("rahmen", ""))}</p>{kl}</article>')
+            kopf_a = f'<div class="abschnitt-kopf reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2>{frag(a["h2"])}</h2>' + (f'<p class="abschnitt-text">{frag(a["text"])}</p>' if a.get("text") else "") + "</div>"
+            return f'<section class="abschnitt innen angebote"{ident}>{kopf_a}<div class="angebot-raster">{"".join(karten)}</div>{mehr}</section>'
+
+        if typ == "stimmen":
+            karten = "".join(f'<figure class="stimme reveal" style="--i:{i}"><blockquote>{frag(x["text"])}</blockquote><figcaption>{frag(x["von"])}</figcaption></figure>' for i, x in enumerate(a["stimmen"]))
+            kopf_s = f'<div class="abschnitt-kopf reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2>{frag(a["h2"])}</h2>' + (f'<p class="abschnitt-text">{frag(a["text"])}</p>' if a.get("text") else "") + "</div>"
+            return f'<section class="abschnitt innen stimmen"{ident}>{kopf_s}<div class="stimmen-raster">{karten}</div></section>'
+
+        if typ == "portraet":
+            fakten = "".join(f"<div><dt>{esc(k)}</dt><dd>{frag(v)}</dd></div>" for k, v in a["fakten"])
+            return (f'<section class="abschnitt innen portraet"{ident}><div class="portraet-raster">'
+                    f'<figure class="portraet-bild reveal" aria-label="{esc(a.get("bild_label", ""))}"><span class="portraet-mono" aria-hidden="true">{esc(a.get("monogramm", "NH"))}</span><figcaption>{frag(a.get("bild_text", ""))}</figcaption></figure>'
+                    f'<div class="reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2>{frag(a["h2"])}</h2><p class="abschnitt-text">{frag(a.get("text", ""))}</p><dl class="felder portraet-fakten">{fakten}</dl></div></div></section>')
 
         if typ == "leistungskarten":
             # Drei Karten mit Foto, Mint-Piktogramm, Titel, Satz und Link (Markenboard 2026-10-26)
@@ -237,7 +264,7 @@ class Bau:
             for nr, f in enumerate(a["fakten"]):
                 wert = f["wert"]
                 zahl = f' data-zahl="{esc(wert)}"' if re.fullmatch(r"\d+", wert) else ""
-                teile.append(f'<div class="fakt fk{nr + 1} reveal" style="--i:{nr + 1}"><p class="fakt-wert"{zahl}>{frag("0" * len(wert) if zahl else wert)}</p><p class="fakt-text">{frag(f["text"])}</p></div>')
+                teile.append(f'<div class="fakt fk{nr + 1} reveal" style="--i:{nr + 1}"><p class="fakt-wert"{zahl}>{frag(wert)}</p><p class="fakt-text">{frag(f["text"])}</p></div>')
             absatz = f'<p class="collage-absatz reveal">{frag(a["text"])}</p>' if a.get("text") else ""
             cta = f'<p class="collage-cta reveal">{self.cta(sprache, pfad, a["cta"], "pfeil")}</p>' if a.get("cta") else ""
             return f'<section class="leinwand collage szene"{ident}><div class="innen collage-innen"><h2 class="collage-titel reveal">{frag(a["h2"])}</h2><div class="collage-raster">{"".join(teile)}{absatz}{cta}</div></div></section>'
@@ -357,7 +384,7 @@ class Bau:
         themen = "".join(f"<li>{frag(x)}</li>" for x in a["themen"])
         return f"""<section class="abschnitt innen" id="kontakt">
   <div class="kontakt-raster">
-    <div class="karte email-karte reveal"><h2>{esc(a["email_label"])}</h2><p class="email-text">{frag(a["email_text"])}</p><p>{email_html}</p><p class="klein">{frag(datenschutz)}</p></div>
+    <div class="karte email-karte reveal"><h2>{esc(a["email_label"])}</h2><p class="email-text">{frag(a["email_text"])}</p><p>{email_html}</p>{"".join(f'<p class="weg">{frag(w)}</p>' for w in a.get("wege", []))}<p class="klein">{frag(datenschutz)}</p></div>
     <div class="karte reveal" style="--i:1"><h2>{frag(a["themen_h2"])}</h2><ul>{themen}</ul></div>
   </div>
 </section>"""
@@ -375,7 +402,7 @@ class Bau:
             teile.append(f'<link rel="canonical" href="{esc(self.absolut(pfad))}">')
             for c in self.sprachen:
                 teile.append(f'<link rel="alternate" hreflang="{c}" href="{esc(self.absolut(self.pfade[(c, seite_key)]))}">')
-            teile.append(f'<link rel="alternate" hreflang="x-default" href="{esc(self.absolut(self.pfade[("de", seite_key)]))}">')
+            teile.append(f'<link rel="alternate" hreflang="x-default" href="{esc(self.absolut(self.pfade[(next(iter(self.sprachen)), seite_key)]))}">')
         teile += [
             '<meta property="og:type" content="website">', f'<meta property="og:site_name" content="{esc(self.site["name"])}">',
             f'<meta property="og:locale" content="{esc(self.site["sprachen"][sprache]["locale"])}">',
@@ -415,7 +442,7 @@ class Bau:
         if s.get("karte"):
             k = s["karte"]
             zahl = f' data-zahl="{esc(k["titel"])}"' if re.fullmatch(r"\d+", k["titel"]) else ""
-            karte = f'<aside class="glas held-karte reveal" aria-label="{esc(k.get("label", k["titel"]))}"><p class="glas-titel"{zahl}>{frag("0" * len(k["titel"]) if zahl else k["titel"])}</p><p>{frag(k["text"])}</p></aside>'
+            karte = f'<aside class="glas held-karte reveal" aria-label="{esc(k.get("label", k["titel"]))}"><p class="glas-titel"{zahl}>{frag(k["titel"])}</p><p>{frag(k["text"])}</p></aside>'
         weiter = f'<a class="weiter" href="#inhalt-weiter" aria-label="{esc(ui.get("weiter", "Scrollen"))}"><span>{esc(ui.get("weiter", "Scrollen"))}</span><i></i></a>' if s.get("bild") else ""
         return f"""<section class="held leinwand szene{" licht" if s.get("bild") else ""}{klasse}{" held-foto-seite" if s.get("bild") else ""}">{foto}<div class="licht-ring" aria-hidden="true"></div><div class="held-schleier" aria-hidden="true"></div><div class="innen held-innen">
   <div class="held-text">
@@ -443,7 +470,8 @@ class Bau:
         # Szene 0: Aufmacher
         cta = ('<div class="cta-reihe">' + self.cta(sprache, pfad, s["cta"]["primaer"]) + self.cta(sprache, pfad, s["cta"]["sekundaer"], "cta-zweit") + "</div>") if s.get("cta") else ""
         held = (f'<p class="kicker">{esc(s["kicker"])}</p><h1 class="zeilen">{zeilen(s["h1"])}</h1>'
-                f'<p class="held-absatz">{frag(s["einleitung"])}</p>{cta}')
+                f'<p class="held-absatz">{frag(s["einleitung"])}</p>{cta}'
+                + (f'<p class="held-fakten">{frag(s["fakten"])}</p>' if s.get("fakten") else ""))
         teile.append(f'<div class="flug-szene flug-szene-start" data-szene="0" data-label="{esc(f.get("start_label", "Start"))}">'
                      + el("flug-text flug-text-start", 0, "0px", "0px", "text", "", held) + portal(760, 0, "14vw") + "</div>")
         # Szenen 1..n: Bereiche
@@ -480,7 +508,8 @@ class Bau:
         hud = (f'<div class="flug-hud" aria-hidden="true"><span class="flug-hud-nr">01</span><span class="flug-hud-trenner">/</span>'
                f'<span class="flug-hud-gesamt">{n:02d}</span><span class="flug-hud-name">{esc(f.get("start_label", "Start"))}</span>'
                f'<i class="flug-hud-balken"><b></b></i></div>')
-        weiter = f'<a class="weiter flug-weiter" href="#inhalt-weiter" aria-label="{esc(ui.get("weiter", "Scrollen"))}"><span>{esc(ui.get("weiter", "Scrollen"))}</span><i></i></a>'
+        weiter = (f'<a class="weiter flug-weiter" href="#inhalt-weiter" aria-label="{esc(ui.get("weiter", "Scrollen"))}"><span>{esc(ui.get("weiter", "Scrollen"))}</span><i></i></a>'
+                  f'<a class="flug-skip" href="#inhalt-weiter">{esc(ui.get("flug_ueberspringen", "Skip"))}</a>')
         return (f'<section class="flug" aria-label="{esc(f.get("label", ""))}" data-tiefe="{D}" style="--szenen:{n}">'
                 f'<div class="flug-buehne"><div class="flug-kamera"><div class="flug-welt">{bahnen}{"".join(staub)}{"".join(teile)}</div></div>'
                 f'<div class="flug-nebel" aria-hidden="true"></div>{hud}{weiter}</div></section><span id="inhalt-weiter"></span>')

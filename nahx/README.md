@@ -43,16 +43,27 @@ die Basis-URL eintragen (oder `--basis-url`), neu bauen; der Prüflauf verlangt 
 
 ## Seiten
 
-| Deutsch | English | Inhalt |
+| English (Startsprache) | Deutsch | Inhalt |
 |---|---|---|
-| `/` | `/en/` | Flug durch A-Portale (Aufmacher, drei Bereiche, Ansatz), Projektbühne, Ablauf, Arbeitsprinzipien, 3D-Markenbühne, Kontaktband |
-| `/leistungen/` | `/en/services/` | je Bereich: Beschreibung, typische Herausforderungen, Leistungen, Anwendungsfälle, für wen |
-| `/projekte/` | `/en/projects/` | je Projekt: Ausgangssituation, Herausforderung, eigener Beitrag, Lösungsansatz, Technologien, Status |
-| `/ueber-mich/` | `/en/about/` | Person hinter der Marke, Arbeitsweise |
-| `/zusammenarbeit/` | `/en/how-we-work/` | fünf Schritte: Erstgespräch, Anforderungsklärung, Konzeption, Umsetzung, Prüfung und Übergabe |
-| `/kontakt/` | `/en/contact/` | nur E-Mail (mailto), Hinweise für eine erste Anfrage |
-| `/impressum/`, `/datenschutz/` (noindex) | `/en/legal-notice/`, `/en/privacy/` (noindex) | Vorlagen mit Platzhaltern |
-| `/404.html` | `/en/404.html` | Fehlerseite |
+| `/` | `/de/` | Flug durch A-Portale (Aufmacher, drei Bereiche, Ansatz), drei Einstiegsangebote, Projektbühne, Stimmen (Platzhalter), Ablauf, 3D-Markenbühne, Kontaktband |
+| `/services/` | `/de/leistungen/` | je Bereich: Beschreibung, typische Herausforderungen, Leistungen, Anwendungsfälle, für wen |
+| `/projects/` | `/de/projekte/` | je Projekt: Ausgangssituation, Herausforderung, eigener Beitrag, Lösungsansatz, Technologien, Status |
+| `/about/` | `/de/ueber-mich/` | Person hinter der Marke, Porträt-Block (Platzhalter), Arbeitsweise |
+| `/how-we-work/` | `/de/zusammenarbeit/` | fünf Schritte: Erstgespräch, Anforderungsklärung, Konzeption, Umsetzung, Prüfung und Übergabe |
+| `/contact/` | `/de/kontakt/` | nur E-Mail (mailto), weitere Wege als Platzhalter, Hinweise für eine erste Anfrage |
+| `/legal-notice/`, `/privacy/` (noindex) | `/de/impressum/`, `/de/datenschutz/` (noindex) | mit markierten Testdaten |
+| `/404.html` | `/de/404.html` | Fehlerseite |
+
+Seit 2026-10-26 ist Englisch Startsprache (Zielmarkt außerhalb Deutschlands); die Reihenfolge in `site.json` → `sprachen`
+bestimmt Startsprache und `x-default`.
+
+### Testdaten
+
+Bis alles feststeht, stehen Testwerte in `<mark class="test">…</mark>` (gestrichelt umrandet, hochgestelltes „Test“).
+Solange `site.json` einen Schlüssel `testdaten` hat, zeigt jede Seite unten zusätzlich einen Hinweis. Zum Livegang:
+alle `<mark class="test">` in `inhalt/*.json` (dort als `class=\"test\"` maskiert) durch echte Angaben ersetzen und `testdaten` aus `site.json` löschen.
+Neue Abschnittstypen: `angebote` (Karten mit Rahmen und Link), `stimmen` (Rückmeldungen), `portraet` (Porträt mit Fakten);
+Kontakt kennt `wege` (weitere Kontaktwege).
 
 ## Marke und Logo
 
@@ -139,7 +150,7 @@ abgesenkt und nie wieder angehoben (kein Springen); Risse und Kontur dezenter, a
 
 - **Domain**: siehe oben.
 - **E-Mail**: `email` in `de.json`/`en.json` ist die vorhandene Adresse `niklas.heinzmann@fsh-documentation.de` (Entscheidung: weiterverwenden). Steht kein `@` im Wert, wird er als sichtbarer Platzhalter ohne `mailto` gezeigt.
-- **Impressum, Datenschutz**: Vorlagen mit Platzhaltern in eckigen Klammern (Name, Anschrift, Umsatzsteuer, Hosting-Anbieter, Rechtsgrundlage, Aufsichtsbehörde), `noindex`. Keine Rechtsberatung; vor dem Livegang prüfen.
+- **Impressum, Datenschutz**: mit markierten Testdaten (Anschrift, Telefon, E-Mail, Umsatzsteuer, Hosting-Anbieter, Speicherdauer, Rechtsgrundlage, Aufsichtsbehörde), `noindex`. Keine Rechtsberatung; vor dem Livegang echte Angaben eintragen und prüfen lassen.
 - **Projekte**: nur geprüfte Kurzangaben mit Status; Technologien und Details folgen nach Freigabe. DocumentCheck & ComplianceCheck ist als „in Abstimmung mit FSH Documentation“ gekennzeichnet und wird nicht als eigenes Produkt dargestellt.
 - **Reaktionszeit** „in der Regel innerhalb von zwei Werktagen“ auf der Kontaktseite ist eine Formulierung von 2026-10-25, keine Zusage aus dem Konzept; anpassen, falls sie nicht gelten soll.
 

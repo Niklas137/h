@@ -17,7 +17,7 @@
     "fuss_navigation": "Navigation",
     "fuss_recht": "Rechtliches",
     "fuss_sprache": "Sprache",
-    "fuss_hinweis": "NAHX Technologies ist eine persönliche Geschäftsbezeichnung und keine eigenständige Gesellschaft. Rechtlich erforderliche Anbieterangaben werden im Impressum entsprechend der tatsächlichen Unternehmens- und Tätigkeitssituation ausgewiesen.",
+    "fuss_hinweis": "NAHX Technologies ist die Geschäftsbezeichnung von Niklas Heinzmann. Anbieterangaben im Impressum.",
     "platzhalter_hinweis": "Platzhalter: Dieser Text ist noch nicht fertig und wird vor dem Livegang ersetzt.",
     "weiter": "Mehr erfahren",
     "logo_alt": "NAHX Technologies – zur Startseite",
@@ -27,7 +27,8 @@
     "l_faelle": "Anwendungsfälle",
     "fuss_kontakt": "Kontakt",
     "bildnachweis": "Bildnachweis",
-    "fotos_hinweis": "Fotografien von Unsplash (Unsplash License), Fotografen siehe Bildnachweis. Sie zeigen Orte und Motive, keine Kundenprojekte."
+    "fotos_hinweis": "Fotografien von Unsplash (Unsplash License), Fotografen siehe Bildnachweis. Sie zeigen Orte und Motive, keine Kundenprojekte.",
+    "flug_ueberspringen": "Intro überspringen"
   },
   "navigation": [
     {
@@ -72,7 +73,7 @@
     "start": {
       "pfad": "",
       "menue": "Startseite",
-      "title": "NAHX Technologies – Technik verstehen. Lösungen schaffen.",
+      "title": "NAHX Technologies – Dokumentation, Software, Automatisierung",
       "description": "Technische Redaktion, Softwareentwicklung und Automatisierung: NAHX Technologies verbindet technisches Verständnis mit digitaler Entwicklung zu klaren Lösungen.",
       "kicker": "Technik verstehen. Lösungen schaffen.",
       "h1": "Komplexe<br>Technik.<br><em>Klare Lösungen.</em>",
@@ -89,19 +90,77 @@
       },
       "abschnitte": [
         {
+          "typ": "angebote",
+          "id": "angebote",
+          "kicker": "Einstieg",
+          "h2": "Drei Wege, anzufangen.",
+          "text": "Klar umrissene Einstiegsangebote mit festem Rahmen. Größere Vorhaben planen wir danach gemeinsam.",
+          "karten": [
+            {
+              "kicker": "Technical Documentation",
+              "h3": "Dokumenten-Check mit 614 One",
+              "text": "Vorprüfung einer Anleitung oder technischen Unterlage gegen Basisanforderungen, DIN EN IEC/IEEE 82079-1 und CE-Vorgaben, mit fachlicher Durchsicht.",
+              "punkte": [
+                "Fachbericht mit Score, Ampel und To-do-Liste",
+                "Bericht auf Deutsch, Englisch, Ukrainisch oder Russisch",
+                "Fundstellen statt Pauschalurteil"
+              ],
+              "rahmen": "Festpreis je Dokument<br><mark class=\"test\">ab 190 €</mark> · <mark class=\"test\">3 Werktage</mark>",
+              "link": {
+                "text": "Check anfragen",
+                "seite": "kontakt"
+              }
+            },
+            {
+              "kicker": "Software & Web Applications",
+              "h3": "Prototyp in wenigen Wochen",
+              "text": "Aus einer Tabelle, einem Ablauf oder einer Idee wird ein lauffähiger Prototyp, an dem sich entscheiden lässt, ob sich der Ausbau lohnt.",
+              "punkte": [
+                "Anforderungen in einem Workshop klären",
+                "Lauffähiger Prototyp statt Folien",
+                "Übergabe mit Code, Anleitung und Tests"
+              ],
+              "rahmen": "Festpreis nach Umfang<br><mark class=\"test\">ab 2.400 €</mark> · <mark class=\"test\">2–4 Wochen</mark>",
+              "link": {
+                "text": "Prototyp besprechen",
+                "seite": "kontakt"
+              }
+            },
+            {
+              "kicker": "Automation & AI",
+              "h3": "Automatisierungs-Analyse",
+              "text": "Ich nehme einen wiederkehrenden Ablauf auf, bewerte, was sich automatisieren lässt, und zeige einen Umsetzungsweg mit Aufwand und Risiken.",
+              "punkte": [
+                "Ist-Ablauf als Diagramm",
+                "Bewertung nach Nutzen und Aufwand",
+                "Umsetzungsplan, auf Wunsch mit lokalem KI-Ansatz"
+              ],
+              "rahmen": "Festpreis<br><mark class=\"test\">ab 690 €</mark> · <mark class=\"test\">1 Woche</mark>",
+              "link": {
+                "text": "Analyse anfragen",
+                "seite": "kontakt"
+              }
+            }
+          ],
+          "link": {
+            "text": "Leistungen im Detail",
+            "seite": "leistungen"
+          }
+        },
+        {
           "typ": "buehne",
           "id": "projekte",
           "kicker": "Projekte",
           "h2": "Lösungen aus<br>konkreten<br>Anforderungen.",
-          "text": "Jedes Projekt wird vor Veröffentlichung auf Vertraulichkeit, Rechte und korrekte Zuordnung geprüft. Deshalb stehen hier nur freigegebene Angaben.",
-          "bild": "fabrik",
+          "text": "Drei Beispiele aus der Praxis: ein Prüfwerkzeug im Pilotbetrieb, ein Web-Modul für einen Verein und ein Website-Relaunch mit automatischem SEO-Audit.",
+          "bild": "code",
           "punkte_label": "Ausgewählte Projekte",
           "punkte": [
             {
               "x": "20%",
               "y": "27%",
               "titel": "614 One",
-              "text": "Dokumentenprüfung von NAHX Technologies, erster Pilotkunde: FSH Documentation",
+              "text": "Dokumentenprüfung mit Berichten in vier Sprachen, im Pilotbetrieb bei FSH Documentation",
               "link": {
                 "seite": "projekte",
                 "anker": "projekt-1"
@@ -111,7 +170,7 @@
               "x": "52%",
               "y": "40%",
               "titel": "Trikotwand",
-              "text": "Individuelle Kaderseite mit Trikot-Animation, Admin-Seite und geschütztem Veröffentlichen",
+              "text": "Kaderseite, auf der Besucher Trikots von der Stange nehmen und Spieler entdecken",
               "link": {
                 "seite": "projekte",
                 "anker": "projekt-2"
@@ -120,11 +179,11 @@
             {
               "x": "71%",
               "y": "60%",
-              "titel": "Mail-Triage und Tagesrunde",
-              "text": "Skriptgestützter Ablauf mit festen Freigabestopps, nur lesend ohne Freigabe",
+              "titel": "Website-Relaunch",
+              "text": "Statische Website mit wöchentlichem SEO-Audit als PDF-Bericht",
               "link": {
                 "seite": "projekte",
-                "anker": "projekt-4"
+                "anker": "projekt-3"
               }
             }
           ],
@@ -134,11 +193,28 @@
           }
         },
         {
+          "typ": "stimmen",
+          "id": "stimmen",
+          "kicker": "Stimmen",
+          "h2": "Was Pilotkunden sagen",
+          "text": "Hier stehen nach Freigabe echte Rückmeldungen.",
+          "stimmen": [
+            {
+              "text": "<mark class=\"test\">Platzhalter für eine Rückmeldung von FSH Documentation zum Pilotbetrieb von 614 One.</mark>",
+              "von": "FSH Documentation · Pilotkunde 614 One · Freigabe ausstehend"
+            },
+            {
+              "text": "<mark class=\"test\">Platzhalter für eine Rückmeldung zur Trikotwand.</mark>",
+              "von": "Verein · Name nach Freigabe"
+            }
+          ]
+        },
+        {
           "typ": "ablauf",
           "id": "ablauf",
           "kicker": "Von der Anforderung zur Lösung",
           "h2": "Verstehen.<br>Konzipieren. <em>Umsetzen.</em><br>Prüfen.",
-          "text": "Gute Lösungen beginnen mit dem Verständnis des Problems. Der Ablauf ist eine Vorgehensweise, keine Garantie; er richtet sich nach Umfang und Anforderungen.",
+          "text": "Gute Lösungen beginnen mit dem Verständnis des Problems. Fünf Schritte, an jedem Übergang mit einer klaren Entscheidung.",
           "bild": "designer",
           "schritte": [
             {
@@ -166,30 +242,6 @@
             "text": "So arbeite ich",
             "seite": "zusammenarbeit"
           }
-        },
-        {
-          "typ": "prinzipien",
-          "id": "arbeitsweise",
-          "h2": "Woran du dich halten kannst",
-          "text": "Keine Erfolgszahlen, keine Versprechen, sondern Arbeitsprinzipien, die in jedem Projekt gelten.",
-          "punkte": [
-            {
-              "h3": "Direkte Zusammenarbeit",
-              "text": "Du sprichst mit der Person, die auch umsetzt. Keine Zwischenebenen."
-            },
-            {
-              "h3": "Nachvollziehbare Entscheidungen",
-              "text": "Offene Punkte und Entscheidungen werden dokumentiert, nicht stillschweigend getroffen."
-            },
-            {
-              "h3": "Passende Lösung statt neuer Software",
-              "text": "Nicht jede Aufgabe braucht ein neues Werkzeug. Wir prüfen zuerst, was zum tatsächlichen Bedarf passt."
-            },
-            {
-              "h3": "Prüfbare Ergebnisse",
-              "text": "Übergeben wird, was gegen die vereinbarten Kriterien geprüft wurde, mit Quellen und Dokumentation."
-            }
-          ]
         },
         {
           "typ": "marke",
@@ -263,7 +315,8 @@
             "seite": "leistungen"
           }
         }
-      }
+      },
+      "fakten": "<mark class=\"test\">Remote für Kunden in Europa</mark> · Deutsch und Englisch"
     },
     "leistungen": {
       "pfad": "leistungen/",
@@ -357,7 +410,7 @@
           "typ": "stack",
           "id": "werkzeuge",
           "h2": "Womit ich arbeite",
-          "text": "Keine Technologieliste zum Beeindrucken, sondern das, was in den Projekten tatsächlich im Einsatz ist.",
+          "text": "Das, was in den Projekten tatsächlich im Einsatz ist.",
           "gruppen": [
             {
               "h3": "Sprachen und Laufzeit",
@@ -418,7 +471,7 @@
             {
               "titel": "614 One – Dokumentenprüfung von NAHX Technologies",
               "bereich": "Technical Documentation · Software",
-              "kurz": "Web-App, die Word- und PDF-Dokumente gegen Regelsätze vorprüft und Berichte in vier Sprachen erzeugt. Erster Pilotkunde und Tester ist FSH Documentation.",
+              "kurz": "Web-App, die Word- und PDF-Dokumente gegen Regelsätze vorprüft und Berichte in vier Sprachen erzeugt. Erster Pilotkunde und Tester ist FSH Documentation. Im Bild: Fachbericht aus einem frei erfundenen Testdokument.",
               "ausgang": "Technische Dokumentation muss gegen Basisanforderungen, DIN EN IEC/IEEE 82079-1 und CE-Konformitätsvorgaben geprüft werden. Das geschah manuell, mit Checklisten und je nach Prüfer unterschiedlich.",
               "herausforderung": "Eine Vorprüfung, die wiederholbar ist, Fundstellen nennt, mehrere Benutzer mit eigenen Einstellungen trägt und Berichte liefert, die Kunden in ihrer Sprache lesen können.",
               "beitrag": "Konzeption und Entwicklung der Web-App: Architektur, Prüflogik, Konten und Rollen, Berichte, Tests, Betriebsanleitung für den Mac. Erprobung im Pilotbetrieb mit FSH Documentation.",
@@ -431,12 +484,12 @@
                 "Prüfung mit Fundstellen",
                 "Bericht als PDF (de/en/uk/ru)"
               ],
-              "bild": "fabrik"
+              "bild": "bericht614"
             },
             {
               "titel": "Trikotwand – interaktive Kaderseite für einen Floorballverein",
               "bereich": "Software & Web Applications",
-              "kurz": "Individuelles Web-Modul: Trikots an der Stange, Spielerkarte mit Trikot-Animation und Pflege über eine Admin-Seite, ohne Bibliotheken.",
+              "kurz": "Individuelles Web-Modul: Trikots an der Stange, Spielerkarte mit Trikot-Animation und Pflege über eine Admin-Seite, ohne Bibliotheken. Im Bild: Vorschau mit Testspielern.",
               "ausgang": "Ein Floorball-Verein wollte seinen Kader auf der Website zeigen: Trikots an der Stange, Spielerkarte mit Daten, Pflege ohne Programmierkenntnisse.",
               "herausforderung": "Eine Animation nach Videoreferenz, die auf dem Handy läuft, Daten, die der Verein selbst pflegt, und eine zweisprachige Oberfläche (Deutsch, Ukrainisch).",
               "beitrag": "Konzeption, Umsetzung, Datenmodell, Admin-Seite, Veröffentlichungsschnittstelle, Prüfbericht mit Befundstatus und Übergabenotiz für den Einbau.",
@@ -449,7 +502,7 @@
                 "Kaderseite mit Trikots",
                 "Veröffentlichen per Token"
               ],
-              "bild": "code"
+              "bild": "trikotwand"
             },
             {
               "titel": "Website-Relaunch und wöchentliches SEO-Audit",
@@ -470,9 +523,9 @@
               "bild": "lichtleiter"
             },
             {
-              "titel": "Mail-Triage und Tagesrunde (eigenes Werkzeug)",
+              "titel": "E-Mail-Vorsortierung mit Freigabe (eigenes Werkzeug)",
               "bereich": "Automation & AI",
-              "kurz": "Tägliche Posteingangs-Sortierung mit Vorschlagstabelle, Freigabewort und lokalem Modell.",
+              "kurz": "Der Posteingang wird täglich vorsortiert; nichts wird verschoben oder beantwortet, ohne dass ich es freigebe.",
               "ausgang": "Der eigene Posteingang mischt Kundenmails, Belege, Newsletter und Werbung. Sortieren kostete jeden Morgen Zeit und passierte uneinheitlich.",
               "herausforderung": "Automatisierung, die nichts eigenmächtig tut: kein Senden, kein Löschen, kein Verschieben ohne ausdrückliche Freigabe, und vertrauliche Inhalte bleiben auf dem Rechner.",
               "beitrag": "Konzeption der Ablaufregeln, Skripte, Sperrliste, Protokollierung, Zeitplanung, Tests mit Stubs.",
@@ -480,7 +533,7 @@
               "technologien": "Shell (zsh), AppleScript, launchd für den Zeitplan, Claude Code als Oberfläche, Ollama mit lokalem Modell, Markdown für Protokolle.",
               "status": "Täglich im eigenen Einsatz seit September 2026. Zeigt, wie KI-Unterstützung mit festen Haltepunkten aussieht.",
               "ablauf": [
-                "Mails lesen (nur lesend)",
+                "Mails einlesen",
                 "Vorschlagstabelle",
                 "Freigabewort",
                 "Verschieben und protokollieren"
@@ -488,22 +541,22 @@
               "bild": "bokeh"
             },
             {
-              "titel": "Diese Website",
+              "titel": "NAHX-Website: Flug durch A-Portale",
               "bereich": "Software & Web Applications",
-              "kurz": "Zweisprachige statische Site mit eigenem Bausystem, Prüflauf und Vektorlogo.",
+              "kurz": "Zweisprachige Website mit eigenem Bausystem, Prüflauf, 3D-Flug ohne Framework und Vektorlogo.",
               "ausgang": "Für NAHX Technologies sollte ein Auftritt entstehen, der ohne externe Dienste, Tracking oder Formular-Backends auskommt und dauerhaft selbst gepflegt wird.",
-              "herausforderung": "Deutsch und Englisch vollständig, Logo als echter Vektor aus einer Rastervorlage, Domain noch offen, keine erfundenen Angaben.",
+              "herausforderung": "Deutsch und Englisch vollständig, Logo als echter Vektor aus einer Rastervorlage, kurze Ladezeit ohne Tracking und ohne externe Dienste.",
               "beitrag": "Alles: Konzept, Texte, Designsystem, Bausystem, Logo-Rekonstruktion, Prüfungen.",
               "ansatz": "Inhalte in zwei JSON-Dateien mit identischen Schlüsseln, Bau in Python ohne Pakete, Prüflauf für Sprachkennzeichnung, Überschriften, Metadaten, Links und Anker; ohne Basis-URL werden Canonical, hreflang und Sitemap bewusst weggelassen. Logo aus der Vorlage vermessen und als SVG-Pfade nachgebaut.",
               "technologien": "Python, HTML/CSS ohne Framework, SVG, lokale Schriften (OFL), Playwright für Darstellungs- und Linkprüfung.",
-              "status": "Du liest sie gerade. Offen: Domain, Impressumsangaben, Freigaben für Referenzen.",
+              "status": "Du siehst sie gerade, als Vorschau mit Testdaten.",
               "ablauf": [
                 "de.json / en.json",
                 "build.py mit Prüflauf",
                 "dist/ (statisch)",
                 "Hoster"
               ],
-              "bild": "designer"
+              "bild": "nahxweb"
             }
           ],
           "legende": {
@@ -529,7 +582,7 @@
           "bild": "faser"
         }
       ],
-      "bild": "fabrik",
+      "bild": "code",
       "karte": {
         "titel": "05",
         "label": "Fünf Projekte",
@@ -548,10 +601,38 @@
         {
           "typ": "text",
           "absaetze": [
-            "Ich bin Niklas Heinzmann. Hinter NAHX Technologies steht eine Person, kein Team und keine Agentur: kurze Wege, direkte Absprachen, und wer die Anforderungen aufnimmt, setzt sie auch um.",
+            "Ich bin Niklas Heinzmann. NAHX Technologies ist meine persönliche Marke: kurze Wege, direkte Absprachen, und wer die Anforderungen aufnimmt, setzt sie auch um.",
             "Ich komme aus der technischen Dokumentation: Dokumentenprüfung und -vergleich, Dokumentencontrolling, Struktur für große Dokumentenmengen, Berichte und Checklisten. Daraus ist die Entwicklung gewachsen, weil die Werkzeuge fehlten, die diese Arbeit prüfbar und wiederholbar machen.",
-            "Ich arbeite mit FSH Documentation zusammen, einem Dienstleister für technische Dokumentation; dort entsteht unter anderem die Website-Automatisierung, und FSH ist erster Pilotkunde und Tester von 614 One, der Dokumentenprüfung von NAHX Technologies. Mit NAHX Technologies bündele ich meine eigenen Dienstleistungen, Entwicklungsprojekte und Werkzeuge unter einer persönlichen Marke. NAHX ist eine Geschäftsbezeichnung, keine Gesellschaft.",
+            "Ich arbeite mit FSH Documentation zusammen, einem Dienstleister für technische Dokumentation; dort entsteht unter anderem die Website-Automatisierung, und FSH ist erster Pilotkunde und Tester von 614 One, der Dokumentenprüfung von NAHX Technologies. Mit NAHX Technologies bündele ich meine eigenen Dienstleistungen, Entwicklungsprojekte und Werkzeuge unter einer persönlichen Marke.",
             "Meine Arbeitsweise ist pragmatisch: Anforderungen verstehen, eine passende Lösung entwickeln und Ergebnisse nachvollziehbar überprüfen. Fakten und Annahmen trenne ich, Unsicheres kennzeichne ich, Originale bleiben unverändert, Änderungen sind dokumentiert. Das gilt für Dokumente wie für Code."
+          ]
+        },
+        {
+          "typ": "portraet",
+          "id": "person",
+          "kicker": "Person",
+          "h2": "Niklas Heinzmann",
+          "text": "Technische Redaktion und digitale Entwicklung.",
+          "bild_label": "Platzhalter für ein Porträtfoto",
+          "bild_text": "<mark class=\"test\">Porträtfoto folgt</mark>",
+          "monogramm": "NH",
+          "fakten": [
+            [
+              "Schwerpunkte",
+              "Technische Dokumentation, Webanwendungen, Automatisierung"
+            ],
+            [
+              "Sprachen",
+              "Deutsch, Englisch <mark class=\"test\">weitere nach Angabe</mark>"
+            ],
+            [
+              "Arbeitsweise",
+              "<mark class=\"test\">Remote, Termine vor Ort nach Absprache</mark>"
+            ],
+            [
+              "Profil",
+              "<mark class=\"test\">LinkedIn-Profil folgt</mark>"
+            ]
           ]
         },
         {
@@ -570,7 +651,7 @@
             },
             {
               "h3": "Passende Lösung statt neuer Software",
-              "text": "Nicht jede Aufgabe braucht ein neues Werkzeug. Wir prüfen zuerst, was zum tatsächlichen Bedarf passt."
+              "text": "Nicht jede Aufgabe braucht ein neues Werkzeug. Ich prüfe zuerst, was zum tatsächlichen Bedarf passt."
             },
             {
               "h3": "Prüfbare Ergebnisse",
@@ -593,7 +674,7 @@
       "karte": {
         "titel": "Niklas Heinzmann",
         "label": "Person",
-        "text": "Technische Redaktion und digitale Entwicklung – eine Person, keine Agentur."
+        "text": "Technische Redaktion und digitale Entwicklung aus einer Hand."
       }
     },
     "zusammenarbeit": {
@@ -603,7 +684,7 @@
       "description": "So läuft ein Projekt mit NAHX Technologies: Erstgespräch, Anforderungen und Umfang, Umsetzung in nachvollziehbaren Schritten, Prüfung und Übergabe am Ende.",
       "kicker": "Zusammenarbeit",
       "h1": "Klarer Ablauf.<br>Direkte<br>Zusammenarbeit.",
-      "einleitung": "Fünf Schritte vom ersten Gespräch bis zur Übergabe. Der Ablauf ist eine flexible Vorgehensweise, keine Garantie; er richtet sich nach Umfang, Komplexität und Anforderungen des jeweiligen Projekts.",
+      "einleitung": "Fünf Schritte vom ersten Gespräch bis zur Übergabe. Der Ablauf passt sich Umfang, Komplexität und Anforderungen des jeweiligen Projekts an.",
       "abschnitte": [
         {
           "typ": "schritte",
@@ -684,21 +765,25 @@
         {
           "typ": "kontakt",
           "email_label": "E-Mail",
-          "email_text": "Schreib mir direkt. Ich antworte in der Regel innerhalb von zwei Werktagen.",
+          "email_text": "Schreib mir direkt. Ich antworte <mark class=\"test\">in der Regel innerhalb von zwei Werktagen</mark>.",
           "themen_h2": "Hilfreich für eine erste Einschätzung",
           "themen": [
             "Worum geht es: Dokumentation, Software, Automatisierung oder eine Mischung?",
             "Was ist die Ausgangslage, was soll am Ende anders sein?",
             "Gibt es einen Zeitrahmen oder feste Rahmenbedingungen?"
           ],
-          "datenschutz": "Deine E-Mail wird nur zur Bearbeitung der Anfrage verwendet. Näheres in der <a href=\"{datenschutz}\">Datenschutzerklärung</a>."
+          "datenschutz": "Deine E-Mail wird nur zur Bearbeitung der Anfrage verwendet. Näheres in der <a href=\"{datenschutz}\">Datenschutzerklärung</a>.",
+          "wege": [
+            "<mark class=\"test\">LinkedIn: Profil-Link folgt</mark>",
+            "<mark class=\"test\">Erstgespräch (30 Minuten) online buchen: Link folgt</mark>"
+          ]
         }
       ],
       "bild": "faser",
       "karte": {
         "titel": "E-Mail",
         "label": "Kontaktweg",
-        "text": "Kein Formular, keine Dienste: eine E-Mail genügt. Ich melde mich zur Abstimmung der Anforderungen."
+        "text": "Eine kurze E-Mail genügt. Ich melde mich zur Abstimmung der Anforderungen."
       }
     },
     "impressum": {
@@ -711,41 +796,40 @@
       "kicker": "Rechtliches",
       "h1": "Impressum",
       "einleitung": "NAHX Technologies ist eine persönliche Geschäftsbezeichnung und keine eigenständige Gesellschaft. Die rechtlich erforderlichen Anbieterangaben werden hier entsprechend der tatsächlichen Unternehmens- und Tätigkeitssituation ausgewiesen.",
-      "platzhalter": true,
       "abschnitte": [
         {
           "typ": "text",
           "h2": "Anbieter",
           "absaetze": [
-            "[Vor- und Nachname]<br>NAHX Technologies<br>[Straße und Hausnummer]<br>[PLZ Ort]<br>[Land]"
+            "Niklas Heinzmann<br>NAHX Technologies<br><mark class=\"test\">Musterstraße 1</mark><br><mark class=\"test\">12345 Musterstadt</mark><br><mark class=\"test\">Deutschland</mark>"
           ]
         },
         {
           "typ": "text",
           "h2": "Kontakt",
           "absaetze": [
-            "E-Mail: niklas.heinzmann@fsh-documentation.de<br>Telefon: [optional]"
+            "E-Mail: <mark class=\"test\">hello@nahx-technologies.example</mark><br>Telefon: <mark class=\"test\">+49 000 0000000</mark>"
           ]
         },
         {
           "typ": "text",
           "h2": "Umsatzsteuer",
           "absaetze": [
-            "[Umsatzsteuer-Identifikationsnummer oder Hinweis auf Kleinunternehmerregelung, je nach tatsächlicher Situation]"
+            "<mark class=\"test\">Kleinunternehmer nach § 19 UStG, daher kein Ausweis der Umsatzsteuer</mark>"
           ]
         },
         {
           "typ": "text",
           "h2": "Verantwortlich für den Inhalt",
           "absaetze": [
-            "[Vor- und Nachname, Anschrift wie oben]"
+            "Niklas Heinzmann, Anschrift wie oben"
           ]
         },
         {
           "typ": "text",
           "h2": "Hinweis",
           "absaetze": [
-            "Welche Angaben hier verpflichtend sind, hängt von Rechtsform, Sitz und Tätigkeit ab. Diese Seite ist eine Vorlage und keine Rechtsberatung; sie wird vor dem Livegang geprüft und vervollständigt."
+            "Die markierten Angaben sind Testdaten und werden vor dem Livegang durch die tatsächlichen Angaben ersetzt und geprüft. Keine Rechtsberatung."
           ]
         }
       ]
@@ -760,46 +844,45 @@
       "kicker": "Rechtliches",
       "h1": "Datenschutzerklärung",
       "einleitung": "Diese Erklärung beschreibt, welche personenbezogenen Daten beim Besuch dieser Website und bei einer Kontaktaufnahme verarbeitet werden. Die konkrete Datenschutzerklärung muss die tatsächlich eingesetzten Dienste und Datenverarbeitungen abbilden.",
-      "platzhalter": true,
       "abschnitte": [
         {
           "typ": "text",
           "h2": "Verantwortlicher",
           "absaetze": [
-            "[Vor- und Nachname], NAHX Technologies, [Anschrift], E-Mail: niklas.heinzmann@fsh-documentation.de"
+            "Niklas Heinzmann, NAHX Technologies, <mark class=\"test\">Musterstraße 1, 12345 Musterstadt</mark>, E-Mail: <mark class=\"test\">hello@nahx-technologies.example</mark>"
           ]
         },
         {
           "typ": "text",
           "h2": "Hosting und Server-Logdateien",
           "absaetze": [
-            "Die Website ist statisch und lädt keine externen Skripte, Schriften oder Analysedienste und speichert nichts im Browser. Beim Abruf verarbeitet der Hosting-Anbieter technisch notwendige Daten (IP-Adresse, Zeitpunkt, aufgerufene Seite, Browser) in Server-Logdateien. [Hosting-Anbieter, Sitz und Speicherdauer eintragen.]"
+            "Die Website ist statisch und lädt keine externen Skripte, Schriften oder Analysedienste und speichert nichts im Browser. Beim Abruf verarbeitet der Hosting-Anbieter technisch notwendige Daten (IP-Adresse, Zeitpunkt, aufgerufene Seite, Browser) in Server-Logdateien. Hosting: <mark class=\"test\">Anbieter und Sitz folgen</mark>. Speicherdauer: <mark class=\"test\">7 Tage</mark>. Rechtsgrundlage: <mark class=\"test\">Art. 6 Abs. 1 lit. f DSGVO</mark>."
           ]
         },
         {
           "typ": "text",
           "h2": "Kontaktaufnahme",
           "absaetze": [
-            "Wenn du per E-Mail Kontakt aufnimmst, werden die übermittelten Angaben (Absenderadresse, Name, Inhalt der Nachricht) zur Bearbeitung der Anfrage verarbeitet und gespeichert, solange dies für die Bearbeitung erforderlich ist. Ein Kontaktformular gibt es nicht. [Rechtsgrundlage und Speicherdauer eintragen.]"
+            "Wenn du per E-Mail Kontakt aufnimmst, werden die übermittelten Angaben (Absenderadresse, Name, Inhalt der Nachricht) zur Bearbeitung der Anfrage verarbeitet und gespeichert, solange dies für die Bearbeitung erforderlich ist. Ein Kontaktformular gibt es nicht. Rechtsgrundlage: <mark class=\"test\">Art. 6 Abs. 1 lit. b und f DSGVO</mark>."
           ]
         },
         {
           "typ": "text",
           "h2": "Deine Rechte",
           "absaetze": [
-            "Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch sowie das Recht, dich bei einer Aufsichtsbehörde zu beschweren. [Zuständige Aufsichtsbehörde eintragen.]"
+            "Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch sowie das Recht, dich bei einer Aufsichtsbehörde zu beschweren. Zuständig: <mark class=\"test\">Landesdatenschutzbehörde des Sitzlandes</mark>."
           ]
         },
         {
           "typ": "text",
           "h2": "Hinweis",
           "absaetze": [
-            "Diese Seite ist eine Vorlage und keine Rechtsberatung. Sie wird vor dem Livegang an die tatsächlich eingesetzten Dienste angepasst und geprüft."
+            "Die markierten Angaben sind Testdaten. Diese Seite wird vor dem Livegang an die tatsächlich eingesetzten Dienste angepasst und geprüft. Keine Rechtsberatung."
           ]
         }
       ]
     }
   },
-  "email": "niklas.heinzmann@fsh-documentation.de",
+  "email": "hello@nahx-technologies.example",
   "og_bild_alt": "NAHX Technologies – Technik verstehen. Lösungen schaffen."
 }
