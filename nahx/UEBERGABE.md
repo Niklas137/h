@@ -140,6 +140,8 @@ echte Geräte noch nicht geprüft.
 **3D-A schärfer und kräftiger (2026-10-26):** Ursache der Unschärfe war die feste Renderauflösung 0,7 (auf Retina
 effektiv 0,35 Gerätepixel, gemessen 1008 × 490 für 1440 × 700). Jetzt nach Pixeldichte (gemessen 1800 × 875) mit
 Leistungsregelung, Mint-Kontur wie im Logo, ACES-Tonkurve.
+Danach: kein Zittern mehr (Pixelversatz, Korn und Hoch-/Runterregeln entfernt), keine Reaktion auf Maus, Finger oder
+Scrollen, das A bewegt sich nur von selbst; Leuchtlinien dezenter. Auch der Flug neigt sich nicht mehr mit der Maus.
 
 ## 10. Offene Punkte (Entscheidung Niklas)
 

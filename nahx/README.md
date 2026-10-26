@@ -100,7 +100,7 @@ weich nachgeführt (Schweben). Fünf Szenen: Aufmacher, Technical Documentation,
 Automation & AI, Ansatz mit Licht am Ende. Jede Ebene hat eine eigene Tiefe: Text, Foto-Tafel (Glas, Lichtkante,
 Tiefenunschärfe in der Ferne), A-Portal aus der Logo-Geometrie (Vorder- und Hinterkante, Lichthof), Lichtbahnen
 an Boden und Decke, Staub in zehn Tiefen. Die Kamera verweilt an jeder Szene und gleitet dazwischen zügiger durch
-das Portal; die Maus neigt die Kamera leicht. Anzeige unten rechts: Szene „01 / 05“, Name, Fortschrittslinie.
+das Portal; Maus und Finger haben keinen Einfluss (Wunsch 2026-10-26). Anzeige unten rechts: Szene „01 / 05“, Name, Fortschrittslinie.
 Tastatur: Fokus in einer Szene fährt die Kamera dorthin. Ohne JavaScript oder bei `prefers-reduced-motion`
 stehen dieselben Inhalte als normale Abschnitte untereinander (Foto neben Text). Der Scroll-Snap der Startseite ist
 deshalb entfernt. Die Leistungskarten (`typ: leistungskarten`) bleiben als Abschnittstyp erhalten, stehen aber nicht
@@ -130,7 +130,10 @@ Seit 2026-10-26 („Logo schärfer, Farben stärker“): Auflösung nach Pixeldi
 1,25-fach, Handy 1,0-fach, Obergrenze 3,2 bzw. 1,4 Mio. Pixel), regelt bei Ruckeln herunter und bei Reserve
 vorsichtig hoch; Mint-Kontur auf Vorder- und Rückseite des A wie im Logo, kräftigere Risse, ACES-Tonkurve, weniger
 Nachziehen, Farbsaum und Korn, Lichtsaum nur noch vom A (Boden und Hintergrund bleiben dunkel). Pausiert außerhalb
-des Bildes, Standbild bei reduzierter Bewegung, ohne WebGL entfällt sie.
+des Bildes, Standbild bei reduzierter Bewegung, ohne WebGL entfällt sie. Nachgeschärft am selben Tag („Logo zappelt, bewegt
+sich mit der Maus; Linien dezenter“): kein Einfluss von Maus, Finger oder Scrollen mehr, das A pendelt ruhig von selbst
+(±31°) und schwebt leicht; kein Pixelversatz pro Bild, kein Filmkorn, Auflösung wird nur noch höchstens zweimal
+abgesenkt und nie wieder angehoben (kein Springen); Risse und Kontur dezenter, auf den Seitenflächen kaum Risse.
 
 ## Platzhalter und offene Punkte
 

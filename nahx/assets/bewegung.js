@@ -123,7 +123,7 @@
     function los() { if (!laeuft) { laeuft = true; requestAnimationFrame(zeichne); } }
     window.addEventListener('scroll', function () { zielAusScroll(); los(); }, { passive: true });
     window.addEventListener('resize', function () { schmal = window.matchMedia('(max-width: 899px)').matches; zielAusScroll(); los(); });
-    if (fein) F.addEventListener('pointermove', function (e) { zry = (e.clientX / window.innerWidth - .5) * 5; zrx = -(e.clientY / window.innerHeight - .5) * 3.5; los(); }, { passive: true });
+    // Keine Neigung mit dem Zeiger (Wunsch 2026-10-26: das Logo bewegt sich ohne Einfluss des Zeigers)
     // Tastatur: ein Fokus in einer Szene fährt die Kamera dorthin
     F.addEventListener('focusin', function (e) {
       var sz = e.target.closest('.flug-szene'); if (!sz) return;
