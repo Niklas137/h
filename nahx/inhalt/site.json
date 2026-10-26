@@ -97,21 +97,6 @@
       },
       "variante_von": "faser"
     },
-    "bokeh": {
-      "breiten": [
-        640,
-        1000,
-        1600
-      ],
-      "seitenverhaeltnis": "2/3",
-      "fotograf": "Kashish Lamba",
-      "quelle": "https://unsplash.com/photos/DGwunSOMMbk",
-      "lizenz": "Unsplash License",
-      "alt": {
-        "de": "Mintfarbene Lichtpunkte von Glasfasern mit Unschärfe",
-        "en": "Mint points of light from optical fibres, out of focus"
-      }
-    },
     "designer": {
       "breiten": [
         640,
@@ -173,6 +158,86 @@
       "alt": {
         "de": "Diese Website: Flug durch ein A-Portal mit Text und Foto-Tafel",
         "en": "This website: flight through an A portal with text and photo panel"
+      }
+    },
+    "glas": {
+      "breiten": [
+        640,
+        1000,
+        1600,
+        2400
+      ],
+      "seitenverhaeltnis": "16/9",
+      "fotograf": "Rohit Choudhari",
+      "quelle": "https://unsplash.com/photos/sC2Twgvu3lg",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Gläserne, verschlungene Struktur mit mintfarbenen Lichtreflexen vor Schwarz",
+        "en": "Intertwined glass structure with mint light reflections on black"
+      }
+    },
+    "wellen": {
+      "breiten": [
+        640,
+        1000,
+        1600,
+        2400
+      ],
+      "seitenverhaeltnis": "16/9",
+      "fotograf": "Abstral Official",
+      "quelle": "https://unsplash.com/photos/CYDlUSK_tIM",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Weiche mintfarbene Wellen aus Licht und Schatten",
+        "en": "Soft mint waves of light and shadow"
+      }
+    },
+    "chrom": {
+      "breiten": [
+        640,
+        1000,
+        1600,
+        2400
+      ],
+      "seitenverhaeltnis": "16/9",
+      "fotograf": "Logan Voss",
+      "quelle": "https://unsplash.com/photos/3cct2HPsNbA",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Flüssiges Metall in Mint mit spiegelnden Wirbeln",
+        "en": "Liquid metal in mint with mirror-like swirls"
+      }
+    },
+    "tropfen": {
+      "breiten": [
+        640,
+        1000,
+        1600,
+        2400
+      ],
+      "seitenverhaeltnis": "16/9",
+      "fotograf": "Logan Voss",
+      "quelle": "https://unsplash.com/photos/ekHyx5drm84",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Mintfarbene Metalltropfen auf schwarzem Grund",
+        "en": "Mint metal droplets on a black background"
+      }
+    },
+    "spritzer": {
+      "breiten": [
+        640,
+        1000,
+        1600,
+        2400
+      ],
+      "seitenverhaeltnis": "16/9",
+      "fotograf": "Logan Voss",
+      "quelle": "https://unsplash.com/photos/5QrLGrTA0Mk",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Leuchtende mintfarbene Flüssigkeitsform auf dunklem, körnigem Grund",
+        "en": "Glowing mint liquid shape on a dark, grainy background"
       }
     }
   },

@@ -15,8 +15,17 @@ das Verändern („download, copy, modify, distribute“). Das Gebäudefoto (San
 | code-*.{webp,jpg} | Mohammad Rahmani | https://unsplash.com/photos/8qEB0fTe9Vw |
 | faser-*.{webp,jpg} | Compare Fibre | https://unsplash.com/photos/INNsF0Zz_kQ |
 | lichtleiter-*.{webp,jpg} | Compare Fibre (gespiegelte Fassung von faser) | https://unsplash.com/photos/INNsF0Zz_kQ |
-| bokeh-*.{webp,jpg} | Kashish Lamba | https://unsplash.com/photos/DGwunSOMMbk |
 | designer-*.{webp,jpg} | Vooglam Eyewear | https://unsplash.com/photos/0dhIl78b__o |
+| glas-*.{webp,jpg} | Rohit Choudhari | https://unsplash.com/photos/sC2Twgvu3lg |
+| wellen-*.{webp,jpg} | Abstral Official | https://unsplash.com/photos/CYDlUSK_tIM |
+| chrom-*.{webp,jpg} | Logan Voss | https://unsplash.com/photos/3cct2HPsNbA |
+| tropfen-*.{webp,jpg} | Logan Voss | https://unsplash.com/photos/ekHyx5drm84 |
+| spritzer-*.{webp,jpg} | Logan Voss | https://unsplash.com/photos/5QrLGrTA0Mk |
+
+**Neu am 2026-10-27** (Wunsch Niklas: „andere, bessere Bilder“): fünf 3D-Renderings von Unsplash, auf den Seiten als
+„Free to use under the Unsplash License“ ausgewiesen (keine Unsplash+-Bilder; geprüft am 2026-10-27), geladen über das
+Unsplash-Bildnetz in 2400 px Breite und mit `nahx/werkzeuge/foto_neu.py` eingefärbt: `glas`, `wellen`, `spritzer` mit
+`--art mint` (Blau wird Mint), `chrom`, `tropfen` mit `--art chrom` (Grau wird Mint-Duoton). Entfernt: `bokeh`.
 
 ## Eigene Bilder (keine Fremdrechte, nicht im Bildnachweis der Website)
 

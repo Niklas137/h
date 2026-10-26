@@ -92,7 +92,7 @@
         {
           "typ": "bildkarte",
           "id": "ansatz",
-          "bild": "faser",
+          "bild": "glas",
           "kicker": "NAHX Technologies",
           "h2": "Eine Hand, von der Anforderung <em>bis zur Übergabe.</em>",
           "text": "Dokumentation, Software und Automatisierung aus einem Guss: Wer die Anforderungen aufnimmt, setzt sie auch um."
@@ -285,7 +285,7 @@
             "anker": "assistent"
           },
           "riese": "NAHX",
-          "riese_bild": "faser"
+          "riese_bild": "wellen"
         }
       ],
       "bild": "lichtleiter",
@@ -322,7 +322,7 @@
             "kicker": "03 · Automation & AI",
             "h2": "Automatisieren, wo es <em>sich lohnt.</em>",
             "text": "Wiederkehrende Arbeit erkennen und dort automatisieren, wo es sich lohnt. KI kommt zum Einsatz, wenn sie einen nachvollziehbaren Nutzen hat, nicht als Selbstzweck.",
-            "bild": "bokeh",
+            "bild": "spritzer",
             "link": {
               "text": "Mehr erfahren",
               "seite": "leistungen",
@@ -423,7 +423,7 @@
                 "Ein lokaler KI-Ansatz wird erprobt, bei dem Daten das Haus nicht verlassen."
               ],
               "fuer": "Sinnvoll für Organisationen mit wiederkehrenden Informations- und Dokumentenaufgaben.",
-              "bild": "faser"
+              "bild": "wellen"
             }
           ],
           "cta_text": "Welcher Bereich passt, zeigt sich im Gespräch.",
@@ -472,7 +472,7 @@
             "text": "Projekt besprechen",
             "seite": "kontakt"
           },
-          "bild": "bokeh"
+          "bild": "chrom"
         }
       ],
       "bild": "blaupause",
@@ -546,7 +546,7 @@
                 "Statische Seiten",
                 "Wöchentliches Audit mit PDF"
               ],
-              "bild": "lichtleiter"
+              "bild": "tropfen"
             },
             {
               "titel": "E-Mail-Vorsortierung mit Freigabe (eigenes Werkzeug)",
@@ -564,7 +564,7 @@
                 "Freigabewort",
                 "Verschieben und protokollieren"
               ],
-              "bild": "bokeh"
+              "bild": "chrom"
             },
             {
               "titel": "NAHX-Website: Flug durch A-Portale",
@@ -813,7 +813,7 @@
           "hinweis": "<mark class=\"test\">In dieser Vorschau läuft eine Demo mit vorbereiteten Antworten.</mark>"
         }
       ],
-      "bild": "faser",
+      "bild": "glas",
       "karte": {
         "titel": "E-Mail",
         "label": "Kontaktweg",

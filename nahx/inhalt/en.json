@@ -92,7 +92,7 @@
         {
           "typ": "bildkarte",
           "id": "ansatz",
-          "bild": "faser",
+          "bild": "glas",
           "kicker": "NAHX Technologies",
           "h2": "One hand, from requirements <em>to handover.</em>",
           "text": "Documentation, software and automation in one piece: the person who takes the requirements also builds the solution."
@@ -285,7 +285,7 @@
             "anker": "assistent"
           },
           "riese": "NAHX",
-          "riese_bild": "faser"
+          "riese_bild": "wellen"
         }
       ],
       "bild": "lichtleiter",
@@ -322,7 +322,7 @@
             "kicker": "03 · Automation & AI",
             "h2": "Automate where it <em>pays off.</em>",
             "text": "Identify recurring work and automate it where it pays off. AI is used when it brings a traceable benefit, not as an end in itself.",
-            "bild": "bokeh",
+            "bild": "spritzer",
             "link": {
               "text": "Learn more",
               "seite": "leistungen",
@@ -423,7 +423,7 @@
                 "A local AI approach is tested where data does not leave the premises."
               ],
               "fuer": "Useful for organisations with recurring information and document tasks.",
-              "bild": "faser"
+              "bild": "wellen"
             }
           ],
           "cta_text": "Which area fits becomes clear in a conversation.",
@@ -472,7 +472,7 @@
             "text": "Discuss a Project",
             "seite": "kontakt"
           },
-          "bild": "bokeh"
+          "bild": "chrom"
         }
       ],
       "bild": "blaupause",
@@ -546,7 +546,7 @@
                 "Static pages",
                 "Weekly audit with PDF"
               ],
-              "bild": "lichtleiter"
+              "bild": "tropfen"
             },
             {
               "titel": "Email pre-sorting with approval (own tool)",
@@ -564,7 +564,7 @@
                 "Release word",
                 "Move and log"
               ],
-              "bild": "bokeh"
+              "bild": "chrom"
             },
             {
               "titel": "NAHX website: flight through A portals",
@@ -813,7 +813,7 @@
           "hinweis": "<mark class=\"test\">This preview runs a demo with prepared answers.</mark>"
         }
       ],
-      "bild": "faser",
+      "bild": "glas",
       "karte": {
         "titel": "Email",
         "label": "Contact",
