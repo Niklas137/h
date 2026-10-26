@@ -57,7 +57,7 @@ def lade(pfad: Path) -> dict:
 # Vektor-Wortmarke (Maße aus der Logo-Vorlage gemessen, Einheiten 1:1), inline mit currentColor
 WORTMARKE = (
     '<svg class="wortmarke" viewBox="0 0 1100 216" aria-hidden="true" focusable="false">'
-    '<defs><linearGradient id="nahx-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#02EEFB"/><stop offset="1" stop-color="#00A4F7"/></linearGradient></defs>'
+    '<defs><linearGradient id="nahx-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2BFFD3"/><stop offset="1" stop-color="#00C99A"/></linearGradient></defs>'
     '<path fill="currentColor" d="M0 0H51V216H0Z M207 0H258V216H207Z M0 0H60L258 216H198Z M578 0H629V216H578Z M760 0H811V216H760Z M578 87H811V132H578Z M824 0H893L1098 216H1029Z M1029 0H1098L893 216H824Z"/>'
     '<path fill="url(#nahx-c)" fill-rule="evenodd" d="M414 0L562 216H276Z M414 76L504 216H325Z M414 137L465 216H364Z"/></svg>'
 )
@@ -167,7 +167,7 @@ class Bau:
       <div><strong>{esc(ui["fuss_sprache"])}</strong><nav aria-label="{esc(ui["fuss_sprache"])}">{sprachen}</nav><strong class="fuss-kontakt-titel">{esc(ui.get("fuss_kontakt", "Kontakt"))}</strong><p>{email_html}</p></div>
     </div>
     <p class="fuss-klein">{esc(ui["fuss_hinweis"])}</p>
-    <details class="bildnachweis"><summary>{esc(ui.get("bildnachweis", "Bildnachweis"))}</summary><p class="fuss-klein">{esc(ui.get("fotos_hinweis", ""))} {" · ".join(f'<a href="{esc(f["quelle"])}" rel="noopener">{esc(f["fotograf"])}</a>' for f in self.site["fotos"].values())}</p></details>
+    <details class="bildnachweis"><summary>{esc(ui.get("bildnachweis", "Bildnachweis"))}</summary><p class="fuss-klein">{esc(ui.get("fotos_hinweis", ""))} {" · ".join(f'<a href="{esc(f["quelle"])}" rel="noopener">{esc(f["fotograf"])}</a>' for f in self.site["fotos"].values() if not f.get("variante_von"))}</p></details>
   </div>
 </footer>"""
 
@@ -197,6 +197,28 @@ class Bau:
   <div class="reihe-text"><p class="nr">0{nr + 1}</p><h3>{frag(k["h3"])}</h3><p>{frag(k["text"])}</p><a class="mehr" href="{esc(ziel)}">{esc(l["text"])}</a></div>
 </article>""")
             return f'<section class="abschnitt abschnitt-breit"{ident}><div class="innen">{kopf}</div><div class="reihen">{"".join(reihen)}</div></section>'
+
+        if typ == "leistungskarten":
+            # Drei Karten mit Foto, Mint-Piktogramm, Titel, Satz und Link (Markenboard 2026-10-26)
+            karten = []
+            for nr, k in enumerate(a["karten"]):
+                l = k["link"]
+                ziel = self.link(pfad, self.pfad(sprache, l["seite"], l.get("anker")))
+                karten.append(f'''<article class="lk-karte reveal" style="--i:{nr}">
+  <div class="lk-bild">{self.bild(sprache, pfad, k["bild"], "(min-width: 900px) 30vw, 100vw")}</div>
+  <div class="lk-text"><span class="lk-icon">{PIKTO[nr % 3]}</span><h3>{frag(k["h3"])}</h3><p>{frag(k["text"])}</p><a class="mehr" href="{esc(ziel)}">{esc(l["text"])}</a></div>
+</article>''')
+            kopf_lk = f'<div class="abschnitt-kopf reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2>{frag(a["h2"])}</h2>' + (f'<p class="abschnitt-text">{frag(a["text"])}</p>' if a.get("text") else "") + "</div>"
+            return f'<section class="abschnitt innen leistungskarten"{ident}>{kopf_lk}<div class="lk-raster">{"".join(karten)}</div>{mehr}</section>'
+
+        if typ == "ablauf":
+            # Foto links, Leitsatz in der Mitte, nummerierte Schritte rechts (Markenboard 2026-10-26)
+            schritte = "".join(f'<li class="reveal" style="--i:{i}"><span class="nr">0{i + 1}</span><div><h3>{frag(x["h3"])}</h3><p>{frag(x["text"])}</p></div></li>' for i, x in enumerate(a["schritte"]))
+            cta = self.cta(sprache, pfad, a["link"], "pfeil") if a.get("link") else ""
+            return f"""<section class="ablauf szene"{ident}><div class="ablauf-foto">{self.bild(sprache, pfad, a["bild"], "(min-width: 900px) 38vw, 100vw", True, "parallax")}</div>
+  <div class="ablauf-text reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2>{frag(a["h2"])}</h2><p class="abschnitt-text">{frag(a["text"])}</p><p>{cta}</p></div>
+  <ol class="ablauf-liste">{schritte}</ol>
+</section>"""
 
         if typ == "collage":
             # Bildcollage mit Fakten (nur zählbare Angaben aus der Website selbst, keine Leistungskennzahlen)
@@ -341,7 +363,7 @@ class Bau:
         teile = [
             '<meta charset="utf-8">', '<meta name="viewport" content="width=device-width, initial-scale=1">',
             f"<title>{esc(title)}</title>", f'<meta name="description" content="{esc(description)}">',
-            f'<meta name="robots" content="{robots}">', '<meta name="theme-color" content="#05070B">',
+            f'<meta name="robots" content="{robots}">', '<meta name="theme-color" content="#030907">',
         ]
         if self.basis_url and seite_key:
             teile.append(f'<link rel="canonical" href="{esc(self.absolut(pfad))}">')
@@ -374,7 +396,7 @@ class Bau:
         return "\n".join(teile)
 
     def held(self, sprache: str, seite_key: str, pfad: str, s: dict) -> str:
-        """Aufmacher als Vollbild-Leinwand: Foto, Absatz oben rechts, große Zeilenüberschrift unten links, Glaskarte unten rechts."""
+        """Aufmacher als Vollbild-Leinwand: Foto, Kicker, Zeilenüberschrift, Einleitung und Schaltflächen links, Glaskarte unten rechts."""
         ui = self.sprachen[sprache]["ui"]
         cta = ""
         if s.get("cta"):
@@ -390,10 +412,10 @@ class Bau:
             karte = f'<aside class="glas held-karte reveal" aria-label="{esc(k.get("label", k["titel"]))}"><p class="glas-titel"{zahl}>{frag("0" * len(k["titel"]) if zahl else k["titel"])}</p><p>{frag(k["text"])}</p></aside>'
         weiter = f'<a class="weiter" href="#inhalt-weiter" aria-label="{esc(ui.get("weiter", "Scrollen"))}"><span>{esc(ui.get("weiter", "Scrollen"))}</span><i></i></a>' if s.get("bild") else ""
         return f"""<section class="held leinwand szene{" licht" if s.get("bild") else ""}{klasse}{" held-foto-seite" if s.get("bild") else ""}">{foto}<div class="licht-ring" aria-hidden="true"></div><div class="held-schleier" aria-hidden="true"></div><div class="innen held-innen">
-  <p class="held-absatz">{frag(s["einleitung"])}</p>
   <div class="held-text">
     <p class="kicker">{esc(s["kicker"])}</p>
     <h1 class="zeilen">{zeilen(s["h1"])}</h1>
+    <p class="held-absatz">{frag(s["einleitung"])}</p>
     {text}{warn}{cta}
   </div>{karte}{weiter}
 </div></section><span id="inhalt-weiter"></span>"""

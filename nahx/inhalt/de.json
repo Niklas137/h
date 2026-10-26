@@ -19,7 +19,7 @@
     "fuss_sprache": "Sprache",
     "fuss_hinweis": "NAHX Technologies ist eine persönliche Geschäftsbezeichnung und keine eigenständige Gesellschaft. Rechtlich erforderliche Anbieterangaben werden im Impressum entsprechend der tatsächlichen Unternehmens- und Tätigkeitssituation ausgewiesen.",
     "platzhalter_hinweis": "Platzhalter: Dieser Text ist noch nicht fertig und wird vor dem Livegang ersetzt.",
-    "weiter": "Scrollen",
+    "weiter": "Mehr erfahren",
     "logo_alt": "NAHX Technologies – zur Startseite",
     "claim_lang": "Technik verstehen. Lösungen schaffen.",
     "l_herausforderungen": "Typische Herausforderungen",
@@ -74,8 +74,8 @@
       "menue": "Startseite",
       "title": "NAHX Technologies – Technik verstehen. Lösungen schaffen.",
       "description": "Technische Redaktion, Softwareentwicklung und Automatisierung: NAHX Technologies verbindet technisches Verständnis mit digitaler Entwicklung zu klaren Lösungen.",
-      "kicker": "NAHX Technologies",
-      "h1": "Technik<br>verstehen.<br>Lösungen<br>schaffen.",
+      "kicker": "Technik verstehen. Lösungen schaffen.",
+      "h1": "Komplexe<br>Technik.<br><em>Klare Lösungen.</em>",
       "einleitung": "Technische Redaktion, Softwareentwicklung und Automatisierung aus einer Hand. Ich verbinde technisches Verständnis mit digitaler Entwicklung – von der Anleitung über individuelle Werkzeuge bis zum automatisierten Ablauf.",
       "cta": {
         "primaer": {
@@ -89,54 +89,44 @@
       },
       "abschnitte": [
         {
-          "typ": "collage",
+          "typ": "leistungskarten",
           "id": "leistungen",
+          "kicker": "Leistungen",
           "h2": "Drei Bereiche, ein Ansatz",
           "text": "Dokumentation, Software und Automatisierung greifen in der Praxis ineinander. Deshalb biete ich sie nicht getrennt an, sondern aus einer Hand – mit nachvollziehbaren Entscheidungen statt Versprechen.",
-          "bilder": [
+          "karten": [
             {
               "bild": "blaupause",
-              "label": "Technical Documentation",
-              "tempo": 0.5,
+              "h3": "Technical Documentation",
+              "text": "Verständliche, präzise und strukturierte technische Inhalte für komplexe Produkte und Prozesse.",
               "link": {
+                "text": "Mehr erfahren",
                 "seite": "leistungen",
                 "anker": "technical-documentation"
               }
             },
             {
               "bild": "code",
-              "label": "Software & Web Applications",
-              "tempo": 0.25,
+              "h3": "Software &amp; Web Applications",
+              "text": "Individuelle digitale Werkzeuge und Webanwendungen, die konkrete Aufgaben vereinfachen.",
               "link": {
+                "text": "Mehr erfahren",
                 "seite": "leistungen",
                 "anker": "software-web-applications"
               }
             },
             {
-              "bild": "faser",
-              "label": "Automation & AI",
-              "tempo": 0.7,
+              "bild": "bokeh",
+              "h3": "Automation &amp; AI",
+              "text": "Wiederkehrende Abläufe effizienter gestalten und technische Prozesse gezielt unterstützen.",
               "link": {
+                "text": "Mehr erfahren",
                 "seite": "leistungen",
                 "anker": "automation-ai"
               }
             }
           ],
-          "fakten": [
-            {
-              "wert": "03",
-              "text": "Leistungsbereiche: Dokumentation, Software, Automatisierung"
-            },
-            {
-              "wert": "05",
-              "text": "dokumentierte Projekte mit Ausgangslage, Beitrag und Status"
-            },
-            {
-              "wert": "DE · EN",
-              "text": "zweisprachig in Dokumentation, Software und auf dieser Website"
-            }
-          ],
-          "cta": {
+          "link": {
             "text": "Leistungen ansehen",
             "seite": "leistungen"
           }
@@ -187,10 +177,12 @@
           }
         },
         {
-          "typ": "schritte",
+          "typ": "ablauf",
           "id": "ablauf",
-          "h2": "Von der Anforderung zur Lösung",
+          "kicker": "Von der Anforderung zur Lösung",
+          "h2": "Verstehen.<br>Konzipieren. <em>Umsetzen.</em><br>Prüfen.",
           "text": "Gute Lösungen beginnen mit dem Verständnis des Problems. Der Ablauf ist eine Vorgehensweise, keine Garantie; er richtet sich nach Umfang und Anforderungen.",
+          "bild": "designer",
           "schritte": [
             {
               "h3": "Erstgespräch",
@@ -214,7 +206,7 @@
             }
           ],
           "link": {
-            "text": "Zusammenarbeit im Detail",
+            "text": "So arbeite ich",
             "seite": "zusammenarbeit"
           }
         },
@@ -258,16 +250,10 @@
             "text": "Kontakt aufnehmen",
             "seite": "kontakt"
           },
-          "bild": "faser",
           "kicker": "Kontakt"
         }
       ],
-      "bild": "kopenhagen",
-      "karte": {
-        "titel": "03",
-        "label": "Drei Leistungsbereiche",
-        "text": "Drei Bereiche, ein Ansatz: Technical Documentation, Software & Web Applications, Automation & AI."
-      }
+      "bild": "lichtleiter"
     },
     "leistungen": {
       "pfad": "leistungen/",
@@ -397,7 +383,7 @@
             "text": "Projekt besprechen",
             "seite": "kontakt"
           },
-          "bild": "kopenhagen"
+          "bild": "bokeh"
         }
       ],
       "bild": "blaupause",
@@ -471,7 +457,7 @@
                 "Statische Seiten",
                 "Wöchentliches Audit mit PDF"
               ],
-              "bild": "kopenhagen"
+              "bild": "lichtleiter"
             },
             {
               "titel": "Mail-Triage und Tagesrunde (eigenes Werkzeug)",
@@ -590,7 +576,7 @@
             "text": "Zur Zusammenarbeit",
             "seite": "zusammenarbeit"
           },
-          "bild": "kopenhagen"
+          "bild": "faser"
         }
       ],
       "bild": "designer",
@@ -666,10 +652,10 @@
             "text": "Kontakt aufnehmen",
             "seite": "kontakt"
           },
-          "bild": "kopenhagen"
+          "bild": "lichtleiter"
         }
       ],
-      "bild": "kopenhagen",
+      "bild": "code",
       "karte": {
         "titel": "05",
         "label": "Fünf Schritte",

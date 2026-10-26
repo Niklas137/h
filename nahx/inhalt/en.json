@@ -19,7 +19,7 @@
     "fuss_sprache": "Language",
     "fuss_hinweis": "NAHX Technologies is a personal business name, not a separate legal entity. Legally required provider information is given in the legal notice according to the actual business and activity situation.",
     "platzhalter_hinweis": "Placeholder: this text is not final and will be replaced before launch.",
-    "weiter": "Scroll",
+    "weiter": "Discover more",
     "logo_alt": "NAHX Technologies – home",
     "claim_lang": "Understand Technology. Create Solutions.",
     "l_herausforderungen": "Typical challenges",
@@ -74,8 +74,8 @@
       "menue": "Home",
       "title": "NAHX Technologies – Understand Technology. Create Solutions.",
       "description": "Technical documentation, software development and automation: NAHX Technologies combines technical expertise with digital development to build clear solutions.",
-      "kicker": "NAHX Technologies",
-      "h1": "Understand<br>Technology.<br>Create<br>Solutions.",
+      "kicker": "Understand Technology. Create Solutions.",
+      "h1": "Complex<br>technology.<br><em>Clear solutions.</em>",
       "einleitung": "Technical documentation, software development and automation from one source. I combine technical understanding with digital development – from manuals and custom tools to automated workflows.",
       "cta": {
         "primaer": {
@@ -89,54 +89,44 @@
       },
       "abschnitte": [
         {
-          "typ": "collage",
-          "id": "services",
+          "typ": "leistungskarten",
+          "id": "leistungen",
+          "kicker": "Services",
           "h2": "Three areas, one approach",
           "text": "Documentation, software and automation are intertwined in practice. That is why I offer them together, from one source – with traceable decisions instead of promises.",
-          "bilder": [
+          "karten": [
             {
               "bild": "blaupause",
-              "label": "Technical Documentation",
-              "tempo": 0.5,
+              "h3": "Technical Documentation",
+              "text": "Clear, precise and structured technical content for complex products and processes.",
               "link": {
+                "text": "Learn more",
                 "seite": "leistungen",
                 "anker": "technical-documentation"
               }
             },
             {
               "bild": "code",
-              "label": "Software & Web Applications",
-              "tempo": 0.25,
+              "h3": "Software &amp; Web Applications",
+              "text": "Custom digital tools and web applications that simplify specific tasks.",
               "link": {
+                "text": "Learn more",
                 "seite": "leistungen",
                 "anker": "software-web-applications"
               }
             },
             {
-              "bild": "faser",
-              "label": "Automation & AI",
-              "tempo": 0.7,
+              "bild": "bokeh",
+              "h3": "Automation &amp; AI",
+              "text": "Make recurring workflows more efficient and support technical processes where it helps.",
               "link": {
+                "text": "Learn more",
                 "seite": "leistungen",
                 "anker": "automation-ai"
               }
             }
           ],
-          "fakten": [
-            {
-              "wert": "03",
-              "text": "service areas: documentation, software, automation"
-            },
-            {
-              "wert": "05",
-              "text": "documented projects with context, contribution and status"
-            },
-            {
-              "wert": "DE · EN",
-              "text": "bilingual in documentation, software and on this website"
-            }
-          ],
-          "cta": {
+          "link": {
             "text": "View services",
             "seite": "leistungen"
           }
@@ -187,10 +177,12 @@
           }
         },
         {
-          "typ": "schritte",
-          "id": "process",
-          "h2": "From Requirements to Solutions",
+          "typ": "ablauf",
+          "id": "ablauf",
+          "kicker": "From Requirements to Solutions",
+          "h2": "Understand.<br>Design. <em>Build.</em><br>Review.",
           "text": "Good solutions start with understanding the problem. The process is an approach, not a guarantee; it adapts to scope and requirements.",
+          "bild": "designer",
           "schritte": [
             {
               "h3": "Initial Discussion",
@@ -214,7 +206,7 @@
             }
           ],
           "link": {
-            "text": "How we work in detail",
+            "text": "How I work",
             "seite": "zusammenarbeit"
           }
         },
@@ -258,16 +250,10 @@
             "text": "Get in Touch",
             "seite": "kontakt"
           },
-          "bild": "faser",
           "kicker": "Contact"
         }
       ],
-      "bild": "kopenhagen",
-      "karte": {
-        "titel": "03",
-        "label": "Three service areas",
-        "text": "Three areas, one approach: Technical Documentation, Software & Web Applications, Automation & AI."
-      }
+      "bild": "lichtleiter"
     },
     "leistungen": {
       "pfad": "services/",
@@ -397,7 +383,7 @@
             "text": "Discuss a Project",
             "seite": "kontakt"
           },
-          "bild": "kopenhagen"
+          "bild": "bokeh"
         }
       ],
       "bild": "blaupause",
@@ -471,7 +457,7 @@
                 "Static pages",
                 "Weekly audit with PDF"
               ],
-              "bild": "kopenhagen"
+              "bild": "lichtleiter"
             },
             {
               "titel": "Mail triage and daily round (own tool)",
@@ -590,7 +576,7 @@
             "text": "How We Work",
             "seite": "zusammenarbeit"
           },
-          "bild": "kopenhagen"
+          "bild": "faser"
         }
       ],
       "bild": "designer",
@@ -666,10 +652,10 @@
             "text": "Get in Touch",
             "seite": "kontakt"
           },
-          "bild": "kopenhagen"
+          "bild": "lichtleiter"
         }
       ],
-      "bild": "kopenhagen",
+      "bild": "code",
       "karte": {
         "titel": "05",
         "label": "Five steps",

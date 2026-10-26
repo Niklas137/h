@@ -36,22 +36,6 @@
   "_logo_hinweis": "Wortmarke: assets/img/nahx-wortmarke.svg (helle Fassung für dunklen Grund, Open Graph); im Seitenkopf wird dieselbe Geometrie inline mit currentColor ausgegeben (build.py WORTMARKE).",
   "logo_vorlage": "/assets/img/nahx-logo-vorlage.png",
   "fotos": {
-    "kopenhagen": {
-      "breiten": [
-        640,
-        1000,
-        1600,
-        2400
-      ],
-      "seitenverhaeltnis": "3/2",
-      "fotograf": "Sandro Katalina",
-      "quelle": "https://unsplash.com/photos/-A3Kb429mgY",
-      "lizenz": "Unsplash License",
-      "alt": {
-        "de": "Beleuchtetes Bürogebäude aus Beton und Glas bei Nacht am Wasser, Kopenhagen",
-        "en": "Illuminated concrete and glass office building at night by the water, Copenhagen"
-      }
-    },
     "fabrik": {
       "breiten": [
         700,
@@ -108,9 +92,25 @@
       "quelle": "https://unsplash.com/photos/INNsF0Zz_kQ",
       "lizenz": "Unsplash License",
       "alt": {
-        "de": "Blau leuchtendes Glasfaserbündel vor schwarzem Hintergrund",
-        "en": "Blue glowing bundle of optical fibres on a black background"
+        "de": "Mintfarben leuchtendes Glasfaserbündel vor schwarzem Hintergrund",
+        "en": "Mint glowing bundle of optical fibres on a black background"
       }
+    },
+    "lichtleiter": {
+      "breiten": [
+        640,
+        1000,
+        1600
+      ],
+      "seitenverhaeltnis": "3/2",
+      "fotograf": "Compare Fibre",
+      "quelle": "https://unsplash.com/photos/INNsF0Zz_kQ",
+      "lizenz": "Unsplash License",
+      "alt": {
+        "de": "Mintfarben leuchtendes Glasfaserbündel vor schwarzem Hintergrund",
+        "en": "Mint glowing bundle of optical fibres on a black background"
+      },
+      "variante_von": "faser"
     },
     "bokeh": {
       "breiten": [
@@ -123,8 +123,8 @@
       "quelle": "https://unsplash.com/photos/DGwunSOMMbk",
       "lizenz": "Unsplash License",
       "alt": {
-        "de": "Blaue Lichtpunkte von Glasfasern mit Unschärfe",
-        "en": "Blue points of light from optical fibres, out of focus"
+        "de": "Mintfarbene Lichtpunkte von Glasfasern mit Unschärfe",
+        "en": "Mint points of light from optical fibres, out of focus"
       }
     },
     "designer": {

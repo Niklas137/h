@@ -12,11 +12,13 @@ externen Schriften, kein Tracking, kein Formular.
 | `build.py` | baut die Seiten aus `inhalt/` nach `dist/` (Python 3.8+, keine Pakete) und prüft sie (`--pruefen`) |
 | `inhalt/site.json` | gemeinsame Daten: Name, Basis-URL (leer, solange die Domain offen ist), Sprachen, Reihenfolge der Seiten |
 | `inhalt/de.json`, `inhalt/en.json` | alle Texte je Sprache, gleiche Seitenschlüssel (`start`, `leistungen`, `projekte`, `ueber-mich`, `zusammenarbeit`, `kontakt`, `impressum`, `datenschutz`) |
-| `assets/site.css` | Designsystem: Schwarz/Navy, Cyan-Akzent, Outfit und Source Sans 3 lokal |
+| `assets/site.css` | Designsystem „Leinwand · Mint“: Midnight Green/Schwarz, Mint-Akzent, Outfit und Source Sans 3 lokal (`@font-face`) |
 | `assets/fonts/` | Outfit (variabel, TTF) für Überschriften und Source Sans 3 (WOFF2) für Text, beide SIL Open Font License, Lizenztexte liegen dabei |
 | `assets/img/` | Logo-Satz (siehe unten), Favicons, Open-Graph-Bild, Logo-Vorlage |
 | `assets/img/foto/` | Fotografien in responsiven Varianten, `QUELLEN.md` mit Fotografen und Lizenz |
 | `assets/szene3d.js` | 3D-Szene der Markenbühne (WebGL) |
+| `werkzeuge/foto_mint.py` | einmalige Mint-Farbstimmung der Fotos (am 2026-10-26 angewendet, nicht erneut laufen lassen) |
+| `werkzeuge/marke_rendern.py` | rendert OG-Bild, App-Icon, Apple-Touch-Icon und Favicon aus den SVGs (Playwright + Pillow) |
 | `dist/` | **fertige Website zum Hochladen** (wird von `build.py` komplett neu erzeugt) |
 
 ## Bauen und prüfen
@@ -43,7 +45,7 @@ die Basis-URL eintragen (oder `--basis-url`), neu bauen; der Prüflauf verlangt 
 
 | Deutsch | English | Inhalt |
 |---|---|---|
-| `/` | `/en/` | Aufmacher mit Diagramm der drei Bereiche, Leistungen, Projekte (Kurzkarten), Ablauf, Arbeitsprinzipien, Kontaktaufruf |
+| `/` | `/en/` | Aufmacher, Leistungskarten, Projektbühne, Ablauf, Arbeitsprinzipien, 3D-Markenbühne, Kontaktband |
 | `/leistungen/` | `/en/services/` | je Bereich: Beschreibung, typische Herausforderungen, Leistungen, Anwendungsfälle, für wen |
 | `/projekte/` | `/en/projects/` | je Projekt: Ausgangssituation, Herausforderung, eigener Beitrag, Lösungsansatz, Technologien, Status |
 | `/ueber-mich/` | `/en/about/` | Person hinter der Marke, Arbeitsweise |
@@ -59,46 +61,48 @@ Buchstaben vermessen und als **echte Vektoren** nachgebaut, nicht verpackt:
 
 | Datei | Verwendung |
 |---|---|
-| `nahx-logo.svg` | Hauptlogo für dunklen Grund (auch Open-Graph-Bild): Wortmarke (Silberverlauf `#F9F9F9` → `#C9C8C8`, A in Cyan `#02EEFB` → `#00A4F7`), TECHNOLOGIES als Strichbuchstaben, Linie |
-| `nahx-logo-dunkel.svg` | dieselbe Geometrie mit dunklen Buchstaben für hellen Grund |
+| `nahx-logo.svg` | Hauptlogo für dunklen Grund (auch Open-Graph-Bild): Wortmarke (Silberverlauf `#F9F9F9` → `#C9C8C8`, A in Mint `#2BFFD3` → `#00C99A`), TECHNOLOGIES als Strichbuchstaben, Linie |
+| `nahx-logo-dunkel.svg` | dieselbe Geometrie für hellen Grund: Buchstaben Midnight Green `#06130F`, A in dunklerem Mint `#00C99A` → `#008F6C` |
 | `nahx-wortmarke.svg` | nur „NAHX“ |
-| `favicon.svg`, `favicon.ico` (32/16), `apple-touch-icon.png` (180), `icon-512.png` | das Cyan-A auf Schwarz |
+| `favicon.svg`, `favicon.ico` (32/16), `apple-touch-icon.png` (180), `icon-512.png` | das Mint-A auf Schwarz (Rasterfassungen mit `werkzeuge/marke_rendern.py`) |
 | `og-nahx.jpg` | Open-Graph-Bild 1200 × 630 aus dem Vektorlogo gerendert |
 
 Im Seitenkopf und in der Fußzeile steht die Wortmarke inline (`WORTMARKE` in `build.py`, Buchstaben in
 `currentColor`), daneben „Technologies“ als Text; unter 900 px nur die Wortmarke. Der Claim ist echter Text, nicht
 Teil der SVG (für eine Claim-Fassung als Vektor fehlt ein Werkzeug, das Schrift in Pfade wandelt).
 
-## Gestaltung („Leinwand“, nach Referenzvideo 2026-10-26)
+## Gestaltung („Leinwand · Mint“, nach Markenboard 2026-10-26)
 
-Umsetzung nach dem Referenzvideo (Luxus-Architekturseite auf einem Laptop): jede Hauptszene ist eine Vollbild-Leinwand
-(`.leinwand`, `min-height: 100svh`, auf der Startseite `scroll-snap-type: y proximity`). Aufbau einer Leinwand wie in
-der Vorlage: transparenter Kopf mit kleiner Wortmarke links, Navigation rechts und Haarlinie darunter (wird beim
-Scrollen zur dunklen Glasleiste), kurzer Absatz oben rechts, große leichte Versal-Überschrift unten links
-(Outfit 300, Zeile für Zeile maskiert eingeblendet), Glaskarte unten rechts (`.glas`, Blur, Haarlinienrahmen),
-Pfeil-Links statt Buttons. Startseite in sechs Szenen: Aufmacher (Foto), Collage „Drei Bereiche, ein Ansatz“
-(drei Bilder mit unterschiedlichem Parallaxe-Tempo über `data-tempo`, dazwischen zählbare Angaben der Website
-selbst: 03 Bereiche, 05 Projekte, DE · EN – keine Leistungskennzahlen), Bühne „Projekte“ (Vollbildfoto mit
-Glas-Markierungen auf drei echte Projekte, mobil als Liste), Ablauf und Prinzipien als Haarlinienlisten,
-Markenbühne mit 3D-Szene, Abschlussszene „Kontakt“ (Vollbildfoto, Überschrift unten links, Pfeil-Link unten rechts).
-Unterseiten tragen denselben Aufmacher und darunter Haarlinien statt Kacheln. Farben: Schwarz `#05070B`,
-Navy `#0D121C`, Cyan-Akzente aus dem Logo (`#17B8E6`, `#5FD6F7`), Weiß und Hellgrau für Text.
+Umstellung am 2026-10-26 von Cyan auf **Mint** nach dem Markenboard „Hauptlogo · Variante 1 · Clean Tech“
+(Entscheidung Niklas: klar unterscheidbar von FSH Documentation, deren Website Blau `#1B63A8`/`#43AEE8` nutzt).
+Wunsch dazu: **ohne Gebäude** – das Gebäudefoto (Kopenhagen) ist entfernt.
 
-Nicht übernommen aus der Vorlage: erfundene Kennzahlen („10+ years“, „50+ people“), Buchungs-Schaltflächen,
-Script-Smooth-Scroll (nur natives Scrollen und Scroll-Snap, damit Tastatur und Bildschirmleser normal arbeiten).
+Farben: Grund `#030907`, Fläche `#06110D`/`#0A1713`, Electric Mint `#00F0BE` (Akzent, Taste), Soft Neon Mint
+`#8CFFDA` (Hover), Mint Glow `#E8FFF7`, Deep Teal Gray `#34524A`, Midnight Green `#06130F`, Text `#F2FAF7`,
+Grau `#C2D1CB` und `#8FA59C`. Kontraste (WCAG): Text 18,9 : 1, Grau 12,7 : 1 und 7,7 : 1, Mint auf Grund 13,6 : 1,
+Text auf Mint-Taste 12,8 : 1. Das Board nennt Electric Mint als `#00FFA3`, zeigt im Bild aber `#00F2C0`–`#00F8C2`;
+übernommen ist der sichtbare Ton.
 
-**Fotografie**: sieben Fotografien von Unsplash unter der Unsplash License (kommerziell nutzbar, keine Namensnennung
+Aufbau: Kicker in Versalien (auf der Startseite der Claim), kräftige Überschriften in normaler Schreibweise
+(Outfit 600), Akzentwort in Mint über `<em>` im Text (`Komplexe Technik. <em>Klare Lösungen.</em>`), Einleitung
+unter der Überschrift, gefüllte Mint-Taste plus Kontur-Taste, Mint-Textlinks „Mehr erfahren →“. Startseite:
+Aufmacher (Lichtleiter-Foto), **Leistungskarten** (`typ: leistungskarten`: Foto, Mint-Piktogramm im Kreis, Titel, Satz,
+Link; ganze Karte klickbar, Lichtkante beim Überfahren), Projektbühne, **Ablauf** (`typ: ablauf`: Foto links,
+Leitsatz „Verstehen. Konzipieren. <em>Umsetzen.</em> Prüfen.“, fünf Schritte mit großen Mint-Ziffern rechts),
+Prinzipien, 3D-Markenbühne (Mint), Kontaktband mit Mint-Leuchten. Unterseiten behalten die Vollbild-Leinwand mit
+Glaskarte. Nicht übernommen aus dem Board: das Gebäude, der Folienzähler „01 / 03“ (es gibt keinen Slider).
+
+**Fotografie**: sechs Fotografien von Unsplash (plus eine gespiegelte Fassung) unter der Unsplash License (kommerziell nutzbar, keine Namensnennung
 verpflichtend, geprüft 2026-10-25; keine Unsplash+-Bilder). Fotografen und Quellen in `assets/img/foto/QUELLEN.md`
 und im Bildnachweis der Fußzeile. Die Bilder zeigen Orte und Motive, keine Kundenprojekte. Je Bild drei bis vier
-Breiten als WebP und JPEG (`<picture>` mit `srcset`/`sizes`), Aufmacherbild `eager` mit `fetchpriority="high"`,
+Breiten als WebP und JPEG, alle in Mint-Lichtstimmung (`werkzeuge/foto_mint.py`) (`<picture>` mit `srcset`/`sizes`), Aufmacherbild `eager` mit `fetchpriority="high"`,
 alle übrigen `loading="lazy"`; Zuordnung über `bild` in den JSON-Dateien, Alt-Texte je Sprache in `site.json`.
 
 **Bewegung** (`assets/bewegung.js`, ohne Bibliothek): ein Scroll-Takt setzt je Szene den Fortschritt `--p`, der Rest
 ist CSS. Eigene Bewegungssprache: der Aufmacher bleibt festgeklemmt, die nächste Szene schiebt sich wie ein Vorhang
 darüber, während Text und Foto des Aufmachers leicht zurückweichen; Überschriften laufen Zeile für Zeile aus der
 Unschärfe scharf ein (Schärfe-Einlauf, passend zu „Technik verstehen“); Fotos der Szenen ziehen mit dem Scrollen,
-Collage-Bilder mit eigenem Tempo und leichter Neigung zum Zeiger, Bilder öffnen sich mit einem Wischen; Zahlen in
-Glaskarten und Collage zählen einmal hoch; die Projektmarkierungen erscheinen nacheinander (Punkt, gezeichnete
+Leistungskarten heben sich beim Überfahren mit Mint-Lichtkante und Bildzoom; Zahlen in Glaskarten zählen einmal hoch; die Projektmarkierungen erscheinen nacheinander (Punkt, gezeichnete
 Linie, Glaskarte); ein Inspektionslicht folgt dem Zeiger über Fotoszenen und hellt eine weiche Stelle auf (nur mit
 Maus, nie bei Touch); Seitenwechsel blenden über (View Transitions, wo der Browser es kann). Keine Dauerbewegung:
 der einzige Pulsring der Markierungen läuft dreimal und stoppt. Bei `prefers-reduced-motion` ist alles davon aus,

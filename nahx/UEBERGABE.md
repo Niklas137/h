@@ -1,12 +1,12 @@
-# NAHX Technologies – Übergabe aus dem bisherigen Chat (Stand 2026-10-26)
+# NAHX Technologies – Übergabe (Stand 2026-10-26, nach Umstellung auf Mint)
 
 Diese Datei fasst den kompletten bisherigen Claude-Code-Chat zur Website von **NAHX Technologies** zusammen,
 damit ein neues Projekt ohne Zugriff auf den alten Chat nahtlos weiterarbeiten kann.
 
 ## 1. Wo alles liegt
 
-- **Repository:** `Niklas137/h`, Branch `claude/nahx-website-concept-34tlvk`, Ordner `nahx/`.
-- **Letzter Stand:** Commit `c449b12` („bessere Lesbarkeit und eigene Bewegungssprache“).
+- **Repository:** `Niklas137/h`, Ordner `nahx/`. Cyan-Stand: Branch `claude/nahx-website-concept-34tlvk`.
+  **Mint-Stand (aktuell):** Branch `claude/nahx-mint` (abgezweigt von `f9464cf`).
 - **Vorschau (privat, Claude-Artefakt):** https://claude.ai/artifact/Gr2LmKRN3EEmCko43L77bh (Version 20).
 - **Kein Pull Request**, kein Merge nach `main`. Beides nur nach ausdrücklicher Freigabe durch Niklas.
 
@@ -45,8 +45,8 @@ Canonical, hreflang, og:url und Sitemap bewusst weggelassen, weil die Domain noc
 - **Domain:** später. Keine Domain im Code einbauen.
 - **E-Mail:** vorhandene Adresse `niklas.heinzmann@fsh-documentation.de`. Keine Adresse erfinden.
 - **Kontakt:** nur per E-Mail. Kein Formular, keine externen Dienste.
-- **Logo:** Richtung beibehalten. Wortmarke NAHX mit silbernen Buchstaben, cyanfarbenem A
-  (Verlauf `#02EEFB` → `#00A4F7`), Schriftzug TECHNOLOGIES, dünne Cyan-Linie, dunkler Hintergrund.
+- **Logo:** Geometrie beibehalten. Wortmarke NAHX mit silbernen Buchstaben, **mintfarbenem A**
+  (Verlauf `#2BFFD3` → `#00C99A`, seit 2026-10-26; vorher Cyan), Schriftzug TECHNOLOGIES, Mint-Linie, dunkler Grund.
   Als echte Vektoren aus der Vorlage nachgemessen (`WORTMARKE` in build.py, Dateien in assets/img).
 - **Keine erfundenen Fakten:** keine erfundenen Kunden, Mitarbeiter, Referenzen, Kennzahlen oder
   Erfolgsversprechen. Kundennamen aus den Repos (z. B. aus FSH-Projekten) werden nicht genannt.
@@ -66,13 +66,16 @@ Canonical, hreflang, og:url und Sitemap bewusst weggelassen, weil die Domain noc
 6. **Referenzvideo** (Instagram-Reel von rinai.vis, Luxus-Architekturseite „NØR“ auf einem Laptop).
    Auftrag: „bauen wie im Video“. Daraus entstand das heutige Designsystem „Leinwand“.
 7. Rückmeldung „Texte besser lesbar, mehr Animation, etwas Einzigartiges“. Umgesetzt im letzten Commit.
+8. 2026-10-26: Markenboard „Clean Tech“ in Mint, Entscheidung „auf Mint umsteigen, ohne Gebäude“ (Abschnitt 9).
+   Mint ist damit nicht mehr verworfen, sondern die gültige Richtung.
 
 ## 5. Heutiges Design „Leinwand“
 
 - Jede Hauptszene ist eine Vollbild-Leinwand: Foto, kurzer Absatz oben rechts (im dunklen Glasblock),
   große leichte Versal-Überschrift unten links, Glaskarte unten rechts, Pfeil-Links statt Buttons.
 - Transparenter Kopf mit Haarlinie, wird beim Scrollen zur dunklen Glasleiste.
-- Farben: Schwarz `#05070B`, Navy `#0D121C`, Cyan `#17B8E6` / `#5FD6F7`, Text `#F5F7FA`, Grau `#CBD2DC`.
+- Farben seit 2026-10-26 (Mint): Grund `#030907`, Fläche `#06110D`/`#0A1713`, Mint `#00F0BE` / `#8CFFDA`, Mint Glow
+  `#E8FFF7`, Deep Teal Gray `#34524A`, Midnight Green `#06130F`, Text `#F2FAF7`, Grau `#C2D1CB`. (Vorher Cyan auf Navy.)
 - Startseite in sechs Szenen: Aufmacher → Collage „Drei Bereiche, ein Ansatz“ (03 Bereiche, 05 Projekte,
   DE · EN, nur zählbare Angaben der Website selbst) → Projektbühne mit drei Glas-Markierungen auf echte
   Projekte → Ablauf (5 Schritte) und Prinzipien als Haarlinienlisten → 3D-Markenbühne → Kontaktszene.
@@ -100,7 +103,7 @@ Technologien, Status, Ablaufkette):
 ## 7. Fotos und Lizenzen
 
 Sieben Fotos von Unsplash unter der Unsplash License (kommerziell nutzbar, keine Namensnennung nötig,
-geprüft am 2026-10-25, keine Unsplash+-Bilder). Fotografen: Sandro Katalina (kopenhagen), Yusuf Onuk
+geprüft am 2026-10-25, keine Unsplash+-Bilder). Fotografen: Yusuf Onuk
 (fabrik), EnCata PD (blaupause), Mohammad Rahmani (code), Compare Fibre (faser), Kashish Lamba (bokeh),
 Vooglam Eyewear (designer). Quellen in `assets/img/foto/QUELLEN.md` und im Bildnachweis der Fußzeile.
 Je Bild WebP und JPEG in mehreren Breiten, Aufmacher eager, alles andere lazy.
@@ -112,7 +115,21 @@ keine fehlgeschlagenen Anfragen, Mobilmenü mit Escape, Tab-Reihenfolge, Lazy Lo
 Überschriften ohne Überlauf. **Grenzen:** nur virtuelle Umgebung, keine echten Geräte, 3D-Szene dort nur per
 Software-Rendering, keine Bildraten-Messung, kein Sicherheitsscan (kein API-Schlüssel).
 
-## 9. Offene Punkte (Entscheidung Niklas)
+## 9. Umstellung auf Mint (2026-10-26, Branch `claude/nahx-mint`)
+
+Entscheidung Niklas: „Auf Mint umsteigen, da ich was anderes brauche als die FSH von Falk“, Vorlage ist das
+Markenboard „Hauptlogo · Variante 1 · Clean Tech“ (Beschreibung im Projektdokument `claude/NAHX_REFERENZEN.md`),
+Zusatz: **ohne das Gebäude**. Umgesetzt:
+- Farbsystem, Logo-SVGs, Favicon, App-Icons, OG-Bild (neu gerendert mit `werkzeuge/marke_rendern.py`), 3D-Szene.
+- Fotos in Mint-Lichtstimmung (`werkzeuge/foto_mint.py`, einmalig); Gebäudefoto „kopenhagen“ entfernt; neues
+  Aufmacherbild „lichtleiter“ (gespiegelte Fassung von „faser“).
+- Startseite nach Board: Claim als Kicker, Überschrift „Komplexe Technik. *Klare Lösungen.*“, gefüllte Mint-Taste,
+  drei Leistungskarten, Ablauf „Verstehen. Konzipieren. *Umsetzen.* Prüfen.“ mit fünf Schritten.
+- Überschriften kräftig in normaler Schreibweise statt leicht in Versalien.
+- Fehler behoben: `@font-face` fehlte in `site.css`, Outfit und Source Sans 3 wurden nie geladen (nur Systemschrift).
+- 404-Seite zeigt jetzt die Schaltfläche „Zur Startseite“ (vorher griff die Ersetzung in `build.py` nicht).
+
+## 10. Offene Punkte (Entscheidung Niklas)
 
 - Domain festlegen, dann mit `--basis-url` bauen (Canonical, hreflang, Sitemap kommen automatisch).
 - Impressum und Datenschutz mit echten Angaben füllen (keine Rechtsberatung).
@@ -120,8 +137,10 @@ Software-Rendering, keine Bildraten-Messung, kein Sicherheitsscan (kein API-Schl
 - Rückmeldung zur Bewegung: welche Effekte stärker oder schwächer.
 - Prüfung auf echten Geräten (iPhone, Mac), besonders 3D-Szene und Vorhang-Effekt.
 - Merge nach `main` bzw. Pull Request erst nach Freigabe.
+- Mint-Stand: Board-Leitsatz „Weiterentwickeln“ statt „Prüfen“? (Heute „Prüfen“, passend zu den fünf freigegebenen Schritten.)
+- Mint-Stand: Foto „Industriehalle“ (Projektbühne, Projekteseite) behalten oder ersetzen? Zeigt ein Zahnrad.
 
-## 10. Nebenthema: Name für den Dokumentenprüfer („614 One“)
+## 11. Nebenthema: Name für den Dokumentenprüfer („614 One“)
 
 Falk schlug „614 One“ vor. Abgleich mit dem Code (`dokumentenpruefer/`):
 - **4** passt: Berichte in Deutsch, Englisch, Ukrainisch, Russisch.
