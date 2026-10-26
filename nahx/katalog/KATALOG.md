@@ -3,7 +3,7 @@
 Lesefassung von `aufgaben.json`. Den aktuellen Status (offen, läuft, erledigt) und die Notizen zeigt nur die
 Artefakt-Seite: https://claude.ai/artifact/KsKynwTEwnXxWeXT1Qdw4u
 
-## Niklas (18)
+## Niklas (21)
 
 | Wann | Bereich | Aufgabe | Liefern |
 |---|---|---|---|
@@ -17,16 +17,19 @@ Artefakt-Seite: https://claude.ai/artifact/KsKynwTEwnXxWeXT1Qdw4u
 | vor Livegang | Angebot | **Einstiegsangebote bestätigen**: Passen die drei Angebote und ihre Stichpunkte? Fehlt ein Angebot oder soll eines weg? | OK oder Änderungen |
 | vor Livegang | Person | **Porträtfoto liefern**: Hochformat, ruhiger dunkler Hintergrund, Blick in die Kamera, mindestens 1600 px hoch. Ersetzt das NH-Monogramm auf „Über mich“. | Fotodatei |
 | vor Livegang | Person | **LinkedIn-Profil verknüpfen**: Link zum Profil; idealerweise Profil auf NAHX Technologies ausrichten (Titel, Info-Text, Website). | Profil-Link |
+| vor Livegang | Chat | **Terminbuchung über den Chat bestätigen**: Erstgespräche bucht jetzt der Chat mit Klick-Kalender (in der Vorschau mit Testterminen). Ein Werkzeug wie Calendly ist dann nicht nötig. Welche Wochentage und Uhrzeiten sollen buchbar sein, und wie lange vorher? | Tage, Uhrzeiten, Vorlauf |
 | vor Livegang | Kontakt | **Antwortzeit bestätigen**: Im Test steht: Antwort in der Regel innerhalb von zwei Werktagen. | OK oder andere Zeit |
 | vor Livegang | Auftritt | **Zielmarkt und Sprachen bestätigen**: Englisch ist jetzt Startsprache, Deutsch unter /de/. Im Test steht „Remote für Kunden in Europa“ und Deutsch/Englisch. Andere Regionen oder Sprachen? Im Deutschen bleibt es beim „du“, oder lieber „Sie“? | Region, Sprachen, du/Sie |
 | vor Livegang | Recht | **Markenrecherche NAHX und 614 One**: Vor dem Livegang bei DPMA, EUIPO und WIPO nach ähnlichen Marken suchen; bei Bedarf anmelden. Keine Rechtsberatung. | Ergebnis der Recherche |
 | vor Livegang | Technik | **Auf echten Geräten testen**: Vorschau auf iPhone (Safari) und Mac öffnen: Flug durch die Portale, 3D-A, Ruckeln, Akku und Wärme. Auffälligkeiten mit Gerät und Stelle notieren. | Notizen zu Gerät und Stelle |
-| nach Livegang | Kontakt | **Terminbuchung entscheiden**: Soll man ein 30-Minuten-Erstgespräch online buchen können (z. B. Cal.com oder Calendly)? Wenn nein, nehme ich den Platzhalter raus. | Buchungslink oder „nein“ |
+| vor Livegang | Chat | **Eigenen NAHX-Assistenten einrichten**: Der FSH-Assistent antwortet nur auf den FSH-Domains und arbeitet mit FSH-Texten, Falks Kalender und Falks Postfach. NAHX braucht eine eigene Instanz: eigenes Cloudflare-Konto getrennt von FSH, eigener Anthropic-API-Schlüssel, Datenbank, Kalender und Empfänger für Anfragen. Schlüssel nur im Cloudflare-Dashboard eintragen, nie in den Chat oder in Dateien. | Cloudflare-Konto bereit, Kalender, E-Mail für Anfragen |
+| vor Livegang | Chat | **Festlegen, was der Assistent sagt**: Grundlage sind die Demo-Antworten in der Vorschau. Passen Ton, Themen und Preise? Welche Sprachen (Deutsch, Englisch, auch Ukrainisch)? Was soll er nie sagen oder versprechen? | OK oder Änderungen zu den Demo-Antworten |
 | nach Livegang | 614 One | **Name 614 One auch in der App?**: Soll „614 One · NAHX Technologies“ auch in der Oberfläche und in den PDF-Berichten stehen? Das ändere ich dann im App-Zweig, ohne die Prüflogik anzufassen. | ja oder nein |
 | nach Livegang | Freigaben | **Freigabe vom Verein (Trikotwand)**: Den Verein fragen, ob er namentlich genannt werden darf und ob es eine kurze Rückmeldung gibt. Bis dahin steht dort „Verein · Name nach Freigabe“. | Vereinsname, Zitat, Freigabe |
 | nach Livegang | Technik | **Freigabe für Merge und Livegang**: Wenn alles steht: Freigabe für den Pull Request nach main und für den Livegang. Vorher passiert beides nicht. | Freigabe |
+| nach Livegang | Chat | **WhatsApp-Kanal entscheiden**: Soll derselbe Assistent auch über WhatsApp erreichbar sein? Dafür braucht es eine eigene Nummer und einen WhatsApp-Business-Zugang. | ja oder nein, ggf. Nummer |
 
-## Falk · FSH Documentation (6)
+## Falk · FSH Documentation (7)
 
 | Wann | Bereich | Aufgabe | Liefern |
 |---|---|---|---|
@@ -36,21 +39,24 @@ Artefakt-Seite: https://claude.ai/artifact/KsKynwTEwnXxWeXT1Qdw4u
 | vor Livegang | Freigaben | **Text zur Zusammenarbeit mit FSH lesen**: Auf „Über mich“ steht, dass Niklas mit FSH Documentation zusammenarbeitet, die Website-Automation dort entsteht und FSH erster Pilotkunde von 614 One ist. Passt die Formulierung? | OK oder Korrekturen |
 | nach Livegang | 614 One | **614 One im Pilot testen**: Freigegebene Dokumente prüfen, Fachberichte bewerten, Fehler und Wünsche melden. Wichtig sind falsche Treffer und fehlende Fundstellen. | Liste mit Befunden |
 | nach Livegang | 614 One | **Anonymisierten echten Bericht als Beleg?**: Darf ein echter Fachbericht, geschwärzt und ohne Kundennamen, als Beleg auf der Website erscheinen? Im Moment zeigt das Bild einen Bericht aus einem erfundenen Testdokument. | ja oder nein |
+| nach Livegang | Freigaben | **FSH-Assistent als Referenz zeigen?**: Darf der Chatbot der FSH-Website auf der NAHX-Seite als Referenzprojekt erscheinen, mit oder ohne Namen von FSH? | ja oder nein |
 
-## Gemeinsam (3)
+## Gemeinsam (4)
 
 | Wann | Bereich | Aufgabe | Liefern |
 |---|---|---|---|
 | vor Livegang | 614 One | **Rechte an 614 One schriftlich klären**: Wem gehören Code und Name von 614 One, und was gilt für Teile, die im Rahmen von FSH-Projekten entstanden sind? Kurz schriftlich festhalten. | kurze Vereinbarung |
 | vor Livegang | 614 One | **Pilotvereinbarung 614 One**: Zeitraum, Kosten, wer welche Dokumente hochlädt, Umgang mit Kundendaten (ggf. Auftragsverarbeitung), Feedback und Nennung als Referenz. | Eckpunkte |
 | vor Livegang | Freigaben | **NAHX und FSH sauber abgrenzen**: Wie passen die NAHX-Tätigkeit und die Zusammenarbeit mit FSH zusammen (z. B. Vertrag, Nebentätigkeit, Überschneidungen bei Kunden)? Bestätigen, dass die Website das so darstellen darf. | gemeinsame Bestätigung |
+| vor Livegang | Chat | **Nutzung des Assistenten-Codes klären**: Der FSH-Assistent liegt im Repo der FSH-Website. Darf NAHX den Code als Grundlage für den eigenen Assistenten und für Chatbots für Kunden verwenden? Ähnlich wie bei 614 One kurz schriftlich festhalten. | kurze Vereinbarung |
 
-## Claude (5)
+## Claude (6)
 
 | Wann | Bereich | Aufgabe | Liefern |
 |---|---|---|---|
 | vor Livegang | Umsetzung | **Testdaten ersetzen**: Alle markierten Testwerte durch die gelieferten Angaben ersetzen und den Testhinweis unten entfernen. Sobald die Angaben da sind, ist das schnell erledigt. | – |
 | vor Livegang | Umsetzung | **Bau für die Domain**: Basis-URL setzen, Canonical, hreflang und Sitemap erzeugen, ohne noindex bauen und alles prüfen. | – |
 | vor Livegang | Umsetzung | **Porträt, Zitate und Screenshots einbauen**: Foto zuschneiden und in Mint-Optik bringen, freigegebene Zitate und Bilder einsetzen, Platzhalter entfernen. | – |
+| vor Livegang | Chat | **NAHX-Assistenten vorbereiten und anschließen**: Eigenen Worker mit NAHX-Anweisungen, NAHX-Domain und Kalender aufsetzen, Adresse in site.json eintragen, Datenschutztext für den Chat mit echten Angaben ergänzen. Die Prüflogik und die FSH-Website bleiben unberührt. | – |
 | nach Livegang | 614 One | **Anzeigefehler in der App beheben**: Auf dem aktuellen App-Zweig zeigt die Oberfläche teils Rohschlüssel (z. B. titel_app) statt Text. Wird behoben, ohne die Prüflogik zu ändern. | – |
 | nach Livegang | Umsetzung | **Anpassung nach Gerätetest**: Je nach Ergebnis vom iPhone-Test: 3D-A auf Handys als Standbild, Flug kürzen oder Bildgrößen anpassen. | – |

@@ -8,7 +8,7 @@ damit ein neues Projekt ohne Zugriff auf den alten Chat nahtlos weiterarbeiten k
 - **Repository:** `Niklas137/h`, Ordner `nahx/`. Cyan-Stand: Branch `claude/nahx-website-concept-34tlvk`.
   **Mint-Stand (aktuell):** Branch `claude/nahx-mint` (abgezweigt von `f9464cf`), Flug ab Commit `a0da6c6`.
 - **Vorschau (Claude-Artefakt, für jeden mit dem Link freigegeben, noindex):** https://claude.ai/artifact/Gr2LmKRN3EEmCko43L77bh
-  (Version 27 = Überarbeitung nach Kundensicht-Prüfbericht mit Testdaten; 22 = Mint mit Flug durch A-Portale;
+  (Version 28 = Chat im Handy als Demo; 27 = Überarbeitung nach Kundensicht-Prüfbericht mit Testdaten; 22 = Mint mit Flug durch A-Portale;
   21 = Mint ohne Flug; 20 = letzter Cyan-Stand, alle über den Versionsverlauf).
 - **Aufgabenkatalog für Niklas und Falk (Claude-Artefakt, privat, Status und Notizen gemeinsam gespeichert):**
   https://claude.ai/artifact/KsKynwTEwnXxWeXT1Qdw4u – Quelle `nahx/katalog/` (Daten `aufgaben.json`, Lesefassung `KATALOG.md`).
@@ -27,6 +27,7 @@ nahx/
   assets/img/         Logo-Set (SVG, Favicon, Apple-Touch, 512er Icon, OG-Bild), foto/ mit 7 Fotos
   dist/               fertige Website (wird von build.py erzeugt und mit eingecheckt)
   katalog/            Aufgabenkatalog Niklas/Falk (aufgaben.json, vorlage.html, bauen.py, KATALOG.md)
+  assets/assistent.js Chat im Handy (Demo ohne Server, Live-Modus nach dem Protokoll des FSH-Assistenten)
   README.md           ausführliche Anleitung
 ```
 
@@ -51,7 +52,8 @@ Canonical, hreflang, og:url und Sitemap bewusst weggelassen, weil die Domain noc
 - **Domain:** später. Keine Domain im Code einbauen.
 - **E-Mail:** echte Adresse folgt mit der Domain. Bis dahin steht in der Vorschau die als Test markierte Adresse
   `hello@nahx-technologies.example` (Auftrag „Testdaten einfüllen“). Keine echte Adresse erfinden.
-- **Kontakt:** nur per E-Mail. Kein Formular, keine externen Dienste.
+- **Kontakt:** E-Mail, dazu seit 2026-10-26 der Chat im Handy (Wunsch Niklas: „den Chatbot besser auf der Webseite und in einer
+  Handy-Ansicht, dass man direkt in einem Handy schreibt“). Kein Formular. In der Vorschau läuft der Chat als Demo ohne Server.
 - **Logo:** Geometrie beibehalten. Wortmarke NAHX mit silbernen Buchstaben, **mintfarbenem A**
   (Verlauf `#2BFFD3` → `#00C99A`, seit 2026-10-26; vorher Cyan), Schriftzug TECHNOLOGIES, Mint-Linie, dunkler Grund.
   Als echte Vektoren aus der Vorlage nachgemessen (`WORTMARKE` in build.py, Dateien in assets/img).
@@ -206,3 +208,30 @@ reduzierte Bewegung, Tastatur und Menü geprüft, Sichtprüfung der neuen Abschn
 
 **Livegang-Weg:** alle `mark class="test"` ersetzen, `testdaten` aus `site.json` löschen, Basis-URL setzen, ohne
 `--noindex` bauen. Was dafür fehlt, steht im Katalog (32 Punkte: Niklas 18, Falk 6, gemeinsam 3, Claude 5).
+
+## 13. Chat im Handy (2026-10-26, Version 28)
+
+Niklas: „Dazu haben wir ja schon einen Chatbot. Den möchte ich noch besser auf der Webseite haben und in einer
+Handy-Ansicht, also dass man direkt in einem Handy schreibt.“ Der vorhandene Bot ist der **FSH-Assistent** im Repo
+`Niklas137/fsh-website` (Cloudflare Worker `src/assistent/`, Claude Haiku, D1-Datenbank, Klick-Kalender, Mail an Falk,
+Fenster `quelle/assistent/assistent/widget.js`). Er nimmt nur Anfragen von den FSH-Domains an (`HERKUNFT` in
+`src/assistent/konfig.js`) und arbeitet mit FSH-Texten, deshalb wurde er auf der NAHX-Seite **nicht** angeschlossen.
+Die FSH-Website wurde nicht verändert.
+
+Umgesetzt in `nahx/`:
+- Abschnittstyp `assistent` (Start nach den Angeboten, Kontakt): Text links, **Handy** rechts (Rahmen, Dynamic Island,
+  Statusleiste mit Uhrzeit, Kopf mit Mint-A, Blasen, Vorschläge, Eingabe, Home-Leiste). Man schreibt direkt ins Handy.
+- Auf Bildschirmen unter 700 px öffnet ein Tippen ins Feld den Chat **bildschirmfüllend wie einen Messenger**
+  (Zurück-Pfeil, Tastaturhöhe über `visualViewport`).
+- Auf allen übrigen Seiten ein **Chat-Knopf** unten rechts; auf dem Desktop schwebt das Handy unten rechts, auf dem Handy
+  Vollbild. Der Verlauf bleibt beim Seitenwechsel im selben Tab (sessionStorage).
+- **Demo-Modus**, solange `site.json` → `assistent.api` leer ist: vorbereitete Antworten nach Stichworten
+  (`inhalt/<sprache>.json` → `assistent.demo.wissen`), Testpreise markiert, Klick-Kalender mit Testterminen, nichts wird
+  gesendet. Mit Adresse: dasselbe Protokoll wie der FSH-Assistent (GET bereit, POST Nachricht, GET /termine).
+- Datenschutz: Abschnitt „Chat-Assistent“ mit markierten Angaben für den Livebetrieb; Satz „speichert nichts im Browser“
+  angepasst.
+- Katalog um sechs Punkte ergänzt (eigene NAHX-Instanz, Inhalte, WhatsApp, Code-Nutzung, Referenz, Anschluss): 38 Punkte.
+
+Prüfung: Bau ohne Befund, Playwright 18 Seiten × 5 Breiten ohne Überlauf und Konsolenfehler, Chatablauf auf Desktop
+(Vorschlag, Freitext, Kalender, Termin, Seitenwechsel mit schwebendem Handy) und auf 390 px mit Touch (Vollbild, Senden,
+Zurück), ohne JavaScript (Feld gesperrt, Knopf verborgen). Nicht geprüft: echtes iPhone mit Bildschirmtastatur.

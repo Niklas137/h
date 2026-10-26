@@ -76,6 +76,12 @@ PORTAL = (f'<svg viewBox="270 -6 298 228" preserveAspectRatio="xMidYMid meet" ar
 FLUG_TIEFE = 1800  # Abstand der Szenen in px Tiefe
 
 KOPF_SCRIPT = "document.documentElement.classList.add('js');"
+# Assistent: das Mint-A aus dem Favicon und die Symbole der Handy-Statusleiste (Netz, WLAN, Akku)
+ASSISTENT_A = ('<svg viewBox="0 0 64 64"><path fill="currentColor" fill-rule="evenodd" transform="translate(12 13) scale(0.1397) translate(-276 0)" '
+               'd="M414 0L562 216H276Z M414 76L504 216H325Z M414 137L465 216H364Z"/></svg>')
+HANDY_SYMBOLE = ('<svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>'
+                 '<svg viewBox="0 0 16 12" width="16" height="12"><path d="M1.2 4.4a9.8 9.8 0 0 1 13.6 0M3.8 7.1a6.1 6.1 0 0 1 8.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="10.2" r="1.5"/></svg>'
+                 '<svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="22" height="11" rx="3.2" fill="none" stroke="currentColor" opacity=".45"/><rect x="2.2" y="2.2" width="16" height="7.6" rx="1.8"/><path d="M24.5 4v4a2 2 0 0 0 0-4z" opacity=".45"/></svg>')
 FUSS_SCRIPT = ""  # Bewegung und Menü liegen in assets/bewegung.js
 
 
@@ -375,6 +381,14 @@ class Bau:
 
         if typ == "kontakt":
             return self.kontakt(sprache, pfad, a)
+        if typ == "assistent":
+            punkte = "".join(f"<li>{frag(x)}</li>" for x in a.get("punkte", []))
+            kopf_c = (f'<div class="assistent-text reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2>{frag(a["h2"])}</h2>'
+                      + (f'<p class="abschnitt-text">{frag(a["text"])}</p>' if a.get("text") else "")
+                      + (f'<ul class="assistent-punkte">{punkte}</ul>' if punkte else "")
+                      + (f'<p class="assistent-hinweis">{frag(a["hinweis"])}</p>' if a.get("hinweis") else "")
+                      + (f'<p class="cta-reihe">{self.cta(sprache, pfad, a["link"], "cta-zweit")}</p>' if a.get("link") else "") + "</div>")
+            return f'<section class="abschnitt innen assistent"{ident}><div class="assistent-raster">{kopf_c}<div class="assistent-buehne">{self.handy(sprache, pfad, False)}</div></div></section>'
         raise ValueError(f"Unbekannter Abschnittstyp: {typ}")
 
     def kontakt(self, sprache: str, pfad: str, a: dict) -> str:
@@ -388,6 +402,44 @@ class Bau:
     <div class="karte reveal" style="--i:1"><h2>{frag(a["themen_h2"])}</h2><ul>{themen}</ul></div>
   </div>
 </section>"""
+
+    # ------------------------------------------------------------------ Assistent (Chat im Handy)
+    def handy(self, sprache: str, pfad: str, schwebend: bool) -> str:
+        """Das Handy mit Chat. Inline in einem Abschnitt oder schwebend am Seitenende (öffnet über den Chat-Knopf).
+        Ohne JavaScript bleibt es eine Ansicht mit Begrüßung und Hinweis auf die E-Mail."""
+        a = self.sprachen[sprache]["assistent"]
+        tx = a["texte"]
+        ds = esc(self.link(pfad, self.pfad(sprache, "datenschutz")))
+        klasse = "handy schwebend" if schwebend else "handy"
+        versteckt = " hidden" if schwebend else ""
+        return f"""<div class="{klasse}" data-assistent{versteckt} role="region" aria-label="{esc(tx["titel"])}">
+  <div class="handy-rahmen"><div class="handy-schirm">
+    <div class="handy-status" aria-hidden="true"><span class="handy-uhr">9:41</span><span class="handy-insel"></span><span class="handy-symbole">{HANDY_SYMBOLE}</span></div>
+    <div class="chat-kopf">
+      <button class="chat-zurueck" type="button" aria-label="{esc(tx["zu"])}" hidden><svg class="ic-zurueck" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="ic-zu" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+      <span class="chat-avatar" aria-hidden="true">{ASSISTENT_A}</span>
+      <div class="chat-wer"><strong>{esc(tx["titel"])}</strong><span class="chat-unter">{esc(tx["unter_demo"])}</span></div>
+      <a class="chat-neu" href="#" title="{esc(tx["neu"])}" aria-label="{esc(tx["neu"])}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+    <div class="chat-verlauf" role="log" aria-live="polite"><div class="blase bot">{frag(tx["gruss_demo"].replace("{{test:", "").replace("}}", ""))}</div><noscript><div class="blase bot">{frag(tx["ohne_js"])}</div></noscript></div>
+    <div class="chat-vorschlaege">{"".join(f'<button class="chip" type="button" disabled>{esc(v)}</button>' for v in tx["vorschlaege"])}</div>
+    <form class="chat-eingabe"><label class="nur-vorlesen" for="chat-feld">{esc(tx["platz"])}</label><textarea id="chat-feld" class="chat-feld" rows="1" maxlength="1500" placeholder="{esc(tx["platz"])}" disabled></textarea><button class="chat-senden" type="submit" aria-label="{esc(tx["senden"])}" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form>
+    <p class="chat-fuss"><span class="chat-fuss-text">{frag(tx["fuss_demo"])}</span> <a href="{ds}">{esc(tx["datenschutz"])}</a></p>
+    <span class="handy-home" aria-hidden="true"></span>
+  </div></div>
+</div>"""
+
+    def assistent_daten(self, sprache: str) -> str:
+        a = self.sprachen[sprache]["assistent"]
+        d = {"sprache": sprache, "api": (self.site.get("assistent") or {}).get("api", ""), "texte": a["texte"], "demo": a["demo"]}
+        roh = json.dumps(d, ensure_ascii=False).replace("</", "<\\/")
+        return f'<script type="application/json" id="assistent-daten">{roh}</script>'
+
+    def chat_knopf(self, sprache: str) -> str:
+        tx = self.sprachen[sprache]["assistent"]["texte"]
+        return (f'<button class="chat-knopf" type="button" hidden aria-label="{esc(tx["knopf_label"])}">'
+                f'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18.5V6.8A2.8 2.8 0 0 1 7.8 4h8.4A2.8 2.8 0 0 1 19 6.8v6.4a2.8 2.8 0 0 1-2.8 2.8H9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 10h.01M12 10h.01M15 10h.01" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>'
+                f'<span>{esc(tx["knopf"])}</span></button>')
 
     # ------------------------------------------------------------------ Seite
     def head(self, sprache: str, seite_key: str, pfad: str, title: str, description: str, robots: str, json_ld: dict | None) -> str:
@@ -528,6 +580,8 @@ class Bau:
             json_ld["url"] = self.absolut(pfad)
             json_ld["isPartOf"]["url"] = self.absolut("/")
         abschnitte = "".join(self.abschnitt(sprache, pfad, a) for a in s["abschnitte"])
+        hat_handy = any(a["typ"] == "assistent" for a in s["abschnitte"])
+        chat = ("" if hat_handy else self.handy(sprache, pfad, True)) + self.chat_knopf(sprache) + self.assistent_daten(sprache)
         html_ = f"""<!doctype html>
 <html lang="{sprache}">
 <head>
@@ -540,8 +594,10 @@ class Bau:
   {abschnitte}
 </main>
 {self.fuss(sprache, pfad)}
+{chat}
 <script src="{esc(self.link(pfad, "/assets/bewegung.js"))}" defer></script>
 <script src="{esc(self.link(pfad, "/assets/szene3d.js"))}" defer></script>
+<script src="{esc(self.link(pfad, "/assets/assistent.js"))}" defer></script>
 </body>
 </html>
 """

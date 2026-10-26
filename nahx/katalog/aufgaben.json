@@ -92,11 +92,11 @@
  {
   "id": "n-termin",
   "wer": "niklas",
-  "wann": "nach",
-  "bereich": "Kontakt",
-  "titel": "Terminbuchung entscheiden",
-  "text": "Soll man ein 30-Minuten-Erstgespräch online buchen können (z. B. Cal.com oder Calendly)? Wenn nein, nehme ich den Platzhalter raus.",
-  "liefern": "Buchungslink oder „nein“"
+  "wann": "vor",
+  "bereich": "Chat",
+  "titel": "Terminbuchung über den Chat bestätigen",
+  "text": "Erstgespräche bucht jetzt der Chat mit Klick-Kalender (in der Vorschau mit Testterminen). Ein Werkzeug wie Calendly ist dann nicht nötig. Welche Wochentage und Uhrzeiten sollen buchbar sein, und wie lange vorher?",
+  "liefern": "Tage, Uhrzeiten, Vorlauf"
  },
  {
   "id": "n-antwort",
@@ -285,6 +285,60 @@
   "bereich": "Umsetzung",
   "titel": "Anpassung nach Gerätetest",
   "text": "Je nach Ergebnis vom iPhone-Test: 3D-A auf Handys als Standbild, Flug kürzen oder Bildgrößen anpassen.",
+  "liefern": ""
+ },
+ {
+  "id": "n-assistent",
+  "wer": "niklas",
+  "wann": "vor",
+  "bereich": "Chat",
+  "titel": "Eigenen NAHX-Assistenten einrichten",
+  "text": "Der FSH-Assistent antwortet nur auf den FSH-Domains und arbeitet mit FSH-Texten, Falks Kalender und Falks Postfach. NAHX braucht eine eigene Instanz: eigenes Cloudflare-Konto getrennt von FSH, eigener Anthropic-API-Schlüssel, Datenbank, Kalender und Empfänger für Anfragen. Schlüssel nur im Cloudflare-Dashboard eintragen, nie in den Chat oder in Dateien.",
+  "liefern": "Cloudflare-Konto bereit, Kalender, E-Mail für Anfragen"
+ },
+ {
+  "id": "n-assistent-inhalt",
+  "wer": "niklas",
+  "wann": "vor",
+  "bereich": "Chat",
+  "titel": "Festlegen, was der Assistent sagt",
+  "text": "Grundlage sind die Demo-Antworten in der Vorschau. Passen Ton, Themen und Preise? Welche Sprachen (Deutsch, Englisch, auch Ukrainisch)? Was soll er nie sagen oder versprechen?",
+  "liefern": "OK oder Änderungen zu den Demo-Antworten"
+ },
+ {
+  "id": "n-whatsapp",
+  "wer": "niklas",
+  "wann": "nach",
+  "bereich": "Chat",
+  "titel": "WhatsApp-Kanal entscheiden",
+  "text": "Soll derselbe Assistent auch über WhatsApp erreichbar sein? Dafür braucht es eine eigene Nummer und einen WhatsApp-Business-Zugang.",
+  "liefern": "ja oder nein, ggf. Nummer"
+ },
+ {
+  "id": "b-assistent-code",
+  "wer": "beide",
+  "wann": "vor",
+  "bereich": "Chat",
+  "titel": "Nutzung des Assistenten-Codes klären",
+  "text": "Der FSH-Assistent liegt im Repo der FSH-Website. Darf NAHX den Code als Grundlage für den eigenen Assistenten und für Chatbots für Kunden verwenden? Ähnlich wie bei 614 One kurz schriftlich festhalten.",
+  "liefern": "kurze Vereinbarung"
+ },
+ {
+  "id": "f-assistent-referenz",
+  "wer": "falk",
+  "wann": "nach",
+  "bereich": "Freigaben",
+  "titel": "FSH-Assistent als Referenz zeigen?",
+  "text": "Darf der Chatbot der FSH-Website auf der NAHX-Seite als Referenzprojekt erscheinen, mit oder ohne Namen von FSH?",
+  "liefern": "ja oder nein"
+ },
+ {
+  "id": "c-assistent",
+  "wer": "claude",
+  "wann": "vor",
+  "bereich": "Chat",
+  "titel": "NAHX-Assistenten vorbereiten und anschließen",
+  "text": "Eigenen Worker mit NAHX-Anweisungen, NAHX-Domain und Kalender aufsetzen, Adresse in site.json eintragen, Datenschutztext für den Chat mit echten Angaben ergänzen. Die Prüflogik und die FSH-Website bleiben unberührt.",
   "liefern": ""
  }
 ]

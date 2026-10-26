@@ -62,7 +62,8 @@ bestimmt Startsprache und `x-default`.
 Bis alles feststeht, stehen Testwerte in `<mark class="test">…</mark>` (gestrichelt umrandet, hochgestelltes „Test“).
 Solange `site.json` einen Schlüssel `testdaten` hat, zeigt jede Seite unten zusätzlich einen Hinweis. Zum Livegang:
 alle `<mark class="test">` in `inhalt/*.json` (dort als `class=\"test\"` maskiert) durch echte Angaben ersetzen und `testdaten` aus `site.json` löschen.
-Neue Abschnittstypen: `angebote` (Karten mit Rahmen und Link), `stimmen` (Rückmeldungen), `portraet` (Porträt mit Fakten);
+Neue Abschnittstypen: `angebote` (Karten mit Rahmen und Link), `stimmen` (Rückmeldungen), `portraet` (Porträt mit Fakten),
+`assistent` (Chat im Handy, siehe unten);
 Kontakt kennt `wege` (weitere Kontaktwege).
 
 ## Marke und Logo
@@ -160,3 +161,13 @@ abgesenkt und nie wieder angehoben (kein Springen); Risse und Kontur dezenter, a
 (Ordner mit `index.html`), `404.html` im Stamm wird von GitHub Pages, Cloudflare Pages und Netlify als Fehlerseite
 genommen. Vor dem Livegang: Basis-URL setzen, Rechtstexte vervollständigen, ohne `--noindex` bauen und prüfen.
 `.github/workflows/website.yml` kann als Vorlage dienen (Pfad `nahx/` statt `website/`).
+
+## Chat im Handy (`assets/assistent.js`)
+
+Abschnitt `assistent` zeigt Text und ein Handy, in das man direkt schreibt; unter 700 px öffnet es sich bildschirmfüllend.
+Seiten ohne den Abschnitt bekommen einen Chat-Knopf und ein schwebendes Handy. Texte und Demo-Antworten stehen in
+`inhalt/<sprache>.json` → `assistent` (`texte`, `demo.wissen` mit `stichworte`, `antwort`, `chips`, optional `kalender`;
+`=wort` heißt ganzes Wort, sonst Wortanfang; `{{test:…}}` markiert Testwerte in einer Antwort).
+`site.json` → `assistent.api` leer = Demo ohne Server. Mit Adresse eines Assistenten nach dem Protokoll des FSH-Assistenten
+(`GET` → `{bereit}`, `POST {sitzung, nachricht, sprache}` → `{antwort, kalender}`, `GET …/termine?sprache=`) antwortet die KI;
+der Server muss die NAHX-Domain als Herkunft zulassen.

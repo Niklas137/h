@@ -180,5 +180,9 @@
   "testdaten": {
     "de": "Vorschau mit Testdaten · markierte Angaben werden ersetzt",
     "en": "Preview with test data · marked details will be replaced"
+  },
+  "assistent": {
+    "api": "",
+    "_hinweis": "Leer = Demo mit vorbereiteten Antworten. Adresse eines NAHX-Assistenten (gleiches Protokoll wie der FSH-Assistent, /api/chat) eintragen, dann antwortet die KI."
   }
 }
