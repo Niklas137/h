@@ -6,6 +6,10 @@
   var html = document.documentElement;
   var ruhig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fein = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  // Leichte Fassung für Handys und Tablets: kein 3D-Flug (36 räumliche Ebenen, rund 200 MB Grafikspeicher bei
+  // dreifacher Pixeldichte, Absturz in Safari auf dem iPhone am 2026-10-26). Der Flug läuft dort als ruhige Folge.
+  var leicht = window.matchMedia('(max-width: 899px), (pointer: coarse)').matches;
+  if (leicht) html.classList.add('leicht');
 
   // Menü
   var m = document.querySelector('.menue-schalter'), n = document.getElementById('nav'), K = document.querySelector('.kopf');
@@ -75,7 +79,7 @@
 
   // Flug durch die A-Portale (Startseite): Scrollen fährt die Kamera in die Tiefe, sanft nachgeführt (Schweben).
   var F = document.querySelector('.flug');
-  if (F && !ruhig && window.CSS && CSS.supports('transform-style', 'preserve-3d')) {
+  if (F && !ruhig && !leicht && window.CSS && CSS.supports('transform-style', 'preserve-3d')) {
     F.classList.add('flug-3d');
     var welt = F.querySelector('.flug-welt'), kam = F.querySelector('.flug-kamera');
     var D = parseFloat(F.dataset.tiefe) || 1800;
