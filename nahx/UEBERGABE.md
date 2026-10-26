@@ -6,9 +6,9 @@ damit ein neues Projekt ohne Zugriff auf den alten Chat nahtlos weiterarbeiten k
 ## 1. Wo alles liegt
 
 - **Repository:** `Niklas137/h`, Ordner `nahx/`. Cyan-Stand: Branch `claude/nahx-website-concept-34tlvk`.
-  **Mint-Stand (aktuell):** Branch `claude/nahx-mint` (abgezweigt von `f9464cf`).
+  **Mint-Stand (aktuell):** Branch `claude/nahx-mint` (abgezweigt von `f9464cf`), Flug ab Commit `a0da6c6`.
 - **Vorschau (Claude-Artefakt, für jeden mit dem Link freigegeben, noindex):** https://claude.ai/artifact/Gr2LmKRN3EEmCko43L77bh
-  (Version 21 = Mint-Stand; Version 20 = letzter Cyan-Stand, über den Versionsverlauf erreichbar).
+  (Version 22 = Mint mit Flug durch A-Portale; 21 = Mint ohne Flug; 20 = letzter Cyan-Stand, alle über den Versionsverlauf).
 - **Kein Pull Request**, kein Merge nach `main`. Beides nur nach ausdrücklicher Freigabe durch Niklas.
 
 ```
