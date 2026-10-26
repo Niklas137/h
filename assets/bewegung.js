@@ -23,6 +23,8 @@
     requestAnimationFrame(schritt);
   }
   function zeige(el) { el.classList.add('sichtbar'); el.querySelectorAll('[data-zahl]').forEach(function (z) { if (ruhig) z.textContent = z.getAttribute('data-zahl'); else zaehle(z); }); }
+  // Zahlen stehen im HTML richtig (auch ohne JavaScript); nur wenn hochgezählt wird, vorher auf 0 setzen
+  if (!ruhig && 'IntersectionObserver' in window) { document.querySelectorAll('[data-zahl]').forEach(function (z) { z.textContent = z.getAttribute('data-zahl').replace(/\d/g, '0'); }); }
   if (ruhig || !('IntersectionObserver' in window)) { R.forEach(zeige); }
   else { var io = new IntersectionObserver(function (es) { es.forEach(function (x) { if (x.isIntersecting) { zeige(x.target); io.unobserve(x.target); } }); }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 }); R.forEach(function (e) { io.observe(e); }); }
 
@@ -124,6 +126,9 @@
     window.addEventListener('scroll', function () { zielAusScroll(); los(); }, { passive: true });
     window.addEventListener('resize', function () { schmal = window.matchMedia('(max-width: 899px)').matches; zielAusScroll(); los(); });
     // Keine Neigung mit dem Zeiger (Wunsch 2026-10-26: das Logo bewegt sich ohne Einfluss des Zeigers)
+    // Flug überspringen: direkt hinter den Flug, ohne durch alle Szenen zu fahren
+    var skip = F.querySelector('.flug-skip');
+    if (skip) skip.addEventListener('click', function (e) { e.preventDefault(); window.scrollTo({ top: F.getBoundingClientRect().top + window.scrollY + F.offsetHeight, behavior: 'instant' }); var n = F.nextElementSibling && F.nextElementSibling.nextElementSibling; var h = n && n.querySelector('h2'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } });
     // Tastatur: ein Fokus in einer Szene fährt die Kamera dorthin
     F.addEventListener('focusin', function (e) {
       var sz = e.target.closest('.flug-szene'); if (!sz) return;

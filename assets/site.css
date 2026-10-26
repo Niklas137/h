@@ -74,6 +74,7 @@ html.js .zeilen.reveal:not(.sichtbar) .zeile>span,html.js .reveal:not(.sichtbar)
 .nav a:hover::after,.nav a[aria-current="page"]::after{transform:scaleX(1)}
 .nav a[aria-current="page"]{color:var(--mint)}
 .nav .kopf-cta{display:none}
+@media (min-width:1100px){.nav .kopf-cta{display:inline-flex;padding:10px 16px;font-size:14px;margin-left:6px}.nav .kopf-cta::after{font-size:15px}.nav a.kopf-cta::after{content:"→";position:static;width:auto;height:auto;background:none;transform:none;display:inline}.nav a.kopf-cta,.nav a.kopf-cta:hover{color:var(--mint-ink)}}
 .kopf-aktionen{display:flex;align-items:center;gap:6px}
 .schalter{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font:400 11px/1 var(--titel);letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
 .schalter:hover{border-color:var(--mint);color:var(--ink)}
@@ -440,7 +441,7 @@ main.recht .fliess h2{font-size:19px;margin-top:0}
 .flug-tafel img{aspect-ratio:4/3!important}
 
 /* 3D-Modus */
-.flug-3d{height:calc(var(--szenen) * 125vh + 100vh)}
+.flug-3d{height:calc(var(--szenen) * 100vh + 100vh)}
 .flug-3d .flug-buehne{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;perspective:1000px;perspective-origin:50% 50%;
   background:radial-gradient(ellipse 50% 45% at 50% 52%,rgba(0,240,190,.10),rgba(0,240,190,0) 70%),radial-gradient(ellipse 120% 80% at 50% 120%,rgba(52,82,74,.45),rgba(52,82,74,0) 60%),var(--bg)}
 .flug-3d .flug-kamera,.flug-3d .flug-welt{position:absolute;inset:0;transform-style:preserve-3d}
@@ -476,6 +477,10 @@ main.recht .fliess h2{font-size:19px;margin-top:0}
 .flug-hud-balken{display:block;position:absolute;left:0;right:0;bottom:-10px;height:1px;background:var(--line)}
 .flug-hud-balken b{display:block;height:100%;background:var(--mint);transform-origin:0 50%;transform:scaleX(var(--fp,0))}
 .flug-3d .flug-weiter{display:flex}
+.flug-skip{display:none}
+.flug-3d .flug-skip{display:inline-flex;position:absolute;right:var(--rand);top:calc(var(--kopf) + 16px);z-index:4;font-family:var(--titel);font-size:13px;color:var(--muted);padding:8px 14px;border:1px solid var(--line-2);border-radius:999px;background:rgba(3,9,7,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.flug-3d .flug-skip:hover,.flug-3d .flug-skip:focus-visible{color:var(--ink);border-color:var(--mint)}
+.held-fakten{font-family:var(--titel);font-size:13px;letter-spacing:.06em;color:var(--muted);margin-top:22px}
 @media (max-width:899px){
   .flug-3d .flug-text{padding:20px 18px}
   .flug-3d .flug-szene:not(.flug-szene-start):not(.flug-szene-ende) .flug-text{--x:0px!important;--y:15vh!important}
@@ -483,6 +488,42 @@ main.recht .fliess h2{font-size:19px;margin-top:0}
   .flug-3d .flug-hud{bottom:20px}
   .flug-hud-name{display:none}
 }
+
+/* ---------- Testdaten: sichtbar markiert, bis echte Angaben feststehen ---------- */
+.testband{position:fixed;left:0;right:0;bottom:12px;z-index:60;margin:0;padding:0 16px;text-align:center;pointer-events:none}
+.testband span{display:inline-block;font:500 11.5px/1.3 var(--titel);letter-spacing:.04em;color:var(--mint-ink);background:var(--mint-2);padding:6px 12px;border-radius:999px;box-shadow:0 8px 24px -8px rgba(0,0,0,.6);max-width:100%;text-align:center}
+mark.test{-webkit-box-decoration-break:clone;box-decoration-break:clone;margin:0 .12em;background:rgba(140,255,218,.10);color:inherit;outline:1px dashed rgba(140,255,218,.65);outline-offset:2px;border-radius:3px;padding:0 .2em}
+mark.test::after{content:"Test";font:600 .55em/1 var(--titel);letter-spacing:.08em;text-transform:uppercase;color:var(--mint);margin-left:.4em;vertical-align:super}
+.angebot-rahmen mark.test,.held-fakten mark.test{white-space:nowrap}
+:lang(en) mark.test::after{content:"Test"}
+@media print{.testband{display:none}}
+
+/* ---------- Angebote ---------- */
+.angebot-raster{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.angebot{display:flex;flex-direction:column;gap:12px;padding:28px 26px;border:1px solid var(--line);border-radius:6px;background:linear-gradient(180deg,var(--surface),var(--bg-2));position:relative}
+.angebot::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,var(--mint),rgba(0,240,190,0));border-radius:6px 6px 0 0}
+.angebot h3{font-size:24px;font-weight:600;line-height:1.15}
+.angebot p{font-size:15.5px;color:var(--muted)}
+.angebot ul{list-style:none;padding:0;margin:4px 0 0;display:grid;gap:8px;font-size:15px;color:var(--ink)}
+.angebot li{padding-left:22px;position:relative}
+.angebot li::before{content:"";position:absolute;left:2px;top:.55em;width:9px;height:9px;border:1.5px solid var(--mint);border-radius:2px;transform:rotate(45deg)}
+.angebot-rahmen{margin-top:auto;padding-top:14px;line-height:1.9;border-top:1px solid var(--line);font-family:var(--titel);font-size:15px!important;color:var(--ink)!important}
+.angebot .cta-zweit{align-self:flex-start;margin-top:6px}
+
+/* ---------- Stimmen (Platzhalter bis zur Freigabe) ---------- */
+.stimmen-raster{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.stimme{margin:0;padding:26px;border:1px dashed rgba(140,255,218,.45);border-radius:6px;display:flex;flex-direction:column;gap:14px;background:rgba(140,255,218,.03)}
+.stimme blockquote{margin:0;font-family:var(--titel);font-size:19px;line-height:1.45;color:var(--ink)}
+.stimme figcaption{font-size:14px;color:var(--muted)}
+
+/* ---------- Porträt ---------- */
+.portraet-raster{display:grid;gap:36px;align-items:center}
+@media (min-width:900px){.portraet-raster{grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:64px}}
+.portraet-bild{margin:0;aspect-ratio:4/5;border-radius:6px;border:1px dashed rgba(140,255,218,.5);background:radial-gradient(ellipse 70% 60% at 50% 35%,rgba(0,240,190,.16),rgba(0,240,190,0) 70%),var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;max-width:420px}
+.portraet-mono{font-family:var(--titel);font-weight:600;font-size:clamp(64px,9vw,120px);letter-spacing:.02em;color:var(--mint)}
+.portraet-bild figcaption{font-size:13px;color:var(--muted);text-align:center;padding:0 18px}
+.portraet-fakten{margin-top:18px}
+.weg{font-size:15px;color:var(--muted);margin-top:6px}
 
 /* Einblenden beim Scrollen (einmalig, dezent) */
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1),filter 1.1s ease;transition-delay:calc(var(--i,0)*.1s)}
@@ -510,3 +551,4 @@ h1{hyphens:manual}
   ::view-transition-old(root),::view-transition-new(root){animation:none}
 }
 @media print{.kopf,.fuss,.cta-reihe,.schalter,.sprung,.weiter,.punkte,.szene3d{display:none}body{background:#fff;color:#000}.leinwand{min-height:auto}}
+@media (max-width:599px){.testband{bottom:8px}.testband span{font-size:10.5px;padding:5px 10px}}
