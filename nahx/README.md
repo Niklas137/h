@@ -126,8 +126,11 @@ Zahlen stehen sofort, der Aufmacher klemmt nicht, kein Scroll-Snap.
 den Anspruch“: Raymarching des NAHX-A als Körper aus dunklem Glasstein mit Mikrostruktur und leuchtenden Rissen,
 Haupt- und Gegenlicht mit GGX-Glanz, Umgebungsreflexionen, weiche Schatten, Umgebungsverschattung, spiegelnder
 Boden, zweites A in der Tiefe, Lichtnebel, Staub, Bloom, Farbsaum, Vignette, Filmkorn, zeitliche Glättung.
-Reduzierte Auflösung (0,7 Desktop, 0,55 Handy), pausiert außerhalb des Bildes, Standbild bei reduzierter Bewegung,
-ohne WebGL entfällt sie.
+Seit 2026-10-26 („Logo schärfer, Farben stärker“): Auflösung nach Pixeldichte statt fest 0,7/0,55 (Retina-Desktop
+1,25-fach, Handy 1,0-fach, Obergrenze 3,2 bzw. 1,4 Mio. Pixel), regelt bei Ruckeln herunter und bei Reserve
+vorsichtig hoch; Mint-Kontur auf Vorder- und Rückseite des A wie im Logo, kräftigere Risse, ACES-Tonkurve, weniger
+Nachziehen, Farbsaum und Korn, Lichtsaum nur noch vom A (Boden und Hintergrund bleiben dunkel). Pausiert außerhalb
+des Bildes, Standbild bei reduzierter Bewegung, ohne WebGL entfällt sie.
 
 ## Platzhalter und offene Punkte
 

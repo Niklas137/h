@@ -137,6 +137,10 @@ Die Startseite beginnt mit einem scrollgesteuerten 3D-Flug durch fünf Szenen (A
 Beschreibung in `README.md`. Grenze der Prüfung: Testbrowser nur mit Software-Rendering (dort rund 6 Bilder/s),
 echte Geräte noch nicht geprüft.
 
+**3D-A schärfer und kräftiger (2026-10-26):** Ursache der Unschärfe war die feste Renderauflösung 0,7 (auf Retina
+effektiv 0,35 Gerätepixel, gemessen 1008 × 490 für 1440 × 700). Jetzt nach Pixeldichte (gemessen 1800 × 875) mit
+Leistungsregelung, Mint-Kontur wie im Logo, ACES-Tonkurve.
+
 ## 10. Offene Punkte (Entscheidung Niklas)
 
 - Domain festlegen, dann mit `--basis-url` bauen (Canonical, hreflang, Sitemap kommen automatisch).
