@@ -10,6 +10,9 @@
 (function () {
   var c = document.getElementById('szene3d');
   if (!c) { return; }
+  // Handys und Tablets: kein WebGL. Der Raymarching-Shader plus der 3D-Flug brachte Safari auf dem iPhone zum Absturz
+  // („wiederholt ein Problem aufgetreten“, 2026-10-26). Dort zeigt site.css ein Standbild der Szene.
+  if (window.matchMedia('(max-width: 899px), (pointer: coarse)').matches) { c.remove(); return; }
   var gl = c.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false, powerPreference: 'high-performance', preserveDrawingBuffer: false });
   if (!gl) { c.remove(); return; }
   var ruhig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

@@ -666,3 +666,9 @@ html.chat-vollbild .testband,html.chat-vollbild .chat-knopf{display:none}
 @media print{.chat-knopf,.handy.schwebend{display:none}}
 .assistent-text .cta-zweit{white-space:normal;max-width:100%}
 @media (max-width:399px){.held-fakten mark.test{white-space:normal}}
+
+/* Leichte Fassung für Handys und Tablets (2026-10-26): Standbild statt WebGL-Szene (szene3d.js bricht dort ab) */
+@media (max-width:899px),(pointer:coarse){
+  .markenbuehne{background:#030907 url(img/marke-standbild.jpg) center bottom/cover no-repeat}
+  .markenbuehne{background-image:image-set(url(img/marke-standbild.webp) type("image/webp"),url(img/marke-standbild.jpg) type("image/jpeg"))}
+}

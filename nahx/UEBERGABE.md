@@ -8,7 +8,7 @@ damit ein neues Projekt ohne Zugriff auf den alten Chat nahtlos weiterarbeiten k
 - **Repository:** `Niklas137/h`, Ordner `nahx/`. Cyan-Stand: Branch `claude/nahx-website-concept-34tlvk`.
   **Mint-Stand (aktuell):** Branch `claude/nahx-mint` (abgezweigt von `f9464cf`), Flug ab Commit `a0da6c6`.
 - **Vorschau (Claude-Artefakt, für jeden mit dem Link freigegeben, noindex):** https://claude.ai/artifact/Gr2LmKRN3EEmCko43L77bh
-  (Version 28 = Chat im Handy als Demo; 27 = Überarbeitung nach Kundensicht-Prüfbericht mit Testdaten; 22 = Mint mit Flug durch A-Portale;
+  (Version 29 = leichte Handy-Fassung; 28 = Chat im Handy als Demo; 27 = Überarbeitung nach Kundensicht-Prüfbericht mit Testdaten; 22 = Mint mit Flug durch A-Portale;
   21 = Mint ohne Flug; 20 = letzter Cyan-Stand, alle über den Versionsverlauf).
 - **Aufgabenkatalog für Niklas und Falk (Claude-Artefakt, privat, Status und Notizen gemeinsam gespeichert):**
   https://claude.ai/artifact/KsKynwTEwnXxWeXT1Qdw4u – Quelle `nahx/katalog/` (Daten `aufgaben.json`, Lesefassung `KATALOG.md`).
@@ -235,3 +235,14 @@ Umgesetzt in `nahx/`:
 Prüfung: Bau ohne Befund, Playwright 18 Seiten × 5 Breiten ohne Überlauf und Konsolenfehler, Chatablauf auf Desktop
 (Vorschlag, Freitext, Kalender, Termin, Seitenwechsel mit schwebendem Handy) und auf 390 px mit Touch (Vollbild, Senden,
 Zurück), ohne JavaScript (Feld gesperrt, Knopf verborgen). Nicht geprüft: echtes iPhone mit Bildschirmtastatur.
+
+## 14. Absturz auf dem iPhone und leichte Handy-Fassung (2026-10-26, Version 29)
+
+Niklas meldete, dass die Vorschau auf dem Handy nicht aufgeht; Screenshot aus Safari: „Auf https://claude.ai/artifact/…
+ist wiederholt ein Problem aufgetreten“ (Safari hat die Seite mehrfach abgebrochen). Messung auf 390 × 844 mit
+dreifacher Pixeldichte (Chromium): Der 3D-Flug legt 36 räumlich transformierte Ebenen mit zusammen 5,6 Mio. Pixel
+an, bei dreifacher Pixeldichte grob 200 MB Grafikspeicher, dazu 13 Filter und die WebGL-Szene (Raymarching).
+Umgesetzt: Bei `(max-width: 899px), (pointer: coarse)` kein 3D-Flug (ruhige Folge wie bei reduzierter Bewegung) und
+kein WebGL; die Markenbühne zeigt dort das Standbild `assets/img/marke-standbild.{webp,jpg}` (aus der Szene gerendert).
+Desktop unverändert. Gemessen danach auf dem Handy: 0 räumliche Ebenen, kein Canvas. Bestätigung auf dem echten iPhone
+steht aus.
