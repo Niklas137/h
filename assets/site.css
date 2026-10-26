@@ -672,3 +672,152 @@ html.chat-vollbild .testband,html.chat-vollbild .chat-knopf{display:none}
   .markenbuehne{background:#030907 url(img/marke-standbild.jpg) center bottom/cover no-repeat}
   .markenbuehne{background-image:image-set(url(img/marke-standbild.webp) type("image/webp"),url(img/marke-standbild.jpg) type("image/jpeg"))}
 }
+
+/* ===================== Effekte nach Art der StringTune-Demo, in Mint (2026-10-26, assets/effekte.js) =====================
+   Nur aktiv mit JavaScript und ohne reduzierte Bewegung (Klasse .fx). Alles 2D, auch auf Handys. */
+.fx-w{display:inline-block;white-space:nowrap}
+/* Pixel-Schrift: jedes Zeichen erscheint aus einem Mint-Pixel, einzelne Pixel stieben weg */
+.px-text{position:relative}
+.fx .px-text .px-z{display:inline-block;position:relative;opacity:0}
+.fx .px-text.px-an .px-z{animation:px-zeichen .5s calc(var(--i) * 16ms + 80ms) cubic-bezier(.2,.7,.2,1) both}
+.fx .px-text .px-z::after{content:"";position:absolute;left:50%;top:52%;width:.38em;height:.38em;margin:-.19em 0 0 -.19em;background:var(--mint);transform:scale(0);pointer-events:none}
+.fx .px-text.px-an .px-z::after{animation:px-pixel .55s calc(var(--i) * 16ms) steps(5,end) both}
+@keyframes px-zeichen{0%,40%{opacity:0;filter:blur(3px)}100%{opacity:1;filter:none}}
+@keyframes px-pixel{0%{transform:scale(0);opacity:1}30%{transform:scale(1);opacity:1}100%{transform:scale(.2);opacity:0}}
+.px-staub{position:absolute;width:var(--g);height:var(--g);background:var(--mint);opacity:0;pointer-events:none}
+.fx .px-an .px-staub{animation:px-staub 1.1s var(--d) steps(6,end) both}
+@keyframes px-staub{0%{opacity:0;transform:none}15%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+/* Wellen-Schrift (Transform setzt effekte.js je nach Scroll-Tempo) */
+.wl-z{display:inline-block}
+/* Pixel-Übergang: Kacheln über Fotoszenen verschwinden in zufälliger Reihenfolge mit dem Scroll-Fortschritt --p */
+.mosaik{position:absolute;inset:0;z-index:1;display:grid;grid-template-columns:repeat(var(--c),1fr);grid-template-rows:repeat(var(--r),1fr);pointer-events:none}
+.mosaik i{background:var(--bg);opacity:clamp(0,calc((var(--s) - (var(--p,1) - .06) / .34) * 14),1)}
+.mosaik i.m{background:var(--mint);opacity:clamp(0,calc((var(--s) - (var(--p,1) - .06) / .34) * 14),.85)}
+/* Fortschrittslinie */
+.fx-linie{position:fixed;left:0;right:0;top:0;height:2px;z-index:45;background:linear-gradient(90deg,var(--mint),var(--mint-2));transform:scaleX(0);transform-origin:left;pointer-events:none;box-shadow:0 0 10px rgba(0,240,190,.6)}
+html.chat-vollbild .fx-linie{display:none}
+/* Wort-Bühne: ohne JavaScript eine ruhige Liste, mit .wb-an eine klebende Bühne mit mitfahrendem A */
+.wortbuehne{position:relative;background:var(--bg);overflow:clip}
+.wb-buehne{position:relative;padding:96px var(--rand);display:grid;gap:28px;justify-items:start;max-width:var(--innen);margin:0 auto}
+.wb-objekt{width:min(220px,50vw);opacity:.9}
+.wb-objekt svg{display:block;width:100%;height:auto;overflow:visible}
+.wb-woerter{list-style:none;margin:0;padding:0;display:grid;gap:18px}
+.wb-gross{display:block;font:600 clamp(40px,8vw,128px)/1 var(--titel);letter-spacing:-.03em;color:var(--ink)}
+.wb-gross em{font-style:normal;color:var(--mint)}
+.wb-klein{display:block;margin-top:10px;color:var(--muted);font-size:clamp(16px,1.6vw,20px)}
+.wb-streif,.wb-fortschritt{display:none}
+.wb-an{height:calc((var(--n) + 1) * 100vh)}
+.wb-an .wb-buehne{position:sticky;top:0;height:100vh;height:100svh;max-width:none;padding:0;overflow:hidden;display:block;
+  background:radial-gradient(60% 55% at 50% 52%,rgba(0,240,190,.08),transparent 70%)}
+.wb-an .wb-kicker{position:absolute;left:var(--rand);top:calc(var(--kopf) + 28px);z-index:3}
+.wb-an .wb-objekt{position:absolute;left:50%;top:50%;width:min(56vh,62vw);z-index:1;will-change:transform;transform:translate(-50%,-50%) rotate(-26deg) scale(.86)}
+.wb-an .wb-streif{display:block;position:absolute;left:50%;top:50%;width:150vmax;height:1px;z-index:0;will-change:transform;
+  background:linear-gradient(90deg,transparent,rgba(140,255,218,.0) 20%,rgba(140,255,218,.75) 50%,rgba(140,255,218,0) 80%,transparent);box-shadow:0 0 12px rgba(0,240,190,.5)}
+.wb-an .wb-woerter{position:absolute;inset:0;z-index:2;display:block}
+.wb-an .wb-wort{position:absolute;left:0;right:0;top:50%;padding:0 var(--rand);text-align:center;opacity:var(--o,0);
+  transform:translateY(calc(-50% + var(--t,0) * -90px)) scale(calc(1 + var(--t,0) * -.06));filter:blur(calc((1 - var(--o,0)) * 14px))}
+.wb-an .wb-gross{text-shadow:0 4px 40px rgba(0,0,0,.85)}
+.wb-an .wb-klein{max-width:34ch;margin:16px auto 0;color:var(--mint-2)}
+.wb-an .wb-fortschritt{display:block;position:absolute;left:var(--rand);right:var(--rand);bottom:36px;height:1px;background:var(--line);z-index:3}
+.wb-an .wb-fortschritt i{display:block;height:100%;background:var(--mint);transform:scaleX(0);transform-origin:left}
+.leicht .wb-an .wb-wort{filter:none}
+@media (max-width:699px){.wb-an .wb-objekt{width:min(48vh,84vw)}.wb-an .wb-klein{font-size:16px}}
+@media (prefers-reduced-motion:reduce){.mosaik,.fx-linie,.px-staub{display:none}}
+
+/* ===================== Startseite nach dem FORGE-Video, in Mint (2026-10-26) =====================
+   Ohne JavaScript oder bei reduzierter Bewegung ruhige Fassungen; mit effekte.js (.bk-an, .gl-an, …) scrollgesteuert. */
+.fx-schmier{transition:text-shadow .2s linear}
+.fx .fx-schmier{text-shadow:calc(var(--v,0) * 1px) 0 0 rgba(0,240,190,.42),calc(var(--v,0) * -.6px) 0 0 rgba(140,255,218,.28)}
+
+/* 1. Bild wird Karte */
+.bildkarte{position:relative;background:var(--bg)}
+.bk-buehne{max-width:var(--innen);margin:0 auto;padding:72px var(--rand) 24px;display:grid;gap:28px}
+.bk-karte{position:relative;border-radius:28px;overflow:hidden;aspect-ratio:16/9;max-width:100%;background:var(--surface)}
+.bk-karte picture,.bk-karte img{display:block;width:100%;height:100%;object-fit:cover}
+.bk-schleier{position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,9,7,0) 40%,rgba(3,9,7,.55))}
+.bk-text{display:grid;gap:14px;max-width:760px}
+.bk-text h2{font-size:clamp(34px,5.4vw,84px);line-height:1}
+@media (max-width:699px){.bk-karte{aspect-ratio:4/5}}
+.bk-an{height:240vh}
+.bk-an .bk-buehne{position:sticky;top:0;height:100vh;height:100svh;max-width:none;padding:0;display:block;overflow:hidden}
+.bk-an .bk-karte{position:absolute;inset:0;aspect-ratio:auto;border-radius:0;--bk-o:calc(var(--kopf) + 3vh);--bk-s:max(var(--rand),9vw);--bk-u:38vh;
+  clip-path:inset(calc(var(--z,0) * var(--bk-o)) calc(var(--z,0) * var(--bk-s)) calc(var(--z,0) * var(--bk-u)) calc(var(--z,0) * var(--bk-s)) round calc(var(--z,0) * 30px))}
+.bk-an .bk-karte img{transform:scale(calc(1.16 - var(--z,0) * .16));transform-origin:50% 40%}
+.bk-an .bk-schleier{opacity:calc(1 - var(--z,0))}
+.bk-an .bk-text{position:absolute;left:max(var(--rand),9vw);right:var(--rand);bottom:6vh;opacity:clamp(0,calc((var(--z,0) - .55) * 3),1);transform:translateY(calc((1 - var(--z,0)) * 40px))}
+@media (max-width:699px){.bk-an .bk-karte{--bk-s:var(--rand);--bk-u:46vh}.bk-an .bk-text{left:var(--rand)}.bk-an .bk-text h2{font-size:clamp(30px,8.4vw,44px)}}
+
+/* 2. Projekte laufen seitlich durch */
+.galerie{position:relative;background:var(--bg)}
+.gl-buehne{padding:96px 0 48px;display:grid;grid-template-columns:minmax(0,1fr);gap:36px;align-content:center}
+.gl-kopf{max-width:var(--innen);width:100%;margin:0 auto;padding:0 var(--rand);display:grid;gap:14px}
+.gl-kopf h2{font-size:clamp(34px,5vw,76px);line-height:1;max-width:16ch}
+.gl-spur{display:flex;gap:20px;min-width:0;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px var(--rand) 18px;scrollbar-width:thin}
+.gl-karte{flex:none;width:min(78vw,440px);scroll-snap-align:start;display:grid;gap:8px;align-content:start;color:var(--ink);text-decoration:none;
+  background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:12px 12px 20px}
+.gl-bild{display:block;border-radius:16px;overflow:hidden;aspect-ratio:4/3;background:var(--bg-2)}
+.gl-bild img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.gl-karte:hover .gl-bild img{transform:scale(1.04)}
+.gl-nr{font:600 13px/1 var(--titel);color:var(--mint);letter-spacing:.12em;margin:10px 8px 0}
+.gl-bereich{font:400 11.5px/1.3 var(--titel);letter-spacing:.22em;text-transform:uppercase;color:var(--faint);margin:0 8px}
+.gl-titel{font:600 clamp(19px,1.7vw,24px)/1.2 var(--titel);margin:0 8px;text-wrap:balance}
+.gl-kurz{color:var(--muted);font-size:15.5px;line-height:1.5;margin:0 8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gl-ende{background:var(--mint);border-color:var(--mint);color:var(--mint-ink);align-content:center;gap:16px;padding:32px}
+.gl-ende .gl-titel{font-size:clamp(28px,2.6vw,40px);margin:0}.gl-ende .gl-kurz{color:var(--mint-ink);opacity:.8;margin:0}
+.gl-ende .cta{justify-self:start;background:var(--mint-ink);border-color:var(--mint-ink);color:var(--mint)}
+.gl-fortschritt{display:none}
+.gl-an .gl-buehne{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;padding:calc(var(--kopf) + 28px) 0 40px;align-content:center}
+.gl-an .gl-spur{overflow:visible;scroll-snap-type:none;will-change:transform;padding-bottom:0}
+.gl-an .gl-fortschritt{display:block;margin:0 var(--rand);height:1px;background:var(--line)}
+.gl-an .gl-fortschritt i{display:block;height:100%;background:var(--mint);transform:scaleX(0);transform-origin:left}
+@media (max-height:760px) and (min-width:900px){.gl-an .gl-karte{width:min(36vw,380px)}.gl-an .gl-bild{aspect-ratio:16/10}}
+
+/* 3. Tafeln schieben sich übereinander (position: sticky, auch ohne JavaScript) */
+.stapel{position:relative;background:var(--bg);padding-bottom:12vh}
+.st-kopf{padding-top:96px;padding-bottom:40px;display:grid;gap:14px}
+.st-liste{padding:0 max(12px,calc(var(--rand) - 16px))}
+.st-tafel{position:sticky;top:calc(var(--kopf) + 12px + var(--k) * 14px);min-height:calc(100vh - var(--kopf) - 48px);min-height:calc(100svh - var(--kopf) - 48px);
+  margin-bottom:6vh;border-radius:30px;overflow:hidden;transform-origin:50% 0;transform:scale(calc(1 - var(--d,0) * .05));--st-bg:#0B2A23;--st-ink:var(--ink);background:var(--st-bg);color:var(--st-ink)}
+.st-tafel::after{content:"";position:absolute;inset:0;background:#000;opacity:calc(var(--d,0) * .45);pointer-events:none}
+.st-tafel:nth-child(2){--st-bg:#0F4B3E}
+.st-tafel:nth-child(3){--st-bg:#00B48C;--st-ink:var(--mint-ink)}
+.st-tafel:nth-child(4){--st-bg:#00F0BE;--st-ink:var(--mint-ink)}
+.st-innen{position:relative;z-index:1;height:100%;min-height:inherit;display:grid;grid-template-rows:auto auto auto 1fr;align-content:start;gap:14px 48px;padding:clamp(24px,4vw,56px)}
+@media (min-width:900px){.st-innen{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.st-nr,.st-wort{grid-column:1 / -1}}
+.st-nr{font:600 13px/1 var(--titel);letter-spacing:.18em;opacity:.75}
+.st-wort{font:600 clamp(56px,12vw,200px)/.9 var(--titel);letter-spacing:-.04em;margin:8px 0 12px;color:inherit}
+.st-titel{font:600 clamp(20px,2.2vw,32px)/1.2 var(--titel);max-width:24ch}
+.st-text{max-width:52ch;font-size:17px;line-height:1.55;opacity:.85}
+.st-tafel:nth-child(n+3) .st-nr,.st-tafel:nth-child(n+3) .st-text{opacity:.8}
+.st-tafel:last-child{margin-bottom:0}
+
+/* 4. Zahlen mit Ring */
+.zl-raster{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.zl-karte{position:relative;display:grid;gap:8px;align-content:start;padding:28px;border-radius:24px;background:var(--surface);border:1px solid var(--line);min-height:240px;overflow:hidden}
+.zl-zahl{font:600 clamp(56px,6vw,92px)/1 var(--titel);color:var(--mint);letter-spacing:-.03em;font-variant-numeric:tabular-nums;position:relative;z-index:1}
+.zl-einheit{font:600 18px/1.3 var(--titel);position:relative;z-index:1}
+.zl-text{color:var(--muted);font-size:15.5px;line-height:1.5;margin-top:auto;position:relative;z-index:1}
+.zl-ring{position:absolute;right:18px;top:18px;width:96px;height:96px;transform:rotate(-90deg)}
+.zl-ring circle{fill:none;stroke-width:6}
+.zl-ring-grund{stroke:var(--line)}
+.zl-ring-wert{stroke:var(--mint);stroke-linecap:round;stroke-dasharray:326.7;stroke-dashoffset:calc(326.7 * (1 - var(--w)));filter:drop-shadow(0 0 6px rgba(0,240,190,.6))}
+.fx .zl-karte:not(.sichtbar) .zl-ring-wert{stroke-dashoffset:326.7}
+.fx .zl-ring-wert{transition:stroke-dashoffset 1.6s cubic-bezier(.2,.7,.2,1) .3s}
+.zl-hervor{background:var(--mint);border-color:var(--mint);color:var(--mint-ink)}
+.zl-hervor .zl-zahl{color:var(--mint-ink);font-size:clamp(34px,3.4vw,50px);white-space:nowrap}
+.zl-hervor .zl-text{color:var(--mint-ink);opacity:.8}
+.zl-hervor mark.test{color:var(--mint-ink);background:rgba(2,20,15,.08);outline-color:rgba(2,20,15,.5)}
+.zl-hervor mark.test::after{color:var(--mint-ink)}
+
+/* 5. Abschluss mit aufgehendem Leuchten und Riesen-Schriftzug */
+.abschluss{position:relative;overflow:hidden;background:var(--bg);padding-top:16vh;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:space-between}
+.ab-leuchten{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(38vmax 38vmax at 78% calc(30% + (1 - var(--a,1)) * 40%),rgba(140,255,218,.55),rgba(0,240,190,.28) 35%,rgba(0,240,190,0) 70%),
+             radial-gradient(120% 60% at 50% 110%,rgba(0,240,190,calc(.08 + var(--a,1) * .14)),transparent 60%)}
+.ab-innen{position:relative;z-index:1;display:grid;gap:18px;max-width:var(--innen)}
+.ab-innen h2{font-size:clamp(44px,8vw,132px);line-height:.95;max-width:12ch}
+.ab-riese{position:relative;z-index:1;margin:6vh 0 -0.12em;font:700 clamp(120px,31vw,560px)/.8 var(--titel);letter-spacing:-.05em;text-align:center;white-space:nowrap;
+  color:transparent;background-position:center calc(40% + var(--a,1) * 20%);background-size:cover;background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-stroke:1px rgba(140,255,218,.25);user-select:none}
+@supports not ((-webkit-background-clip:text) or (background-clip:text)){.ab-riese{color:var(--teal)}}
+.leicht .gl-an .gl-spur{will-change:auto}
