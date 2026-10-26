@@ -96,7 +96,8 @@ Platzhalter). Drei Leistungsbereiche: Technical Documentation, Software & Web Ap
 Fünf echte Projekte auf der Projektseite (je Ausgangssituation, Herausforderung, Beitrag, Lösungsansatz,
 Technologien, Status, Ablaufkette):
 1. Dokumentenprüfer: Vorprüfung technischer Dokumente (mit FSH Documentation; Rechte in Abstimmung)
-2. Kader-Manager für eine Vereinswebsite
+2. Trikotwand – interaktive Kaderseite für einen Floorballverein (bis 2026-10-26 „Kader-Manager“, umbenannt:
+   „ist was Individuelles und sollte nicht als Kader-Manager verkauft werden“)
 3. Website-Relaunch und wöchentliches SEO-Audit
 4. Mail-Triage und Tagesrunde (eigenes Werkzeug)
 5. Diese Website
@@ -130,13 +131,19 @@ Zusatz: **ohne das Gebäude**. Umgesetzt:
 - Fehler behoben: `@font-face` fehlte in `site.css`, Outfit und Source Sans 3 wurden nie geladen (nur Systemschrift).
 - 404-Seite zeigt jetzt die Schaltfläche „Zur Startseite“ (vorher griff die Ersetzung in `build.py` nicht).
 
+**Flug durch A-Portale (2026-10-26):** Wunsch „realistischer, mehrere Ebenen, durch jede schweben, eine krasse
+Website wie im Video“. Gewählt: A-Portale aus dem Logo (statt Foto-Tafeln, Technik-Schichten oder Zahnrad-Tunnel).
+Die Startseite beginnt mit einem scrollgesteuerten 3D-Flug durch fünf Szenen (Aufmacher, drei Bereiche, Ansatz),
+Beschreibung in `README.md`. Grenze der Prüfung: Testbrowser nur mit Software-Rendering (dort rund 6 Bilder/s),
+echte Geräte noch nicht geprüft.
+
 ## 10. Offene Punkte (Entscheidung Niklas)
 
 - Domain festlegen, dann mit `--basis-url` bauen (Canonical, hreflang, Sitemap kommen automatisch).
 - Impressum und Datenschutz mit echten Angaben füllen (keine Rechtsberatung).
 - Freigaben für Kundennamen, Screenshots oder Referenzen.
 - Rückmeldung zur Bewegung: welche Effekte stärker oder schwächer.
-- Prüfung auf echten Geräten (iPhone, Mac), besonders 3D-Szene und Vorhang-Effekt.
+- Prüfung auf echten Geräten (iPhone, Mac), besonders Flug durch die A-Portale (Flüssigkeit) und 3D-Markenbühne.
 - Merge nach `main` bzw. Pull Request erst nach Freigabe.
 - Mint-Stand: Board-Leitsatz „Weiterentwickeln“ statt „Prüfen“? (Heute „Prüfen“, passend zu den fünf freigegebenen Schritten.)
 - Mint-Stand: Foto „Industriehalle“ (Projektbühne, Projekteseite) behalten oder ersetzen? Zeigt ein Zahnrad.

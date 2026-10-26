@@ -69,6 +69,12 @@ PIKTO = {
     2: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="10" cy="24" r="4"/><circle cx="38" cy="12" r="4"/><circle cx="38" cy="36" r="4"/><path d="M14 24h8c4 0 6-2 8-6l4-6M22 24c4 0 6 2 8 6l4 6M14 24h20"/></svg>',
 }
 
+# A-Portal für den Flug (Geometrie wie WORTMARKE, ohne das kleine Innendreieck)
+_A = "M414 0L562 216H276Z M414 76L504 216H325Z"
+PORTAL = (f'<svg viewBox="270 -6 298 228" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">'
+          f'<path class="p-flaeche" fill-rule="evenodd" d="{_A}"/><path class="p-glanz" d="{_A}"/><path class="p-kante" d="{_A}"/></svg>')
+FLUG_TIEFE = 1800  # Abstand der Szenen in px Tiefe
+
 KOPF_SCRIPT = "document.documentElement.classList.add('js');"
 FUSS_SCRIPT = ""  # Bewegung und Menü liegen in assets/bewegung.js
 
@@ -420,6 +426,65 @@ class Bau:
   </div>{karte}{weiter}
 </div></section><span id="inhalt-weiter"></span>"""
 
+    def flug(self, sprache: str, seite_key: str, pfad: str, s: dict) -> str:
+        """Startseite: scrollgesteuerter Flug durch A-Portale. Jede Szene liegt als eigene Ebene in der Tiefe,
+        Texte, Foto-Tafeln, Portale, Lichtbahnen und Staub haben eigene Tiefen. Ohne JavaScript oder bei
+        reduzierter Bewegung erscheinen dieselben Inhalte als normale Abschnitte untereinander."""
+        f = s["flug"]
+        ui = self.sprachen[sprache]["ui"]
+        D = FLUG_TIEFE
+        szenen = f["szenen"]
+        n = len(szenen) + 2  # Start + Bereiche + Ende
+        el = lambda klasse, z, x="0px", y="0px", art="deko", extra="", inhalt="": (
+            f'<div class="flug-el {klasse}" data-art="{art}" style="--z:{z};--x:{x};--y:{y}{extra}">{inhalt}</div>')
+        portal = lambda z, rz=0, x="0px": (el("flug-hof", z + 90, x) + el("flug-portal", z, x, "-12vmin", "portal", f";--rz:{rz}deg", PORTAL)
+                                           + el("flug-portal flug-portal-hinten", z + 70, x, "-12vmin", "portal", f";--rz:{rz}deg", PORTAL))
+        teile = []
+        # Szene 0: Aufmacher
+        cta = ('<div class="cta-reihe">' + self.cta(sprache, pfad, s["cta"]["primaer"]) + self.cta(sprache, pfad, s["cta"]["sekundaer"], "cta-zweit") + "</div>") if s.get("cta") else ""
+        held = (f'<p class="kicker">{esc(s["kicker"])}</p><h1 class="zeilen">{zeilen(s["h1"])}</h1>'
+                f'<p class="held-absatz">{frag(s["einleitung"])}</p>{cta}')
+        teile.append(f'<div class="flug-szene flug-szene-start" data-szene="0" data-label="{esc(f.get("start_label", "Start"))}">'
+                     + el("flug-text flug-text-start", 0, "0px", "0px", "text", "", held) + portal(760, 0, "14vw") + "</div>")
+        # Szenen 1..n: Bereiche
+        for i, sz in enumerate(szenen, start=1):
+            R = i * D
+            seite = -1 if i % 2 else 1
+            l = sz["link"]
+            ziel = self.link(pfad, self.pfad(sprache, l["seite"], l.get("anker")))
+            text = (f'<p class="kicker">{esc(sz["kicker"])}</p><h2>{frag(sz["h2"])}</h2><p>{frag(sz["text"])}</p>'
+                    f'<a class="mehr" href="{esc(ziel)}">{esc(l["text"])}</a>')
+            foto = f'<div class="flug-tafel">{self.bild(sprache, pfad, sz["bild"], "(min-width: 900px) 40vw, 80vw")}</div>'
+            teile.append(f'<div class="flug-szene" data-szene="{i}" data-label="{esc(sz["label"])}">'
+                         + el("flug-text", R, f"{seite * 20}vw", "0px", "text", "", text)
+                         + el("flug-foto", R + 320, f"{-seite * 24}vw", "4vh", "foto", "", foto)
+                         + portal(R + 820, 4 * seite) + "</div>")
+        # Ende: Ansatz, Licht am Ende des Tunnels
+        e = f["ende"]
+        R = (n - 1) * D
+        el_ende = (f'<p class="kicker">{esc(e["kicker"])}</p><h2>{frag(e["h2"])}</h2><p>{frag(e["text"])}</p>'
+                   f'<p>{self.cta(sprache, pfad, e["link"], "pfeil")}</p>')
+        teile.append(f'<div class="flug-szene flug-szene-ende" data-szene="{n - 1}" data-label="{esc(e["label"])}">'
+                     + el("flug-text flug-text-ende", R, "0px", "0px", "text", "", el_ende)
+                     + el("flug-licht", R + 1600, "0px", "0px", "licht", "", self.bild(sprache, pfad, e["bild"], "100vw")) + "</div>")
+        # Lichtbahnen (Boden und Decke) und Staub in mehreren Tiefen, deterministisch erzeugt
+        laenge = (n + 1) * D + 2000
+        bahnen = "".join(el("flug-bahn", -600, x, y, "bahn", f";--l:{laenge}px") for x, y in
+                         (("-46vw", "44vh"), ("-18vw", "44vh"), ("18vw", "44vh"), ("46vw", "44vh"), ("-30vw", "-46vh"), ("30vw", "-46vh")))
+        import random
+        zufall = random.Random(7)
+        staub = []
+        for k in range(10):
+            punkte = ",".join(f'{zufall.randint(-900, 900)}px {zufall.randint(-520, 520)}px {zufall.choice((0, 0, 1))}px rgba(140,255,218,{zufall.uniform(.35, .9):.2f})' for _ in range(14))
+            staub.append(el("flug-staub", int((k + .5) * (n - 1) * D / 10) + 300, "0px", "0px", "staub", f";--punkte:{punkte}"))
+        hud = (f'<div class="flug-hud" aria-hidden="true"><span class="flug-hud-nr">01</span><span class="flug-hud-trenner">/</span>'
+               f'<span class="flug-hud-gesamt">{n:02d}</span><span class="flug-hud-name">{esc(f.get("start_label", "Start"))}</span>'
+               f'<i class="flug-hud-balken"><b></b></i></div>')
+        weiter = f'<a class="weiter flug-weiter" href="#inhalt-weiter" aria-label="{esc(ui.get("weiter", "Scrollen"))}"><span>{esc(ui.get("weiter", "Scrollen"))}</span><i></i></a>'
+        return (f'<section class="flug" aria-label="{esc(f.get("label", ""))}" data-tiefe="{D}" style="--szenen:{n}">'
+                f'<div class="flug-buehne"><div class="flug-kamera"><div class="flug-welt">{bahnen}{"".join(staub)}{"".join(teile)}</div></div>'
+                f'<div class="flug-nebel" aria-hidden="true"></div>{hud}{weiter}</div></section><span id="inhalt-weiter"></span>')
+
     def seite_html(self, sprache: str, seite_key: str) -> tuple[str, str]:
         t = self.sprachen[sprache]
         s = t["seiten"][seite_key]
@@ -442,7 +507,7 @@ class Bau:
 <body class="seite-{esc(seite_key)}">
 {self.kopf(sprache, seite_key, pfad)}
 <main id="inhalt" class="{esc(s.get("typ", "seite"))}">
-  {self.held(sprache, seite_key, pfad, s)}
+  {self.flug(sprache, seite_key, pfad, s) if s.get("flug") else self.held(sprache, seite_key, pfad, s)}
   {abschnitte}
 </main>
 {self.fuss(sprache, pfad)}

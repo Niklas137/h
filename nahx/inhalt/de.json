@@ -89,49 +89,6 @@
       },
       "abschnitte": [
         {
-          "typ": "leistungskarten",
-          "id": "leistungen",
-          "kicker": "Leistungen",
-          "h2": "Drei Bereiche, ein Ansatz",
-          "text": "Dokumentation, Software und Automatisierung greifen in der Praxis ineinander. Deshalb biete ich sie nicht getrennt an, sondern aus einer Hand – mit nachvollziehbaren Entscheidungen statt Versprechen.",
-          "karten": [
-            {
-              "bild": "blaupause",
-              "h3": "Technical Documentation",
-              "text": "Verständliche, präzise und strukturierte technische Inhalte für komplexe Produkte und Prozesse.",
-              "link": {
-                "text": "Mehr erfahren",
-                "seite": "leistungen",
-                "anker": "technical-documentation"
-              }
-            },
-            {
-              "bild": "code",
-              "h3": "Software &amp; Web Applications",
-              "text": "Individuelle digitale Werkzeuge und Webanwendungen, die konkrete Aufgaben vereinfachen.",
-              "link": {
-                "text": "Mehr erfahren",
-                "seite": "leistungen",
-                "anker": "software-web-applications"
-              }
-            },
-            {
-              "bild": "bokeh",
-              "h3": "Automation &amp; AI",
-              "text": "Wiederkehrende Abläufe effizienter gestalten und technische Prozesse gezielt unterstützen.",
-              "link": {
-                "text": "Mehr erfahren",
-                "seite": "leistungen",
-                "anker": "automation-ai"
-              }
-            }
-          ],
-          "link": {
-            "text": "Leistungen ansehen",
-            "seite": "leistungen"
-          }
-        },
-        {
           "typ": "buehne",
           "id": "projekte",
           "kicker": "Projekte",
@@ -153,8 +110,8 @@
             {
               "x": "52%",
               "y": "40%",
-              "titel": "Kader-Manager",
-              "text": "Web-Modul mit Trikot-Animation, Admin-Seite und geschütztem Veröffentlichen",
+              "titel": "Trikotwand",
+              "text": "Individuelle Kaderseite mit Trikot-Animation, Admin-Seite und geschütztem Veröffentlichen",
               "link": {
                 "seite": "projekte",
                 "anker": "projekt-2"
@@ -253,7 +210,60 @@
           "kicker": "Kontakt"
         }
       ],
-      "bild": "lichtleiter"
+      "bild": "lichtleiter",
+      "flug": {
+        "label": "Flug durch die drei Bereiche",
+        "start_label": "Start",
+        "szenen": [
+          {
+            "label": "Dokumentation",
+            "kicker": "01 · Technical Documentation",
+            "h2": "Technik, die man <em>versteht.</em>",
+            "text": "Technische Inhalte so aufbereiten, dass sie verständlich, strukturiert und prüfbar sind – für neue Dokumente ebenso wie für bestehende Unterlagen.",
+            "bild": "blaupause",
+            "link": {
+              "text": "Mehr erfahren",
+              "seite": "leistungen",
+              "anker": "technical-documentation"
+            }
+          },
+          {
+            "label": "Software",
+            "kicker": "02 · Software & Web Applications",
+            "h2": "Software, die <em>passt.</em>",
+            "text": "Digitale Werkzeuge, die eine konkrete Aufgabe vereinfachen: vom internen Hilfsmittel bis zur Webanwendung mit Konten und Berichten.",
+            "bild": "code",
+            "link": {
+              "text": "Mehr erfahren",
+              "seite": "leistungen",
+              "anker": "software-web-applications"
+            }
+          },
+          {
+            "label": "Automation",
+            "kicker": "03 · Automation & AI",
+            "h2": "Automatisieren, wo es <em>sich lohnt.</em>",
+            "text": "Wiederkehrende Arbeit erkennen und dort automatisieren, wo es sich lohnt. KI kommt zum Einsatz, wenn sie einen nachvollziehbaren Nutzen hat, nicht als Selbstzweck.",
+            "bild": "bokeh",
+            "link": {
+              "text": "Mehr erfahren",
+              "seite": "leistungen",
+              "anker": "automation-ai"
+            }
+          }
+        ],
+        "ende": {
+          "label": "Ansatz",
+          "kicker": "Drei Bereiche, ein Ansatz",
+          "h2": "Aus einer Hand.<br><em>Durch alle Ebenen.</em>",
+          "text": "Dokumentation, Software und Automatisierung greifen in der Praxis ineinander. Deshalb biete ich sie nicht getrennt an, sondern aus einer Hand – mit nachvollziehbaren Entscheidungen statt Versprechen.",
+          "bild": "lichtleiter",
+          "link": {
+            "text": "Leistungen ansehen",
+            "seite": "leistungen"
+          }
+        }
+      }
     },
     "leistungen": {
       "pfad": "leistungen/",
@@ -424,9 +434,9 @@
               "bild": "fabrik"
             },
             {
-              "titel": "Kader-Manager für eine Vereinswebsite",
+              "titel": "Trikotwand – interaktive Kaderseite für einen Floorballverein",
               "bereich": "Software & Web Applications",
-              "kurz": "Einhängbares Web-Modul mit Spielerkarten, Trikot-Animation und Admin-Pflege, ohne Bibliotheken.",
+              "kurz": "Individuelles Web-Modul: Trikots an der Stange, Spielerkarte mit Trikot-Animation und Pflege über eine Admin-Seite, ohne Bibliotheken.",
               "ausgang": "Ein Floorball-Verein wollte seinen Kader auf der Website zeigen: Trikots an der Stange, Spielerkarte mit Daten, Pflege ohne Programmierkenntnisse.",
               "herausforderung": "Eine Animation nach Videoreferenz, die auf dem Handy läuft, Daten, die der Verein selbst pflegt, und eine zweisprachige Oberfläche (Deutsch, Ukrainisch).",
               "beitrag": "Konzeption, Umsetzung, Datenmodell, Admin-Seite, Veröffentlichungsschnittstelle, Prüfbericht mit Befundstatus und Übergabenotiz für den Einbau.",

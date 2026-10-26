@@ -89,49 +89,6 @@
       },
       "abschnitte": [
         {
-          "typ": "leistungskarten",
-          "id": "leistungen",
-          "kicker": "Services",
-          "h2": "Three areas, one approach",
-          "text": "Documentation, software and automation are intertwined in practice. That is why I offer them together, from one source – with traceable decisions instead of promises.",
-          "karten": [
-            {
-              "bild": "blaupause",
-              "h3": "Technical Documentation",
-              "text": "Clear, precise and structured technical content for complex products and processes.",
-              "link": {
-                "text": "Learn more",
-                "seite": "leistungen",
-                "anker": "technical-documentation"
-              }
-            },
-            {
-              "bild": "code",
-              "h3": "Software &amp; Web Applications",
-              "text": "Custom digital tools and web applications that simplify specific tasks.",
-              "link": {
-                "text": "Learn more",
-                "seite": "leistungen",
-                "anker": "software-web-applications"
-              }
-            },
-            {
-              "bild": "bokeh",
-              "h3": "Automation &amp; AI",
-              "text": "Make recurring workflows more efficient and support technical processes where it helps.",
-              "link": {
-                "text": "Learn more",
-                "seite": "leistungen",
-                "anker": "automation-ai"
-              }
-            }
-          ],
-          "link": {
-            "text": "View services",
-            "seite": "leistungen"
-          }
-        },
-        {
           "typ": "buehne",
           "id": "projects",
           "kicker": "Projects",
@@ -153,8 +110,8 @@
             {
               "x": "52%",
               "y": "40%",
-              "titel": "Squad Manager",
-              "text": "Web module with jersey animation, admin page and protected publishing",
+              "titel": "Jersey Wall",
+              "text": "Custom squad page with jersey animation, admin page and protected publishing",
               "link": {
                 "seite": "projekte",
                 "anker": "projekt-2"
@@ -253,7 +210,60 @@
           "kicker": "Contact"
         }
       ],
-      "bild": "lichtleiter"
+      "bild": "lichtleiter",
+      "flug": {
+        "label": "Flight through the three areas",
+        "start_label": "Start",
+        "szenen": [
+          {
+            "label": "Documentation",
+            "kicker": "01 · Technical Documentation",
+            "h2": "Technology people <em>understand.</em>",
+            "text": "Technical content prepared to be understandable, structured and verifiable – for new documents as well as existing material.",
+            "bild": "blaupause",
+            "link": {
+              "text": "Learn more",
+              "seite": "leistungen",
+              "anker": "technical-documentation"
+            }
+          },
+          {
+            "label": "Software",
+            "kicker": "02 · Software & Web Applications",
+            "h2": "Software that <em>fits.</em>",
+            "text": "Digital tools that simplify a specific task: from an internal helper to a web application with accounts and reports.",
+            "bild": "code",
+            "link": {
+              "text": "Learn more",
+              "seite": "leistungen",
+              "anker": "software-web-applications"
+            }
+          },
+          {
+            "label": "Automation",
+            "kicker": "03 · Automation & AI",
+            "h2": "Automate where it <em>pays off.</em>",
+            "text": "Identify recurring work and automate it where it pays off. AI is used when it brings a traceable benefit, not as an end in itself.",
+            "bild": "bokeh",
+            "link": {
+              "text": "Learn more",
+              "seite": "leistungen",
+              "anker": "automation-ai"
+            }
+          }
+        ],
+        "ende": {
+          "label": "Approach",
+          "kicker": "Three areas, one approach",
+          "h2": "From one source.<br><em>Through every layer.</em>",
+          "text": "Documentation, software and automation are intertwined in practice. That is why I offer them together, from one source – with traceable decisions instead of promises.",
+          "bild": "lichtleiter",
+          "link": {
+            "text": "View services",
+            "seite": "leistungen"
+          }
+        }
+      }
     },
     "leistungen": {
       "pfad": "services/",
@@ -424,9 +434,9 @@
               "bild": "fabrik"
             },
             {
-              "titel": "Squad manager for a club website",
+              "titel": "Jersey Wall – interactive squad page for a floorball club",
               "bereich": "Software & Web Applications",
-              "kurz": "Embeddable web module with player cards, jersey animation and admin editing, no libraries.",
+              "kurz": "Custom web module: jerseys on a rail, player card with jersey animation and editing via an admin page, no libraries.",
               "ausgang": "A floorball club wanted to present its squad on the website: jerseys on a rail, player card with data, maintenance without programming skills.",
               "herausforderung": "An animation after a video reference that runs on phones, data the club maintains itself, and a bilingual interface (German, Ukrainian).",
               "beitrag": "Concept, implementation, data model, admin page, publishing interface, review report with status per finding and handover note for integration.",

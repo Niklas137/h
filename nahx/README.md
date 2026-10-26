@@ -45,7 +45,7 @@ die Basis-URL eintragen (oder `--basis-url`), neu bauen; der Prüflauf verlangt 
 
 | Deutsch | English | Inhalt |
 |---|---|---|
-| `/` | `/en/` | Aufmacher, Leistungskarten, Projektbühne, Ablauf, Arbeitsprinzipien, 3D-Markenbühne, Kontaktband |
+| `/` | `/en/` | Flug durch A-Portale (Aufmacher, drei Bereiche, Ansatz), Projektbühne, Ablauf, Arbeitsprinzipien, 3D-Markenbühne, Kontaktband |
 | `/leistungen/` | `/en/services/` | je Bereich: Beschreibung, typische Herausforderungen, Leistungen, Anwendungsfälle, für wen |
 | `/projekte/` | `/en/projects/` | je Projekt: Ausgangssituation, Herausforderung, eigener Beitrag, Lösungsansatz, Technologien, Status |
 | `/ueber-mich/` | `/en/about/` | Person hinter der Marke, Arbeitsweise |
@@ -91,6 +91,20 @@ Link; ganze Karte klickbar, Lichtkante beim Überfahren), Projektbühne, **Ablau
 Leitsatz „Verstehen. Konzipieren. <em>Umsetzen.</em> Prüfen.“, fünf Schritte mit großen Mint-Ziffern rechts),
 Prinzipien, 3D-Markenbühne (Mint), Kontaktband mit Mint-Leuchten. Unterseiten behalten die Vollbild-Leinwand mit
 Glaskarte. Nicht übernommen aus dem Board: das Gebäude, der Folienzähler „01 / 03“ (es gibt keinen Slider).
+
+**Flug durch A-Portale** (Startseite, 2026-10-26, Wunsch Niklas: „mehrere Ebenen, durch jede schweben, eine
+krasse Website wie im Video“; Motiv gewählt: A-Portale). `start.flug` in `de.json`/`en.json` ersetzt dort den
+Aufmacher; gebaut von `Bau.flug()` in `build.py`, gesteuert in `assets/bewegung.js`. Eine klebende Bühne mit
+CSS-Perspektive (1000 px), die Kamera fährt beim Scrollen in die Tiefe (`FLUG_TIEFE` = 1800 px je Szene) und wird
+weich nachgeführt (Schweben). Fünf Szenen: Aufmacher, Technical Documentation, Software & Web Applications,
+Automation & AI, Ansatz mit Licht am Ende. Jede Ebene hat eine eigene Tiefe: Text, Foto-Tafel (Glas, Lichtkante,
+Tiefenunschärfe in der Ferne), A-Portal aus der Logo-Geometrie (Vorder- und Hinterkante, Lichthof), Lichtbahnen
+an Boden und Decke, Staub in zehn Tiefen. Die Kamera verweilt an jeder Szene und gleitet dazwischen zügiger durch
+das Portal; die Maus neigt die Kamera leicht. Anzeige unten rechts: Szene „01 / 05“, Name, Fortschrittslinie.
+Tastatur: Fokus in einer Szene fährt die Kamera dorthin. Ohne JavaScript oder bei `prefers-reduced-motion`
+stehen dieselben Inhalte als normale Abschnitte untereinander (Foto neben Text). Der Scroll-Snap der Startseite ist
+deshalb entfernt. Die Leistungskarten (`typ: leistungskarten`) bleiben als Abschnittstyp erhalten, stehen aber nicht
+mehr auf der Startseite.
 
 **Fotografie**: sechs Fotografien von Unsplash (plus eine gespiegelte Fassung) unter der Unsplash License (kommerziell nutzbar, keine Namensnennung
 verpflichtend, geprüft 2026-10-25; keine Unsplash+-Bilder). Fotografen und Quellen in `assets/img/foto/QUELLEN.md`
