@@ -90,6 +90,14 @@
       },
       "abschnitte": [
         {
+          "typ": "bildkarte",
+          "id": "ansatz",
+          "bild": "faser",
+          "kicker": "NAHX Technologies",
+          "h2": "Eine Hand, von der Anforderung <em>bis zur Übergabe.</em>",
+          "text": "Dokumentation, Software und Automatisierung aus einem Guss: Wer die Anforderungen aufnimmt, setzt sie auch um."
+        },
+        {
           "typ": "angebote",
           "id": "angebote",
           "kicker": "Einstieg",
@@ -148,6 +156,21 @@
           }
         },
         {
+          "typ": "galerie",
+          "id": "projekte",
+          "kicker": "Projekte",
+          "h2": "Fünf Projekte, <em>von der Idee bis zum Betrieb.</em>",
+          "text": "Vom Prüfwerkzeug im Pilotbetrieb bis zur Kaderseite für einen Verein.",
+          "ende": {
+            "h3": "Etwas Eigenes vor?",
+            "text": "Erzähl mir davon, ich melde mich mit einem Vorschlag.",
+            "link": {
+              "text": "Projekt besprechen",
+              "seite": "kontakt"
+            }
+          }
+        },
+        {
           "typ": "assistent",
           "id": "assistent",
           "kicker": "Assistent",
@@ -162,51 +185,6 @@
           "link": {
             "text": "Chatbot für deine Firma anfragen",
             "seite": "kontakt"
-          }
-        },
-        {
-          "typ": "buehne",
-          "id": "projekte",
-          "kicker": "Projekte",
-          "h2": "Lösungen aus<br>konkreten<br>Anforderungen.",
-          "text": "Drei Beispiele aus der Praxis: ein Prüfwerkzeug im Pilotbetrieb, ein Web-Modul für einen Verein und ein Website-Relaunch mit automatischem SEO-Audit.",
-          "bild": "code",
-          "punkte_label": "Ausgewählte Projekte",
-          "punkte": [
-            {
-              "x": "20%",
-              "y": "27%",
-              "titel": "614 One",
-              "text": "Dokumentenprüfung mit Berichten in vier Sprachen, im Pilotbetrieb bei FSH Documentation",
-              "link": {
-                "seite": "projekte",
-                "anker": "projekt-1"
-              }
-            },
-            {
-              "x": "52%",
-              "y": "40%",
-              "titel": "Trikotwand",
-              "text": "Kaderseite, auf der Besucher Trikots von der Stange nehmen und Spieler entdecken",
-              "link": {
-                "seite": "projekte",
-                "anker": "projekt-2"
-              }
-            },
-            {
-              "x": "71%",
-              "y": "60%",
-              "titel": "Website-Relaunch",
-              "text": "Statische Website mit wöchentlichem SEO-Audit als PDF-Bericht",
-              "link": {
-                "seite": "projekte",
-                "anker": "projekt-3"
-              }
-            }
-          ],
-          "cta": {
-            "text": "Alle Projekte",
-            "seite": "projekte"
           }
         },
         {
@@ -227,38 +205,62 @@
           ]
         },
         {
-          "typ": "ablauf",
+          "typ": "stapel",
           "id": "ablauf",
           "kicker": "Von der Anforderung zur Lösung",
-          "h2": "Verstehen.<br>Konzipieren. <em>Umsetzen.</em><br>Prüfen.",
-          "text": "Gute Lösungen beginnen mit dem Verständnis des Problems. Fünf Schritte, an jedem Übergang mit einer klaren Entscheidung.",
-          "bild": "designer",
-          "schritte": [
+          "h2": "Vier Schritte, <em>klare Entscheidungen.</em>",
+          "tafeln": [
             {
-              "h3": "Erstgespräch",
-              "text": "Ausgangssituation, Ziele und Herausforderungen klären."
+              "wort": "Verstehen.",
+              "titel": "Erst das Problem, dann die Lösung.",
+              "text": "Im Erstgespräch kläre ich Ausgangslage, Ziele und Rahmen. Danach steht fest, was gebraucht wird."
             },
             {
-              "h3": "Anforderungsklärung",
-              "text": "Leistungen, erwartete Ergebnisse und Rahmenbedingungen festlegen."
+              "wort": "Konzipieren.",
+              "titel": "Aufbau, Daten und Abläufe auf einem Blatt.",
+              "text": "Ein passender Lösungsansatz mit Aufwand und Risiken, abgestimmt, bevor gebaut wird."
             },
             {
-              "h3": "Konzeption",
-              "text": "Einen passenden Lösungsansatz entwickeln und abstimmen."
+              "wort": "Umsetzen.",
+              "titel": "Lauffähig statt Folien.",
+              "text": "Umsetzung in nachvollziehbaren Schritten, mit Zwischenständen zum Ausprobieren."
             },
             {
-              "h3": "Umsetzung",
-              "text": "In nachvollziehbaren Schritten umsetzen, Entscheidungen transparent halten."
-            },
-            {
-              "h3": "Prüfung und Übergabe",
-              "text": "Ergebnis anhand der vereinbarten Kriterien prüfen und übergeben."
+              "wort": "Prüfen.",
+              "titel": "Jedes Ergebnis nachvollziehbar.",
+              "text": "Prüfung gegen die vereinbarten Anforderungen, Übergabe mit Anleitung, Code und Tests."
             }
-          ],
-          "link": {
-            "text": "So arbeite ich",
-            "seite": "zusammenarbeit"
-          }
+          ]
+        },
+        {
+          "typ": "zahlen",
+          "id": "zahlen",
+          "kicker": "Worauf du zählen kannst",
+          "h2": "Zahlen, die <em>stimmen.</em>",
+          "karten": [
+            {
+              "zahl": "4",
+              "einheit": "Berichtssprachen",
+              "text": "614 One schreibt Fachberichte auf Deutsch, Englisch, Ukrainisch und Russisch.",
+              "ring": 1.0
+            },
+            {
+              "zahl": "3",
+              "einheit": "Regelsätze",
+              "text": "Basisprüfung, DIN EN IEC/IEEE 82079-1 und CE-Vorgaben."
+            },
+            {
+              "zahl": "0",
+              "einheit": "Tracker",
+              "text": "Diese Website lädt keine Analyse- oder Werbedienste."
+            },
+            {
+              "zahl": "<mark class=\"test\">Q1 2027</mark>",
+              "einheit": "<mark class=\"test\">zwei Projektplätze frei</mark>",
+              "text": "Neue Projekte starten nach Absprache.",
+              "hervor": true
+            }
+          ]
         },
         {
           "typ": "marke",
@@ -268,15 +270,22 @@
           "claim": "Technik verstehen. Lösungen schaffen."
         },
         {
-          "typ": "band",
+          "typ": "abschluss",
           "id": "kontakt",
-          "h2": "Lass uns über<br>dein Projekt<br>sprechen.",
-          "text": "Du hast eine technische Herausforderung, einen manuellen Prozess oder eine Idee für ein digitales Werkzeug? Ich freue mich darauf, die Anforderungen kennenzulernen und mögliche Lösungen zu besprechen.",
+          "kicker": "Projekt geplant?",
+          "h2": "Lass es uns <em>richtig</em> bauen.",
+          "text": "Schreib mir, was du vorhast. Du bekommst eine ehrliche Einschätzung und einen klaren nächsten Schritt.",
           "cta": {
-            "text": "Kontakt aufnehmen",
+            "text": "Projekt besprechen",
             "seite": "kontakt"
           },
-          "kicker": "Kontakt"
+          "cta2": {
+            "text": "Mit dem Assistenten chatten",
+            "seite": "start",
+            "anker": "assistent"
+          },
+          "riese": "NAHX",
+          "riese_bild": "faser"
         }
       ],
       "bild": "lichtleiter",

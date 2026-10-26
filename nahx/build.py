@@ -74,6 +74,12 @@ _A = "M414 0L562 216H276Z M414 76L504 216H325Z"
 PORTAL = (f'<svg viewBox="270 -6 298 228" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">'
           f'<path class="p-flaeche" fill-rule="evenodd" d="{_A}"/><path class="p-glanz" d="{_A}"/><path class="p-kante" d="{_A}"/></svg>')
 FLUG_TIEFE = 1800  # Abstand der Szenen in px Tiefe
+# Wort-Bühne (2026-10-26, nach StringTune-Demo): das A als Kontur mit Mint-Verlauf und weichem Leuchten
+WB_A = ('<svg viewBox="250 -26 338 268" aria-hidden="true" focusable="false"><defs>'
+        '<linearGradient id="wb-verlauf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8FFF7"/><stop offset=".45" stop-color="#8CFFDA"/><stop offset="1" stop-color="#00C99A"/></linearGradient>'
+        '<filter id="wb-leuchten" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="7"/></filter></defs>'
+        f'<path d="{_A}" fill="none" stroke="#00F0BE" stroke-width="6" opacity=".5" filter="url(#wb-leuchten)"/>'
+        f'<path d="{_A}" fill="rgba(0,240,190,.07)" fill-rule="evenodd" stroke="url(#wb-verlauf)" stroke-width="2.4" stroke-linejoin="round"/></svg>')
 
 KOPF_SCRIPT = "document.documentElement.classList.add('js');"
 # Assistent: das Mint-A aus dem Favicon und die Symbole der Handy-Statusleiste (Netz, WLAN, Akku)
@@ -249,6 +255,64 @@ class Bau:
 </article>''')
             kopf_lk = f'<div class="abschnitt-kopf reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2>{frag(a["h2"])}</h2>' + (f'<p class="abschnitt-text">{frag(a["text"])}</p>' if a.get("text") else "") + "</div>"
             return f'<section class="abschnitt innen leistungskarten"{ident}>{kopf_lk}<div class="lk-raster">{"".join(karten)}</div>{mehr}</section>'
+
+        # ---------- Abschnitte nach dem FORGE-Video (2026-10-26) ----------
+        if typ == "bildkarte":
+            # Vollbild-Foto, das beim Scrollen zur abgerundeten Karte schrumpft; ohne JavaScript gleich als Karte
+            return (f'<section class="bildkarte"{ident} data-bildkarte><div class="bk-buehne">'
+                    f'<div class="bk-karte">{self.bild(sprache, pfad, a["bild"], "100vw", True)}<div class="bk-schleier" aria-hidden="true"></div></div>'
+                    f'<div class="bk-text"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2 class="fx-schmier">{frag(a["h2"])}</h2>'
+                    + (f'<p class="abschnitt-text">{frag(a["text"])}</p>' if a.get("text") else "") + '</div></div></section>')
+
+        if typ == "galerie":
+            # Projekte als Karten, die beim Scrollen seitlich durchlaufen; ohne JavaScript ein wischbares Band
+            liste = next(x for x in self.sprachen[sprache]["seiten"]["projekte"]["abschnitte"] if x["typ"] == "projektliste")["projekte"]
+            karten = []
+            for nr, pj in enumerate(liste):
+                ziel = esc(self.link(pfad, self.pfad(sprache, "projekte", f"projekt-{nr + 1}")))
+                karten.append(f'<a class="gl-karte" href="{ziel}"><span class="gl-bild">{self.bild(sprache, pfad, pj["bild"], "(min-width: 900px) 40vw, 80vw", True)}</span>'
+                              f'<span class="gl-nr">0{nr + 1}</span><span class="gl-bereich">{esc(pj["bereich"])}</span><span class="gl-titel">{frag(pj["titel"])}</span><span class="gl-kurz">{frag(pj.get("kurz", ""))}</span></a>')
+            e = a["ende"]
+            karten.append(f'<a class="gl-karte gl-ende" href="{esc(self.link(pfad, self.pfad(sprache, e["link"]["seite"])))}"><span class="gl-titel">{frag(e["h3"])}</span><span class="gl-kurz">{frag(e["text"])}</span><span class="cta">{esc(e["link"]["text"])}</span></a>')
+            return (f'<section class="galerie"{ident} data-galerie><div class="gl-buehne"><div class="gl-kopf"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2 class="fx-schmier">{frag(a["h2"])}</h2>'
+                    + (f'<p class="abschnitt-text">{frag(a["text"])}</p>' if a.get("text") else "")
+                    + f'</div><div class="gl-spur" tabindex="0" aria-label="{esc(a.get("kicker", ""))}">{"".join(karten)}</div><div class="gl-fortschritt" aria-hidden="true"><i></i></div></div></section>')
+
+        if typ == "stapel":
+            # Tafeln in vier Mint-Tönen, die sich beim Scrollen übereinanderschieben (position: sticky, auch ohne JavaScript)
+            tafeln = "".join(f'<article class="st-tafel" style="--k:{i}"><div class="st-innen"><p class="st-nr">0{i + 1} / 0{len(a["tafeln"])}</p>'
+                             f'<h3 class="st-wort">{frag(t["wort"])}</h3><p class="st-titel">{frag(t["titel"])}</p><p class="st-text">{frag(t["text"])}</p></div></article>'
+                             for i, t in enumerate(a["tafeln"]))
+            return (f'<section class="stapel"{ident}><div class="st-kopf innen"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2>{frag(a["h2"])}</h2></div>'
+                    f'<div class="st-liste" style="--n:{len(a["tafeln"])}">{tafeln}</div></section>')
+
+        if typ == "zahlen":
+            karten = []
+            for i, k in enumerate(a["karten"]):
+                zahl = k["zahl"]
+                z = f'<span class="zl-zahl"{f" data-zahl={chr(34)}{esc(zahl)}{chr(34)}" if zahl.isdigit() else ""}>{frag(zahl)}</span>'
+                ring = ('<svg class="zl-ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="zl-ring-grund"/>'
+                        f'<circle cx="60" cy="60" r="52" class="zl-ring-wert" style="--w:{k["ring"]}"/></svg>') if k.get("ring") is not None else ""
+                karten.append(f'<article class="zl-karte reveal{" zl-hervor" if k.get("hervor") else ""}" style="--i:{i}">{ring}{z}<p class="zl-einheit">{frag(k["einheit"])}</p><p class="zl-text">{frag(k["text"])}</p></article>')
+            return (f'<section class="abschnitt innen zahlen"{ident}><div class="abschnitt-kopf reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2>{frag(a["h2"])}</h2></div>'
+                    f'<div class="zl-raster">{"".join(karten)}</div></section>')
+
+        if typ == "abschluss":
+            c2 = a.get("cta2")
+            zweit = f'<a class="cta-zweit" href="{esc(self.link(pfad, self.pfad(sprache, c2["seite"], c2.get("anker"))))}">{esc(c2["text"])}</a>' if c2 else ""
+            riese_bild = self.site["fotos"][a["riese_bild"]]
+            quelle = self.link(pfad, f'/assets/img/foto/{a["riese_bild"]}-1000.jpg')
+            return (f'<section class="abschluss"{ident} data-abschluss><div class="ab-leuchten" aria-hidden="true"></div><div class="ab-innen innen">'
+                    f'<p class="kicker">{esc(a.get("kicker", ""))}</p><h2 class="fx-schmier">{frag(a["h2"])}</h2><p class="abschnitt-text">{frag(a["text"])}</p>'
+                    f'<div class="cta-reihe">{self.cta(sprache, pfad, a["cta"])}{zweit}</div></div>'
+                    f'<p class="ab-riese" aria-hidden="true" style="background-image:linear-gradient(180deg,rgba(3,9,7,0),rgba(3,9,7,.5)),url({esc(quelle)})">{esc(a["riese"])}</p></section>')
+
+        if typ == "wortbuehne":
+            woerter = "".join(f'<li class="wb-wort" style="--k:{i}"><span class="wb-gross">{frag(w)}</span><span class="wb-klein">{frag(t)}</span></li>' for i, (w, t) in enumerate(a["woerter"]))
+            return (f'<section class="wortbuehne"{ident} data-wortbuehne style="--n:{len(a["woerter"])}"><div class="wb-buehne">'
+                    f'<h2 class="nur-vorlesen">{esc(a.get("titel", a.get("kicker", "")))}</h2><p class="kicker wb-kicker">{esc(a.get("kicker", ""))}</p>'
+                    f'<span class="wb-streif" aria-hidden="true"></span><div class="wb-objekt" aria-hidden="true">{WB_A}</div>'
+                    f'<ol class="wb-woerter">{woerter}</ol><div class="wb-fortschritt" aria-hidden="true"><i></i></div></div></section>')
 
         if typ == "ablauf":
             # Foto links, Leitsatz in der Mitte, nummerierte Schritte rechts (Markenboard 2026-10-26)
@@ -598,6 +662,7 @@ class Bau:
 <script src="{esc(self.link(pfad, "/assets/bewegung.js"))}" defer></script>
 <script src="{esc(self.link(pfad, "/assets/szene3d.js"))}" defer></script>
 <script src="{esc(self.link(pfad, "/assets/assistent.js"))}" defer></script>
+<script src="{esc(self.link(pfad, "/assets/effekte.js"))}" defer></script>
 </body>
 </html>
 """

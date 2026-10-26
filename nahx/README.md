@@ -171,3 +171,11 @@ Seiten ohne den Abschnitt bekommen einen Chat-Knopf und ein schwebendes Handy. T
 `site.json` → `assistent.api` leer = Demo ohne Server. Mit Adresse eines Assistenten nach dem Protokoll des FSH-Assistenten
 (`GET` → `{bereit}`, `POST {sitzung, nachricht, sprache}` → `{antwort, kalender}`, `GET …/termine?sprache=`) antwortet die KI;
 der Server muss die NAHX-Domain als Herkunft zulassen.
+
+## Startseite nach FORGE-Video und Effekte (`assets/effekte.js`, 2026-10-26)
+
+Neue Abschnittstypen: `bildkarte` (bild, kicker, h2, text), `galerie` (kicker, h2, text, ende{h3, text, link}; Karten kommen
+aus der Projektliste), `stapel` (kicker, h2, tafeln[{wort, titel, text}]), `zahlen` (kicker, h2, karten[{zahl, einheit, text,
+ring 0–1, hervor}]), `abschluss` (kicker, h2, text, cta, cta2, riese, riese_bild), `wortbuehne` (kicker, titel, woerter).
+Jede Szene hat eine ruhige Fassung ohne JavaScript und bei reduzierter Bewegung; effekte.js schaltet die bewegte Fassung
+mit Klassen (`.bk-an`, `.gl-an`, `.wb-an`, `.fx`) zu. Nur 2D-Transformationen, damit Handys nicht überlastet werden.

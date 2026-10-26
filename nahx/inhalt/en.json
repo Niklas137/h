@@ -90,6 +90,14 @@
       },
       "abschnitte": [
         {
+          "typ": "bildkarte",
+          "id": "ansatz",
+          "bild": "faser",
+          "kicker": "NAHX Technologies",
+          "h2": "One hand, from requirements <em>to handover.</em>",
+          "text": "Documentation, software and automation in one piece: the person who takes the requirements also builds the solution."
+        },
+        {
           "typ": "angebote",
           "id": "angebote",
           "kicker": "Getting started",
@@ -148,6 +156,21 @@
           }
         },
         {
+          "typ": "galerie",
+          "id": "projekte",
+          "kicker": "Projects",
+          "h2": "Five projects, <em>from idea to operation.</em>",
+          "text": "From a review tool in pilot use to a squad page for a sports club.",
+          "ende": {
+            "h3": "Planning something of your own?",
+            "text": "Tell me about it and I will come back with a proposal.",
+            "link": {
+              "text": "Discuss a Project",
+              "seite": "kontakt"
+            }
+          }
+        },
+        {
           "typ": "assistent",
           "id": "assistent",
           "kicker": "Assistant",
@@ -162,51 +185,6 @@
           "link": {
             "text": "Ask about a chatbot for your company",
             "seite": "kontakt"
-          }
-        },
-        {
-          "typ": "buehne",
-          "id": "projects",
-          "kicker": "Projects",
-          "h2": "Solutions built<br>around real<br>requirements.",
-          "text": "Three examples from practice: a review tool in pilot use, a web module for a sports club and a website relaunch with an automated SEO audit.",
-          "bild": "code",
-          "punkte_label": "Selected projects",
-          "punkte": [
-            {
-              "x": "20%",
-              "y": "27%",
-              "titel": "614 One",
-              "text": "Document review with reports in four languages, in pilot use at FSH Documentation",
-              "link": {
-                "seite": "projekte",
-                "anker": "projekt-1"
-              }
-            },
-            {
-              "x": "52%",
-              "y": "40%",
-              "titel": "Jersey Wall",
-              "text": "Squad page where visitors take jerseys off the rail and discover players",
-              "link": {
-                "seite": "projekte",
-                "anker": "projekt-2"
-              }
-            },
-            {
-              "x": "71%",
-              "y": "60%",
-              "titel": "Website relaunch",
-              "text": "Static website with a weekly SEO audit as a PDF report",
-              "link": {
-                "seite": "projekte",
-                "anker": "projekt-3"
-              }
-            }
-          ],
-          "cta": {
-            "text": "All projects",
-            "seite": "projekte"
           }
         },
         {
@@ -227,38 +205,62 @@
           ]
         },
         {
-          "typ": "ablauf",
+          "typ": "stapel",
           "id": "ablauf",
           "kicker": "From Requirements to Solutions",
-          "h2": "Understand.<br>Design. <em>Build.</em><br>Review.",
-          "text": "Good solutions start with understanding the problem. Five steps, each ending with a clear decision.",
-          "bild": "designer",
-          "schritte": [
+          "h2": "Four steps, <em>clear decisions.</em>",
+          "tafeln": [
             {
-              "h3": "Initial Discussion",
-              "text": "Clarify the current situation, goals and challenges."
+              "wort": "Understand.",
+              "titel": "First the problem, then the solution.",
+              "text": "In the first conversation I clarify the situation, goals and constraints. Afterwards it is clear what is needed."
             },
             {
-              "h3": "Requirements",
-              "text": "Define services, expected deliverables and constraints."
+              "wort": "Design.",
+              "titel": "Structure, data and workflows on one page.",
+              "text": "A suitable approach with effort and risks, agreed before anything is built."
             },
             {
-              "h3": "Concept",
-              "text": "Develop and agree on a suitable approach."
+              "wort": "Build.",
+              "titel": "Working software instead of slides.",
+              "text": "Implementation in traceable steps, with interim versions to try out."
             },
             {
-              "h3": "Implementation",
-              "text": "Build in clear steps and keep decisions transparent."
-            },
-            {
-              "h3": "Review and Handover",
-              "text": "Evaluate the result against agreed criteria and hand it over."
+              "wort": "Review.",
+              "titel": "Every result traceable.",
+              "text": "Review against the agreed requirements, handover with instructions, code and tests."
             }
-          ],
-          "link": {
-            "text": "How I work",
-            "seite": "zusammenarbeit"
-          }
+          ]
+        },
+        {
+          "typ": "zahlen",
+          "id": "zahlen",
+          "kicker": "What you can count on",
+          "h2": "Numbers that <em>hold.</em>",
+          "karten": [
+            {
+              "zahl": "4",
+              "einheit": "report languages",
+              "text": "614 One writes client reports in English, German, Ukrainian and Russian.",
+              "ring": 1.0
+            },
+            {
+              "zahl": "3",
+              "einheit": "rule sets",
+              "text": "Basic review, DIN EN IEC/IEEE 82079-1 and CE rules."
+            },
+            {
+              "zahl": "0",
+              "einheit": "trackers",
+              "text": "This website loads no analytics or advertising services."
+            },
+            {
+              "zahl": "<mark class=\"test\">Q1 2027</mark>",
+              "einheit": "<mark class=\"test\">two project slots open</mark>",
+              "text": "New projects start by arrangement.",
+              "hervor": true
+            }
+          ]
         },
         {
           "typ": "marke",
@@ -268,15 +270,22 @@
           "claim": "Understand Technology. Create Solutions."
         },
         {
-          "typ": "band",
-          "id": "contact",
-          "h2": "Let’s talk<br>about your<br>project.",
-          "text": "Do you have a technical challenge, a manual process or an idea for a digital tool? I would be happy to learn about your requirements and discuss possible solutions.",
+          "typ": "abschluss",
+          "id": "kontakt",
+          "kicker": "Planning a project?",
+          "h2": "Let's build it <em>properly.</em>",
+          "text": "Tell me what you have in mind. You get an honest assessment and a clear next step.",
           "cta": {
-            "text": "Get in Touch",
+            "text": "Discuss a Project",
             "seite": "kontakt"
           },
-          "kicker": "Contact"
+          "cta2": {
+            "text": "Chat with the assistant",
+            "seite": "start",
+            "anker": "assistent"
+          },
+          "riese": "NAHX",
+          "riese_bild": "faser"
         }
       ],
       "bild": "lichtleiter",
