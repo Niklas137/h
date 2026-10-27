@@ -1,0 +1,2251 @@
+{
+  "_hinweis": "Erzeugt von nahx/werkzeuge/pruefumfang.js aus FSH DocumentCheck (Code.js, lokal geladen). Nicht von Hand ändern.",
+  "stand": {
+    "commit": "6f698b1",
+    "datum": "2026-10-27",
+    "quelle": "FSH DocumentCheck src/Code.js"
+  },
+  "produktarten": [
+    "Maschine",
+    "Anlage",
+    "Gesamtanlage",
+    "Teilmaschine",
+    "Unvollständige Maschine",
+    "Baugruppe",
+    "Vorrichtung",
+    "Werkzeug",
+    "Elektrische Ausrüstung",
+    "Schaltschrank",
+    "Steuerung",
+    "Software",
+    "Sicherheitsbauteil",
+    "Druckgerät",
+    "Druckbehälter",
+    "Rohrleitung",
+    "Pumpe",
+    "Ventil",
+    "Fördertechnik",
+    "Roboter / Automatisierung",
+    "Medizinprodukt",
+    "Laborgerät",
+    "Reinigungsmaschine",
+    "Wärmeerzeuger / Dampfsystem",
+    "Energieanlage",
+    "Trainings- / Schulungsprodukt",
+    "Arbeitsmittel",
+    "Sonstiges"
+  ],
+  "dokumentarten": [
+    {
+      "name": "Betriebsanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Grenzen der Maschine",
+        "Personalqualifikation",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Transport",
+        "Montage",
+        "Installation und Anschluss",
+        "Inbetriebnahme",
+        "Betrieb und Bedienung",
+        "Störungen und Störungsbeseitigung",
+        "Reinigung",
+        "Wartung",
+        "Instandhaltung",
+        "Ersatzteile",
+        "Außerbetriebnahme",
+        "Entsorgung",
+        "Hersteller- und Betreiberpflichten",
+        "Querverweise",
+        "Abbildungen und Tabellen"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Vorhersehbarer Fehlgebrauch",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Automatische Forderungen",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Aufbau und Zielgruppenbezug der Nutzungsinformation"
+        },
+        {
+          "quelle": "DIN EN ISO 20607",
+          "ausgabe": "2019-08",
+          "relevanz": "Betriebsanleitung für Maschinen"
+        },
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Restrisiken und Benutzerinformation"
+        },
+        {
+          "quelle": "ISO 3864-2 / ANSI Z535",
+          "ausgabe": null,
+          "relevanz": "Signalwörter und Sicherheitskennzeichnung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": true,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Originalbetriebsanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Grenzen der Maschine",
+        "Personalqualifikation",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Transport",
+        "Montage",
+        "Installation und Anschluss",
+        "Inbetriebnahme",
+        "Betrieb und Bedienung",
+        "Störungen und Störungsbeseitigung",
+        "Reinigung",
+        "Wartung",
+        "Instandhaltung",
+        "Ersatzteile",
+        "Außerbetriebnahme",
+        "Entsorgung",
+        "Hersteller- und Betreiberpflichten",
+        "Querverweise",
+        "Abbildungen und Tabellen",
+        "Korrekte Bezeichnung der Erklärung"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Vorhersehbarer Fehlgebrauch",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Automatische Forderungen",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Aufbau und Zielgruppenbezug der Nutzungsinformation"
+        },
+        {
+          "quelle": "DIN EN ISO 20607",
+          "ausgabe": "2019-08",
+          "relevanz": "Betriebsanleitung für Maschinen"
+        },
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Restrisiken und Benutzerinformation"
+        },
+        {
+          "quelle": "ISO 3864-2 / ANSI Z535",
+          "ausgabe": null,
+          "relevanz": "Signalwörter und Sicherheitskennzeichnung"
+        },
+        {
+          "quelle": "Maschinenverordnung (EU) 2023/1230",
+          "ausgabe": "2023-06",
+          "relevanz": "Pflicht zur Originalbetriebsanleitung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Montageanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Grenzen der Maschine",
+        "Personalqualifikation",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Transport",
+        "Montage",
+        "Installation und Anschluss",
+        "Inbetriebnahme",
+        "Störungen und Störungsbeseitigung",
+        "Ersatzteile",
+        "Entsorgung",
+        "Hersteller- und Betreiberpflichten",
+        "Querverweise",
+        "Abbildungen und Tabellen"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Vorhersehbarer Fehlgebrauch",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Automatische Forderungen",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Aufbau und Zielgruppenbezug der Nutzungsinformation"
+        },
+        {
+          "quelle": "DIN EN ISO 20607",
+          "ausgabe": "2019-08",
+          "relevanz": "Betriebsanleitung für Maschinen"
+        },
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Restrisiken und Benutzerinformation"
+        },
+        {
+          "quelle": "ISO 3864-2 / ANSI Z535",
+          "ausgabe": null,
+          "relevanz": "Signalwörter und Sicherheitskennzeichnung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Demontageanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Grenzen der Maschine",
+        "Personalqualifikation",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Transport",
+        "Montage",
+        "Installation und Anschluss",
+        "Störungen und Störungsbeseitigung",
+        "Instandhaltung",
+        "Ersatzteile",
+        "Außerbetriebnahme",
+        "Entsorgung",
+        "Hersteller- und Betreiberpflichten",
+        "Querverweise",
+        "Abbildungen und Tabellen"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Vorhersehbarer Fehlgebrauch",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Automatische Forderungen",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Aufbau und Zielgruppenbezug der Nutzungsinformation"
+        },
+        {
+          "quelle": "DIN EN ISO 20607",
+          "ausgabe": "2019-08",
+          "relevanz": "Betriebsanleitung für Maschinen"
+        },
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Restrisiken und Benutzerinformation"
+        },
+        {
+          "quelle": "ISO 3864-2 / ANSI Z535",
+          "ausgabe": null,
+          "relevanz": "Signalwörter und Sicherheitskennzeichnung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Installationsanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Grenzen der Maschine",
+        "Personalqualifikation",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Transport",
+        "Montage",
+        "Installation und Anschluss",
+        "Inbetriebnahme",
+        "Störungen und Störungsbeseitigung",
+        "Wartung",
+        "Ersatzteile",
+        "Entsorgung",
+        "Hersteller- und Betreiberpflichten",
+        "Querverweise",
+        "Abbildungen und Tabellen"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Vorhersehbarer Fehlgebrauch",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Automatische Forderungen",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Aufbau und Zielgruppenbezug der Nutzungsinformation"
+        },
+        {
+          "quelle": "DIN EN ISO 20607",
+          "ausgabe": "2019-08",
+          "relevanz": "Betriebsanleitung für Maschinen"
+        },
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Restrisiken und Benutzerinformation"
+        },
+        {
+          "quelle": "ISO 3864-2 / ANSI Z535",
+          "ausgabe": null,
+          "relevanz": "Signalwörter und Sicherheitskennzeichnung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Inbetriebnahmeanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Grenzen der Maschine",
+        "Personalqualifikation",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Montage",
+        "Installation und Anschluss",
+        "Inbetriebnahme",
+        "Betrieb und Bedienung",
+        "Störungen und Störungsbeseitigung",
+        "Wartung",
+        "Ersatzteile",
+        "Hersteller- und Betreiberpflichten",
+        "Querverweise",
+        "Abbildungen und Tabellen"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Vorhersehbarer Fehlgebrauch",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Automatische Forderungen",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Aufbau und Zielgruppenbezug der Nutzungsinformation"
+        },
+        {
+          "quelle": "DIN EN ISO 20607",
+          "ausgabe": "2019-08",
+          "relevanz": "Betriebsanleitung für Maschinen"
+        },
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Restrisiken und Benutzerinformation"
+        },
+        {
+          "quelle": "ISO 3864-2 / ANSI Z535",
+          "ausgabe": null,
+          "relevanz": "Signalwörter und Sicherheitskennzeichnung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Bedienungsanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Grenzen der Maschine",
+        "Personalqualifikation",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Transport",
+        "Inbetriebnahme",
+        "Betrieb und Bedienung",
+        "Störungen und Störungsbeseitigung",
+        "Reinigung",
+        "Wartung",
+        "Instandhaltung",
+        "Ersatzteile",
+        "Entsorgung",
+        "Hersteller- und Betreiberpflichten",
+        "Querverweise",
+        "Abbildungen und Tabellen"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Vorhersehbarer Fehlgebrauch",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Automatische Forderungen",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Aufbau und Zielgruppenbezug der Nutzungsinformation"
+        },
+        {
+          "quelle": "DIN EN ISO 20607",
+          "ausgabe": "2019-08",
+          "relevanz": "Betriebsanleitung für Maschinen"
+        },
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Restrisiken und Benutzerinformation"
+        },
+        {
+          "quelle": "ISO 3864-2 / ANSI Z535",
+          "ausgabe": null,
+          "relevanz": "Signalwörter und Sicherheitskennzeichnung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Kurzanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Grenzen der Maschine",
+        "Personalqualifikation",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Inbetriebnahme",
+        "Betrieb und Bedienung",
+        "Störungen und Störungsbeseitigung",
+        "Reinigung",
+        "Wartung",
+        "Ersatzteile",
+        "Hersteller- und Betreiberpflichten",
+        "Querverweise"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Vorhersehbarer Fehlgebrauch",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Automatische Forderungen",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Aufbau und Zielgruppenbezug der Nutzungsinformation"
+        },
+        {
+          "quelle": "DIN EN ISO 20607",
+          "ausgabe": "2019-08",
+          "relevanz": "Betriebsanleitung für Maschinen"
+        },
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Restrisiken und Benutzerinformation"
+        },
+        {
+          "quelle": "ISO 3864-2 / ANSI Z535",
+          "ausgabe": null,
+          "relevanz": "Signalwörter und Sicherheitskennzeichnung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Serviceanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Personalqualifikation",
+        "Wartungsintervalle",
+        "Tätigkeiten",
+        "Energiezustände",
+        "Freischalten und Sichern",
+        "Sicherung gegen Wiedereinschalten (LOTO)",
+        "Benötigte Werkzeuge",
+        "Ersatzteile",
+        "Betriebsstoffe",
+        "Prüfungen im Rahmen der Wartung",
+        "Wiederinbetriebnahme",
+        "Dokumentation der Wartung",
+        "Sicherheitsrelevante Wartungsarbeiten",
+        "HMI-Reset und Berechtigungen",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Instandhaltungsinformationen"
+        },
+        {
+          "quelle": "BetrSichV",
+          "ausgabe": null,
+          "relevanz": "Prüfpflichten und Instandhaltung durch den Betreiber"
+        },
+        {
+          "quelle": "EN 60204-1",
+          "ausgabe": "2018-09",
+          "relevanz": "Freischalten und Sicherung gegen Wiedereinschalten"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Wartungsanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Personalqualifikation",
+        "Wartungsintervalle",
+        "Tätigkeiten",
+        "Energiezustände",
+        "Freischalten und Sichern",
+        "Sicherung gegen Wiedereinschalten (LOTO)",
+        "Benötigte Werkzeuge",
+        "Ersatzteile",
+        "Betriebsstoffe",
+        "Prüfungen im Rahmen der Wartung",
+        "Wiederinbetriebnahme",
+        "Dokumentation der Wartung",
+        "Sicherheitsrelevante Wartungsarbeiten",
+        "HMI-Reset und Berechtigungen",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Instandhaltungsinformationen"
+        },
+        {
+          "quelle": "BetrSichV",
+          "ausgabe": null,
+          "relevanz": "Prüfpflichten und Instandhaltung durch den Betreiber"
+        },
+        {
+          "quelle": "EN 60204-1",
+          "ausgabe": "2018-09",
+          "relevanz": "Freischalten und Sicherung gegen Wiedereinschalten"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": true,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Instandhaltungsanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Personalqualifikation",
+        "Wartungsintervalle",
+        "Tätigkeiten",
+        "Energiezustände",
+        "Freischalten und Sichern",
+        "Sicherung gegen Wiedereinschalten (LOTO)",
+        "Benötigte Werkzeuge",
+        "Ersatzteile",
+        "Betriebsstoffe",
+        "Prüfungen im Rahmen der Wartung",
+        "Wiederinbetriebnahme",
+        "Dokumentation der Wartung",
+        "Sicherheitsrelevante Wartungsarbeiten",
+        "HMI-Reset und Berechtigungen",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Instandhaltungsinformationen"
+        },
+        {
+          "quelle": "BetrSichV",
+          "ausgabe": null,
+          "relevanz": "Prüfpflichten und Instandhaltung durch den Betreiber"
+        },
+        {
+          "quelle": "EN 60204-1",
+          "ausgabe": "2018-09",
+          "relevanz": "Freischalten und Sicherung gegen Wiedereinschalten"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Reparaturanleitung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Personalqualifikation",
+        "Wartungsintervalle",
+        "Tätigkeiten",
+        "Energiezustände",
+        "Freischalten und Sichern",
+        "Sicherung gegen Wiedereinschalten (LOTO)",
+        "Benötigte Werkzeuge",
+        "Ersatzteile",
+        "Betriebsstoffe",
+        "Prüfungen im Rahmen der Wartung",
+        "Wiederinbetriebnahme",
+        "Dokumentation der Wartung",
+        "Sicherheitsrelevante Wartungsarbeiten",
+        "HMI-Reset und Berechtigungen",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Normen- und Rechtsquellenmatrix",
+        "Warnhinweisprüfung",
+        "SAFE-Prüfung",
+        "Dokumentartabhängige Prüflogik",
+        "Qualifikationsmatrix",
+        "Betreiberpflichten",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Instandhaltungsinformationen"
+        },
+        {
+          "quelle": "BetrSichV",
+          "ausgabe": null,
+          "relevanz": "Prüfpflichten und Instandhaltung durch den Betreiber"
+        },
+        {
+          "quelle": "EN 60204-1",
+          "ausgabe": "2018-09",
+          "relevanz": "Freischalten und Sicherung gegen Wiedereinschalten"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Arbeitsanweisung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Personalqualifikation",
+        "Tätigkeiten",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Erste-Hilfe-Maßnahmen",
+        "Lesbarkeit und Verständlichkeit",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Warnhinweisprüfung",
+        "Betreiberpflichten",
+        "Qualifikationsmatrix",
+        "Upload / Dokumentqualität",
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "SAFE-Prüfung"
+      ],
+      "normen": [
+        {
+          "quelle": "GefStoffV / TRGS 555 / DGUV",
+          "ausgabe": null,
+          "relevanz": "Aufbau von Betriebsanweisungen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Betriebsanweisung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Personalqualifikation",
+        "Tätigkeiten",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Erste-Hilfe-Maßnahmen",
+        "Lesbarkeit und Verständlichkeit",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Warnhinweisprüfung",
+        "Betreiberpflichten",
+        "Qualifikationsmatrix",
+        "Upload / Dokumentqualität",
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "SAFE-Prüfung"
+      ],
+      "normen": [
+        {
+          "quelle": "GefStoffV / TRGS 555 / DGUV",
+          "ausgabe": null,
+          "relevanz": "Aufbau von Betriebsanweisungen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Sicherheitskapitel",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Personalqualifikation",
+        "Tätigkeiten",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Erste-Hilfe-Maßnahmen",
+        "Lesbarkeit und Verständlichkeit",
+        "Technische Dokumentqualität",
+        "Grenzen der Maschine"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Warnhinweisprüfung",
+        "Betreiberpflichten",
+        "Qualifikationsmatrix",
+        "Upload / Dokumentqualität",
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "SAFE-Prüfung"
+      ],
+      "normen": [
+        {
+          "quelle": "GefStoffV / TRGS 555 / DGUV",
+          "ausgabe": null,
+          "relevanz": "Aufbau von Betriebsanweisungen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Warnhinweiskonzept",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Personalqualifikation",
+        "Tätigkeiten",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken",
+        "Erste-Hilfe-Maßnahmen",
+        "Lesbarkeit und Verständlichkeit",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Warnhinweisprüfung",
+        "Betreiberpflichten",
+        "Qualifikationsmatrix",
+        "Upload / Dokumentqualität",
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "SAFE-Prüfung"
+      ],
+      "normen": [
+        {
+          "quelle": "GefStoffV / TRGS 555 / DGUV",
+          "ausgabe": null,
+          "relevanz": "Aufbau von Betriebsanweisungen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Risikobeurteilung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Maschinenbeschreibung",
+        "Grenzen der Maschine",
+        "Lebensphasen",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Gefährdungsidentifikation",
+        "Risikoeinschätzung",
+        "Bewertungsmethode",
+        "Risikominderung nach Dreistufenmethode",
+        "Inhärent sichere Konstruktion",
+        "Technische Schutzmaßnahmen",
+        "Benutzerinformation als Schutzmaßnahme",
+        "Restrisiken",
+        "Sicherheitsfunktionen",
+        "Performance Level bzw. SIL",
+        "Nachvollziehbarkeit der Maßnahmen",
+        "Verantwortlichkeiten",
+        "Versionsstand",
+        "Freigabe",
+        "Rückverfolgbarkeit zu Anleitung und Warnhinweisen",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Vorhersehbarer Fehlgebrauch",
+        "Dokumentartabhängige Prüflogik",
+        "Upload / Dokumentqualität",
+        "Lesbarkeit"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Methodik der Risikobeurteilung und Dreistufenmethode"
+        },
+        {
+          "quelle": "DIN EN ISO 13849-1",
+          "ausgabe": "2023-04",
+          "relevanz": "Performance Level sicherheitsbezogener Steuerungsteile"
+        },
+        {
+          "quelle": "Maschinenverordnung (EU) 2023/1230",
+          "ausgabe": "2023-06",
+          "relevanz": "Pflicht zur Risikobeurteilung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": true,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Gefährdungsbeurteilung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Maschinenbeschreibung",
+        "Grenzen der Maschine",
+        "Lebensphasen",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Gefährdungsidentifikation",
+        "Risikoeinschätzung",
+        "Bewertungsmethode",
+        "Risikominderung nach Dreistufenmethode",
+        "Inhärent sichere Konstruktion",
+        "Technische Schutzmaßnahmen",
+        "Benutzerinformation als Schutzmaßnahme",
+        "Restrisiken",
+        "Sicherheitsfunktionen",
+        "Performance Level bzw. SIL",
+        "Nachvollziehbarkeit der Maßnahmen",
+        "Verantwortlichkeiten",
+        "Versionsstand",
+        "Freigabe",
+        "Rückverfolgbarkeit zu Anleitung und Warnhinweisen",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Vorhersehbarer Fehlgebrauch",
+        "Dokumentartabhängige Prüflogik",
+        "Upload / Dokumentqualität",
+        "Lesbarkeit"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Methodik der Risikobeurteilung und Dreistufenmethode"
+        },
+        {
+          "quelle": "DIN EN ISO 13849-1",
+          "ausgabe": "2023-04",
+          "relevanz": "Performance Level sicherheitsbezogener Steuerungsteile"
+        },
+        {
+          "quelle": "Maschinenverordnung (EU) 2023/1230",
+          "ausgabe": "2023-06",
+          "relevanz": "Pflicht zur Risikobeurteilung"
+        },
+        {
+          "quelle": "ArbSchG / BetrSichV",
+          "ausgabe": null,
+          "relevanz": "Betreiberpflicht zur Gefährdungsbeurteilung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "FMEA",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Maschinenbeschreibung",
+        "Grenzen der Maschine",
+        "Lebensphasen",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Gefährdungsidentifikation",
+        "Risikoeinschätzung",
+        "Bewertungsmethode",
+        "Risikominderung nach Dreistufenmethode",
+        "Inhärent sichere Konstruktion",
+        "Technische Schutzmaßnahmen",
+        "Benutzerinformation als Schutzmaßnahme",
+        "Restrisiken",
+        "Sicherheitsfunktionen",
+        "Performance Level bzw. SIL",
+        "Nachvollziehbarkeit der Maßnahmen",
+        "Verantwortlichkeiten",
+        "Versionsstand",
+        "Freigabe",
+        "Rückverfolgbarkeit zu Anleitung und Warnhinweisen",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Vorhersehbarer Fehlgebrauch",
+        "Dokumentartabhängige Prüflogik",
+        "Upload / Dokumentqualität",
+        "Lesbarkeit"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Methodik der Risikobeurteilung und Dreistufenmethode"
+        },
+        {
+          "quelle": "DIN EN ISO 13849-1",
+          "ausgabe": "2023-04",
+          "relevanz": "Performance Level sicherheitsbezogener Steuerungsteile"
+        },
+        {
+          "quelle": "Maschinenverordnung (EU) 2023/1230",
+          "ausgabe": "2023-06",
+          "relevanz": "Pflicht zur Risikobeurteilung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "HAZOP",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Maschinenbeschreibung",
+        "Grenzen der Maschine",
+        "Lebensphasen",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Gefährdungsidentifikation",
+        "Risikoeinschätzung",
+        "Bewertungsmethode",
+        "Risikominderung nach Dreistufenmethode",
+        "Inhärent sichere Konstruktion",
+        "Technische Schutzmaßnahmen",
+        "Benutzerinformation als Schutzmaßnahme",
+        "Restrisiken",
+        "Sicherheitsfunktionen",
+        "Performance Level bzw. SIL",
+        "Nachvollziehbarkeit der Maßnahmen",
+        "Verantwortlichkeiten",
+        "Versionsstand",
+        "Freigabe",
+        "Rückverfolgbarkeit zu Anleitung und Warnhinweisen",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Vorhersehbarer Fehlgebrauch",
+        "Dokumentartabhängige Prüflogik",
+        "Upload / Dokumentqualität",
+        "Lesbarkeit"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Methodik der Risikobeurteilung und Dreistufenmethode"
+        },
+        {
+          "quelle": "DIN EN ISO 13849-1",
+          "ausgabe": "2023-04",
+          "relevanz": "Performance Level sicherheitsbezogener Steuerungsteile"
+        },
+        {
+          "quelle": "Maschinenverordnung (EU) 2023/1230",
+          "ausgabe": "2023-06",
+          "relevanz": "Pflicht zur Risikobeurteilung"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "SIL-Bewertung",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Maschinenbeschreibung",
+        "Grenzen der Maschine",
+        "Lebensphasen",
+        "Bestimmungsgemäße Verwendung",
+        "Vernünftigerweise vorhersehbarer Fehlgebrauch",
+        "Gefährdungsidentifikation",
+        "Risikoeinschätzung",
+        "Bewertungsmethode",
+        "Risikominderung nach Dreistufenmethode",
+        "Inhärent sichere Konstruktion",
+        "Technische Schutzmaßnahmen",
+        "Benutzerinformation als Schutzmaßnahme",
+        "Restrisiken",
+        "Sicherheitsfunktionen",
+        "Performance Level bzw. SIL",
+        "Nachvollziehbarkeit der Maßnahmen",
+        "Verantwortlichkeiten",
+        "Versionsstand",
+        "Freigabe",
+        "Rückverfolgbarkeit zu Anleitung und Warnhinweisen",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Normen- und Rechtsquellenmatrix",
+        "Bestimmungsgemäße Verwendung",
+        "Vorhersehbarer Fehlgebrauch",
+        "Dokumentartabhängige Prüflogik",
+        "Upload / Dokumentqualität",
+        "Lesbarkeit"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN ISO 12100",
+          "ausgabe": "2011-03",
+          "relevanz": "Methodik der Risikobeurteilung und Dreistufenmethode"
+        },
+        {
+          "quelle": "DIN EN ISO 13849-1",
+          "ausgabe": "2023-04",
+          "relevanz": "Performance Level sicherheitsbezogener Steuerungsteile"
+        },
+        {
+          "quelle": "Maschinenverordnung (EU) 2023/1230",
+          "ausgabe": "2023-06",
+          "relevanz": "Pflicht zur Risikobeurteilung"
+        },
+        {
+          "quelle": "IEC 61508 / IEC 62061",
+          "ausgabe": null,
+          "relevanz": "Ermittlung des Sicherheits-Integritätslevels"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "CE-Konformitätserklärung",
+      "kapitel": [
+        "Hersteller und Anschrift",
+        "Bevollmächtigter",
+        "Produktbezeichnung und Typ",
+        "Seriennummer und Baujahr",
+        "Einschlägige Richtlinien und Verordnungen",
+        "Angewandte Normen mit Ausgabejahr",
+        "Bevollmächtigte Person für die technischen Unterlagen",
+        "Ort, Datum, Name, Funktion, Unterschrift",
+        "Korrekte Bezeichnung der Erklärung",
+        "Konsistenz zu Typenschild und Betriebsanleitung",
+        "Vollständige oder unvollständige Maschine",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "Maschinenverordnung (EU) 2023/1230",
+          "ausgabe": "2023-06",
+          "relevanz": "Inhalt der EU-Konformitätserklärung"
+        },
+        {
+          "quelle": "Maschinenrichtlinie 2006/42/EG",
+          "ausgabe": "2006-05",
+          "relevanz": "Inhalt der EG-Konformitätserklärung bis zum Stichtag"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": true,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Einbauerklärung",
+      "kapitel": [
+        "Hersteller und Anschrift",
+        "Bevollmächtigter",
+        "Produktbezeichnung und Typ",
+        "Seriennummer und Baujahr",
+        "Einschlägige Richtlinien und Verordnungen",
+        "Angewandte Normen mit Ausgabejahr",
+        "Bevollmächtigte Person für die technischen Unterlagen",
+        "Ort, Datum, Name, Funktion, Unterschrift",
+        "Korrekte Bezeichnung der Erklärung",
+        "Konsistenz zu Typenschild und Betriebsanleitung",
+        "Eindeutige Bezeichnung als unvollständige Maschine",
+        "Montageanleitung vorhanden",
+        "Angewandte grundlegende Sicherheitsanforderungen",
+        "Verpflichtung zur Übermittlung technischer Unterlagen",
+        "Hinweis zum Inbetriebnahmeverbot",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "Maschinenverordnung (EU) 2023/1230",
+          "ausgabe": "2023-06",
+          "relevanz": "Einbauerklärung für unvollständige Maschinen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Technische Unterlagen",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Maschinenbeschreibung",
+        "Einschlägige Richtlinien und Verordnungen",
+        "Angewandte Normen mit Ausgabejahr",
+        "Nachvollziehbarkeit der Maßnahmen",
+        "Versionsstand",
+        "Verantwortlichkeiten",
+        "Technische Dokumentqualität",
+        "Dokumentkonsistenz"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "Upload / Dokumentqualität",
+        "Lesbarkeit",
+        "Automatische Forderungen"
+      ],
+      "normen": [
+        {
+          "quelle": "Maschinenverordnung (EU) 2023/1230",
+          "ausgabe": "2023-06",
+          "relevanz": "Umfang der technischen Unterlagen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Technischer Bericht",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Maschinenbeschreibung",
+        "Einschlägige Richtlinien und Verordnungen",
+        "Angewandte Normen mit Ausgabejahr",
+        "Nachvollziehbarkeit der Maßnahmen",
+        "Versionsstand",
+        "Verantwortlichkeiten",
+        "Technische Dokumentqualität",
+        "Dokumentkonsistenz"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "Upload / Dokumentqualität",
+        "Lesbarkeit",
+        "Automatische Forderungen"
+      ],
+      "normen": [
+        {
+          "quelle": "Maschinenverordnung (EU) 2023/1230",
+          "ausgabe": "2023-06",
+          "relevanz": "Umfang der technischen Unterlagen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Fachbericht",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Maschinenbeschreibung",
+        "Einschlägige Richtlinien und Verordnungen",
+        "Angewandte Normen mit Ausgabejahr",
+        "Nachvollziehbarkeit der Maßnahmen",
+        "Versionsstand",
+        "Verantwortlichkeiten",
+        "Technische Dokumentqualität",
+        "Dokumentkonsistenz"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "Upload / Dokumentqualität",
+        "Lesbarkeit",
+        "Automatische Forderungen"
+      ],
+      "normen": [
+        {
+          "quelle": "Maschinenverordnung (EU) 2023/1230",
+          "ausgabe": "2023-06",
+          "relevanz": "Umfang der technischen Unterlagen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Prüfbericht",
+      "kapitel": [
+        "Prüfgegenstand und Identifikation",
+        "Prüfverfahren",
+        "Angewandte Norm",
+        "Prüfmittel und Kalibrierstatus",
+        "Prüfer, Datum und Ort",
+        "Randbedingungen",
+        "Messwerte",
+        "Grenzwerte",
+        "Messunsicherheit",
+        "Ergebnis",
+        "Unterschrift und Freigabe",
+        "Technische Dokumentqualität",
+        "Dokumentkonsistenz"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "Upload / Dokumentqualität",
+        "Lesbarkeit"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN ISO/IEC 17025",
+          "ausgabe": "2018-03",
+          "relevanz": "Anforderungen an Prüfberichte und Messunsicherheit"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Schulungsunterlage",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Lernziele",
+        "Ablauf und Dauer",
+        "Praxisanteil",
+        "Erfolgskontrolle",
+        "Sicherheitsbezug",
+        "Lesbarkeit und Verständlichkeit",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Schulungsunterlagen-Prüfung",
+        "Lesbarkeit",
+        "Terminologie",
+        "Upload / Dokumentqualität",
+        "Dokumentartabhängige Prüflogik"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Qualitätsmaßstab für Nutzungsinformationen"
+        },
+        {
+          "quelle": "ArbSchG / BetrSichV / DGUV",
+          "ausgabe": null,
+          "relevanz": "Unterweisungspflichten"
+        }
+      ],
+      "normbasis_dok": [
+        "DIN EN IEC/IEEE 82079-1 als Qualitätsmaßstab für Nutzungsinformationen",
+        "Arbeitsschutzrechtliche Unterweisungspflichten je nach Inhalt",
+        "BetrSichV / GefStoffV / DGUV-Kontext, sofern sicherheitsrelevant"
+      ],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Unterweisungsunterlage",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Lernziele",
+        "Ablauf und Dauer",
+        "Praxisanteil",
+        "Erfolgskontrolle",
+        "Sicherheitsbezug",
+        "Lesbarkeit und Verständlichkeit",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Schulungsunterlagen-Prüfung",
+        "Lesbarkeit",
+        "Terminologie",
+        "Upload / Dokumentqualität",
+        "Dokumentartabhängige Prüflogik"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Qualitätsmaßstab für Nutzungsinformationen"
+        },
+        {
+          "quelle": "ArbSchG / BetrSichV / DGUV",
+          "ausgabe": null,
+          "relevanz": "Unterweisungspflichten"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Checkliste",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Tätigkeiten",
+        "Ergebnis",
+        "Technische Dokumentqualität",
+        "Lesbarkeit und Verständlichkeit"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Handlungsanleitende Information"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Mängelmatrix",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Tätigkeiten",
+        "Ergebnis",
+        "Technische Dokumentqualität",
+        "Lesbarkeit und Verständlichkeit"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Handlungsanleitende Information"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Ersatzteilliste",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Teileidentifikation und Bestellnummern",
+        "Zuordnung zu Baugruppen",
+        "Sicherheitsrelevante Teile",
+        "Querverweise",
+        "Technische Dokumentqualität",
+        "Dokumentkonsistenz"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Terminologie",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Ersatzteilinformationen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Schaltplan / Elektrodokumentation",
+      "kapitel": [
+        "Dokumentidentifikation und Revision",
+        "Projektbezug",
+        "Seiten- und Blattnummerierung",
+        "Betriebsmittelkennzeichnung",
+        "Legenden und Symbolerklärung",
+        "Schnittstellen",
+        "Querverweise",
+        "Konsistenz zu Anleitung und Stückliste",
+        "Spannung und Energieversorgung",
+        "Elektrische Schutzmaßnahmen",
+        "Hauptschalter",
+        "Restspannung",
+        "Spannung vor dem Hauptschalter",
+        "Not-Halt",
+        "Sicherheitskreise",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "EN 60204-1",
+          "ausgabe": "2018-09",
+          "relevanz": "Elektrische Ausrüstung von Maschinen"
+        },
+        {
+          "quelle": "EN 81346 / EN 61082",
+          "ausgabe": null,
+          "relevanz": "Betriebsmittelkennzeichnung und Dokumentation"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": true,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Pneumatikplan",
+      "kapitel": [
+        "Dokumentidentifikation und Revision",
+        "Projektbezug",
+        "Seiten- und Blattnummerierung",
+        "Betriebsmittelkennzeichnung",
+        "Legenden und Symbolerklärung",
+        "Schnittstellen",
+        "Querverweise",
+        "Konsistenz zu Anleitung und Stückliste",
+        "Hauptschalter",
+        "Not-Halt",
+        "Sicherheitskreise",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "ISO 4414",
+          "ausgabe": "2010-11",
+          "relevanz": "Sicherheitsanforderungen an fluidtechnische Anlagen, Pneumatik"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Hydraulikplan",
+      "kapitel": [
+        "Dokumentidentifikation und Revision",
+        "Projektbezug",
+        "Seiten- und Blattnummerierung",
+        "Betriebsmittelkennzeichnung",
+        "Legenden und Symbolerklärung",
+        "Schnittstellen",
+        "Querverweise",
+        "Konsistenz zu Anleitung und Stückliste",
+        "Hauptschalter",
+        "Not-Halt",
+        "Sicherheitskreise",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "ISO 4413",
+          "ausgabe": "2010-11",
+          "relevanz": "Sicherheitsanforderungen an fluidtechnische Anlagen, Hydraulik"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Meldeliste",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Meldungsnummer, Text, Ursache, Auswirkung",
+        "Sichere Reaktion der Steuerung",
+        "Bedienermaßnahme je Meldung",
+        "Personalqualifikation",
+        "Stop- und Fortsetzungsbedingung",
+        "Quittierung",
+        "Querverweis zur Betriebsanleitung",
+        "Technische Dokumentqualität",
+        "Dokumentkonsistenz"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Terminologie",
+        "Qualifikationsmatrix",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "EN 60204-1",
+          "ausgabe": "2018-09",
+          "relevanz": "Steuerungsverhalten und Meldungen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "HMI-Bedienungsunterlage",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Zielgruppen",
+        "Terminologie",
+        "Lesbarkeit und Verständlichkeit",
+        "Dokumentkonsistenz",
+        "Technische Dokumentqualität",
+        "Benutzerrollen und Rechte",
+        "Einrichterfunktionen",
+        "Servicefunktionen",
+        "Parametrierung",
+        "Test- und Tippbetrieb",
+        "Personalqualifikation",
+        "Querverweis zur Betriebsanleitung",
+        "Signalwortsystem",
+        "Warnhinweise nach SAFE-Struktur",
+        "Sicherheitskennzeichnung",
+        "Restrisiken"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Dokumentartabhängige Prüflogik",
+        "Qualifikationsmatrix",
+        "Warnhinweisprüfung",
+        "Upload / Dokumentqualität",
+        "Normen- und Rechtsquellenmatrix",
+        "SAFE-Prüfung"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Bedienbezogene Nutzungsinformation"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Fließbild / R&I-Schema",
+      "kapitel": [
+        "Dokumentidentifikation und Revision",
+        "Projektbezug",
+        "Seiten- und Blattnummerierung",
+        "Legenden und Symbolerklärung",
+        "Verfahrensschritte und Fließrichtung",
+        "Apparate- und Armaturenkennzeichnung",
+        "Stoffströme und Medien",
+        "Messstellen und Regelkreise",
+        "Sicherheitsarmaturen und Absicherung",
+        "Betriebsparameter der Leitungen",
+        "Schnittstellen",
+        "Konsistenz zu Anleitung und Stückliste",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Normen- und Rechtsquellenmatrix",
+        "Upload / Dokumentqualität",
+        "Terminologie"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN ISO 10628-1",
+          "ausgabe": "2015-04",
+          "relevanz": "Fließschemata für die Prozessindustrie"
+        },
+        {
+          "quelle": "DIN EN 62424",
+          "ausgabe": "2017-03",
+          "relevanz": "Prozessleittechnik in R&I-Schemata"
+        },
+        {
+          "quelle": "DIN EN 81346-2",
+          "ausgabe": "2020-10",
+          "relevanz": "Kennzeichnung von Anlagenteilen"
+        },
+        {
+          "quelle": "BetrSichV",
+          "ausgabe": null,
+          "relevanz": "Absicherung überwachungsbedürftiger Anlagen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Layout / Aufstellplan",
+      "kapitel": [
+        "Dokumentidentifikation und Revision",
+        "Projektbezug",
+        "Seiten- und Blattnummerierung",
+        "Betriebsmittelkennzeichnung",
+        "Legenden und Symbolerklärung",
+        "Schnittstellen",
+        "Querverweise",
+        "Konsistenz zu Anleitung und Stückliste",
+        "Grenzen der Maschine",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN ISO 13857",
+          "ausgabe": "2020-03",
+          "relevanz": "Sicherheitsabstände"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Datenblatt",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Produktbezeichnung und Typ",
+        "Grenzen der Maschine",
+        "Technische Dokumentqualität",
+        "Dokumentkonsistenz"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Technische Produktinformation"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Sicherheitsdatenblatt",
+      "kapitel": [
+        "Stoffidentifikation",
+        "Gefahrenmerkmale und Kennzeichnung",
+        "Schutzmaßnahmen und PSA",
+        "Erste-Hilfe-Maßnahmen",
+        "Lagerung und Entsorgung",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Dokumentartabhängige Prüflogik",
+        "Betreiberpflichten",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "Verordnung (EG) 1907/2006 (REACH), Anhang II",
+          "ausgabe": null,
+          "relevanz": "Aufbau des Sicherheitsdatenblatts"
+        },
+        {
+          "quelle": "GefStoffV / TRGS 555",
+          "ausgabe": null,
+          "relevanz": "Betriebsanweisung und Unterweisung bei Gefahrstoffen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": false
+    },
+    {
+      "name": "Sonstiges",
+      "kapitel": [
+        "Identifikation und Geltungsbereich",
+        "Lesbarkeit und Verständlichkeit",
+        "Terminologie",
+        "Technische Dokumentqualität"
+      ],
+      "bereiche": [
+        "Lesbarkeit",
+        "Terminologie",
+        "Upload / Dokumentqualität"
+      ],
+      "normen": [
+        {
+          "quelle": "DIN EN IEC/IEEE 82079-1",
+          "ausgabe": "2021-09",
+          "relevanz": "Allgemeiner Qualitätsmaßstab für Nutzungsinformationen"
+        }
+      ],
+      "normbasis_dok": [],
+      "belegt": false,
+      "nur_vorpruefung": true
+    }
+  ],
+  "normbasis": {
+    "Maschine": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung",
+      "Maschinenverordnung (EU) 2023/1230 bzw. Maschinenrichtlinie 2006/42/EG je nach Stichtag",
+      "DIN EN ISO 12100 – Risikobeurteilung",
+      "DIN EN ISO 20607 – Betriebsanleitung für Maschinen"
+    ],
+    "Anlage": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung",
+      "DIN EN IEC/IEEE 82079-1",
+      "DIN EN ISO 12100, soweit maschinenbezogene Risiken betroffen sind",
+      "Betriebssicherheitsverordnung / Gefährdungsbeurteilung als Betreiberkontext"
+    ],
+    "Gesamtanlage": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Teilmaschine": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Unvollständige Maschine": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Baugruppe": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Vorrichtung": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Werkzeug": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Elektrische Ausrüstung": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Schaltschrank": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Steuerung": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Software": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung",
+      "DIN EN IEC/IEEE 82079-1",
+      "IEC 62304 nur bei medizinproduktbezogener Software",
+      "IEC 62443 als Orientierung bei industrieller Cybersecurity, sofern relevant",
+      "Barrierefreiheit / Usability-Anforderungen je nach Zielmarkt"
+    ],
+    "Sicherheitsbauteil": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Druckgerät": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Druckbehälter": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Rohrleitung": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Pumpe": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Ventil": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Fördertechnik": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Roboter / Automatisierung": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Medizinprodukt": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung",
+      "MDR (EU) 2017/745",
+      "DIN EN IEC/IEEE 82079-1",
+      "IEC 62366-1 – Gebrauchstauglichkeit",
+      "IEC 62304 – Software-Lebenszyklusprozesse, sofern Software betroffen ist"
+    ],
+    "Laborgerät": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Reinigungsmaschine": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Wärmeerzeuger / Dampfsystem": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Energieanlage": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Trainings- / Schulungsprodukt": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Arbeitsmittel": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ],
+    "Sonstiges": [
+      "DIN EN IEC/IEEE 82079-1 – Erstellen von Nutzungsinformationen",
+      "Produktsicherheitsrecht / Produkthaftung – Plausibilitätsprüfung",
+      "DIN EN ISO 12100 – Risikobeurteilung und Risikominderung",
+      "ANSI Z535 / ISO 3864 – Sicherheitskennzeichnung und Warnhinweise als Orientierung"
+    ]
+  },
+  "rechtsbereiche": [
+    {
+      "name": "Maschinenverordnung (EU) 2023/1230 bzw. Maschinenrichtlinie 2006/42/EG",
+      "produkte": [
+        "Maschine",
+        "Anlage",
+        "Gesamtanlage",
+        "Teilmaschine",
+        "Unvollständige Maschine",
+        "Baugruppe",
+        "Vorrichtung",
+        "Sicherheitsbauteil",
+        "Fördertechnik",
+        "Roboter / Automatisierung",
+        "Reinigungsmaschine",
+        "Wärmeerzeuger / Dampfsystem",
+        "Energieanlage"
+      ],
+      "auch_text": false,
+      "nachweise": 6
+    },
+    {
+      "name": "Niederspannungsrichtlinie 2014/35/EU",
+      "produkte": [
+        "Elektrische Ausrüstung",
+        "Schaltschrank",
+        "Steuerung"
+      ],
+      "auch_text": true,
+      "nachweise": 3
+    },
+    {
+      "name": "EMV-Richtlinie 2014/30/EU",
+      "produkte": [
+        "Elektrische Ausrüstung",
+        "Schaltschrank",
+        "Steuerung"
+      ],
+      "auch_text": true,
+      "nachweise": 3
+    },
+    {
+      "name": "Druckgeräterichtlinie 2014/68/EU",
+      "produkte": [
+        "Druckgerät",
+        "Druckbehälter",
+        "Rohrleitung",
+        "Pumpe",
+        "Ventil"
+      ],
+      "auch_text": true,
+      "nachweise": 3
+    },
+    {
+      "name": "Medizinprodukte-Verordnung (EU) 2017/745",
+      "produkte": [
+        "Medizinprodukt"
+      ],
+      "auch_text": true,
+      "nachweise": 8
+    },
+    {
+      "name": "Betriebssicherheitsverordnung – Pflichten des Betreibers",
+      "produkte": [
+        "Maschine",
+        "Anlage",
+        "Gesamtanlage",
+        "Teilmaschine",
+        "Unvollständige Maschine",
+        "Baugruppe",
+        "Vorrichtung",
+        "Werkzeug",
+        "Elektrische Ausrüstung",
+        "Schaltschrank",
+        "Steuerung",
+        "Sicherheitsbauteil",
+        "Druckgerät",
+        "Druckbehälter",
+        "Rohrleitung",
+        "Pumpe",
+        "Ventil",
+        "Fördertechnik",
+        "Roboter / Automatisierung",
+        "Medizinprodukt",
+        "Laborgerät",
+        "Reinigungsmaschine",
+        "Wärmeerzeuger / Dampfsystem",
+        "Energieanlage",
+        "Arbeitsmittel"
+      ],
+      "auch_text": false,
+      "nachweise": 4
+    }
+  ],
+  "zaehler": {
+    "produktarten": 28,
+    "dokumentarten": 42,
+    "belegt": 5,
+    "pruefbereiche_waehlbar": 14,
+    "rechtsbereiche": 6
+  }
+}

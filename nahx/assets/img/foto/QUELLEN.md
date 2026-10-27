@@ -38,3 +38,4 @@ Am 2026-10-26 mit Playwright aufgenommen, ausschließlich mit erfundenen Testdat
 | nahxweb-*.{webp,jpg} | Screenshot dieser Website (Flug durch A-Portale) |
 
 Ein Screenshot der FSH-Website wurde erstellt, aber **nicht übernommen**: Verwendung erst nach Freigabe durch FSH Documentation.
+| bsp614-pruef, bsp614-fach1, bsp614-fach2, bericht614 | eigen (2026-10-27): Seiten aus Prüf- und Fachbericht von 614 One (FSH DocumentCheck), lokal erzeugt aus dem synthetischen Testdokument `tests/pilot/betriebsanleitung_fehler.txt`; keine Kundendaten | eigen |

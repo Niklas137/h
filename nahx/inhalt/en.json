@@ -40,6 +40,10 @@
       "seite": "leistungen"
     },
     {
+      "text": "614 One",
+      "seite": "pruefwerkzeug"
+    },
+    {
       "text": "Projects",
       "seite": "projekte"
     },
@@ -106,17 +110,17 @@
           "karten": [
             {
               "kicker": "Technical Documentation",
-              "h3": "Document check with 614 One",
-              "text": "Pre-review of a German-language manual or technical document: 614 One looks for typical required content from DIN EN IEC/IEEE 82079-1 and CE rules, followed by an expert read-through.",
+              "h3": "Pre-review with 614 One",
+              "text": "Your documentation is pre-reviewed against fixed criteria for its product and document type. You get findings with reasons and recommendations and can work on them directly. An expert review can be booked separately.",
               "punkte": [
-                "Pre-review report with score, traffic light and to-do list",
-                "Report in English, German, Ukrainian or Russian",
-                "Every check point listed, with a recommendation"
+                "Review report and client report as PDF, in German",
+                "Findings with severity and recommendation",
+                "The limits of the review scope are stated in the report"
               ],
               "rahmen": "Fixed price per document<br><mark class=\"test\">from €190</mark> · <mark class=\"test\">3 working days</mark>",
               "link": {
-                "text": "Request a check",
-                "seite": "kontakt"
+                "text": "See the review scope",
+                "seite": "pruefwerkzeug"
               }
             },
             {
@@ -160,7 +164,7 @@
           "id": "projekte",
           "kicker": "Projects",
           "h2": "Five projects, <em>from idea to operation.</em>",
-          "text": "From a review tool in trial use to a squad page for a sports club.",
+          "text": "From a review tool ahead of its pilot to a squad page for a sports club.",
           "ende": {
             "h3": "Planning something of your own?",
             "text": "Tell me about it and I will come back with a proposal.",
@@ -239,15 +243,15 @@
           "h2": "Numbers that <em>hold.</em>",
           "karten": [
             {
-              "zahl": "4",
-              "einheit": "report languages",
-              "text": "614 One writes reports in English, German, Ukrainian and Russian. It reviews German-language documents.",
-              "ring": 1.0
+              "zahl": "42",
+              "einheit": "document types",
+              "text": "set up in 614 One, five of them already backed by reference documents.",
+              "ring": 0.119
             },
             {
-              "zahl": "3",
-              "einheit": "rule sets",
-              "text": "Keyword lists for basic review, DIN EN IEC/IEEE 82079-1 and CE rules."
+              "zahl": "14",
+              "einheit": "review areas",
+              "text": "to choose from, from warnings to readability; scoring, defect matrix and report always run too."
             },
             {
               "zahl": "0",
@@ -497,18 +501,19 @@
             {
               "titel": "614 One – document review by NAHX Technologies",
               "bereich": "Technical Documentation · Software",
-              "kurz": "Web app that pre-reviews German-language Word and PDF documents against keyword lists and produces reports in four languages. First pilot customer and tester is FSH Documentation. Pictured: client report from a fictitious test document.",
-              "ausgang": "Technical documentation has to be checked against basic requirements, DIN EN IEC/IEEE 82079-1 and CE conformity rules. This was done manually, with checklists, and differently by each reviewer.",
-              "herausforderung": "A pre-review that is repeatable, lists every check point individually, supports several users with their own settings and delivers reports customers can read in their language.",
-              "beitrag": "Design and development of the web app: architecture, review logic, accounts and roles, reports, tests, operating instructions for the Mac. Trialled with FSH Documentation.",
-              "ansatz": "Rule sets as verifiable JSON files (24 rules with area, weight and recommendation in de/en/uk/ru), keyword search with score and traffic light, rules that can be deselected per account, reports as PDF. Expert review and approval explicitly stay with a person; every report says so.",
-              "technologien": "Python, FastAPI, Uvicorn, SQLite, python-docx, pdfplumber, ReportLab, Argon2 for passwords, pytest; interface without a framework.",
-              "status": "Runs locally, with automated tests for accounts, review, report languages and command line. Being trialled with FSH Documentation as first customer and tester; screenshots and access are not public yet.",
+              "kurz": "Web app in Google Apps Script that pre-reviews document sets for their product and document type and produces a review report and a client report as PDF. Review criteria: <mark class=\"test\">Falk Heinzmann, technical writer</mark>. First pilot customer is FSH Documentation. Pictured: client report from a fictitious test document.",
+              "ausgang": "Technical documentation has to meet different standards and legal requirements depending on the product, from machinery to medical devices. Reviews were done by hand, with checklists, and differently by each reviewer.",
+              "herausforderung": "A pre-review that applies the right scope for each product and document type, reports every finding with severity, reason and recommendation, and keeps clear what the software checks and what a person has to assess.",
+              "beitrag": "I develop most of the software, steered through several AI agents that review each other's work. <mark class=\"test\">Falk Heinzmann</mark> is responsible for the review content; he shapes which requirements the software covers and how understandable the results are.",
+              "ansatz": "Review profiles for 42 document types with chapters and references to standards, 14 selectable review areas, text recognition for scans, traffic light with blocking reasons. Every finding is confirmed, rejected or changed by an expert, with a reason; approval only when green and all findings are confirmed. The report does not state conformity.",
+              "technologien": "Google Apps Script (V8), Google Drive API with text recognition, Google Sheets as storage with audit log, HTML and JavaScript without a framework, PDF reports; 854 automated tests with Node.js.",
+              "status": "Tested locally: 854 automated tests pass, five document types are backed by reference documents. The pilot with FSH Documentation is prepared but not yet approved; evidence from live operation is still pending.",
               "ablauf": [
-                "Upload document",
-                "Choose rule sets",
-                "Review against keyword lists",
-                "PDF report (de/en/uk/ru)"
+                "Choose product and document type",
+                "Upload documents (PDF, Word, TXT)",
+                "Review by profile",
+                "Confirm or reject findings",
+                "Review and client report as PDF"
               ],
               "bild": "bericht614"
             },
@@ -629,7 +634,7 @@
           "absaetze": [
             "I am Niklas Heinzmann. NAHX Technologies is my personal brand: short paths, direct agreements, and the person who takes the requirements is the one who implements them.",
             "My background is technical documentation: document review and comparison, document control, structure for large document sets, reports and checklists. Development grew out of that, because the tools that make this work verifiable and repeatable were missing.",
-            "I work with FSH Documentation, a technical documentation service provider; the website automation, among other things, is created there, and FSH is the first pilot customer and tester of 614 One, the document review tool by NAHX Technologies. With NAHX Technologies I bring together my own services, development projects and tools under a personal brand.",
+            "I work with FSH Documentation, a technical documentation service provider; the website automation, among other things, is created there, and FSH is the first pilot customer of 614 One, the document review tool by NAHX Technologies, whose review criteria are the responsibility of <mark class=\"test\">Falk Heinzmann</mark>. With NAHX Technologies I bring together my own services, development projects and tools under a personal brand.",
             "My approach is pragmatic: understand the requirements, develop a suitable solution and verify the results transparently. I separate facts from assumptions, flag what is uncertain, keep originals unchanged and document changes. That applies to documents as much as to code."
           ]
         },
@@ -922,6 +927,193 @@
           ]
         }
       ]
+    },
+    "pruefwerkzeug": {
+      "pfad": "614-one/",
+      "menue": "614 One",
+      "title": "614 One – Document Review | NAHX Technologies",
+      "description": "614 One pre-reviews technical documents for their product and document type: findings with reasons and recommendations, plus an expert review on request.",
+      "kicker": "614 One · Document review",
+      "h1": "Pre-review your documentation.<br>Fix what matters.",
+      "einleitung": "Have your documentation pre-reviewed against fixed criteria for its product and document type. You get findings with reasons and recommendations and know where to start.",
+      "bild": "tropfen",
+      "karte": {
+        "titel": "42",
+        "label": "Document types",
+        "text": "document types with their own review profile, from operating instructions to circuit diagrams."
+      },
+      "abschnitte": [
+        {
+          "typ": "beispielbericht",
+          "id": "example",
+          "kicker": "Example result",
+          "h2": "What a <em>result</em> looks like.",
+          "text": "A review run with fictitious operating instructions. The review report supports the decision, the client report the rework. Tap a page to open the PDF. The reports are in German.",
+          "spur_label": "Pages from the example report",
+          "seiten": [
+            {
+              "bild": "bsp614-pruef",
+              "titel": "Review report, page 1",
+              "datei": "/assets/beispiel/614one_beispiel_pruefbericht.pdf"
+            },
+            {
+              "bild": "bsp614-fach1",
+              "titel": "Client report, page 1",
+              "datei": "/assets/beispiel/614one_beispiel_fachbericht.pdf"
+            },
+            {
+              "bild": "bsp614-fach2",
+              "titel": "Client report, findings",
+              "datei": "/assets/beispiel/614one_beispiel_fachbericht.pdf"
+            }
+          ],
+          "punkte": [
+            {
+              "h3": "Traffic light and blocking reasons",
+              "text": "Red, amber or green, plus the reason why a document cannot be approved."
+            },
+            {
+              "h3": "Findings",
+              "text": "For each finding: severity, reason, recommendation and location, where there is a passage to point to."
+            },
+            {
+              "h3": "Limits",
+              "text": "Chapters the software cannot assess are marked as requiring a manual check."
+            }
+          ],
+          "pdf": [
+            {
+              "text": "Review report (PDF, German)",
+              "datei": "/assets/beispiel/614one_beispiel_pruefbericht.pdf"
+            },
+            {
+              "text": "Client report (PDF, German)",
+              "datei": "/assets/beispiel/614one_beispiel_fachbericht.pdf"
+            }
+          ],
+          "hinweis": "Example from a synthetic test document, generated locally on 27 October 2026. No customer data."
+        },
+        {
+          "typ": "auswahl",
+          "id": "scope",
+          "kicker": "Review scope",
+          "h2": "What gets checked in <em>your document?</em>",
+          "text": "Choose the product type and document type. You see which chapters and review areas 614 One applies, which standards serve as the basis and where the limits are. Criteria and reports are in German.",
+          "start": [
+            "Maschine",
+            "Betriebsanleitung"
+          ]
+        },
+        {
+          "typ": "leistungspaar",
+          "id": "services",
+          "kicker": "Two services",
+          "h2": "Pre-review and expert review, <em>kept apart.</em>",
+          "text": "The pre-review is useful on its own: you can work with the report yourself. The expert review comes on top when you need an assessment in context.",
+          "zeilen": [
+            "What you get",
+            "What you use it for",
+            "Limits",
+            "Turnaround",
+            "Price"
+          ],
+          "karten": [
+            {
+              "kicker": "Automated",
+              "h3": "Pre-review with 614 One",
+              "werte": [
+                "Review report and client report as PDF: traffic light, findings with severity, reason and recommendation.",
+                "Find gaps before acceptance, audit or translation and fix them in a targeted way.",
+                "Only the defined review scope, no confirmation of conformity, German-language documents.",
+                "<mark class=\"test\">3 working days</mark>",
+                "Fixed price per document <mark class=\"test\">from €190</mark>"
+              ],
+              "link": {
+                "text": "Request a pre-review",
+                "seite": "kontakt"
+              }
+            },
+            {
+              "kicker": "Personal",
+              "h3": "Expert review",
+              "werte": [
+                "Assessment of the findings in context, clarification of open points and an order of what to tackle first.",
+                "Prepare decisions when findings depend on the product or contradict each other.",
+                "No legal advice and no declaration of conformity; responsibility for the product stays with the manufacturer.",
+                "Scope and delivery date are agreed before the order.",
+                "<mark class=\"test\">Billed by effort within an agreed budget</mark>"
+              ],
+              "link": {
+                "text": "Request an expert review",
+                "seite": "kontakt"
+              }
+            }
+          ],
+          "hinweis": "The personal review of a client report is a separate service and not part of every review run. Whether a report was reviewed is stated in the order."
+        },
+        {
+          "typ": "personen",
+          "id": "responsibility",
+          "kicker": "Responsibility",
+          "h2": "Who <em>stands behind it.</em>",
+          "text": "614 One is joint work: expertise from technical writing flows straight into development.",
+          "personen": [
+            {
+              "monogramm": "FH",
+              "name": "<mark class=\"test\">Falk Heinzmann</mark>",
+              "rolle": "Technical writer",
+              "text": "Responsible for drafting and approving the review criteria; shapes which requirements the software covers and how understandable the results are. <mark class=\"test\">approval pending</mark>"
+            },
+            {
+              "monogramm": "NH",
+              "name": "Niklas Heinzmann",
+              "rolle": "Software · NAHX Technologies",
+              "text": "Develops most of the software: review logic, interface, reports and automated tests."
+            }
+          ]
+        },
+        {
+          "typ": "faq",
+          "h2": "Good to know",
+          "fragen": [
+            {
+              "f": "Does 614 One confirm that my document conforms to the standards?",
+              "a": "No. Standards and legal sources are the basis of the review. Whether your product meets the requirements is assessed by a person; the report says so explicitly."
+            },
+            {
+              "f": "Which files can I submit?",
+              "a": "PDF, Word (DOC, DOCX) and text, up to 20 files per run, 10 MB per file and 20 MB in total. Scanned pages are read with text recognition."
+            },
+            {
+              "f": "In which language?",
+              "a": "German-language documents are reviewed; text recognition is set to German. The reports are in German. The interface is available in German, English, Ukrainian and Russian."
+            },
+            {
+              "f": "Does the report give exact locations?",
+              "a": "Where there is a passage to point to, yes. Page numbers are estimated and marked as such. If content is missing entirely, the report says what is missing instead of inventing a location."
+            },
+            {
+              "f": "Where are my files stored?",
+              "a": "For the review, in the operator's Google Drive and Google Sheets. <mark class=\"test\">Retention and deletion are set out in the order.</mark>"
+            },
+            {
+              "f": "When can I start?",
+              "a": "The pilot with FSH Documentation is prepared. Until it is approved, only fictitious test documents are processed, no customer documents."
+            }
+          ]
+        },
+        {
+          "typ": "band",
+          "kicker": "614 One",
+          "h2": "Does your<br>document fit?",
+          "text": "Tell me briefly which product and which document it is. You get an assessment of whether the pre-review fits.",
+          "cta": {
+            "text": "Send a request",
+            "seite": "kontakt"
+          },
+          "bild": "wellen"
+        }
+      ]
     }
   },
   "email": "hello@nahx-technologies.example",
@@ -937,7 +1129,7 @@
       "gruss_live": "Hi! I am the digital assistant of NAHX Technologies, an AI. I answer questions about services and prices and can arrange a free intro call with Niklas. How can I help?",
       "vorschlaege": [
         "What does NAHX do?",
-        "What does a document check cost?",
+        "What does the pre-review cost?",
         "Book an intro call",
         "A chatbot for my company"
       ],
@@ -990,9 +1182,9 @@
             "offer",
             "help"
           ],
-          "antwort": "NAHX Technologies brings together three areas: technical documentation, software and web applications, and automation and AI. To get started there are three offers with a fixed frame: a document check with 614 One, a prototype in a few weeks and an automation assessment. Which one interests you?",
+          "antwort": "NAHX Technologies brings together three areas: technical documentation, software and web applications, and automation and AI. To get started there are three offers with a fixed frame: a pre-review with 614 One, a prototype in a few weeks and an automation assessment. Which one interests you?",
           "chips": [
-            "Document check",
+            "Pre-review",
             "Prototype",
             "Automation"
           ]
@@ -1006,9 +1198,11 @@
             "82079",
             "=ce",
             "review",
-            "check"
+            "check",
+            "pre-review",
+            "expert review"
           ],
-          "antwort": "In the document check, 614 One looks for typical required content from DIN EN IEC/IEEE 82079-1 and CE rules in your German-language manual, then I read it through as an expert. You get a pre-review report with score, traffic light and to-do list, in English, German, Ukrainian or Russian. It is not a confirmation of conformity. Fixed price per document {{test:from €190}}, result in {{test:3 working days}}.",
+          "antwort": "For the pre-review you choose the product and document type, and 614 One reviews your documents with the matching profile. You get a review report and a client report as PDF in German, with findings, severity and recommendations. It is not a confirmation of conformity. Fixed price per document {{test:from €190}}, result in {{test:3 working days}}. An expert review by {{test:Falk Heinzmann}} can be booked separately, billed by effort within an agreed budget.",
           "chips": [
             "Book an intro call",
             "What is 614 One?"
@@ -1021,9 +1215,9 @@
             "614one",
             "review tool"
           ],
-          "antwort": "614 One is the review tool by NAHX Technologies. It searches German-language manuals and technical documents using keyword lists from three rule sets (basic review, DIN EN IEC/IEEE 82079-1, CE) and creates pre-review reports in four languages. The expert assessment stays with a person. The first pilot client and tester is FSH Documentation.",
+          "antwort": "614 One is the review tool by NAHX Technologies, a web app in Google Apps Script. It knows 28 product types and 42 document types, reviews by profile with 14 selectable review areas and writes review and client reports in German. Every finding is confirmed or rejected by an expert; {{test:Falk Heinzmann}} is responsible for the review criteria. The pilot with FSH Documentation is prepared but not yet approved.",
           "chips": [
-            "Document check",
+            "Pre-review",
             "Book an intro call"
           ]
         },
@@ -1084,10 +1278,10 @@
             "how much",
             "cheap"
           ],
-          "antwort": "The three starter offers have fixed prices: document check {{test:from €190}}, automation assessment {{test:from €690}}, prototype {{test:from €2,400}}. Chatbots and larger projects are planned after an intro call.",
+          "antwort": "The three starter offers have fixed prices: pre-review with 614 One {{test:from €190}} (expert review billed by effort), automation assessment {{test:from €690}}, prototype {{test:from €2,400}}. Chatbots and larger projects are planned after an intro call.",
           "chips": [
             "Book an intro call",
-            "Document check"
+            "Pre-review"
           ]
         },
         {
@@ -1104,7 +1298,8 @@
             "intro"
           ],
           "antwort": "Sure. Pick a free slot for a 30-minute intro call:",
-          "kalender": true
+          "kalender": true,
+          "chips": []
         },
         {
           "stichworte": [
@@ -1131,7 +1326,7 @@
             "reference",
             "example"
           ],
-          "antwort": "Three examples: 614 One pre-reviews documents and is being trialled at FSH Documentation. The Jersey Wall is a squad page for a floorball club where visitors take jerseys off the rail. And a website relaunch with a weekly SEO audit as a PDF. More under “Projects”.",
+          "antwort": "Three examples: 614 One pre-reviews documents; the pilot at FSH Documentation is prepared. The Jersey Wall is a squad page for a floorball club where visitors take jerseys off the rail. And a website relaunch with a weekly SEO audit as a PDF. More under “Projects”.",
           "chips": [
             "What is 614 One?",
             "Book an intro call"
@@ -1162,7 +1357,7 @@
             "ukrain",
             "russian"
           ],
-          "antwort": "I answer in English and German. 614 One reports are also available in Ukrainian and Russian.",
+          "antwort": "I answer in English and German. 614 One reports are in German.",
           "chips": [
             "What is 614 One?"
           ]
@@ -1210,5 +1405,34 @@
         }
       ]
     }
+  },
+  "pruefumfang": {
+    "produkt": "Product type",
+    "dokument": "Document type",
+    "kapitel": "Chapters in the review profile",
+    "alle_kapitel": "Show all {n} chapters",
+    "bereiche": "Review areas",
+    "normen": "Standards in the profile",
+    "ohne_ausgabe": "edition not recorded",
+    "normbasis": "Standards basis of the product type",
+    "rechtsbereiche": "Legal areas triggered by the product type",
+    "ergebnis": "What you get",
+    "grenzen_titel": "Limits",
+    "keine": "None recorded.",
+    "belegt": "Backed by reference documents",
+    "nicht_belegt": "Set up in the software, not yet backed by reference documents",
+    "ergebnisse": [
+      "Review report and client report as PDF, in German",
+      "Traffic light with blocking reasons, findings with severity and recommendation",
+      "Guide value for the rework effort"
+    ],
+    "grenzen": [
+      "No confirmation of conformity: standards are the basis of the review, not a promise.",
+      "German-language documents only; page numbers are estimated.",
+      "Chapters the software cannot assess are marked for a manual check."
+    ],
+    "nur_vorpruefung": "This document type only gets a general pre-review without its own profile.",
+    "stand": "Rule catalogue as of 27 October 2026, read from the 614 One program code. <mark class=\"test\">Expert approval of the review criteria by Falk Heinzmann pending.</mark>",
+    "text_hinweis": "From details in the document, 614 One can additionally detect:"
   }
 }

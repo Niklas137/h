@@ -99,6 +99,8 @@ class Bau:
         self.noindex = noindex
         self.ausgabe = ausgabe
         self.sprachen = {code: lade(INHALT / f"{code}.json") for code in site["sprachen"]}
+        # Prüfumfang von 614 One (aus FSH DocumentCheck gelesen, werkzeuge/pruefumfang.py)
+        self.pu = lade(INHALT / "pruefumfang.json") if (INHALT / "pruefumfang.json").exists() else None
         self.heute = dt.date.today().isoformat()
         self.pfade: dict[tuple[str, str], str] = {}
         for code, texte in self.sprachen.items():
@@ -255,6 +257,28 @@ class Bau:
 </article>''')
             kopf_lk = f'<div class="abschnitt-kopf reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2>{frag(a["h2"])}</h2>' + (f'<p class="abschnitt-text">{frag(a["text"])}</p>' if a.get("text") else "") + "</div>"
             return f'<section class="abschnitt innen leistungskarten"{ident}>{kopf_lk}<div class="lk-raster">{"".join(karten)}</div>{mehr}</section>'
+
+        # ---------- Produktseite 614 One (2026-10-27, nach Gespräch Falk/ChatGPT) ----------
+        if typ in ("beispielbericht", "auswahl", "leistungspaar", "personen"):
+            kopf_p = f'<div class="abschnitt-kopf reveal"><p class="kicker">{esc(a.get("kicker", ""))}</p><h2>{frag(a["h2"])}</h2>' + (f'<p class="abschnitt-text">{frag(a["text"])}</p>' if a.get("text") else "") + "</div>"
+            hinweis = f'<p class="hinweis reveal">{frag(a["hinweis"])}</p>' if a.get("hinweis") else ""
+            if typ == "beispielbericht":
+                seiten = "".join(f'<figure class="bb-seite" style="--i:{i}"><a href="{esc(self.link(pfad, s["datei"]))}" target="_blank" rel="noopener" aria-label="{esc(s["titel"])}">{self.bild(sprache, pfad, s["bild"], "(min-width: 900px) 26vw, 70vw")}</a><figcaption>{frag(s["titel"])}</figcaption></figure>' for i, s in enumerate(a["seiten"]))
+                punkte = "".join(f'<li><h3>{frag(p["h3"])}</h3><p>{frag(p["text"])}</p></li>' for p in a.get("punkte", []))
+                pdfs = "".join(f'<a class="cta-zweit" href="{esc(self.link(pfad, p["datei"]))}" target="_blank" rel="noopener">{esc(p["text"])}</a>' for p in a.get("pdf", []))
+                return (f'<section class="abschnitt innen beispielbericht"{ident}>{kopf_p}<div class="bb-raster reveal"><div class="bb-spur" tabindex="0" role="group" aria-label="{esc(a.get("spur_label", ""))}">{seiten}</div>'
+                        f'<ol class="bb-punkte">{punkte}</ol></div><div class="cta-reihe bb-pdf reveal">{pdfs}</div>{hinweis}</section>')
+            if typ == "auswahl":
+                return f'<section class="abschnitt innen auswahl"{ident}>{kopf_p}{self.pu_auswahl(sprache, a)}{hinweis}</section>'
+            if typ == "leistungspaar":
+                karten = []
+                for i, k in enumerate(a["karten"]):
+                    zeilen_ = "".join(f'<div><dt>{esc(z)}</dt><dd>{frag(w)}</dd></div>' for z, w in zip(a["zeilen"], k["werte"]))
+                    kl = self.cta(sprache, pfad, k["link"], "cta" if i == 0 else "cta-zweit") if k.get("link") else ""
+                    karten.append(f'<article class="angebot lp-karte reveal" style="--i:{i}"><p class="kicker">{esc(k.get("kicker", ""))}</p><h3>{frag(k["h3"])}</h3><dl class="lp-zeilen">{zeilen_}</dl>{kl}</article>')
+                return f'<section class="abschnitt innen leistungspaar"{ident}>{kopf_p}<div class="lp-raster">{"".join(karten)}</div>{hinweis}</section>'
+            personen = "".join(f'<article class="person reveal" style="--i:{i}"><span class="person-mono" aria-hidden="true">{esc(p["monogramm"])}</span><div><h3>{frag(p["name"])}</h3><p class="person-rolle">{frag(p["rolle"])}</p><p>{frag(p["text"])}</p></div></article>' for i, p in enumerate(a["personen"]))
+            return f'<section class="abschnitt innen personen"{ident}>{kopf_p}<div class="personen-raster">{personen}</div>{hinweis}</section>'
 
         # ---------- Abschnitte nach dem FORGE-Video (2026-10-26) ----------
         if typ == "bildkarte":
@@ -544,6 +568,50 @@ class Bau:
             teile.append('<script type="application/ld+json">' + json.dumps(json_ld, ensure_ascii=False).replace("</", "<\\/") + "</script>")
         return "\n".join(teile)
 
+    # ------------------------------------------------------------------ Prüfumfang 614 One
+    def pu_panel(self, sprache: str, produkt: str, dokument: str) -> str:
+        """Prüfumfang für eine Auswahl. Gleiches Markup wie assets/pruefumfang.js (bei Änderungen beide anpassen)."""
+        pu = self.pu
+        L = self.sprachen[sprache]["pruefumfang"]
+        d = next(x for x in pu["dokumentarten"] if x["name"] == dokument)
+        normen_p = [n for n in d["normen"]]
+        basis = list(dict.fromkeys(pu["normbasis"].get(produkt, []) + d.get("normbasis_dok", [])))
+        rb = [r["name"] for r in pu["rechtsbereiche"] if produkt in r["produkte"]]
+        rb_text = [r["name"] for r in pu["rechtsbereiche"] if r.get("auch_text") and produkt not in r["produkte"]]
+        def liste(items, klasse=""):
+            return f'<ul class="{klasse}">' + "".join(f"<li>{x}</li>" for x in items) + "</ul>" if items else f'<p class="pu-leer">{esc(L["keine"])}</p>'
+        normen_html = [f'{esc(n["quelle"])} <span class="pu-ausgabe">{esc(n["ausgabe"]) if n.get("ausgabe") else esc(L["ohne_ausgabe"])}</span>' + (f'<small>{esc(n["relevanz"])}</small>' if n.get("relevanz") else "") for n in normen_p]
+        kap = d["kapitel"]
+        kap_html = liste([esc(k) for k in kap[:8]], "pu-kapitel")
+        if len(kap) > 8:
+            kap_html += f'<details class="pu-mehr"><summary>{esc(L["alle_kapitel"].replace("{n}", str(len(kap))))}</summary>' + liste([esc(k) for k in kap[8:]], "pu-kapitel") + "</details>"
+        beleg = f'<span class="pu-beleg{" pu-beleg-ja" if d["belegt"] else ""}">{esc(L["belegt"] if d["belegt"] else L["nicht_belegt"])}</span>'
+        grenzen = list(L["grenzen"]) + ([L["nur_vorpruefung"]] if d.get("nur_vorpruefung") else [])
+        return f"""<div class="pu-kopf"><h3>{esc(dokument)} <span>· {esc(produkt)}</span></h3>{beleg}</div>
+<div class="pu-raster">
+  <div class="pu-block"><h4>{esc(L["kapitel"])} <span class="pu-zahl">{len(kap)}</span></h4>{kap_html}</div>
+  <div class="pu-block"><h4>{esc(L["bereiche"])} <span class="pu-zahl">{len(d["bereiche"])}</span></h4>{liste([esc(b) for b in d["bereiche"]])}</div>
+  <div class="pu-block"><h4>{esc(L["normen"])}</h4>{liste(normen_html, "pu-normen")}<h4 class="pu-unter">{esc(L["normbasis"])}</h4>{liste([esc(n) for n in basis])}</div>
+  <div class="pu-block"><h4>{esc(L["rechtsbereiche"])}</h4>{liste([esc(r) for r in rb])}{(f'<p class="pu-text">{esc(L["text_hinweis"])} {esc("; ".join(rb_text))}</p>') if rb_text else ""}<h4 class="pu-unter">{esc(L["ergebnis"])}</h4>{liste([frag(x) for x in L["ergebnisse"]])}<h4 class="pu-unter">{esc(L["grenzen_titel"])}</h4>{liste([frag(x) for x in grenzen], "pu-grenzen")}</div>
+</div>"""
+
+    def pu_auswahl(self, sprache: str, a: dict) -> str:
+        pu = self.pu
+        L = self.sprachen[sprache]["pruefumfang"]
+        p0, d0 = a.get("start", ["Maschine", "Betriebsanleitung"])
+        opt = lambda werte, aktiv: "".join(f'<option{" selected" if w == aktiv else ""}>{esc(w)}</option>' for w in werte)
+        dok = [x["name"] for x in pu["dokumentarten"]]
+        daten = json.dumps({"pu": pu, "L": L}, ensure_ascii=False).replace("</", "<\\/")
+        return f"""<div class="pu reveal" data-pu>
+  <div class="pu-wahl">
+    <label><span>{esc(L["produkt"])}</span><select data-pu-produkt>{opt(pu["produktarten"], p0)}</select></label>
+    <label><span>{esc(L["dokument"])}</span><select data-pu-dokument>{opt(dok, d0)}</select></label>
+  </div>
+  <div class="pu-ergebnis" data-pu-ergebnis aria-live="polite">{self.pu_panel(sprache, p0, d0)}</div>
+  <p class="pu-stand">{frag(L["stand"])}</p>
+  <script type="application/json" data-pu-daten>{daten}</script>
+</div>"""
+
     def held(self, sprache: str, seite_key: str, pfad: str, s: dict) -> str:
         """Aufmacher als Vollbild-Leinwand: Foto, Kicker, Zeilenüberschrift, Einleitung und Schaltflächen links, Glaskarte unten rechts."""
         ui = self.sprachen[sprache]["ui"]
@@ -646,6 +714,7 @@ class Bau:
         abschnitte = "".join(self.abschnitt(sprache, pfad, a) for a in s["abschnitte"])
         hat_handy = any(a["typ"] == "assistent" for a in s["abschnitte"])
         chat = ("" if hat_handy else self.handy(sprache, pfad, True)) + self.chat_knopf(sprache) + self.assistent_daten(sprache)
+        pu_js = f'<script src="{esc(self.link(pfad, "/assets/pruefumfang.js"))}" defer></script>\n' if any(a["typ"] == "auswahl" for a in s["abschnitte"]) else ""
         html_ = f"""<!doctype html>
 <html lang="{sprache}">
 <head>
@@ -663,7 +732,7 @@ class Bau:
 <script src="{esc(self.link(pfad, "/assets/szene3d.js"))}" defer></script>
 <script src="{esc(self.link(pfad, "/assets/assistent.js"))}" defer></script>
 <script src="{esc(self.link(pfad, "/assets/effekte.js"))}" defer></script>
-</body>
+{pu_js}</body>
 </html>
 """
         return pfad, html_

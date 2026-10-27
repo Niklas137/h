@@ -40,6 +40,10 @@
       "seite": "leistungen"
     },
     {
+      "text": "614 One",
+      "seite": "pruefwerkzeug"
+    },
+    {
       "text": "Projekte",
       "seite": "projekte"
     },
@@ -106,17 +110,17 @@
           "karten": [
             {
               "kicker": "Technical Documentation",
-              "h3": "Dokumenten-Check mit 614 One",
-              "text": "Vorprüfung einer deutschsprachigen Anleitung oder technischen Unterlage: 614 One sucht nach typischen Pflichtinhalten aus DIN EN IEC/IEEE 82079-1 und CE-Vorgaben, danach folgt die fachliche Durchsicht.",
+              "h3": "Vorprüfung mit 614 One",
+              "text": "Deine Dokumentation wird nach festen Kriterien für Produkt- und Dokumentart vorgeprüft. Du bekommst Befunde mit Begründung und Empfehlung und arbeitest gezielt weiter. Die fachliche Durchsicht ist separat buchbar.",
               "punkte": [
-                "Vorprüfbericht mit Score, Ampel und To-do-Liste",
-                "Bericht auf Deutsch, Englisch, Ukrainisch oder Russisch",
-                "Jeder Prüfpunkt einzeln, mit Empfehlung"
+                "Prüfbericht und Fachbericht als PDF, auf Deutsch",
+                "Befunde mit Schweregrad und Empfehlung",
+                "Grenzen des Prüfumfangs stehen im Bericht"
               ],
               "rahmen": "Festpreis je Dokument<br><mark class=\"test\">ab 190 €</mark> · <mark class=\"test\">3 Werktage</mark>",
               "link": {
-                "text": "Check anfragen",
-                "seite": "kontakt"
+                "text": "Prüfumfang ansehen",
+                "seite": "pruefwerkzeug"
               }
             },
             {
@@ -160,7 +164,7 @@
           "id": "projekte",
           "kicker": "Projekte",
           "h2": "Fünf Projekte, <em>von der Idee bis zum Betrieb.</em>",
-          "text": "Vom Prüfwerkzeug in Erprobung bis zur Kaderseite für einen Verein.",
+          "text": "Vom Prüfwerkzeug vor dem Pilotstart bis zur Kaderseite für einen Verein.",
           "ende": {
             "h3": "Etwas Eigenes vor?",
             "text": "Erzähl mir davon, ich melde mich mit einem Vorschlag.",
@@ -239,15 +243,15 @@
           "h2": "Zahlen, die <em>stimmen.</em>",
           "karten": [
             {
-              "zahl": "4",
-              "einheit": "Berichtssprachen",
-              "text": "614 One schreibt Berichte auf Deutsch, Englisch, Ukrainisch und Russisch. Geprüft werden deutschsprachige Dokumente.",
-              "ring": 1.0
+              "zahl": "42",
+              "einheit": "Dokumentarten",
+              "text": "hinterlegt in 614 One, fünf davon schon mit Referenzdokumenten belegt.",
+              "ring": 0.119
             },
             {
-              "zahl": "3",
-              "einheit": "Regelsätze",
-              "text": "Stichwortlisten zu Basisprüfung, DIN EN IEC/IEEE 82079-1 und CE-Vorgaben."
+              "zahl": "14",
+              "einheit": "Prüfbereiche",
+              "text": "zur Auswahl, von Warnhinweisen bis Lesbarkeit; Bewertung, Mängelmatrix und Bericht laufen immer mit."
             },
             {
               "zahl": "0",
@@ -497,18 +501,19 @@
             {
               "titel": "614 One – Dokumentenprüfung von NAHX Technologies",
               "bereich": "Technical Documentation · Software",
-              "kurz": "Web-App, die deutschsprachige Word- und PDF-Dokumente nach Stichwortlisten vorprüft und Berichte in vier Sprachen erzeugt. Erster Pilotkunde und Tester ist FSH Documentation. Im Bild: Fachbericht aus einem frei erfundenen Testdokument.",
-              "ausgang": "Technische Dokumentation muss gegen Basisanforderungen, DIN EN IEC/IEEE 82079-1 und CE-Konformitätsvorgaben geprüft werden. Das geschah manuell, mit Checklisten und je nach Prüfer unterschiedlich.",
-              "herausforderung": "Eine Vorprüfung, die wiederholbar ist, jeden Prüfpunkt einzeln ausweist, mehrere Benutzer mit eigenen Einstellungen trägt und Berichte liefert, die Kunden in ihrer Sprache lesen können.",
-              "beitrag": "Konzeption und Entwicklung der Web-App: Architektur, Prüflogik, Konten und Rollen, Berichte, Tests, Betriebsanleitung für den Mac. Erprobung mit FSH Documentation.",
-              "ansatz": "Regelsätze als prüfbare JSON-Dateien (24 Regeln mit Bereich, Gewichtung, Empfehlung in de/en/uk/ru), Schlüsselwortsuche mit Score und Ampel, abwählbare Prüfpunkte je Konto, Berichte als PDF. Fachliche Prüfung und Freigabe bleiben ausdrücklich beim Menschen; jeder Bericht sagt das.",
-              "technologien": "Python, FastAPI, Uvicorn, SQLite, python-docx, pdfplumber, ReportLab, Argon2 für Passwörter, pytest; Oberfläche ohne Framework.",
-              "status": "Läuft lokal, mit automatischen Tests für Konten, Prüfung, Berichtssprachen und Kommandozeile. In Erprobung mit FSH Documentation als erstem Kunden und Tester; Screenshots und Zugang sind noch nicht öffentlich.",
+              "kurz": "Web-App in Google Apps Script, die Dokumentensätze passend zu Produkt- und Dokumentart vorprüft und Prüfbericht und Fachbericht als PDF erzeugt. Fachliche Prüfkriterien: <mark class=\"test\">Falk Heinzmann, technischer Redakteur</mark>. Erster Pilotkunde ist FSH Documentation. Im Bild: Fachbericht aus einem frei erfundenen Testdokument.",
+              "ausgang": "Technische Dokumentation muss je nach Produkt andere Normen und Rechtsvorgaben erfüllen, vom Maschinenbau bis zur Medizintechnik. Geprüft wurde von Hand, mit Checklisten und je nach Prüfer unterschiedlich.",
+              "herausforderung": "Eine Vorprüfung, die je Produkt- und Dokumentart den passenden Prüfumfang anwendet, jeden Befund mit Schweregrad, Begründung und Empfehlung ausweist und klar trennt, was die Software prüft und was ein Mensch bewerten muss.",
+              "beitrag": "Ich entwickle die Software zu einem großen Teil, gesteuert über mehrere KI-Agenten, die ihre Arbeit gegenseitig abnehmen. Die fachlichen Prüfinhalte verantwortet <mark class=\"test\">Falk Heinzmann</mark>; er gestaltet mit, welche Anforderungen die Software abbildet und wie verständlich die Ergebnisse sind.",
+              "ansatz": "Prüfprofile für 42 Dokumentarten mit Kapiteln und Normbezug, 14 wählbare Prüfbereiche, Texterkennung für Scans, Ampel mit Sperrgründen. Jeder Befund wird fachlich bestätigt, verworfen oder geändert, mit Begründung; freigegeben wird nur bei Grün und bestätigten Befunden. Der Bericht stellt keine Konformität fest.",
+              "technologien": "Google Apps Script (V8), Google Drive API mit Texterkennung, Google Sheets als Ablage mit Audit-Protokoll, HTML und JavaScript ohne Framework, PDF-Berichte; 854 automatische Tests mit Node.js.",
+              "status": "Lokal getestet: 854 automatische Tests bestehen, fünf Dokumentarten sind mit Referenzdokumenten belegt. Der Pilot mit FSH Documentation ist vorbereitet, aber noch nicht freigegeben; Nachweise im Livebetrieb stehen aus.",
               "ablauf": [
-                "Dokument hochladen",
-                "Regelsätze wählen",
-                "Prüfung nach Stichwortlisten",
-                "Bericht als PDF (de/en/uk/ru)"
+                "Produkt- und Dokumentart wählen",
+                "Dokumente hochladen (PDF, Word, TXT)",
+                "Prüfung nach Profil",
+                "Befunde bestätigen oder verwerfen",
+                "Prüf- und Fachbericht als PDF"
               ],
               "bild": "bericht614"
             },
@@ -629,7 +634,7 @@
           "absaetze": [
             "Ich bin Niklas Heinzmann. NAHX Technologies ist meine persönliche Marke: kurze Wege, direkte Absprachen, und wer die Anforderungen aufnimmt, setzt sie auch um.",
             "Ich komme aus der technischen Dokumentation: Dokumentenprüfung und -vergleich, Dokumentencontrolling, Struktur für große Dokumentenmengen, Berichte und Checklisten. Daraus ist die Entwicklung gewachsen, weil die Werkzeuge fehlten, die diese Arbeit prüfbar und wiederholbar machen.",
-            "Ich arbeite mit FSH Documentation zusammen, einem Dienstleister für technische Dokumentation; dort entsteht unter anderem die Website-Automatisierung, und FSH ist erster Pilotkunde und Tester von 614 One, der Dokumentenprüfung von NAHX Technologies. Mit NAHX Technologies bündele ich meine eigenen Dienstleistungen, Entwicklungsprojekte und Werkzeuge unter einer persönlichen Marke.",
+            "Ich arbeite mit FSH Documentation zusammen, einem Dienstleister für technische Dokumentation; dort entsteht unter anderem die Website-Automatisierung, und FSH ist erster Pilotkunde von 614 One, der Dokumentenprüfung von NAHX Technologies, deren fachliche Prüfkriterien <mark class=\"test\">Falk Heinzmann</mark> verantwortet. Mit NAHX Technologies bündele ich meine eigenen Dienstleistungen, Entwicklungsprojekte und Werkzeuge unter einer persönlichen Marke.",
             "Meine Arbeitsweise ist pragmatisch: Anforderungen verstehen, eine passende Lösung entwickeln und Ergebnisse nachvollziehbar überprüfen. Fakten und Annahmen trenne ich, Unsicheres kennzeichne ich, Originale bleiben unverändert, Änderungen sind dokumentiert. Das gilt für Dokumente wie für Code."
           ]
         },
@@ -922,6 +927,193 @@
           ]
         }
       ]
+    },
+    "pruefwerkzeug": {
+      "pfad": "614-one/",
+      "menue": "614 One",
+      "title": "614 One – Dokumentenprüfung | NAHX Technologies",
+      "description": "614 One prüft technische Dokumentation passend zu Produkt- und Dokumentart vor: Befunde mit Begründung und Empfehlung, die fachliche Durchsicht separat buchbar.",
+      "kicker": "614 One · Dokumentenprüfung",
+      "h1": "Dokumentation vorprüfen.<br>Gezielt nacharbeiten.",
+      "einleitung": "Du lässt deine Dokumentation nach festen Kriterien vorprüfen, passend zu Produkt und Dokumentart. Du bekommst Befunde mit Begründung und Empfehlung und weißt, wo du zuerst ansetzt.",
+      "bild": "tropfen",
+      "karte": {
+        "titel": "42",
+        "label": "Dokumentarten",
+        "text": "Dokumentarten mit eigenem Prüfprofil, von der Betriebsanleitung bis zum Schaltplan."
+      },
+      "abschnitte": [
+        {
+          "typ": "beispielbericht",
+          "id": "beispiel",
+          "kicker": "Beispielergebnis",
+          "h2": "So sieht ein <em>Ergebnis</em> aus.",
+          "text": "Ein Prüflauf mit einer frei erfundenen Betriebsanleitung. Der Prüfbericht dient der Entscheidung, der Fachbericht der Nacharbeit. Tippe eine Seite an, um das PDF zu öffnen.",
+          "spur_label": "Seiten aus dem Beispielbericht",
+          "seiten": [
+            {
+              "bild": "bsp614-pruef",
+              "titel": "Prüfbericht, Seite 1",
+              "datei": "/assets/beispiel/614one_beispiel_pruefbericht.pdf"
+            },
+            {
+              "bild": "bsp614-fach1",
+              "titel": "Fachbericht, Seite 1",
+              "datei": "/assets/beispiel/614one_beispiel_fachbericht.pdf"
+            },
+            {
+              "bild": "bsp614-fach2",
+              "titel": "Fachbericht, Befunde",
+              "datei": "/assets/beispiel/614one_beispiel_fachbericht.pdf"
+            }
+          ],
+          "punkte": [
+            {
+              "h3": "Ampel und Sperrgründe",
+              "text": "Rot, Gelb oder Grün, und dazu der Grund, warum ein Dokument nicht freigegeben werden kann."
+            },
+            {
+              "h3": "Befunde",
+              "text": "Je Befund Schweregrad, Begründung, Empfehlung und Fundstelle, soweit es eine Textstelle gibt."
+            },
+            {
+              "h3": "Grenzen",
+              "text": "Kapitel, die die Software nicht beurteilen kann, stehen als „manuelle Prüfung erforderlich“ im Bericht."
+            }
+          ],
+          "pdf": [
+            {
+              "text": "Prüfbericht als PDF",
+              "datei": "/assets/beispiel/614one_beispiel_pruefbericht.pdf"
+            },
+            {
+              "text": "Fachbericht als PDF",
+              "datei": "/assets/beispiel/614one_beispiel_fachbericht.pdf"
+            }
+          ],
+          "hinweis": "Beispiel aus einem synthetischen Testdokument, lokal erzeugt am 27.10.2026. Keine Kundendaten."
+        },
+        {
+          "typ": "auswahl",
+          "id": "pruefumfang",
+          "kicker": "Prüfumfang",
+          "h2": "Was wird bei deinem <em>Dokument</em> geprüft?",
+          "text": "Wähle Produktart und Dokumentart. Du siehst, welche Kapitel und Prüfbereiche 614 One anwendet, welche Normen als Prüfgrundlage dienen und wo die Grenzen liegen.",
+          "start": [
+            "Maschine",
+            "Betriebsanleitung"
+          ]
+        },
+        {
+          "typ": "leistungspaar",
+          "id": "leistungen",
+          "kicker": "Zwei Leistungen",
+          "h2": "Vorprüfung und Durchsicht, <em>klar getrennt.</em>",
+          "text": "Die Vorprüfung hat für sich einen Nutzen: Du kannst mit dem Bericht selbst weiterarbeiten. Die fachliche Durchsicht kommt dazu, wenn du eine Bewertung im Zusammenhang brauchst.",
+          "zeilen": [
+            "Was du bekommst",
+            "Wofür du es nutzt",
+            "Grenzen",
+            "Dauer",
+            "Kosten"
+          ],
+          "karten": [
+            {
+              "kicker": "Automatisch",
+              "h3": "Vorprüfung mit 614 One",
+              "werte": [
+                "Prüfbericht und Fachbericht als PDF: Ampel, Befunde mit Schweregrad, Begründung und Empfehlung.",
+                "Lücken vor Abnahme, Audit oder Übersetzung finden und gezielt nacharbeiten.",
+                "Nur der festgelegte Prüfumfang, keine Konformitätsbestätigung, deutschsprachige Dokumente.",
+                "<mark class=\"test\">3 Werktage</mark>",
+                "Festpreis je Dokument <mark class=\"test\">ab 190 €</mark>"
+              ],
+              "link": {
+                "text": "Vorprüfung anfragen",
+                "seite": "kontakt"
+              }
+            },
+            {
+              "kicker": "Persönlich",
+              "h3": "Fachliche Durchsicht",
+              "werte": [
+                "Bewertung der Befunde im Zusammenhang, Klärung offener Punkte und eine Reihenfolge, was zuerst angepackt wird.",
+                "Entscheidungen vorbereiten, wenn Befunde produktabhängig oder widersprüchlich sind.",
+                "Keine Rechtsberatung und keine Konformitätserklärung; die Verantwortung für das Produkt bleibt beim Hersteller.",
+                "Umfang und Liefertermin legen wir vor dem Auftrag fest.",
+                "<mark class=\"test\">Nach Aufwand mit vereinbartem Kostenrahmen</mark>"
+              ],
+              "link": {
+                "text": "Durchsicht anfragen",
+                "seite": "kontakt"
+              }
+            }
+          ],
+          "hinweis": "Die persönliche Durchsicht eines Kundenberichts ist eine eigene Leistung und nicht Teil jedes Prüflaufs. Ob ein Bericht durchgesehen wurde, steht im Auftrag."
+        },
+        {
+          "typ": "personen",
+          "id": "verantwortung",
+          "kicker": "Verantwortung",
+          "h2": "Wer dafür <em>einsteht.</em>",
+          "text": "614 One entsteht in gemeinsamer Arbeit: Fachwissen aus der technischen Redaktion fließt direkt in die Entwicklung ein.",
+          "personen": [
+            {
+              "monogramm": "FH",
+              "name": "<mark class=\"test\">Falk Heinzmann</mark>",
+              "rolle": "Technischer Redakteur",
+              "text": "Verantwortet die fachliche Ausarbeitung und Freigabe der Prüfkriterien und gestaltet mit, welche Anforderungen die Software abbildet und wie verständlich die Ergebnisse sind. <mark class=\"test\">Freigabe ausstehend</mark>"
+            },
+            {
+              "monogramm": "NH",
+              "name": "Niklas Heinzmann",
+              "rolle": "Software · NAHX Technologies",
+              "text": "Entwickelt die Software zu einem großen Teil: Prüflogik, Oberfläche, Berichte und automatische Tests."
+            }
+          ]
+        },
+        {
+          "typ": "faq",
+          "h2": "Gut zu wissen",
+          "fragen": [
+            {
+              "f": "Bestätigt 614 One, dass mein Dokument normkonform ist?",
+              "a": "Nein. Normen und Rechtsquellen sind die Prüfgrundlage. Ob dein Produkt die Anforderungen erfüllt, bewertet ein Mensch; der Bericht weist ausdrücklich darauf hin."
+            },
+            {
+              "f": "Welche Dateien kann ich prüfen lassen?",
+              "a": "PDF, Word (DOC, DOCX) und Text, bis 20 Dateien je Lauf, 10 MB je Datei und 20 MB insgesamt. Gescannte Seiten werden per Texterkennung gelesen."
+            },
+            {
+              "f": "In welcher Sprache?",
+              "a": "Geprüft werden deutschsprachige Dokumente; die Texterkennung ist auf Deutsch eingestellt. Die Berichte sind auf Deutsch. Die Bedienoberfläche gibt es auf Deutsch, Englisch, Ukrainisch und Russisch."
+            },
+            {
+              "f": "Nennt der Bericht genaue Fundstellen?",
+              "a": "Wo es eine Textstelle gibt, ja. Seitenangaben sind geschätzt und so gekennzeichnet. Fehlt ein Inhalt ganz, steht im Bericht, was fehlt, statt einer erfundenen Fundstelle."
+            },
+            {
+              "f": "Wo liegen meine Dateien?",
+              "a": "Für die Prüfung in Google Drive und Google Sheets des Betreibers. <mark class=\"test\">Speicherdauer und Löschung regelt der Auftrag.</mark>"
+            },
+            {
+              "f": "Ab wann geht es los?",
+              "a": "Der Pilot mit FSH Documentation ist vorbereitet. Bis zur Freigabe laufen nur frei erfundene Testdokumente durch, keine Kundendokumente."
+            }
+          ]
+        },
+        {
+          "typ": "band",
+          "kicker": "614 One",
+          "h2": "Passt dein<br>Dokument?",
+          "text": "Schreib kurz, welches Produkt und welches Dokument es ist. Du bekommst eine Einschätzung, ob die Vorprüfung passt.",
+          "cta": {
+            "text": "Anfrage stellen",
+            "seite": "kontakt"
+          },
+          "bild": "wellen"
+        }
+      ]
     }
   },
   "email": "hello@nahx-technologies.example",
@@ -937,7 +1129,7 @@
       "gruss_live": "Hallo! Ich bin der digitale Assistent von NAHX Technologies, eine KI. Ich beantworte Fragen zu Leistungen und Preisen und vereinbare ein kostenfreies Erstgespräch mit Niklas. Worum geht es?",
       "vorschlaege": [
         "Was macht NAHX?",
-        "Was kostet ein Dokumenten-Check?",
+        "Was kostet die Vorprüfung?",
         "Erstgespräch buchen",
         "Chatbot für meine Firma"
       ],
@@ -992,9 +1184,9 @@
             "helfen",
             "angebote"
           ],
-          "antwort": "NAHX Technologies verbindet drei Bereiche: technische Dokumentation, Software und Webanwendungen sowie Automatisierung und KI. Zum Einstieg gibt es drei Angebote mit festem Rahmen: Dokumenten-Check mit 614 One, Prototyp in wenigen Wochen und Automatisierungs-Analyse. Was davon interessiert dich?",
+          "antwort": "NAHX Technologies verbindet drei Bereiche: technische Dokumentation, Software und Webanwendungen sowie Automatisierung und KI. Zum Einstieg gibt es drei Angebote mit festem Rahmen: Vorprüfung mit 614 One, Prototyp in wenigen Wochen und Automatisierungs-Analyse. Was davon interessiert dich?",
           "chips": [
-            "Dokumenten-Check",
+            "Vorprüfung",
             "Prototyp",
             "Automatisierung"
           ]
@@ -1009,9 +1201,11 @@
             "82079",
             "=ce",
             "prüf",
-            "check"
+            "check",
+            "vorprüfung",
+            "durchsicht"
           ],
-          "antwort": "Beim Dokumenten-Check sucht 614 One in deiner deutschsprachigen Anleitung nach typischen Pflichtinhalten aus DIN EN IEC/IEEE 82079-1 und CE-Vorgaben, danach sehe ich fachlich drüber. Du bekommst einen Vorprüfbericht mit Score, Ampel und To-do-Liste, auf Deutsch, Englisch, Ukrainisch oder Russisch. Eine Konformitätsbestätigung ist das nicht. Festpreis je Dokument {{test:ab 190 €}}, Ergebnis in {{test:3 Werktagen}}.",
+          "antwort": "Bei der Vorprüfung wählst du Produkt- und Dokumentart, und 614 One prüft deine Dokumente nach dem passenden Profil. Du bekommst Prüfbericht und Fachbericht als PDF auf Deutsch, mit Befunden, Schweregrad und Empfehlung. Eine Konformitätsbestätigung ist das nicht. Festpreis je Dokument {{test:ab 190 €}}, Ergebnis in {{test:3 Werktagen}}. Die fachliche Durchsicht durch {{test:Falk Heinzmann}} ist separat buchbar, nach Aufwand mit vereinbartem Kostenrahmen.",
           "chips": [
             "Erstgespräch buchen",
             "Was ist 614 One?"
@@ -1024,9 +1218,9 @@
             "614one",
             "prüfwerkzeug"
           ],
-          "antwort": "614 One ist das Prüfwerkzeug von NAHX Technologies. Es durchsucht deutschsprachige Anleitungen und technische Unterlagen nach Stichwortlisten aus drei Regelsätzen (Basisprüfung, DIN EN IEC/IEEE 82079-1, CE) und erstellt Vorprüfberichte in vier Sprachen. Die fachliche Bewertung bleibt beim Menschen. Erster Pilotkunde und Tester ist FSH Documentation.",
+          "antwort": "614 One ist das Prüfwerkzeug von NAHX Technologies, eine Web-App in Google Apps Script. Es kennt 28 Produktarten und 42 Dokumentarten, prüft nach Profil mit 14 wählbaren Prüfbereichen und schreibt Prüf- und Fachberichte auf Deutsch. Jeder Befund wird fachlich bestätigt oder verworfen; die Prüfkriterien verantwortet {{test:Falk Heinzmann}}. Der Pilot mit FSH Documentation ist vorbereitet, aber noch nicht freigegeben.",
           "chips": [
-            "Dokumenten-Check",
+            "Vorprüfung",
             "Erstgespräch buchen"
           ]
         },
@@ -1091,10 +1285,10 @@
             "was kostet",
             "günstig"
           ],
-          "antwort": "Die drei Einstiegsangebote haben Festpreise: Dokumenten-Check {{test:ab 190 €}}, Automatisierungs-Analyse {{test:ab 690 €}}, Prototyp {{test:ab 2.400 €}}. Chatbots und größere Vorhaben plane ich nach einem Erstgespräch mit dir.",
+          "antwort": "Die drei Einstiegsangebote haben Festpreise: Vorprüfung mit 614 One {{test:ab 190 €}} (fachliche Durchsicht nach Aufwand), Automatisierungs-Analyse {{test:ab 690 €}}, Prototyp {{test:ab 2.400 €}}. Chatbots und größere Vorhaben plane ich nach einem Erstgespräch mit dir.",
           "chips": [
             "Erstgespräch buchen",
-            "Dokumenten-Check"
+            "Vorprüfung"
           ]
         },
         {
@@ -1113,7 +1307,8 @@
             "kennenlernen"
           ],
           "antwort": "Gern. Such dir einen freien Termin für ein 30-Minuten-Erstgespräch aus:",
-          "kalender": true
+          "kalender": true,
+          "chips": []
         },
         {
           "stichworte": [
@@ -1141,7 +1336,7 @@
             "referenz",
             "beispiel"
           ],
-          "antwort": "Drei Beispiele: 614 One prüft Dokumente vor und wird bei FSH Documentation erprobt. Die Trikotwand ist eine Kaderseite für einen Floorballverein, auf der Besucher Trikots von der Stange nehmen. Und ein Website-Relaunch mit wöchentlichem SEO-Audit als PDF. Alles Weitere steht unter „Projekte“.",
+          "antwort": "Drei Beispiele: 614 One prüft Dokumente vor; der Pilot bei FSH Documentation ist vorbereitet. Die Trikotwand ist eine Kaderseite für einen Floorballverein, auf der Besucher Trikots von der Stange nehmen. Und ein Website-Relaunch mit wöchentlichem SEO-Audit als PDF. Alles Weitere steht unter „Projekte“.",
           "chips": [
             "Was ist 614 One?",
             "Erstgespräch buchen"
@@ -1173,7 +1368,7 @@
             "ukrain",
             "russisch"
           ],
-          "antwort": "Ich antworte auf Deutsch und Englisch. Berichte von 614 One gibt es zusätzlich auf Ukrainisch und Russisch.",
+          "antwort": "Ich antworte auf Deutsch und Englisch. Die Berichte von 614 One sind auf Deutsch.",
           "chips": [
             "Was ist 614 One?"
           ]
@@ -1224,5 +1419,34 @@
         }
       ]
     }
+  },
+  "pruefumfang": {
+    "produkt": "Produktart",
+    "dokument": "Dokumentart",
+    "kapitel": "Kapitel im Prüfprofil",
+    "alle_kapitel": "Alle {n} Kapitel zeigen",
+    "bereiche": "Prüfbereiche",
+    "normen": "Normbezug im Profil",
+    "ohne_ausgabe": "Ausgabe nicht hinterlegt",
+    "normbasis": "Normbasis der Produktart",
+    "rechtsbereiche": "Rechtsbereiche, die die Produktart auslöst",
+    "ergebnis": "Was du bekommst",
+    "grenzen_titel": "Grenzen",
+    "keine": "Keine hinterlegt.",
+    "belegt": "Mit Referenzdokumenten belegt",
+    "nicht_belegt": "Im Programm hinterlegt, noch nicht mit Referenzdokumenten belegt",
+    "ergebnisse": [
+      "Prüfbericht und Fachbericht als PDF, auf Deutsch",
+      "Ampel mit Sperrgründen, Befunde mit Schweregrad und Empfehlung",
+      "Richtwert für den Nacharbeitsaufwand"
+    ],
+    "grenzen": [
+      "Keine Konformitätsbestätigung: Normen sind Prüfgrundlage, keine Zusage.",
+      "Nur deutschsprachige Dokumente; Seitenangaben sind geschätzt.",
+      "Kapitel, die die Software nicht beurteilen kann, sind als manuelle Prüfung markiert."
+    ],
+    "nur_vorpruefung": "Für diese Dokumentart gibt es nur eine allgemeine Vorprüfung ohne eigenes Profil.",
+    "stand": "Stand des Regelkatalogs: 27.10.2026, aus dem Programmcode von 614 One gelesen. <mark class=\"test\">Fachliche Freigabe der Prüfkriterien durch Falk Heinzmann ausstehend.</mark>",
+    "text_hinweis": "Aus Angaben im Dokument kann 614 One zusätzlich erkennen:"
   }
 }

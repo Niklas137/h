@@ -24,6 +24,7 @@
   "seiten": [
     "start",
     "leistungen",
+    "pruefwerkzeug",
     "projekte",
     "ueber-mich",
     "zusammenarbeit",
@@ -119,13 +120,13 @@
         1600
       ],
       "seitenverhaeltnis": "8/5",
-      "fotograf": "NAHX Technologies (Screenshot)",
+      "fotograf": "NAHX Technologies (Beispielbericht)",
       "quelle": "",
       "lizenz": "eigen",
       "eigen": true,
       "alt": {
-        "de": "Zwei Seiten eines Fachberichts von 614 One auf Deutsch und Englisch, erzeugt aus einem frei erfundenen Testdokument",
-        "en": "Two pages of a 614 One client report in German and English, generated from a fictitious test document"
+        "de": "Zwei Seiten eines Fachberichts von 614 One, erzeugt aus einer frei erfundenen Betriebsanleitung: Kennwerte mit Ampel Rot, Normenmatrix und Mängelmatrix",
+        "en": "Two pages of a 614 One client report generated from fictitious operating instructions: key figures with a red traffic light, standards matrix and defect matrix"
       }
     },
     "trikotwand": {
@@ -238,6 +239,51 @@
       "alt": {
         "de": "Leuchtende mintfarbene Flüssigkeitsform auf dunklem, körnigem Grund",
         "en": "Glowing mint liquid shape on a dark, grainy background"
+      }
+    },
+    "bsp614-pruef": {
+      "breiten": [
+        640,
+        1000
+      ],
+      "seitenverhaeltnis": "2339/1653",
+      "fotograf": "NAHX Technologies (Beispielbericht)",
+      "quelle": "",
+      "lizenz": "eigen",
+      "eigen": true,
+      "alt": {
+        "de": "Erste Seite des Prüfberichts aus dem Beispiellauf: Zusammenfassung mit Dokumentqualität 78 %, Freigabestatus Rot und Gründen gegen eine Freigabe",
+        "en": "First page of the review report from the example run: summary with document quality 78 %, approval status red and reasons against approval"
+      }
+    },
+    "bsp614-fach1": {
+      "breiten": [
+        640,
+        1000
+      ],
+      "seitenverhaeltnis": "1653/2339",
+      "fotograf": "NAHX Technologies (Beispielbericht)",
+      "quelle": "",
+      "lizenz": "eigen",
+      "eigen": true,
+      "alt": {
+        "de": "Erste Seite des Fachberichts aus dem Beispiellauf: geprüfte Dokumentart, Prüfmaßstab mit Normausgaben, Kennwerte und Ampel",
+        "en": "First page of the client report from the example run: document type, review basis with editions of the standards, key figures and traffic light"
+      }
+    },
+    "bsp614-fach2": {
+      "breiten": [
+        640,
+        1000
+      ],
+      "seitenverhaeltnis": "1653/2339",
+      "fotograf": "NAHX Technologies (Beispielbericht)",
+      "quelle": "",
+      "lizenz": "eigen",
+      "eigen": true,
+      "alt": {
+        "de": "Seite des Fachberichts mit Normen- und Rechtsquellenmatrix und Mängelmatrix: Befunde mit Schweregrad, Fundstelle und empfohlener Maßnahme",
+        "en": "Client report page with the matrix of standards and legal sources and the defect matrix: findings with severity, location and recommended action"
       }
     }
   },

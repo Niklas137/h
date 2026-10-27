@@ -1,4 +1,4 @@
-# NAHX Technologies – Übergabe (Stand 2026-10-27, Texte zu 614 One nach Bestandsbericht)
+# NAHX Technologies – Übergabe (Stand 2026-10-27, Produktseite 614 One)
 
 Diese Datei fasst den kompletten bisherigen Claude-Code-Chat zur Website von **NAHX Technologies** zusammen,
 damit ein neues Projekt ohne Zugriff auf den alten Chat nahtlos weiterarbeiten kann.
@@ -8,7 +8,7 @@ damit ein neues Projekt ohne Zugriff auf den alten Chat nahtlos weiterarbeiten k
 - **Repository:** `Niklas137/h`, Ordner `nahx/`. Cyan-Stand: Branch `claude/nahx-website-concept-34tlvk`.
   **Mint-Stand (aktuell):** Branch `claude/nahx-mint` (abgezweigt von `f9464cf`), Flug ab Commit `a0da6c6`.
 - **Vorschau (Claude-Artefakt, für jeden mit dem Link freigegeben, noindex):** https://claude.ai/artifact/Gr2LmKRN3EEmCko43L77bh
-  (Version 32 = Texte zu 614 One nach Bestandsbericht; 31 = neue Bilder; 30 = Startseite nach FORGE-Video mit Effekten nach StringTune-Demo; 29 = leichte Handy-Fassung; 28 = Chat im Handy als Demo; 27 = Überarbeitung nach Kundensicht-Prüfbericht mit Testdaten; 22 = Mint mit Flug durch A-Portale;
+  (Version 33 = Produktseite 614 One, 614 One = FSH DocumentCheck; 32 = Texte zu 614 One nach Bestandsbericht; 31 = neue Bilder; 30 = Startseite nach FORGE-Video mit Effekten nach StringTune-Demo; 29 = leichte Handy-Fassung; 28 = Chat im Handy als Demo; 27 = Überarbeitung nach Kundensicht-Prüfbericht mit Testdaten; 22 = Mint mit Flug durch A-Portale;
   21 = Mint ohne Flug; 20 = letzter Cyan-Stand, alle über den Versionsverlauf).
 - **Aufgabenkatalog für Niklas und Falk (Claude-Artefakt, privat, Status und Notizen gemeinsam gespeichert):**
   https://claude.ai/artifact/KsKynwTEwnXxWeXT1Qdw4u – Quelle `nahx/katalog/` (Daten `aufgaben.json`, Lesefassung `KATALOG.md`).
@@ -286,3 +286,31 @@ nur bei zu langen Sätzen, fehlende Inhalte heißen „Nicht gefunden“. Auf Zu
   `window.I18N`, eingebunden ist nur `i18n.js` mit `window.UI_TEXTE`); im Browser nicht geprüft.
 
 Prüfung: Bau ohne Befund, alte Formulierungen in den gebauten Seiten 0-mal, Angebotskarte auf 390 und 1280 px ohne Überlauf.
+
+## 17. 614 One ist FSH DocumentCheck, Produktseite „614 One“ (2026-10-27, Version 33)
+
+Entscheidung Niklas (27.10.): **„614 One“ ist das Apps-Script-Tool FSH DocumentCheck** (Repo `Niklas137/Fsh-Documentcheck`),
+nicht die Python-App aus `dokumentenpruefer/`. Abschnitt 16 ist damit überholt. Falk darf als fachlich Verantwortlicher
+genannt werden, **als Testtext** (`mark class="test"`, „Freigabe ausstehend“). Grundlage: Gespräch Falk/ChatGPT
+(zwei getrennte Leistungen, Verantwortung namentlich, Beispielergebnis, Auswahl nach Produkt und Dokument).
+
+- **Neue Seite** `pruefwerkzeug` (`/614-one/`, `/de/614-one/`, im Menü nach Leistungen): Aufmacher → `beispielbericht`
+  (drei Berichtsseiten als Bilder, PDFs unter `assets/beispiel/`) → `auswahl` (Produktart × Dokumentart → Kapitel, Prüfbereiche,
+  Normen mit Ausgabe, Normbasis, Rechtsbereiche, Ergebnis, Grenzen; Badge „mit Referenzdokumenten belegt“ für die 5
+  Pilot-Dokumentarten) → `leistungspaar` (Vorprüfung / fachliche Durchsicht: Was, Wofür, Grenzen, Dauer, Kosten) →
+  `personen` (Falk als Test, Niklas) → FAQ (Konformität, Formate, Sprache, Fundstellen, Ablage in Google, Pilot) → Band.
+- **Daten der Auswahl:** `inhalt/pruefumfang.json`, erzeugt mit `node nahx/werkzeuge/pruefumfang.js <fsh-documentcheck> <commit>`
+  direkt aus `src/Code.js` (über `tests/hilfen/ladeCode.js`, nur lesend). Stand `6f698b1`: 28 Produktarten, 42 Dokumentarten,
+  5 belegt, 14 wählbare Prüfbereiche, 6 Rechtsbereiche. Bei neuem Codestand neu erzeugen.
+- **Umgestellt:** Startseite (Angebot „Vorprüfung mit 614 One“, Zahlen 42 Dokumentarten mit Ring 5/42 und 14 Prüfbereiche),
+  Projekt 614 One (Apps Script, Drive-Texterkennung, Sheets, 854 Tests, Pilot vorbereitet, nicht freigegeben), Über mich,
+  Chat-Wissen de/en (Vorprüfung, Durchsicht nach Aufwand, Berichte nur Deutsch). Projektbild `bericht614` neu aus dem
+  Beispiellauf (synthetisch).
+- **Testdaten neu markiert:** Falk als Verantwortlicher, Dauer/Preis der Vorprüfung, „nach Aufwand mit Kostenrahmen“,
+  Speicherdauer/Löschung, Freigabe der Prüfkriterien.
+- **Paket für Falk/ChatGPT:** `614One_Pruefpaket_2026-10-27.zip` (Regelkatalog JSON+CSV, Beispielberichte, Pilot-Referenzdokumente,
+  Skripte, LIESMICH). Nicht im Repo.
+
+Prüfung: Bau ohne Befund (20 Seiten), Playwright 20 Seiten × 5 Breiten ohne Überlauf und Konsolenfehler, Auswahl umgeschaltet
+(Medizinprodukt + Risikobeurteilung zeigt MDR; Sonstiges zeigt Vorprüfungshinweis), Kopf bis 1100 px einzeilig, Chat-Antworten
+de/en. Nicht geprüft: echtes iPhone.
