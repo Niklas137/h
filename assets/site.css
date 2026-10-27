@@ -821,3 +821,69 @@ html.chat-vollbild .fx-linie{display:none}
   -webkit-text-stroke:1px rgba(140,255,218,.25);user-select:none}
 @supports not ((-webkit-background-clip:text) or (background-clip:text)){.ab-riese{color:var(--teal)}}
 .leicht .gl-an .gl-spur{will-change:auto}
+
+/* ---------- Produktseite 614 One (2026-10-27) ---------- */
+.hinweis mark.test,.person mark.test,.pu-stand mark.test{white-space:normal}
+/* Beispielbericht: Seiten als wischbare Spur, daneben die Leseanleitung */
+.bb-raster{display:grid;gap:28px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1000px){.bb-raster{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:start}}
+.bb-spur{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;scrollbar-color:var(--teal) transparent}
+.bb-seite{flex:0 0 min(72vw,300px);margin:0;scroll-snap-align:start}
+.bb-seite a{display:block;border:1px solid var(--line-2);border-radius:4px;overflow:hidden;background:#fff;transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease}
+.bb-seite a:hover{transform:translateY(-3px);border-color:var(--mint);box-shadow:0 18px 50px -20px rgba(0,240,190,.55)}
+.bb-seite img{display:block;width:100%;height:auto}
+.bb-seite figcaption{font-size:13px;color:var(--faint);margin-top:10px;font-family:var(--titel);letter-spacing:.04em}
+.bb-punkte{list-style:none;margin:0;padding:0;display:grid;gap:0;counter-reset:bb}
+.bb-punkte li{border-top:1px solid var(--line);padding:18px 0 18px 44px;position:relative;counter-increment:bb}
+.bb-punkte li::before{content:counter(bb,decimal-leading-zero);position:absolute;left:0;top:19px;font-family:var(--titel);font-size:13px;color:var(--mint);letter-spacing:.08em}
+.bb-punkte h3{font-size:18px;font-weight:600;margin-bottom:6px}
+.bb-punkte p{font-size:15px;color:var(--muted)}
+.bb-pdf{margin-top:22px}
+/* Auswahl Produktart und Dokumentart */
+.pu{border:1px solid var(--line);border-radius:8px;background:linear-gradient(180deg,var(--surface),var(--bg-2));padding:clamp(18px,3vw,32px)}
+.pu-wahl{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));margin-bottom:26px}
+.pu-wahl label{display:grid;gap:8px}
+.pu-wahl label span{font-family:var(--titel);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+.pu-wahl select{appearance:none;-webkit-appearance:none;width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2300F0BE' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 14px center/12px 8px;border:1px solid var(--line-2);border-radius:6px;padding:13px 40px 13px 14px;min-height:48px}
+.pu-wahl select:hover{border-color:var(--mint)}
+.pu-wahl option{background:var(--bg);color:var(--ink)}
+.pu-kopf{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:20px;margin-bottom:18px}
+.pu-kopf h3{font-size:clamp(20px,2.4vw,26px);font-weight:600}
+.pu-kopf h3 span{color:var(--faint);font-weight:400}
+.pu-beleg{font-family:var(--titel);font-size:12px;letter-spacing:.06em;padding:6px 10px;border-radius:999px;border:1px dashed var(--line-2);color:var(--muted)}
+.pu-beleg-ja{border-style:solid;border-color:var(--mint);color:var(--mint);background:var(--mint-soft)}
+.pu-raster{display:grid;gap:22px 32px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.pu-block h4{font-family:var(--titel);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin:0 0 10px;font-weight:500;display:flex;gap:8px;align-items:baseline}
+.pu-block h4.pu-unter{margin-top:20px}
+.pu-zahl{color:var(--mint);letter-spacing:.04em;font-size:13px}
+.pu-block ul{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:14.5px;color:var(--muted)}
+.pu-block li{padding-left:16px;position:relative;overflow-wrap:anywhere}
+.pu-block li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.pu-normen li{display:grid;gap:2px}
+.pu-normen small{font-size:13px;color:var(--faint)}
+.pu-ausgabe{font-family:var(--titel);font-size:12px;color:var(--mint-2);white-space:nowrap}
+.pu-grenzen li::before{background:none;border:1.5px solid var(--mint);border-radius:1px;transform:rotate(45deg);width:6px;height:6px}
+.pu-leer{font-size:14px;color:var(--faint)}
+.pu-mehr summary{cursor:pointer;color:var(--mint);font-size:14px;margin-top:8px;list-style:none}
+.pu-mehr summary::-webkit-details-marker{display:none}
+.pu-mehr[open] summary{margin-bottom:8px}
+.pu-stand{font-size:13px;color:var(--faint);margin-top:22px;border-top:1px solid var(--line);padding-top:14px}
+.pu-neu{animation:puNeu .45s ease}
+@keyframes puNeu{from{opacity:.25;transform:translateY(6px)}}
+@media (prefers-reduced-motion: reduce){.pu-neu{animation:none}}
+/* Zwei Leistungen nebeneinander */
+.lp-raster{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.lp-zeilen{margin:6px 0 0;display:grid}
+.lp-zeilen>div{border-top:1px solid var(--line);padding:13px 0;display:grid;gap:4px}
+.lp-zeilen dt{font-family:var(--titel);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+.lp-zeilen dd{margin:0;font-size:15px;color:var(--ink)}
+.lp-karte .cta,.lp-karte .cta-zweit{align-self:flex-start;margin-top:auto}
+/* Verantwortung */
+.personen-raster{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.person{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:start;border:1px solid var(--line);border-radius:6px;padding:24px;background:var(--bg-2)}
+.person-mono{font-family:var(--titel);font-weight:600;font-size:34px;line-height:1;color:var(--mint);width:72px;height:72px;display:grid;place-items:center;border:1px solid var(--line-2);border-radius:50%}
+.person h3{font-size:20px;font-weight:600}
+.person-rolle{font-family:var(--titel);font-size:13px;letter-spacing:.06em;color:var(--mint-2);margin:4px 0 10px}
+.person p{font-size:15px;color:var(--muted)}
+.pu-text{font-size:13.5px;color:var(--faint);margin-top:10px}
+@media (max-width:420px){.person{grid-template-columns:minmax(0,1fr);gap:14px}.person-mono{width:56px;height:56px;font-size:26px}}
