@@ -1,4 +1,4 @@
-# NAHX Technologies – Übergabe (Stand 2026-10-26, Überarbeitung mit Testdaten)
+# NAHX Technologies – Übergabe (Stand 2026-10-27, Texte zu 614 One nach Bestandsbericht)
 
 Diese Datei fasst den kompletten bisherigen Claude-Code-Chat zur Website von **NAHX Technologies** zusammen,
 damit ein neues Projekt ohne Zugriff auf den alten Chat nahtlos weiterarbeiten kann.
@@ -8,7 +8,7 @@ damit ein neues Projekt ohne Zugriff auf den alten Chat nahtlos weiterarbeiten k
 - **Repository:** `Niklas137/h`, Ordner `nahx/`. Cyan-Stand: Branch `claude/nahx-website-concept-34tlvk`.
   **Mint-Stand (aktuell):** Branch `claude/nahx-mint` (abgezweigt von `f9464cf`), Flug ab Commit `a0da6c6`.
 - **Vorschau (Claude-Artefakt, für jeden mit dem Link freigegeben, noindex):** https://claude.ai/artifact/Gr2LmKRN3EEmCko43L77bh
-  (Version 30 = Startseite nach FORGE-Video mit Effekten nach StringTune-Demo; 29 = leichte Handy-Fassung; 28 = Chat im Handy als Demo; 27 = Überarbeitung nach Kundensicht-Prüfbericht mit Testdaten; 22 = Mint mit Flug durch A-Portale;
+  (Version 32 = Texte zu 614 One nach Bestandsbericht; 31 = neue Bilder; 30 = Startseite nach FORGE-Video mit Effekten nach StringTune-Demo; 29 = leichte Handy-Fassung; 28 = Chat im Handy als Demo; 27 = Überarbeitung nach Kundensicht-Prüfbericht mit Testdaten; 22 = Mint mit Flug durch A-Portale;
   21 = Mint ohne Flug; 20 = letzter Cyan-Stand, alle über den Versionsverlauf).
 - **Aufgabenkatalog für Niklas und Falk (Claude-Artefakt, privat, Status und Notizen gemeinsam gespeichert):**
   https://claude.ai/artifact/KsKynwTEwnXxWeXT1Qdw4u – Quelle `nahx/katalog/` (Daten `aufgaben.json`, Lesefassung `KATALOG.md`).
@@ -268,7 +268,7 @@ Unterseiten, Steuerung der neuen Szenen. Alles 2D; bei reduzierter Bewegung aus.
 Prüfung: Bau ohne Befund, 18 Seiten × 5 Breiten ohne Überlauf und Konsolenfehler, Chat weiter im Vollbild, Bildfolgen der
 Szenen auf 1440 und 390 px. Nicht geprüft: echtes iPhone.
 
-## 16. Texte zu 614 One nach dem Bestandsbericht (2026-10-27)
+## 16. Texte zu 614 One nach dem Bestandsbericht (2026-10-27, Version 32)
 
 Grundlage: Bestandsbericht „Prüftool: Bestandsbericht und Abgleich“ (https://claude.ai/artifact/Nq6PGvST5Rhn5JSymDML4m),
 Phase D. 614 One ist eine Schlüsselwortsuche über 24 Regeln plus Satzlänge; die Suchwörter sind deutsch; Fundstellen gibt es
