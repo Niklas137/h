@@ -107,11 +107,11 @@
             {
               "kicker": "Technical Documentation",
               "h3": "Document check with 614 One",
-              "text": "Pre-review of a manual or technical document against basic requirements, DIN EN IEC/IEEE 82079-1 and CE rules, with an expert read-through.",
+              "text": "Pre-review of a German-language manual or technical document: 614 One looks for typical required content from DIN EN IEC/IEEE 82079-1 and CE rules, followed by an expert read-through.",
               "punkte": [
-                "Client report with score, traffic light and to-do list",
+                "Pre-review report with score, traffic light and to-do list",
                 "Report in English, German, Ukrainian or Russian",
-                "Exact locations instead of a blanket verdict"
+                "Every check point listed, with a recommendation"
               ],
               "rahmen": "Fixed price per document<br><mark class=\"test\">from €190</mark> · <mark class=\"test\">3 working days</mark>",
               "link": {
@@ -160,7 +160,7 @@
           "id": "projekte",
           "kicker": "Projects",
           "h2": "Five projects, <em>from idea to operation.</em>",
-          "text": "From a review tool in pilot use to a squad page for a sports club.",
+          "text": "From a review tool in trial use to a squad page for a sports club.",
           "ende": {
             "h3": "Planning something of your own?",
             "text": "Tell me about it and I will come back with a proposal.",
@@ -195,7 +195,7 @@
           "text": "Real feedback appears here once approved.",
           "stimmen": [
             {
-              "text": "<mark class=\"test\">Placeholder for feedback from FSH Documentation on the 614 One pilot.</mark>",
+              "text": "<mark class=\"test\">Placeholder for feedback from FSH Documentation on trialling 614 One.</mark>",
               "von": "FSH Documentation · 614 One pilot client · approval pending"
             },
             {
@@ -241,13 +241,13 @@
             {
               "zahl": "4",
               "einheit": "report languages",
-              "text": "614 One writes client reports in English, German, Ukrainian and Russian.",
+              "text": "614 One writes reports in English, German, Ukrainian and Russian. It reviews German-language documents.",
               "ring": 1.0
             },
             {
               "zahl": "3",
               "einheit": "rule sets",
-              "text": "Basic review, DIN EN IEC/IEEE 82079-1 and CE rules."
+              "text": "Keyword lists for basic review, DIN EN IEC/IEEE 82079-1 and CE rules."
             },
             {
               "zahl": "0",
@@ -497,17 +497,17 @@
             {
               "titel": "614 One – document review by NAHX Technologies",
               "bereich": "Technical Documentation · Software",
-              "kurz": "Web app that pre-reviews Word and PDF documents against rule sets and produces reports in four languages. First pilot customer and tester is FSH Documentation. Pictured: client report from a fictitious test document.",
+              "kurz": "Web app that pre-reviews German-language Word and PDF documents against keyword lists and produces reports in four languages. First pilot customer and tester is FSH Documentation. Pictured: client report from a fictitious test document.",
               "ausgang": "Technical documentation has to be checked against basic requirements, DIN EN IEC/IEEE 82079-1 and CE conformity rules. This was done manually, with checklists, and differently by each reviewer.",
-              "herausforderung": "A pre-review that is repeatable, cites locations, supports several users with their own settings and delivers reports customers can read in their language.",
-              "beitrag": "Design and development of the web app: architecture, review logic, accounts and roles, reports, tests, operating instructions for the Mac. Trialled in a pilot with FSH Documentation.",
+              "herausforderung": "A pre-review that is repeatable, lists every check point individually, supports several users with their own settings and delivers reports customers can read in their language.",
+              "beitrag": "Design and development of the web app: architecture, review logic, accounts and roles, reports, tests, operating instructions for the Mac. Trialled with FSH Documentation.",
               "ansatz": "Rule sets as verifiable JSON files (24 rules with area, weight and recommendation in de/en/uk/ru), keyword search with score and traffic light, rules that can be deselected per account, reports as PDF. Expert review and approval explicitly stay with a person; every report says so.",
               "technologien": "Python, FastAPI, Uvicorn, SQLite, python-docx, pdfplumber, ReportLab, Argon2 for passwords, pytest; interface without a framework.",
-              "status": "Running with test coverage (accounts, review, languages, command line). In pilot use with FSH Documentation as first customer and tester; screenshots and access are not public yet.",
+              "status": "Runs locally, with automated tests for accounts, review, report languages and command line. Being trialled with FSH Documentation as first customer and tester; screenshots and access are not public yet.",
               "ablauf": [
                 "Upload document",
                 "Choose rule sets",
-                "Review with locations",
+                "Review against keyword lists",
                 "PDF report (de/en/uk/ru)"
               ],
               "bild": "bericht614"
@@ -1008,7 +1008,7 @@
             "review",
             "check"
           ],
-          "antwort": "In the document check, 614 One reviews your manual against basic requirements, DIN EN IEC/IEEE 82079-1 and CE rules, then I read it through as an expert. You get a client report with score, traffic light and to-do list, in English, German, Ukrainian or Russian. Fixed price per document {{test:from €190}}, result in {{test:3 working days}}.",
+          "antwort": "In the document check, 614 One looks for typical required content from DIN EN IEC/IEEE 82079-1 and CE rules in your German-language manual, then I read it through as an expert. You get a pre-review report with score, traffic light and to-do list, in English, German, Ukrainian or Russian. It is not a confirmation of conformity. Fixed price per document {{test:from €190}}, result in {{test:3 working days}}.",
           "chips": [
             "Book an intro call",
             "What is 614 One?"
@@ -1021,7 +1021,7 @@
             "614one",
             "review tool"
           ],
-          "antwort": "614 One is the review tool by NAHX Technologies. It checks manuals and technical documents against three rule sets (basic review, DIN EN IEC/IEEE 82079-1, CE) and creates client reports in four languages. The first pilot client and tester is FSH Documentation.",
+          "antwort": "614 One is the review tool by NAHX Technologies. It searches German-language manuals and technical documents using keyword lists from three rule sets (basic review, DIN EN IEC/IEEE 82079-1, CE) and creates pre-review reports in four languages. The expert assessment stays with a person. The first pilot client and tester is FSH Documentation.",
           "chips": [
             "Document check",
             "Book an intro call"
@@ -1131,7 +1131,7 @@
             "reference",
             "example"
           ],
-          "antwort": "Three examples: 614 One reviews documents and is in pilot use at FSH Documentation. The Jersey Wall is a squad page for a floorball club where visitors take jerseys off the rail. And a website relaunch with a weekly SEO audit as a PDF. More under “Projects”.",
+          "antwort": "Three examples: 614 One pre-reviews documents and is being trialled at FSH Documentation. The Jersey Wall is a squad page for a floorball club where visitors take jerseys off the rail. And a website relaunch with a weekly SEO audit as a PDF. More under “Projects”.",
           "chips": [
             "What is 614 One?",
             "Book an intro call"

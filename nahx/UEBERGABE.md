@@ -267,3 +267,22 @@ Schmier-Schatten bei schnellem Scrollen, Wellen-Schrift (Bänder auf Unterseiten
 Unterseiten, Steuerung der neuen Szenen. Alles 2D; bei reduzierter Bewegung aus. Gemessen auf 390 px: 0 räumliche Ebenen.
 Prüfung: Bau ohne Befund, 18 Seiten × 5 Breiten ohne Überlauf und Konsolenfehler, Chat weiter im Vollbild, Bildfolgen der
 Szenen auf 1440 und 390 px. Nicht geprüft: echtes iPhone.
+
+## 16. Texte zu 614 One nach dem Bestandsbericht (2026-10-27)
+
+Grundlage: Bestandsbericht „Prüftool: Bestandsbericht und Abgleich“ (https://claude.ai/artifact/Nq6PGvST5Rhn5JSymDML4m),
+Phase D. 614 One ist eine Schlüsselwortsuche über 24 Regeln plus Satzlänge; die Suchwörter sind deutsch; Fundstellen gibt es
+nur bei zu langen Sätzen, fehlende Inhalte heißen „Nicht gefunden“. Auf Zuruf von Niklas umformuliert (de und en):
+
+- „prüft gegen Basisanforderungen, DIN EN IEC/IEEE 82079-1 und CE-Vorgaben“ → „sucht nach typischen Pflichtinhalten aus
+  DIN EN IEC/IEEE 82079-1 und CE-Vorgaben“; überall „deutschsprachige“ Dokumente; Regelsätze als „Stichwortlisten“.
+- „Fachbericht“ im Angebot und im Chat → „Vorprüfbericht“; Chat ergänzt „Eine Konformitätsbestätigung ist das nicht.“
+- „Fundstellen statt Pauschalurteil“ / „Prüfung mit Fundstellen“ → „Jeder Prüfpunkt einzeln, mit Empfehlung“ / „Prüfung nach
+  Stichwortlisten“.
+- „im Pilotbetrieb“ / „läuft im Pilot“ → „in Erprobung“. FSH Documentation bleibt als erster Pilotkunde und Tester genannt.
+  **Offen:** Falk bestätigt, dass 614 One bei FSH erprobt wird (bei FSH läuft sonst das Apps-Script-Tool FSH DocumentCheck).
+- Status: „Lauffähig mit Testabdeckung“ → „Läuft lokal, mit automatischen Tests für Konten, Prüfung, Berichtssprachen und
+  Kommandozeile“. Nicht behoben: Die Oberfläche der App zeigt vermutlich Schlüsselnamen statt Texte (`app.js` liest
+  `window.I18N`, eingebunden ist nur `i18n.js` mit `window.UI_TEXTE`); im Browser nicht geprüft.
+
+Prüfung: Bau ohne Befund, alte Formulierungen in den gebauten Seiten 0-mal, Angebotskarte auf 390 und 1280 px ohne Überlauf.

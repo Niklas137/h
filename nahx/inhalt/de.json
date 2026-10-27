@@ -107,11 +107,11 @@
             {
               "kicker": "Technical Documentation",
               "h3": "Dokumenten-Check mit 614 One",
-              "text": "Vorprüfung einer Anleitung oder technischen Unterlage gegen Basisanforderungen, DIN EN IEC/IEEE 82079-1 und CE-Vorgaben, mit fachlicher Durchsicht.",
+              "text": "Vorprüfung einer deutschsprachigen Anleitung oder technischen Unterlage: 614 One sucht nach typischen Pflichtinhalten aus DIN EN IEC/IEEE 82079-1 und CE-Vorgaben, danach folgt die fachliche Durchsicht.",
               "punkte": [
-                "Fachbericht mit Score, Ampel und To-do-Liste",
+                "Vorprüfbericht mit Score, Ampel und To-do-Liste",
                 "Bericht auf Deutsch, Englisch, Ukrainisch oder Russisch",
-                "Fundstellen statt Pauschalurteil"
+                "Jeder Prüfpunkt einzeln, mit Empfehlung"
               ],
               "rahmen": "Festpreis je Dokument<br><mark class=\"test\">ab 190 €</mark> · <mark class=\"test\">3 Werktage</mark>",
               "link": {
@@ -160,7 +160,7 @@
           "id": "projekte",
           "kicker": "Projekte",
           "h2": "Fünf Projekte, <em>von der Idee bis zum Betrieb.</em>",
-          "text": "Vom Prüfwerkzeug im Pilotbetrieb bis zur Kaderseite für einen Verein.",
+          "text": "Vom Prüfwerkzeug in Erprobung bis zur Kaderseite für einen Verein.",
           "ende": {
             "h3": "Etwas Eigenes vor?",
             "text": "Erzähl mir davon, ich melde mich mit einem Vorschlag.",
@@ -195,7 +195,7 @@
           "text": "Hier stehen nach Freigabe echte Rückmeldungen.",
           "stimmen": [
             {
-              "text": "<mark class=\"test\">Platzhalter für eine Rückmeldung von FSH Documentation zum Pilotbetrieb von 614 One.</mark>",
+              "text": "<mark class=\"test\">Platzhalter für eine Rückmeldung von FSH Documentation zur Erprobung von 614 One.</mark>",
               "von": "FSH Documentation · Pilotkunde 614 One · Freigabe ausstehend"
             },
             {
@@ -241,13 +241,13 @@
             {
               "zahl": "4",
               "einheit": "Berichtssprachen",
-              "text": "614 One schreibt Fachberichte auf Deutsch, Englisch, Ukrainisch und Russisch.",
+              "text": "614 One schreibt Berichte auf Deutsch, Englisch, Ukrainisch und Russisch. Geprüft werden deutschsprachige Dokumente.",
               "ring": 1.0
             },
             {
               "zahl": "3",
               "einheit": "Regelsätze",
-              "text": "Basisprüfung, DIN EN IEC/IEEE 82079-1 und CE-Vorgaben."
+              "text": "Stichwortlisten zu Basisprüfung, DIN EN IEC/IEEE 82079-1 und CE-Vorgaben."
             },
             {
               "zahl": "0",
@@ -497,17 +497,17 @@
             {
               "titel": "614 One – Dokumentenprüfung von NAHX Technologies",
               "bereich": "Technical Documentation · Software",
-              "kurz": "Web-App, die Word- und PDF-Dokumente gegen Regelsätze vorprüft und Berichte in vier Sprachen erzeugt. Erster Pilotkunde und Tester ist FSH Documentation. Im Bild: Fachbericht aus einem frei erfundenen Testdokument.",
+              "kurz": "Web-App, die deutschsprachige Word- und PDF-Dokumente nach Stichwortlisten vorprüft und Berichte in vier Sprachen erzeugt. Erster Pilotkunde und Tester ist FSH Documentation. Im Bild: Fachbericht aus einem frei erfundenen Testdokument.",
               "ausgang": "Technische Dokumentation muss gegen Basisanforderungen, DIN EN IEC/IEEE 82079-1 und CE-Konformitätsvorgaben geprüft werden. Das geschah manuell, mit Checklisten und je nach Prüfer unterschiedlich.",
-              "herausforderung": "Eine Vorprüfung, die wiederholbar ist, Fundstellen nennt, mehrere Benutzer mit eigenen Einstellungen trägt und Berichte liefert, die Kunden in ihrer Sprache lesen können.",
-              "beitrag": "Konzeption und Entwicklung der Web-App: Architektur, Prüflogik, Konten und Rollen, Berichte, Tests, Betriebsanleitung für den Mac. Erprobung im Pilotbetrieb mit FSH Documentation.",
+              "herausforderung": "Eine Vorprüfung, die wiederholbar ist, jeden Prüfpunkt einzeln ausweist, mehrere Benutzer mit eigenen Einstellungen trägt und Berichte liefert, die Kunden in ihrer Sprache lesen können.",
+              "beitrag": "Konzeption und Entwicklung der Web-App: Architektur, Prüflogik, Konten und Rollen, Berichte, Tests, Betriebsanleitung für den Mac. Erprobung mit FSH Documentation.",
               "ansatz": "Regelsätze als prüfbare JSON-Dateien (24 Regeln mit Bereich, Gewichtung, Empfehlung in de/en/uk/ru), Schlüsselwortsuche mit Score und Ampel, abwählbare Prüfpunkte je Konto, Berichte als PDF. Fachliche Prüfung und Freigabe bleiben ausdrücklich beim Menschen; jeder Bericht sagt das.",
               "technologien": "Python, FastAPI, Uvicorn, SQLite, python-docx, pdfplumber, ReportLab, Argon2 für Passwörter, pytest; Oberfläche ohne Framework.",
-              "status": "Lauffähig mit Testabdeckung (Konten, Prüfung, Sprachen, Kommandozeile). Im Pilotbetrieb mit FSH Documentation als erstem Kunden und Tester; Screenshots und Zugang sind noch nicht öffentlich.",
+              "status": "Läuft lokal, mit automatischen Tests für Konten, Prüfung, Berichtssprachen und Kommandozeile. In Erprobung mit FSH Documentation als erstem Kunden und Tester; Screenshots und Zugang sind noch nicht öffentlich.",
               "ablauf": [
                 "Dokument hochladen",
                 "Regelsätze wählen",
-                "Prüfung mit Fundstellen",
+                "Prüfung nach Stichwortlisten",
                 "Bericht als PDF (de/en/uk/ru)"
               ],
               "bild": "bericht614"
@@ -1011,7 +1011,7 @@
             "prüf",
             "check"
           ],
-          "antwort": "Beim Dokumenten-Check prüft 614 One deine Anleitung gegen Basisanforderungen, DIN EN IEC/IEEE 82079-1 und CE-Vorgaben, danach sehe ich fachlich drüber. Du bekommst einen Fachbericht mit Score, Ampel und To-do-Liste, auf Deutsch, Englisch, Ukrainisch oder Russisch. Festpreis je Dokument {{test:ab 190 €}}, Ergebnis in {{test:3 Werktagen}}.",
+          "antwort": "Beim Dokumenten-Check sucht 614 One in deiner deutschsprachigen Anleitung nach typischen Pflichtinhalten aus DIN EN IEC/IEEE 82079-1 und CE-Vorgaben, danach sehe ich fachlich drüber. Du bekommst einen Vorprüfbericht mit Score, Ampel und To-do-Liste, auf Deutsch, Englisch, Ukrainisch oder Russisch. Eine Konformitätsbestätigung ist das nicht. Festpreis je Dokument {{test:ab 190 €}}, Ergebnis in {{test:3 Werktagen}}.",
           "chips": [
             "Erstgespräch buchen",
             "Was ist 614 One?"
@@ -1024,7 +1024,7 @@
             "614one",
             "prüfwerkzeug"
           ],
-          "antwort": "614 One ist das Prüfwerkzeug von NAHX Technologies. Es prüft Anleitungen und technische Unterlagen nach drei Regelsätzen (Basisprüfung, DIN EN IEC/IEEE 82079-1, CE) und erstellt Fachberichte in vier Sprachen. Erster Pilotkunde und Tester ist FSH Documentation.",
+          "antwort": "614 One ist das Prüfwerkzeug von NAHX Technologies. Es durchsucht deutschsprachige Anleitungen und technische Unterlagen nach Stichwortlisten aus drei Regelsätzen (Basisprüfung, DIN EN IEC/IEEE 82079-1, CE) und erstellt Vorprüfberichte in vier Sprachen. Die fachliche Bewertung bleibt beim Menschen. Erster Pilotkunde und Tester ist FSH Documentation.",
           "chips": [
             "Dokumenten-Check",
             "Erstgespräch buchen"
@@ -1141,7 +1141,7 @@
             "referenz",
             "beispiel"
           ],
-          "antwort": "Drei Beispiele: 614 One prüft Dokumente und läuft im Pilot bei FSH Documentation. Die Trikotwand ist eine Kaderseite für einen Floorballverein, auf der Besucher Trikots von der Stange nehmen. Und ein Website-Relaunch mit wöchentlichem SEO-Audit als PDF. Alles Weitere steht unter „Projekte“.",
+          "antwort": "Drei Beispiele: 614 One prüft Dokumente vor und wird bei FSH Documentation erprobt. Die Trikotwand ist eine Kaderseite für einen Floorballverein, auf der Besucher Trikots von der Stange nehmen. Und ein Website-Relaunch mit wöchentlichem SEO-Audit als PDF. Alles Weitere steht unter „Projekte“.",
           "chips": [
             "Was ist 614 One?",
             "Erstgespräch buchen"
@@ -1173,7 +1173,7 @@
             "ukrain",
             "russisch"
           ],
-          "antwort": "Ich antworte auf Deutsch und Englisch. Fachberichte von 614 One gibt es zusätzlich auf Ukrainisch und Russisch.",
+          "antwort": "Ich antworte auf Deutsch und Englisch. Berichte von 614 One gibt es zusätzlich auf Ukrainisch und Russisch.",
           "chips": [
             "Was ist 614 One?"
           ]
