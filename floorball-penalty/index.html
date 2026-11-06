@@ -69,6 +69,10 @@ input,select{ font:inherit; }
 #joystick{ position:absolute; width:9rem; height:9rem; margin:-4.5rem 0 0 -4.5rem; border-radius:50%; border:2px solid rgba(255,255,255,.35);
   background:rgba(255,255,255,.06); }
 #joystick .knopf{ position:absolute; left:50%; top:50%; width:3.4rem; height:3.4rem; margin:-1.7rem 0 0 -1.7rem; border-radius:50%; background:rgba(255,255,255,.5); }
+#trickLeiste{ position:absolute; right:max(.8rem,env(safe-area-inset-right)); bottom:calc(max(.8rem,env(safe-area-inset-bottom)) + 2.6rem); display:flex; flex-direction:column; gap:.45rem; pointer-events:auto; }
+.trickKnopf{ min-width:7.2rem; min-height:2.9rem; border-radius:2rem; border:1px solid var(--rand); background:var(--panel); font-weight:800; font-size:.95rem; touch-action:none; }
+.trickKnopf:active{ background:var(--akzent); color:#111; }
+.trickKnopf.raus{ background:var(--schlecht); color:#fff; min-height:3.6rem; font-size:1.15rem; }
 #steuerHinweis{ position:absolute; bottom:max(.8rem,env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); color:var(--mute);
   font-size:.9rem; background:rgba(0,0,0,.45); padding:.35rem .8rem; border-radius:.5rem; white-space:nowrap; max-width:96vw; overflow:hidden; text-overflow:ellipsis; }
 #trainingInfo{ position:absolute; top:max(.6rem,env(safe-area-inset-top)); left:max(.6rem,env(safe-area-inset-left)); background:var(--panel);
@@ -197,6 +201,7 @@ table.tab td.z{ text-align:right; font-variant-numeric:tabular-nums; }
     <button class="rundKnopf" id="btnPause" aria-label="Pause">⏸</button>
   </div>
   <div id="joystick" class="versteckt"><div class="knopf"></div></div>
+  <div id="trickLeiste" class="versteckt"></div>
   <div id="steuerHinweis"></div>
 </div>
 <div id="menues"></div>
@@ -249,16 +254,16 @@ const TEXTE = {
     r_rueckwaerts: 'Bewegung vom Tor weg – Fehlversuch.',
     r_nachschuss: 'Nachschuss nach Torhüterkontakt – kein Tor.',
     r_zeit: 'Zeitlimit überschritten – Fehlversuch.',
-    r_torraum: 'Schütze im Torraum – Fehlversuch.',
+    r_torraum: 'Schütze im Torhüterraum – Fehlversuch.',
     r_linie: 'Ball liegt auf der Linie, nicht vollständig drüber – kein Tor.',
     r_ballgestoppt: 'Ball gestoppt – kein Tor.',
     r_training: 'Training',
     tor_banner: 'TOR!', gehalten_banner: 'GEHALTEN!', fehl_banner: 'KEIN TOR',
     banner_sieg: 'gewinnt das Shootout', banner_remis: 'Unentschieden',
     wiederholung: 'WIEDERHOLUNG', ueberspringen: 'Tippen zum Überspringen',
-    hinweis_schuetze_maus: 'Maus zeigt das Ziel im Tor, der Spieler läuft dorthin · in Schussnähe Maustaste halten = Kraft · loslassen = Schuss · Rechtsklick/Shift = Lupfer · Leertaste = Finte',
-    hinweis_schuetze_touch: 'Finger zeigt das Ziel (Fadenkreuz) · in Schussnähe halten = Kraft · loslassen = Schuss · nach oben wischen = Lupfer · Doppeltipp = Finte',
-    hinweis_torwart: 'Tippe/klicke im richtigen Moment dorthin, wo der Ball ins Tor fliegt · Stellungsspiel automatisch, A/D bzw. Stick verschiebt selbst',
+    hinweis_schuetze_maus: 'W/A/S/D oder Pfeile = laufen (ohne Taste läuft er selbst) · Maus zielt ins Tor · Maustaste halten = Kraft, loslassen = Schuss · Rechtsklick/Shift = Lupfer · Leertaste = Täuschung · Q = Zieher · E = Drehung · R = Zorro',
+    hinweis_schuetze_touch: 'Linke Hälfte = Joystick zum Laufen (optional) · rechte Hälfte: Finger zielt, halten = Kraft, loslassen = Schuss · Doppeltipp = Täuschung · Tricks über die Knöpfe',
+    hinweis_torwart: 'W/A/S/D, Pfeile oder Joystick = im ganzen Torraum bewegen · Tipp/Klick ins Tor = Parade · Tipp vor das Tor, F oder „Raus!“ = herausspringen',
     hinweis_zuschauen: 'KI gegen KI · C = Kamera · Esc = Pause',
     schussnah: 'Schussnähe – halten zum Aufladen',
     // Ergebnis
@@ -291,11 +296,13 @@ const TEXTE = {
     e_ton: 'Lautstärke', e_qualitaet: 'Grafikqualität', q_niedrig: 'Niedrig', q_mittel: 'Mittel', q_hoch: 'Hoch',
     e_tasten: 'Tastenbelegung', e_taste_druecken: 'Taste drücken …', e_tutorial: 'Tutorial erneut zeigen', e_speicher_aus: 'Hinweis: Speicher nicht verfügbar – Einstellungen gelten nur für diese Sitzung.',
     a_hoch: 'Vor / Ziel hoch', a_runter: 'Zurück / Ziel tief', a_links: 'Links', a_rechts: 'Rechts', a_aktion: 'Schuss (halten) / Parade', a_finte: 'Finte / Parade',
-    a_lupfer: 'Lupfer', a_kamera: 'Kamera', a_pause: 'Pause', a_tuning: 'Tuning',
+    a_lupfer: 'Lupfer', a_zieher: 'Trick: Zieher', a_drehung: 'Trick: Drehung', a_zorro: 'Trick: Zorro', a_raus: 'Torhüter: Raus', a_kamera: 'Kamera', a_pause: 'Pause', a_tuning: 'Tuning',
+    trick_finte: 'Täuschung', trick_zieher: 'Zieher', trick_drehung: 'Drehung', trick_zorro: 'Zorro', trick_raus: 'Raus!',
+    r_abgefangen: 'Torhüter hat den Ball abgefangen – kein Tor.', r_ballweg: 'Ball verloren.',
     // Tutorial
-    tut_titel: 'So spielst du', tut_1: 'Zeige mit Maus oder Finger auf die Stelle im Tor, wo der Ball hin soll. Das gelbe Fadenkreuz folgt dir, der Spieler dribbelt automatisch in diese Richtung.',
-    tut_2: 'In Schussnähe gedrückt halten: der Ring füllt sich (Kraft), eine gestrichelte Linie zeigt die Flugbahn. Loslassen = Schuss. Rechtsklick, Shift oder nach oben wischen = Lupfer, Leertaste oder Doppeltipp = Finte.',
-    tut_3: 'Im Tor stellt sich dein Torhüter selbst. Tippe oder klicke im richtigen Moment dorthin, wo der Ball ins Tor fliegt – er springt genau dorthin.',
+    tut_titel: 'So spielst du', tut_1: 'Laufen mit W/A/S/D, Pfeiltasten oder dem Joystick links (ohne Eingabe läuft der Spieler selbst zum Tor). Maus oder Finger zeigt auf die Stelle im Tor, wo der Ball hin soll.',
+    tut_2: 'In Schussnähe gedrückt halten: der Ring füllt sich, eine Linie zeigt die Flugbahn. Loslassen = Schuss. Tricks beim Anlauf: Leertaste = Täuschung, Q = Zieher, E = Drehung, R = Zorro (Ball auf der Kelle) – oder die Knöpfe unten rechts.',
+    tut_3: 'Im Tor bewegst du dich mit W/A/S/D oder Joystick im ganzen Torraum. Tippe oder klicke dorthin, wo der Ball ins Tor fliegt. Kommt der Schütze zu nah: F, „Raus!“ oder ein Tipp vor das Tor – dein Torhüter springt ihm entgegen.',
     tut_weiter: 'Weiter', tut_los: 'Los geht’s', tut_skip: 'Überspringen',
     // Tuning
     tuning: 'Tuning', tu_presets: 'Presets', tu_eigene: 'Eigene Presets', tu_speichern: 'Speichern', tu_name: 'Name des Presets',
@@ -399,7 +406,7 @@ const TUNING_SCHEMA = [
     ['fov', 'Sichtfeld', 30, 90, 1, '°'], ['hoehe', 'Höhe', 0.4, 2.5, 0.05, '×'], ['abstand', 'Abstand', 0.5, 2.5, 0.05, '×'], ['wackeln', 'Kamerawackeln', 0, 2, 0.05, '']] },
   { g: 'regeln', titel: 'Regeln', f: [
     ['schuetzen', 'Anzahl Schützen', 1, 10, 1, ''], ['zeitlimit', 'Zeitlimit', 5, 30, 1, ' s'],
-    ['suddenDeath', 'Sudden Death'], ['strengeVorwaerts', 'Strenge Vorwärtsregel'], ['torraum', 'Torraum-Regel (Schütze)']] },
+    ['suddenDeath', 'Sudden Death'], ['strengeVorwaerts', 'Strenge Vorwärtsregel'], ['torraum', 'Torhüterraum-Regel (Schütze)']] },
   { g: 'grafik', titel: 'Grafik', f: [
     ['qualitaet', 'Qualitätsstufe', ['niedrig', 'mittel', 'hoch']], ['schatten', 'Schatten'],
     ['zuschauer', 'Zuschauerdichte', 0, 1, 0.05, ''], ['fps', 'FPS-Anzeige']] }
@@ -428,9 +435,10 @@ function presetAnwenden(p) {
 }
 
 /* Spieler-Einstellungen (nicht im Tuning) */
-const TASTEN_STANDARD = { hoch: 'KeyW', runter: 'KeyS', links: 'KeyA', rechts: 'KeyD', aktion: 'KeyJ', finte: 'Space', lupfer: 'ShiftLeft', kamera: 'KeyC', pause: 'Escape', tuning: 'KeyT' };
+const TASTEN_STANDARD = { hoch: 'KeyW', runter: 'KeyS', links: 'KeyA', rechts: 'KeyD', aktion: 'KeyJ', finte: 'Space', lupfer: 'ShiftLeft', zieher: 'KeyQ', drehung: 'KeyE', zorro: 'KeyR', raus: 'KeyF', kamera: 'KeyC', pause: 'Escape', tuning: 'KeyT' };
 const Einst = mischeTief({ schwierigkeit: 'amateur', kamera: 'auto', zielhilfe: true, wiederholung: true, schrift: 1, farbenblind: false, ton: 0.8, tutorial: false,
   letztesTeam: null, tasten: tief(TASTEN_STANDARD) }, Speicher.lesen('fps_einst_v1', {}));
+for (const k in TASTEN_STANDARD) if (!Einst.tasten[k]) Einst.tasten[k] = TASTEN_STANDARD[k];
 function einstSpeichern() { Speicher.schreiben('fps_einst_v1', Einst); }
 const SCHWIERIGKEIT = {
   einsteiger: { reaktion: 160, fehler: 2.0, ziel: 0.7, anti: -0.2, zeitlupe: true, kiSchuss: 0.85 },
@@ -527,7 +535,8 @@ class EingabeSystem {
     this.tasten = new Set(); this.ereignisse = [];
     this.zeiger = null;            // aktiver Zug {id,sx,sy,x,y,t0,verlauf[]}
     this.letzterTipp = 0; this.wischGemeldet = false;
-    this.pad = { lx: 0, ly: 0, a: false, b: false, x: false, y: false, rb: false, start: false };
+    this.pad = { lx: 0, ly: 0, rx: 0, ry: 0, a: false, b: false, x: false, y: false, lb: false, rb: false, lt: false, start: false };
+    this.joy = null; this.joyZone = false;
     this.padVorher = {}; this.belegungWartet = null; this.lenkGlatt = { x: 0, y: 0 };
     this.radius = 90; this.geraet = istTouch ? 'touch' : 'maus';
   }
@@ -540,14 +549,19 @@ class EingabeSystem {
     window.addEventListener('pointercancel', e => this._hoch(e), opt);
     window.addEventListener('keydown', e => this._taste(e, true));
     window.addEventListener('keyup', e => this._taste(e, false));
-    window.addEventListener('blur', () => { this.tasten.clear(); this.zeiger = null; });
+    window.addEventListener('blur', () => { this.tasten.clear(); this.zeiger = null; this.joy = null; });
     flaeche.addEventListener('contextmenu', e => e.preventDefault());
   }
   _runter(e) {
     Ton.init(); this.geraet = e.pointerType === 'mouse' ? 'maus' : 'touch';
+    this.radius = Math.max(60, Math.min(130, Math.min(innerWidth, innerHeight) * 0.16));
+    // Touch: linke Bildschirmhälfte = Joystick (Laufen), rechte = Zielen und Schießen
+    if (e.pointerType !== 'mouse' && this.joyZone && !this.joy && e.clientX < innerWidth * 0.4) {
+      e.preventDefault(); try { this.flaeche.setPointerCapture(e.pointerId); } catch (x) { /* egal */ }
+      this.joy = { id: e.pointerId, sx: e.clientX, sy: e.clientY, x: e.clientX, y: e.clientY }; return;
+    }
     if (this.zeiger) return; e.preventDefault();
     try { this.flaeche.setPointerCapture(e.pointerId); } catch (x) { /* egal */ }
-    this.radius = Math.max(60, Math.min(130, Math.min(innerWidth, innerHeight) * 0.16));
     const jetzt = performance.now();
     this.zeiger = { id: e.pointerId, sx: e.clientX, sy: e.clientY, x: e.clientX, y: e.clientY, t0: jetzt, verlauf: [{ x: e.clientX, y: e.clientY, t: jetzt }] };
     this.zeiger.lupfer = e.button === 2;
@@ -555,6 +569,7 @@ class EingabeSystem {
   }
   _bewegen(e) {
     if (e.pointerType === 'mouse') this.hover = { x: e.clientX, y: e.clientY, t: performance.now() };
+    if (this.joy && e.pointerId === this.joy.id) { e.preventDefault(); this.joy.x = e.clientX; this.joy.y = e.clientY; return; }
     const z = this.zeiger; if (!z || e.pointerId !== z.id) return; e.preventDefault();
     z.x = e.clientX; z.y = e.clientY; const jetzt = performance.now();
     z.verlauf.push({ x: z.x, y: z.y, t: jetzt }); while (z.verlauf.length > 2 && jetzt - z.verlauf[0].t > 160) z.verlauf.shift();
@@ -570,6 +585,7 @@ class EingabeSystem {
     return { dx, dy, d, v: d / dt };
   }
   _hoch(e) {
+    if (this.joy && e.pointerId === this.joy.id) { this.joy = null; return; }
     const z = this.zeiger; if (!z || e.pointerId !== z.id) return;
     const jetzt = performance.now(), dauer = jetzt - z.t0, weg = Math.hypot(z.x - z.sx, z.y - z.sy);
     const w = this._wischVektor(110);
@@ -592,6 +608,7 @@ class EingabeSystem {
       this.letzteTaste = performance.now();
       if (!this.tasten.has(e.code)) {
         if (e.code === b.finte) this.ereignisse.push({ typ: 'finte' });
+        for (const n of ['zieher', 'drehung', 'zorro', 'raus']) if (e.code === b[n]) this.ereignisse.push({ typ: 'trick', name: n });
         if (e.code === b.aktion) this.ereignisse.push({ typ: 'aktionDruck' });
         if (e.code === b.pause || e.code === 'KeyP') this.ereignisse.push({ typ: 'pause' });
         if (e.code === b.tuning) this.ereignisse.push({ typ: 'tuning' });
@@ -609,14 +626,17 @@ class EingabeSystem {
     let gp = null;
     try { const l = navigator.getGamepads ? navigator.getGamepads() : []; for (const g of l) if (g && g.connected) { gp = g; break; } } catch (e) { gp = null; }
     const p = this.pad, v = this.padVorher;
-    if (!gp) { p.lx = p.ly = 0; p.a = p.b = p.x = p.y = p.rb = p.start = false; return; }
+    if (!gp) { p.lx = p.ly = p.rx = p.ry = 0; p.a = p.b = p.x = p.y = p.lb = p.rb = p.lt = p.start = false; return; }
     const dz = (x) => Math.abs(x) < 0.18 ? 0 : (x - Math.sign(x) * 0.18) / 0.82;
-    p.lx = dz(gp.axes[0] || 0); p.ly = -dz(gp.axes[1] || 0);
+    p.lx = dz(gp.axes[0] || 0); p.ly = -dz(gp.axes[1] || 0); p.rx = dz(gp.axes[2] || 0); p.ry = -dz(gp.axes[3] || 0);
     const k = (i) => !!(gp.buttons[i] && gp.buttons[i].pressed);
-    p.a = k(0); p.b = k(1); p.x = k(2); p.y = k(3); p.rb = k(5) || k(4); p.start = k(9);
+    p.a = k(0); p.b = k(1); p.x = k(2); p.y = k(3); p.lb = k(4); p.rb = k(5); p.lt = k(6) || k(7); p.start = k(9);
     if (p.a && !v.a) { this.ereignisse.push({ typ: 'aktionDruck' }); Ton.init(); }
     if (!p.a && v.a) this.ereignisse.push({ typ: 'aktionLos' });
-    if ((p.b && !v.b) || (p.rb && !v.rb)) this.ereignisse.push({ typ: 'finte' });
+    if (p.b && !v.b) this.ereignisse.push({ typ: 'finte' });
+    if (p.lb && !v.lb) this.ereignisse.push({ typ: 'trick', name: 'zieher' });
+    if (p.rb && !v.rb) this.ereignisse.push({ typ: 'trick', name: 'drehung' });
+    if (p.lt && !v.lt) { this.ereignisse.push({ typ: 'trick', name: 'zorro' }); this.ereignisse.push({ typ: 'trick', name: 'raus' }); }
     if (p.y && !v.y) this.ereignisse.push({ typ: 'kamera' });
     if (p.start && !v.start) this.ereignisse.push({ typ: 'pause' });
     this.geraet = (p.a || p.b || Math.abs(p.lx) + Math.abs(p.ly) > 0.2) ? 'pad' : this.geraet;
@@ -626,9 +646,9 @@ class EingabeSystem {
   lenkung() {
     const b = Einst.tasten, T = this.tasten;
     let x = 0, y = 0, quelle = 'keine';
-    if (this.zeiger) {
-      x = (this.zeiger.x - this.zeiger.sx) / this.radius; y = -(this.zeiger.y - this.zeiger.sy) / this.radius;
-      const l = Math.hypot(x, y); if (l > 1) { x /= l; y /= l; } quelle = 'zeiger';
+    if (this.joy) {
+      x = (this.joy.x - this.joy.sx) / this.radius; y = -(this.joy.y - this.joy.sy) / this.radius;
+      const l = Math.hypot(x, y); if (l > 1) { x /= l; y /= l; } quelle = 'joy';
     } else if (Math.abs(this.pad.lx) + Math.abs(this.pad.ly) > 0.01) { x = this.pad.lx; y = this.pad.ly; quelle = 'pad'; }
     else {
       const kx = (T.has(b.rechts) || T.has('ArrowRight') ? 1 : 0) - (T.has(b.links) || T.has('ArrowLeft') ? 1 : 0);
@@ -644,6 +664,7 @@ class EingabeSystem {
   /** Bildschirmpunkt zum Zielen: Finger (leicht darüber, damit das Fadenkreuz sichtbar bleibt) oder Mauszeiger. */
   zielBildschirm() {
     if (this.zeiger) return { x: this.zeiger.x, y: this.zeiger.y - (this.geraet === 'touch' ? 70 : 0) };
+    if (Math.abs(this.pad.rx) + Math.abs(this.pad.ry) > 0.05) return { stick: true, x: this.pad.rx, y: this.pad.ry };
     if (this.hover && this.hover.t > (this.letzteTaste || 0)) return this.hover;
     return null;
   }
@@ -1816,8 +1837,30 @@ const POSEN_SCHUETZE = {
     P.kelle[1] += 0.0; P.oben = [P.oben[0] + s * 0.12 * a, P.oben[1] + 0.08 * a, P.oben[2] - 0.08 * a];
     return P;
   },
+  /** Zieher (Toe-Drag): Kelle kippt über den Ball und zieht ihn quer vor dem Körper auf die andere Seite. */
+  zieher(e, t, p) {
+    const P = POSEN_SCHUETZE.dribbel(e, t), u = klemme(t / 0.45, 0, 1), a = Math.sin(Math.PI * u), s = p.seite;
+    kelleAmBall(P, e, -s, 0.08); P.kNeig = s * 0.55 * a; P.kelle[1] = 0.035;
+    P.bx = -s * 0.1 * a; P.roll = s * 0.1 * a; P.twist += -s * 0.35 * a; P.hoehe -= 0.07 * a; P.beuge += 0.18 * a;
+    P.oben = [P.oben[0] - s * 0.18 * a, P.oben[1] - 0.06 * a, P.oben[2] + 0.1 * a];
+    return P;
+  },
+  /** Drehung (360°): Körper lehnt in die Drehung, Kelle hält den Ball außen am Körper. */
+  drehung(e, t, p) {
+    const P = POSEN_SCHUETZE.dribbel(e, t), u = klemme(t / 0.65, 0, 1), a = Math.sin(Math.PI * u), s = p.seite;
+    kelleAmBall(P, e, s * 0.7, 0.75); P.roll = s * 0.16 * a; P.seit = s * 0.12 * a; P.hoehe -= 0.05 * a; P.twist = s * 0.3;
+    P.oben = [s * 0.12, 0.84, 0.3]; return P;
+  },
+  /** Zorro (Airhook): Ball wird auf die flach gedrehte Kelle gehoben und vor dem Körper getragen. */
+  zorro(e, t, p) {
+    const P = POSEN_SCHUETZE.dribbel(e, t), sd = e.ballSeite, u = e.zorro ? 1 : glatt(t / 0.35);
+    P.kelle = [e.lokBall.x, Math.max(0.03, e.lokBall.y - BALLD.r - 0.01), e.lokBall.z]; P.kRicht = [sd, 0, 0.3]; P.kNeig = sd * Math.PI * 0.48 * u;
+    P.hoehe -= 0.05 * u; P.beuge = 0.3 + 0.15 * u; P.twist = sd * 0.2; P.oben = [sd * 0.08 - e.s * 0.03, mix(0.86, 0.8, u), mix(0.22, 0.5, u)];
+    return P;
+  },
   ausholen(e, t) {
     const P = POSEN_SCHUETZE.dribbel(e, t), p = e.power, sd = e.ballSeite, hoch = glatt((p - 0.4) / 0.5);
+    if (e.zorro) { const Z = POSEN_SCHUETZE.zorro(e, 1, {}); Z.twist += sd * 0.25 * p; Z.hoehe -= 0.03 * p; return Z; }
     P.twist = sd * (0.25 + p * 0.55) + e.s * 0.05; P.beuge = 0.38 + p * 0.12; P.hoehe -= p * 0.04;
     // Kelle hinter dem Ball (Handgelenkschuss) bzw. hoch ausgeholt (Schlagschuss)
     const kz = mix(e.lokBall.z - 0.05, -0.42, hoch), kx = mix(e.lokBall.x + sd * 0.04, sd * 0.5, hoch), ky = mix(0.035, 1.55, hoch);
@@ -1834,10 +1877,10 @@ const POSEN_SCHUETZE = {
     let k;
     if (u < kontaktU) { const f = glatt(u / kontaktU); k = [mix(W[0], C[0], f), mix(W[1], C[1], f * f), mix(W[2], C[2], f)]; }
     else {
-      const f = glatt((u - kontaktU) / (1 - kontaktU)), hoch = typ === 'schlag' ? 0.95 : typ === 'lupfer' ? 0.65 : typ === 'schlenzer' ? 0.6 : 0.45;
+      const f = glatt((u - kontaktU) / (1 - kontaktU)), hoch = typ === 'schlag' ? 0.95 : typ === 'lupfer' ? 0.65 : typ === 'zorro' ? 1.1 : typ === 'schlenzer' ? 0.6 : 0.45;
       k = [mix(C[0], -sd * 0.25, f), mix(C[1], hoch, f), mix(C[2], C[2] + 0.55, f)];
     }
-    P.kelle = k; P.kRicht = [sd * 0.2, 0, 1]; P.kNeig = typ === 'lupfer' ? -sd * 0.7 : 0;
+    P.kelle = k; P.kRicht = typ === 'zorro' ? [sd, 0, 0.3] : [sd * 0.2, 0, 1]; P.kNeig = typ === 'lupfer' ? -sd * 0.7 : typ === 'zorro' ? sd * Math.PI * 0.48 * (1 - glatt(u)) : 0;
     P.twist = mix(sd * (typ === 'schlag' ? 0.8 : 0.55), -sd * 0.55, glatt(u)); P.beuge = 0.45; P.hoehe -= 0.05;
     P.oben = [mix(-sd * 0.05, -sd * 0.18 - e.s * 0.05, glatt(u)), mix(typ === 'schlag' ? 1.1 : 0.88, 0.95, u), mix(0.15, 0.4, glatt(u))];
     return P;
@@ -1900,6 +1943,23 @@ const POSEN_TORWART = {
     return P;
   },
   liegt(e, t, p) { const P = POSEN_TORWART.hecht(e, 1, p); return P; },
+  /** Herausspringen: Körper kippt nach vorn, Arme strecken sich zum Ball, Beine schieben nach hinten weg. */
+  raus(e, t, p) {
+    const P = POSEN_TORWART.grund(e, t), u = glatt(t / 0.35), z = e.zielLokal;
+    P.hoehe = mix(0.6, 0.3, u); P.pitch = mix(0.06, 1.2, u); P.beuge = 0.05; P.kopfNick = -0.5 * u;
+    const zx = klemme(z.x, -0.5, 0.5);
+    P.hL = [mix(0.42, zx + 0.2, u), mix(0.52, 0.1, u), mix(0.22, 1.0, u)]; P.hR = [mix(-0.42, zx - 0.2, u), mix(0.52, 0.1, u), mix(0.22, 1.0, u)];
+    P.elL = [0.8, -0.2, 0.3]; P.elR = [-0.8, -0.2, 0.3];
+    P.fL = [0.2, 0.075, mix(-0.42, -0.7, u)]; P.fR = [-0.2, 0.075, mix(-0.42, -0.7, u)]; P.knL = [0.2, -0.3, 1]; P.knR = [-0.2, -0.3, 1];
+    return P;
+  },
+  liegtVorn(e, t, p) {
+    const P = POSEN_TORWART.grund(e, t); P.hoehe = 0.27; P.pitch = 1.3; P.beuge = 0.05; P.kopfNick = -0.6;
+    P.hL = [0.3, 0.08, 0.95]; P.hR = [-0.3, 0.08, 0.95]; P.elL = [0.8, -0.1, 0.2]; P.elR = [-0.8, -0.1, 0.2];
+    P.fL = [0.22, 0.075, -0.72]; P.fR = [-0.22, 0.075, -0.72]; P.knL = [0.2, -0.2, 1]; P.knR = [-0.2, -0.2, 1];
+    if (e.gefangen) { P.hL = [0.1, 0.1, 0.82]; P.hR = [-0.1, 0.1, 0.82]; }
+    return P;
+  },
   jubel(e, t) {
     const P = basisPose(), h = Math.abs(Math.sin(t * 6)) * 0.1; P.hoehe = 0.95 + h; P.fW = 1; P.fL = [0.14, 0.08 + h, 0]; P.fR = [-0.14, 0.08 + h, 0];
     P.hL = [0.3, 1.95 + h, 0.1]; P.hR = [-0.3, 1.95 + h, 0.1]; P.elL = [1, 0, 0]; P.elR = [-1, 0, 0]; P.kopfNick = -0.3; P.blick = 0; return P;
@@ -1913,8 +1973,9 @@ const POSEN_TORWART = {
 /* =====================================================================
    MODUL: ENTITÄTEN – Schütze und Torhüter (Steuerung, Ballführung, Schuss, Parade)
    ===================================================================== */
-const SCHUSS_DAUER = { handgelenk: 0.17, schlenzer: 0.22, schlag: 0.2, lupfer: 0.22 };
-const SCHUSS_FAKTOR = { handgelenk: 0.8, schlenzer: 0.9, schlag: 1.0, lupfer: 0.5 };
+const SCHUSS_DAUER = { handgelenk: 0.17, schlenzer: 0.22, schlag: 0.2, lupfer: 0.22, zorro: 0.18 };
+const SCHUSS_FAKTOR = { handgelenk: 0.8, schlenzer: 0.9, schlag: 1.0, lupfer: 0.5, zorro: 0.62 };
+const TRICK_DAUER = { zieher: 0.45, drehung: 0.65, zorro: 0.35 };
 function winkelDaempf(a, b, rate, dt) { let d = b - a; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; return a + d * (1 - Math.exp(-rate * dt)); }
 function zuLokal(out, welt, pos, yaw) { out.subVectors(welt, pos); out.y = welt.y; const c = Math.cos(-yaw), s = Math.sin(-yaw); const x = out.x * c + out.z * s, z = -out.x * s + out.z * c; out.x = x; out.z = z; return out; }
 function zuWelt(out, lok, pos, yaw) { const c = Math.cos(yaw), s = Math.sin(yaw); const x = lok.x * c + lok.z * s, z = -lok.x * s + lok.z * c; out.set(pos.x + x, lok.y, pos.z + z); return out; }
@@ -1932,6 +1993,7 @@ class Schuetze {
     this.zustand = 'bereit'; this.kontrolle = true; this.power = 0; this.lupfer = false; this.schussU = 0; this.schuss = null; this.abgeschossen = false;
     this.finteT = -1; this.finteSeite = 0; this.zielSpeed = 0; this.zielAbsicht.aktiv = false; this.lenkRichtung.set(1, 0, 0); this.dribbelPhase = this.s > 0 ? Math.PI - Math.asin(0.32) : -Math.asin(0.32); this.pushSeite = this.dribbelDir = -this.s;
     this.fig.planer.bereit = false; this.anim.setze('bereit', null, 0); this.anim.letzte = null; this.anim.von = null; this.wiederBall = false; this.tZustand = 0;
+    this.trick = null; this.zorro = false; this.zorroT = 0; this.drehRate = 0; this.ballSperre = 0;
   }
   planerPhase() { return this.fig.planer.phase; }
   istVorhand() { return this.ballSeite === this.s; }
@@ -1947,22 +2009,30 @@ class Schuetze {
       case 'bereit': wunsch.set(0, 0, 0); break;
       case 'lauf': {
         if (A.aktiv) { this.lenkRichtung.copy(A.richtung); this.zielSpeed = maxV * A.tempo; }
-        wunsch.copy(this.lenkRichtung).multiplyScalar(this.zielSpeed);
+        wunsch.copy(this.lenkRichtung).multiplyScalar(this.zielSpeed * (this.zorro ? 0.7 : 1));
         if (this.finteT >= 0) { this.finteT += dt * Config.animation.tempo; wunsch.z += -this.finteSeiteWelt * 1.6 * glatt((this.finteT - 0.18) / 0.2); if (this.finteT > 0.46) this.finteT = -1; }
-        if (A.finte && this.finteT < 0 && this.kontrolle) { this.finteT = 0; this.finteSeite = this.ballSeite; this.finteSeiteWelt = Math.sign(zuWelt(_b, _c.set(this.finteSeite, 0, 0), _d.set(0, 0, 0), this.yaw).z) || 1; welt.beiFinte && welt.beiFinte(this); }
-        animName = this.finteT >= 0 ? 'finte' : 'dribbel'; animParam = { seite: this.finteSeite };
-        if (this.kontrolle && this.imSchussbereich() && A.laden && this.finteT < 0) { this.setzeZustand('laden'); this.power = 0; this.zielAbsicht.aktiv = true; }
+        if (A.finte && this.finteT < 0 && !this.trick && this.kontrolle) { this.finteT = 0; this.finteSeite = this.ballSeite; this.finteSeiteWelt = Math.sign(zuWelt(_b, _c.set(this.finteSeite, 0, 0), _d.set(0, 0, 0), this.yaw).z) || 1; welt.beiFinte && welt.beiFinte(this); }
+        // Tricks: Zieher, Drehung, Zorro (nur mit Ballkontrolle, nicht während einer Täuschung)
+        if (A.trick && !this.trick && this.finteT < 0 && this.kontrolle && TRICK_DAUER[A.trick] && !(A.trick === 'zorro' && this.zorro)) this.starteTrick(A.trick, welt);
+        if (this.trick) this.trickSchritt(dt, ball, welt, wunsch);
+        if (this.zorro && !this.trick) { this.zorroT += dt; if (this.zorroT > 1.2 + d.technik / 100 * 1.8) this.zorro = false; }
+        // Verlorenen Ball wieder aufnehmen (nach Torhüterkontakt gilt das als Nachschuss)
+        this.ballSperre = Math.max(0, this.ballSperre - dt);
+        if (!this.kontrolle && this.ballSperre <= 0 && !ball.kinematisch && ball.v.length() < 5 && ball.p.y < 0.2 && this.fig.ferse.distanceTo(ball.p) < 0.45) { this.kontrolle = true; welt.beiWiederBall && welt.beiWiederBall(this); }
+        animName = this.trick ? this.trick.name : this.zorro ? 'zorro' : this.finteT >= 0 ? 'finte' : 'dribbel'; animParam = this.trick ? { seite: this.trick.seite } : { seite: this.finteSeite };
+        if (this.kontrolle && this.imSchussbereich() && A.laden && this.finteT < 0 && !this.trick) { this.setzeZustand('laden'); this.power = 0; this.zielAbsicht.aktiv = true; }
         break;
       }
       case 'laden': {
         this.power = Math.min(1, this.power + dt / 1.0);
         this.zielAbsicht.z = A.zielZ; this.zielAbsicht.y = A.zielY; this.zielAbsicht.aktiv = true;
-        this.lupfer = !!A.lupfer;
+        this.lupfer = !!A.lupfer && !this.zorro;
+        if (this.zorro) { this.zorroT += dt; if (this.zorroT > 1.2 + d.technik / 100 * 1.8) this.zorro = false; }
         const ziel = _b.set(TOR.x, 0, A.zielZ * 0.6).sub(this.pos).setY(0).normalize();
         this.lenkRichtung.lerp(ziel, 1 - Math.exp(-2 * dt)).normalize();
         wunsch.copy(this.lenkRichtung).multiplyScalar(Math.max(1.2, this.zielSpeed * 0.8));
         // Assistenz: kurz vor der Torraumlinie wird automatisch abgezogen (sonst Fehlversuch)
-        const vorTorraum = Config.regeln.torraum && Math.abs(this.pos.z) < TORRAUM.hz + 0.2 && this.pos.x > TORRAUM.vorne - 0.35 - this.speed * 0.12;
+        const vorTorraum = Config.regeln.torraum && Math.abs(this.pos.z) < TWRAUM.hz + 0.2 && this.pos.x > TWRAUM.vorne - 0.35 - this.speed * 0.12;
         if (!A.laden || (vorTorraum && this.power >= 0.06)) {
           if (this.power >= 0.06) this.starteSchuss(A); else { this.setzeZustand('lauf'); this.zielAbsicht.aktiv = false; }
         }
@@ -1995,7 +2065,7 @@ class Schuetze {
     this.pos.x = klemme(this.pos.x, -19, 18.6); this.pos.z = klemme(this.pos.z, -9.3, 9.3);
     // Keine Durchdringung: Schütze bleibt außerhalb von Tor und Torhüter (nach dem Schuss auch außerhalb des Torraums)
     const imAblauf = this.zustand === 'lauf' || this.zustand === 'laden';
-    const grenzeX = !imAblauf && Math.abs(this.pos.z) < TORRAUM.hz + 0.3 ? TORRAUM.vorne - 0.3 : (Math.abs(this.pos.z) < TOR.hb + 0.9 ? TOR.x - 0.9 : 99);
+    const grenzeX = !imAblauf && Math.abs(this.pos.z) < TORRAUM.hz + 0.3 ? Math.min(this.pos.x, TORRAUM.vorne - 0.3) : (Math.abs(this.pos.z) < TOR.hb + 0.9 ? TOR.x - 0.9 : 99);
     if (this.pos.x > grenzeX) { this.pos.x = grenzeX; if (this.vel.x > 0) this.vel.x = 0; }
     if (welt.torwartPos) { const dx = this.pos.x - welt.torwartPos.x, dz = this.pos.z - welt.torwartPos.z, d = Math.hypot(dx, dz); if (d < 0.75 && d > 1e-4) { this.pos.x += dx / d * (0.75 - d); this.pos.z += dz / d * (0.75 - d); } }
     this.speed = Math.hypot(this.vel.x, this.vel.z);
@@ -2004,7 +2074,7 @@ class Schuetze {
     if (this.zustand === 'laden' || this.zustand === 'schuss') zielYaw = Math.atan2(TOR.x - this.pos.x, (this.zielAbsicht.z * 0.5) - this.pos.z) - this.ballSeite * 0.25;
     else if (this.speed > 0.4) zielYaw = Math.atan2(this.vel.x, this.vel.z);
     else if (this.zustand !== 'jubel' && this.zustand !== 'enttaeuscht') zielYaw = Math.atan2(TOR.x - this.pos.x, -this.pos.z);
-    this.yaw = winkelDaempf(this.yaw, zielYaw, this.zustand === 'laden' ? 5 : 7, dt);
+    if (this.trick && this.trick.name === 'drehung') this.yaw += this.drehRate * dt; else this.yaw = winkelDaempf(this.yaw, zielYaw, this.zustand === 'laden' ? 5 : 7, dt);
     // Ballführung
     zuLokal(this.lokBall, ball.p, this.pos, this.yaw);
     if (Math.abs(this.lokBall.x) > 0.06) this.ballSeite = Math.sign(this.lokBall.x);
@@ -2017,14 +2087,24 @@ class Schuetze {
   }
   fuehreBall(dt, ball) {
     const sp = this.speed;
-    let lat, vor;
-    if (this.zustand === 'laden') {
+    let lat, vor, hoehe = BALLD.r;
+    const zorroAktiv = this.zorro || (this.trick && this.trick.name === 'zorro');
+    if (this.trick && this.trick.name === 'zieher') {
+      const u = glatt(this.trick.t / TRICK_DAUER.zieher), s = this.trick.seite;
+      lat = mix(s * 0.3, -s * 0.3, u); vor = 0.52 + 0.1 * Math.sin(Math.PI * u); this.dribbelDir = -s; this.dribbelPhase = Math.asin(klemme(-s, -1, 1));
+    } else if (this.trick && this.trick.name === 'drehung') {
+      const s = this.trick.seite; lat = s * 0.3; vor = 0.5; this.dribbelDir = s;
+    } else if (zorroAktiv && this.zustand !== 'schuss') {
+      const u = this.zorro ? 1 : glatt(this.trick.t / TRICK_DAUER.zorro);
+      lat = this.ballSeite * 0.26; vor = 0.6; hoehe = BALLD.r + 0.27 * u;
+    } else if (this.zustand === 'laden') {
       const hoch = glatt((this.power - 0.4) / 0.5);
       lat = this.ballSeite * mix(0.3, 0.36, hoch); vor = mix(0.48, 0.78, hoch);
     } else if (this.zustand === 'schuss') {
       const s = this.schuss; const f = glatt(this.schussU / 0.55);
       if (s.mitziehen) { lat = mix(s.ballStart[0], s.ballKontakt[0], f); vor = mix(s.ballStart[2], s.ballKontakt[2], f); }
       else { lat = s.ballKontakt[0]; vor = s.ballKontakt[2]; }
+      hoehe = s.ballKontakt[1];
     } else if (this.zustand === 'bereit') { lat = this.s * 0.12; vor = 0.55; }
     else {
       this.dribbelPhase += dt * Math.PI * 2 * (1.0 + sp * 0.2);
@@ -2032,7 +2112,7 @@ class Schuetze {
       this.dribbelDir = Math.cos(this.dribbelPhase) >= 0 ? 1 : -1;
       if (this.finteT >= 0) { const u = glatt((this.finteT - 0.2) / 0.24); lat = mix(this.finteSeite * 0.24, -this.finteSeite * 0.3, u); this.dribbelDir = -this.finteSeite; this.dribbelPhase = Math.asin(klemme(-this.finteSeite, -1, 1)); }
     }
-    const ziel = zuWelt(_b, _c.set(lat, BALLD.r, vor), this.pos, this.yaw);
+    const ziel = zuWelt(_b, _c.set(lat, hoehe, vor), this.pos, this.yaw);
     // weich hinführen (kein Teleport beim Wiederaufnehmen)
     const dv = _d.subVectors(ziel, ball.p); const dl = dv.length(), maxS = 9 * dt;
     if (dl > maxS) ziel.copy(ball.p).addScaledVector(dv, maxS / dl);
@@ -2044,10 +2124,10 @@ class Schuetze {
     const seite = this.ballSeite, P = this.anim.letzte || basisPose();
     const zielLok = zuLokal(_b, _c.set(TOR.x, 0, A.zielZ), this.pos, this.yaw).normalize();
     const push = [zielLok.x, zielLok.z], d = BALLD.r + 0.013;
-    const mitziehen = typ !== 'schlag';
-    const bs = [this.lokBall.x, BALLD.r, this.lokBall.z];
+    const mitziehen = typ !== 'schlag' && typ !== 'zorro';
+    const bs = [this.lokBall.x, typ === 'zorro' ? this.lokBall.y : BALLD.r, this.lokBall.z];
     const bk = mitziehen ? [bs[0] + push[0] * 0.28, BALLD.r, bs[2] + push[1] * 0.28] : bs.slice();
-    const kontakt = [bk[0] - push[0] * d, 0.035, bk[2] - push[1] * d];
+    const kontakt = typ === 'zorro' ? [bk[0], Math.max(0.03, bk[1] - BALLD.r - 0.01), bk[2]] : [bk[0] - push[0] * d, 0.035, bk[2] - push[1] * d];
     this.schuss = { typ, power: this.power, zielZ: A.zielZ, zielY: A.zielY, rueckhand: seite !== this.s, mitziehen, ballStart: bs, ballKontakt: bk,
       animParam: { typ, seite, start: P.kelle.slice(), kontakt, neu: true } };
     this.schussU = 0; this.abgeschossen = false; this.setzeZustand('schuss'); this.zielAbsicht.aktiv = true;
@@ -2061,10 +2141,30 @@ class Schuetze {
     w.y = (typ === 'schlag' ? 0 : -this.ballSeite * this.s * 18);
     return { speed, w };
   }
-  schussTyp(power, lupfer) { return lupfer ? 'lupfer' : power < 0.42 ? 'handgelenk' : power < 0.78 ? 'schlenzer' : 'schlag'; }
+  schussTyp(power, lupfer) { return this.zorro ? 'zorro' : lupfer ? 'lupfer' : power < 0.42 ? 'handgelenk' : power < 0.78 ? 'schlenzer' : 'schlag'; }
+  /** Trick beginnen; Misserfolg (abhängig von Technik) wird vorab ausgewürfelt und lässt den Ball verspringen. */
+  starteTrick(name, welt) {
+    const seite = this.ballSeite || this.s, gelingt = Math.random() < 0.5 + this.daten.technik / 100 * 0.48 - (welt.druck || 0) * 0.1;
+    this.trick = { name, t: 0, seite, seiteWelt: Math.sign(zuWelt(_b, _c.set(seite, 0, 0), _d.set(0, 0, 0), this.yaw).z) || 1, gelingt, fehlerBei: 0.25 + Math.random() * 0.2 };
+    if (name === 'drehung') this.drehRate = -seite * Math.PI * 2 / TRICK_DAUER.drehung;   // Drehung über die Ballseite
+    welt.beiTrick && welt.beiTrick(this, name);
+    Ton.quietschen();
+  }
+  trickSchritt(dt, ball, welt, wunsch) {
+    const T = this.trick; T.t += dt * Config.animation.tempo;
+    if (T.name === 'drehung') wunsch.multiplyScalar(0.6);
+    if (!T.gelingt && T.t >= T.fehlerBei && this.kontrolle) {
+      // Ball verspringt: kurz Kontrolle verloren, Ball rollt vor dem Spieler weiter (Vorwärtsregel bleibt erfüllt)
+      this.kontrolle = false; this.zorro = false; ball.kinematisch = false;
+      const vor = zuWelt(_b, _c.set(T.seite * 0.6, 0, 1), _d.set(0, 0, 0), this.yaw).normalize();
+      ball.v.copy(vor).multiplyScalar(Math.max(3.0, this.speed + 1.8)); ball.v.y = T.name === 'zorro' ? 0.6 : 0.2; ball.w.set(0, 0, 0);
+      this.trick = null; this.ballSperre = 0.45; welt.beiBallVerloren && welt.beiBallVerloren(this); return;
+    }
+    if (T.t >= TRICK_DAUER[T.name]) { if (T.name === 'zorro' && this.kontrolle) { this.zorro = true; this.zorroT = 0; } this.trick = null; }
+  }
   abschuss(ball, welt) {
     const s = this.schuss, d = this.daten, cfg = Config.schuetze, P = Config.physik;
-    this.abgeschossen = true; this.kontrolle = false;
+    this.abgeschossen = true; this.kontrolle = false; this.zorro = false;
     const druck = welt.druck || 0.3;
     let sigma;
     if (welt.menschPraezise) sigma = Math.max(0.006, (0.012 + 0.06 * s.power * s.power) * (1.5 - cfg.zielgenauigkeit) * (1 + druck * cfg.nervendruck * (1 - d.nerven / 100) * 0.5) * (s.rueckhand ? 1.2 : 1));
@@ -2093,6 +2193,7 @@ class Torwart {
   /** Parade starten: typ hecht|fuss|butterfly|fangen, ziel = Weltpunkt */
   parade(typ, ziel) {
     if (!['grund', 'stehen'].includes(this.zustand)) return false;
+    if (typ === 'raus' && this.pos.x < TORRAUM.vorne + 0.3) return false;
     this.zielWelt.copy(ziel); const seite = Math.sign(ziel.z - this.pos.z) || 1;
     this.aktion = { typ, seite, hoehe: ziel.y, seiteWelt: seite };
     this.setzeZustand(typ, { seite, hoehe: ziel.y }, 0.06);
@@ -2103,10 +2204,18 @@ class Torwart {
     const wunsch = _n.set(0, 0, 0), d = this.daten;
     switch (this.zustand) {
       case 'grund': case 'stehen': {
-        if (A.bewegen) wunsch.set(A.bewegen.x * 1.8, 0, A.bewegen.z * (2.4 + d.reflexe / 100 * 0.6));
+        if (A.bewegen) wunsch.set(A.bewegen.x * 2.6, 0, A.bewegen.z * (2.4 + d.reflexe / 100 * 0.6));
         if (A.parade) this.parade(A.parade.typ, A.parade.ziel);
         break;
       }
+      case 'raus': {
+        // Herausspringen: Schub Richtung Ball, danach liegt der Torhüter vorn
+        const f = 1 - glatt(this.t / 0.5), dir = _b.subVectors(this.zielWelt, this.pos).setY(0); if (dir.lengthSq() < 1e-4) dir.set(-1, 0, 0); dir.normalize();
+        wunsch.copy(dir).multiplyScalar((3.6 + d.mut / 100 * 1.6) * f); this.vel.copy(wunsch);
+        if (this.t > 0.55) this.setzeZustand('liegtVorn', this.aktion, 0.1);
+        break;
+      }
+      case 'liegtVorn': if (this.t > 0.7 && !this.gefangen) this.setzeZustand('grund', null, 0.5); break;
       case 'hecht': {
         const f = 1 - glatt(this.t / 0.42); wunsch.set(0, 0, this.aktion.seiteWelt * (2.6 + d.reflexe / 100 * 1.4) * f);
         this.vel.z = wunsch.z;
@@ -2122,17 +2231,17 @@ class Torwart {
       }
       default: break;
     }
-    const acc = this.zustand === 'hecht' || this.zustand === 'fuss' ? 60 : 14;
+    const acc = ['hecht', 'fuss', 'raus'].includes(this.zustand) ? 60 : 14;
     _c.subVectors(wunsch, this.vel); const l = _c.length(); if (l > acc * dt) _c.multiplyScalar(acc * dt / l);
     this.vel.add(_c); this.vel.y = 0; this.pos.addScaledVector(this.vel, dt);
-    this.pos.x = klemme(this.pos.x, TOR.x - 2.6, TOR.x - 0.18); this.pos.z = klemme(this.pos.z, -2.3, 2.3);
-    if (this.zustand === 'grund') this.pos.z = klemme(this.pos.z, -1.5, 1.5);
+    // Der Torhüter darf den ganzen Torraum nutzen
+    this.pos.x = klemme(this.pos.x, TORRAUM.vorne + 0.12, TOR.x - 0.15); this.pos.z = klemme(this.pos.z, -(TORRAUM.hz - 0.22), TORRAUM.hz - 0.22);
     zuLokal(this.lokVel, _b.copy(this.pos).add(this.vel), this.pos, this.yaw);
     zuLokal(this.zielLokal, this.zielWelt, this.pos, this.yaw);
-    if (this.gefangen) { this.zielLokal.set(0, 0.72, 0.32); }
+    if (this.gefangen && this.zustand !== 'liegtVorn') { this.zielLokal.set(0, 0.72, 0.32); }
     const P = this.anim.update(dt, this);
     this.fig.anwenden(P, { pos: this.pos, yaw: this.yaw, vel: this.vel, dt, ballPos: ball.p && ball.p.isVector3 ? ball.p : null, blickZiel: ball.p });
-    if (this.gefangen) { const hl = this.fig.j.handL.getWorldPosition(_a), hr = this.fig.j.handR.getWorldPosition(_b); ball.fuehre(_c.lerpVectors(hl, hr, 0.5).add(_d.set(-0.06, -0.02, 0)), _u.set(0, 0, 0), dt); }
+    if (this.gefangen) { const hl = this.fig.j.handL.getWorldPosition(_a), hr = this.fig.j.handR.getWorldPosition(_b); const m = _c.lerpVectors(hl, hr, 0.5).add(_d.set(-0.06, -0.02, 0)); if (m.y < BALLD.r) m.y = BALLD.r; ball.fuehre(m, _u.set(0, 0, 0), dt); }
   }
 }
 
@@ -2141,7 +2250,7 @@ class Torwart {
    ===================================================================== */
 const KI_GEDAECHTNIS = [];
 class KISchuetze {
-  constructor(daten) { this.daten = daten; this.plan = this.waehlePlan(); this.finteGemacht = false; this.t = 0; }
+  constructor(daten) { this.daten = daten; this.plan = this.waehlePlan(); this.finteGemacht = false; this.trickGemacht = false; this.t = 0; }
   waehlePlan() {
     const d = this.daten, r = Math.random;
     const gew = {
@@ -2155,7 +2264,8 @@ class KISchuetze {
     for (const k in gew) { x -= gew[k]; if (x <= 0) { typ = k; break; } }
     KI_GEDAECHTNIS.push(typ); if (KI_GEDAECHTNIS.length > 12) KI_GEDAECHTNIS.shift();
     const seite = r() < 0.5 ? -1 : 1;
-    const p = { typ, seite, tempo: 0.7 + r() * 0.25, laufZ: (r() - 0.5) * 1.6, lupfer: false, finteBei: -1 };
+    const p = { typ, seite, tempo: 0.7 + r() * 0.25, laufZ: (r() - 0.5) * 1.6, lupfer: false, finteBei: -1, trick: null, trickBei: 7.5 + r() * 2.5 };
+    if (r() < 0.12 + d.technik / 100 * 0.4) p.trick = ['zieher', 'drehung', 'zorro'][Math.floor(r() * 3)];
     if (typ === 'flach') Object.assign(p, { schussDist: 6.2 + r() * 2.6, power: 0.42 + r() * 0.3, zielZ: seite * (0.52 + r() * 0.18), zielY: 0.1 + r() * 0.2, laufZ: -seite * (0.2 + r() * 0.8) });
     if (typ === 'finteRH') Object.assign(p, { schussDist: 5.0 + r() * 1.4, power: 0.35 + r() * 0.2, zielZ: seite * (0.5 + r() * 0.2), zielY: 0.1 + r() * 0.25, finteBei: 7.3 + r() * 1.3, laufZ: -seite * 0.6, nachFinteZ: seite * (0.6 + r() * 0.6) });
     if (typ === 'lupfer') Object.assign(p, { schussDist: 4.4 + r() * 1.0, power: 0.3, zielZ: seite * (0.4 + r() * 0.3), zielY: 1.0 + r() * 0.1, lupfer: true, tempo: 0.62 + r() * 0.2, finteBei: r() < 0.4 ? 8.0 : -1, nachFinteZ: seite * 0.4 });
@@ -2172,10 +2282,14 @@ class KISchuetze {
     // nahe am Torraum abbremsen, damit der Schuss vor der Torraumlinie fällt
     A.tempo *= klemme((dist - TORRAUM.x0) / 3.2, 0.35, 1);
     if (p.finteBei > 0 && !this.finteGemacht && dist < p.finteBei && sch.zustand === 'lauf') { A.finte = true; this.finteGemacht = true; }
+    if (p.trick && !this.trickGemacht && dist < p.trickBei && sch.zustand === 'lauf' && sch.finteT < 0 && !sch.trick) { A.trick = p.trick; this.trickGemacht = true; if (p.trick === 'zorro') { A.zielY = p.zielY = 0.85 + Math.random() * 0.25; p.schussDist = Math.min(p.schussDist, 5.5); } }
+    if (sch.trick) A.laden = false;
     const ladeDauer = p.power;
     if (sch.zustand === 'lauf' && sch.finteT < 0 && dist - sch.speed * ladeDauer <= p.schussDist) A.laden = true;
     if (sch.zustand === 'lauf' && dist < TORRAUM.x0 + 0.5 + sch.speed * 0.45) A.laden = true;
     if (sch.zustand === 'laden') A.laden = sch.power < p.power && dist > TORRAUM.x0 + 0.25 + sch.speed * 0.3;
+    if (sch.trick || (sch.zustand === 'lauf' && sch.zorro && sch.zorroT < 0.15)) A.laden = false;
+    if (this.plan.trick === 'zorro' && this.trickGemacht && !sch.zorro && !sch.trick && sch.zustand === 'lauf' && dist < p.schussDist + 1.5) A.laden = true;
     if (sch.zustand === 'nach') A.laden = false;
     return A;
   }
@@ -2196,7 +2310,14 @@ class KITorwart {
     const d = this.tw.daten, p = Config.torwart.fintenAnfaellig * (1.25 - d.reflexe / 100 * 0.6) * (1 - schw().anti);
     if (Math.random() < p) { this.gebissen = 0.9; this.versatz = sch.finteSeiteWelt * (0.35 + Math.random() * 0.25); }
   }
-  beiSchuss() { const d = this.tw.daten; this.reaktionBei = this.uhr + Math.max(0.06, (Config.torwart.reaktionMs + schw().reaktion * (this.istGegnerMensch ? 1 : 0) - (d.reflexe - 60) * 1.5 + (this.gebissen > 0 ? 140 : 0)) / 1000); this.geplant = false; }
+  /** Reaktion auf einen Trick des Schützen: Zieher und Drehung verleiten zum Mitgehen, Zorro verzögert das Lesen. */
+  beiTrick(sch, name) {
+    const d = this.tw.daten, p = Config.torwart.fintenAnfaellig * (1.3 - d.reflexe / 100 * 0.6) * (1 - schw().anti);
+    if (name === 'zieher' && Math.random() < p * 1.1) { this.gebissen = 0.8; this.versatz = sch.trick.seiteWelt * (0.4 + Math.random() * 0.3); }
+    if (name === 'drehung') { this.lesen = 0; if (Math.random() < p) { this.gebissen = 0.7; this.versatz = (Math.random() - 0.5) * 0.6; } }
+    if (name === 'zorro') this.zorroStrafe = 0.09 * (1.2 - d.stellung / 100 * 0.6);
+  }
+  beiSchuss() { const d = this.tw.daten; this.reaktionBei = this.uhr + Math.max(0.06, (Config.torwart.reaktionMs + schw().reaktion * (this.istGegnerMensch ? 1 : 0) - (d.reflexe - 60) * 1.5 + (this.gebissen > 0 ? 140 : 0)) / 1000 + (this.zorroStrafe || 0)); this.geplant = false; this.zorroStrafe = 0; }
   absicht(dt, sch, ball, geschossen) {
     this.uhr += dt; this.gebissen = Math.max(0, this.gebissen - dt);
     const tw = this.tw, d = tw.daten, A = { bewegen: new V3(), parade: null };
@@ -2212,6 +2333,12 @@ class KITorwart {
       const zZiel = klemme(zLinie + this.lesen * 0.32 + this.versatz, -1.2, 1.2);
       const xZiel = TOR.x - raus;
       A.bewegen.set(klemme((xZiel - tw.pos.x) * 2.5, -1, 1), 0, klemme((zZiel - tw.pos.z) * 3.2, -1, 1));
+      // Kommt der Schütze mit Ball zu nah, springt ein mutiger Torhüter ihm entgegen
+      if (!this.nurStellung && sch.kontrolle && tw.zustand === 'grund' && ball.p.x < TOR.x - 0.3) {
+        const nah = Math.hypot(ball.p.x - tw.pos.x, ball.p.z - tw.pos.z);
+        const kommtNaeher = sch.speed > 1.2 && sch.vel.x > 0;
+        if (nah < 1.5 + d.mut / 100 * 1.5 && ball.p.x > TORRAUM.vorne - 1.2 && kommtNaeher && Math.random() < dt * (0.8 + d.mut / 100 * 4)) A.parade = { typ: 'raus', ziel: ball.p.clone().addScaledVector(sch.vel, 0.25) };
+      }
       return A;
     }
     if (!this.geplant && this.reaktionBei > 0 && this.uhr >= this.reaktionBei) {
@@ -2249,7 +2376,7 @@ const Regelwerk = {
     if (v.gefangen) return fertig('gehalten');
     if (b.aus) return fertig('aus');
     if (!b.imTor && b.p.x > TOR.x + r) return fertig(v.gkBeruehrt ? 'pariert' : (v.t - v.pfostenT < 0.6 ? 'pfosten' : b.p.y > TOR.h ? 'drueber' : 'vorbei'));
-    if (Config.regeln.torraum && !v.geschossen && s.zustand !== 'schuss' && s.pos.x > TORRAUM.vorne && s.pos.x < TORRAUM.hinten && Math.abs(s.pos.z) < TORRAUM.hz) return fertig('torraum');
+    if (Config.regeln.torraum && !v.geschossen && s.zustand !== 'schuss' && s.pos.x > TWRAUM.vorne && s.pos.x < TOR.x + 0.3 && Math.abs(s.pos.z) < TWRAUM.hz) return fertig('torraum');
     const bs = b.v.length();
     // Ball liegt auf der Linie (Mittelpunkt drüber, aber nicht vollständig)
     if (bs < 0.15 && b.p.x > TOR.x - r && b.p.x - r <= TOR.x + TOR.linie / 2 && Math.abs(b.p.z) < TOR.hb) { v.ruhe += dt; if (v.ruhe > 0.6) return fertig('linie'); }
@@ -2602,7 +2729,7 @@ const Spiel = {
     this.aufnahme = new Aufnahme([...this.figL.objekte, ...this.figR.objekte, ...this.figT.objekte, ballGruppe]);
     this.replay = { kamPos: new V3(), kamZiel: new V3(), t: 0, start: 0, ende: 0, pass: 0 };
     ball.ereignisHandler = (typ, st, info) => this.ballEreignis(typ, st, info);
-    this.welt = { torwartPos: null, beiSchuss: (s, info) => this.beiSchuss(s, info), beiFinte: (s) => this.kiT && this.kiT.beiFinte(s), beiWiederBall: () => { if (this.versuch && this.versuch.gkBeruehrt) this.versuch.nachschuss = true; },
+    this.welt = { torwartPos: null, beiTrick: (s, name) => this.kiT && this.kiT.beiTrick(s, name), beiBallVerloren: () => { HUD.schiri(t('r_ballweg')); setTimeout(() => { if (this.zustand === 'anlauf') HUD.schiri(null); }, 900); }, beiSchuss: (s, info) => this.beiSchuss(s, info), beiFinte: (s) => this.kiT && this.kiT.beiFinte(s), beiWiederBall: () => { if (this.versuch && this.versuch.gkBeruehrt) this.versuch.nachschuss = true; },
       schrittCb: (sp) => { if (Math.random() < 0.12) Ton.quietschen(); } };
     this.welt.torwartPos = this.torwart.pos;
     // Power-Ring und Zielhilfe
@@ -2667,6 +2794,8 @@ const Spiel = {
     if (this.kiT) this.kiT.istGegnerMensch = this.menschSchiesst;
     this.hilfsTW = this.menschHaelt ? Object.assign(new KITorwart(this.torwart), { nurStellung: true }) : null; this.manuellBis = 0; this.paradePunkt = null;
     this.welt.menschPraezise = this.menschSchiesst;
+    this.manuellGelaufen = false; this.trickWunsch = null; this.rausWunsch = false; this.rausZiel = null; Eingabe.joy = null;
+    HUD.trickLeiste(this.menschSchiesst ? 'schuetze' : this.menschHaelt ? 'torwart' : null);
     ent.reset(0, 0); this.torwart.reset(); if (trainingOhneTW) this.torwart.pos.set(TOR.x + 3, 0, 4);
     ball.reset(0, 0); halle.netz.zuruecksetzen();
     this.versuch = new Versuch({ training: this.modus === 'training' }); this.aufnahme.leeren(); this.simZeit = 0;
@@ -2710,6 +2839,7 @@ const Spiel = {
       this.stickSperre = Math.max(0, this.stickSperre - dt);
       const stickAktiv = !S.kontrolle && this.stickSperre <= 0 && !ball.kinematisch;
       S.fig.kapseln.forEach(k => k.aktiv = stickAktiv);
+      if (ball.kinematisch && S.kontrolle && this.figT.objekt.visible) this.abfangenPruefen(S, T, v);
       const vorX = ball.p.x;
       ball.schritt(dt, { kapseln: [...T.fig.kapseln, ...S.fig.kapseln] });
       if (vorX < TOR.x && ball.p.x >= TOR.x) this.torebeneGekreuzt();
@@ -2725,6 +2855,22 @@ const Spiel = {
       if (this.aufnahme && Math.round(this.simZeit * 120) % 2 === 0) this.aufnahme.aufnehmen(this.simZeit);
     }
   },
+  /** Der Torhüter erreicht den Ball am Schläger: Ball ist weg, danach darf der Schütze ihn nicht mehr spielen. */
+  abfangenPruefen(S, T, v) {
+    for (const c of T.fig.kapseln) {
+      if (!c.aktiv) continue;
+      naechsterPunkt(ball.p, c.a, c.b, _c); const d = ball.p.distanceTo(_c), min = BALLD.r + c.r + 0.015;
+      if (d >= min) continue;
+      S.kontrolle = false; S.zorro = false; S.trick = null; if (S.zustand === 'laden') S.setzeZustand('lauf');
+      ball.kinematisch = false; v.gkBeruehrt = true; v.geschossen = true;
+      const weg = _d.subVectors(ball.p, _c).setY(0); if (weg.lengthSq() < 1e-6) weg.set(-1, 0, 0); weg.normalize();
+      const fang = ['hand', 'unterarm', 'oberarm', 'rumpf'].includes(c.teil) || ['raus', 'liegtVorn'].includes(T.zustand);
+      if (fang && !T.gefangen) { T.gefangen = true; v.gefangen = true; ball.v.set(0, 0, 0); if (T.zustand === 'grund' || T.zustand === 'butterfly') T.setzeZustand('fangen', { gefangen: true }, 0.12); else T.anim.param.gefangen = true; }
+      else { ball.v.copy(weg).multiplyScalar(2.2 + Math.random()); ball.v.y = 0.3; }
+      Ton.koerper(0.6); HUD.schiri(t('r_abgefangen'));
+      return;
+    }
+  },
   zeitSkala() { return this.zeitlupeBis > 0 && this.simZeit < this.zeitlupeBis ? Config.animation.zeitlupe : 1; },
   /* ---------- Menschliche Eingabe → Absicht ---------- */
   /** Bildschirmpunkt → Punkt auf der Torebene (z = seitlich, y = Höhe). */
@@ -2733,23 +2879,33 @@ const Spiel = {
     this._ndc.set(sx / innerWidth * 2 - 1, -(sy / innerHeight) * 2 + 1); this._ray.setFromCamera(this._ndc, kamera);
     const r = this._ray.ray; if (Math.abs(r.direction.x) < 1e-4) return null;
     const t = (TOR.x - r.origin.x) / r.direction.x; if (t <= 0) return null;
-    return { z: klemme(r.origin.z + r.direction.z * t, -1.5, 1.5), y: klemme(r.origin.y + r.direction.y * t, 0.05, 1.55) };
+    const yRoh = r.origin.y + r.direction.y * t, out = { z: klemme(r.origin.z + r.direction.z * t, -1.5, 1.5), y: klemme(yRoh, 0.05, 1.55) };
+    // Klick unterhalb der Torlinie = Punkt auf dem Boden vor dem Tor (Torhüter: herausspringen)
+    // Bodenpunkt unter dem Zeiger (für „Raus!“: Tipp auf den Ball oder vor das Tor)
+    if (Math.abs(r.direction.y) > 1e-4) { const tb = -r.origin.y / r.direction.y; if (tb > 0) { const bx = r.origin.x + r.direction.x * tb; if (bx < TOR.x - 0.3 && bx > TORRAUM.vorne - 4) out.boden = { x: bx, z: r.origin.z + r.direction.z * tb }; } }
+    return out;
   },
   /* Schütze: Zeiger/Finger zeigt das Ziel im Tor, der Spieler läuft selbst in diese Richtung.
      In Schussnähe gedrückt halten = Kraft, loslassen = Schuss. */
   menschSchuetze(dt) {
-    const S = this.schuetze, L = Eingabe.lenkung(), sp = Eingabe.zielBildschirm();
-    if (L.quelle === 'tasten') { const sg = Kam.rechtsVorne().r.z >= 0 ? 1 : -1; this.zielCursor.z = klemme(this.zielCursor.z + L.x * dt * 1.7 * sg, -1.4, 1.4); this.zielCursor.y = klemme(this.zielCursor.y + L.y * dt * 1.2, 0.06, 1.4); }
-    else if (L.quelle === 'pad') { this.zielCursor.z = klemme(L.x * 1.2, -1.4, 1.4); this.zielCursor.y = klemme(0.1 + (L.y + 1) / 2 * 1.05, 0.06, 1.3); }
+    const S = this.schuetze, L = Eingabe.lenkung(), sp = Eingabe.zielBildschirm(), { r, f } = Kam.rechtsVorne();
+    // Zielen: Maus/Finger auf die Torebene, Gamepad rechter Stick
+    if (sp && sp.stick) { this.zielCursor.z = klemme(sp.x * 1.2 * (r.z >= 0 ? 1 : -1), -1.4, 1.4); this.zielCursor.y = klemme(0.1 + (sp.y + 1) / 2 * 1.05, 0.06, 1.3); }
     else if (sp) {
       // Nur bei Zeigerbewegung neu zielen – ein ruhender Zeiger hält den Zielpunkt im Tor fest (kein Wandern beim Anlaufen)
       const key = Math.round(sp.x) + ',' + Math.round(sp.y);
       if (key !== this._letzterZeiger) { this._letzterZeiger = key; const p = this.torPunkt(sp.x, sp.y); if (p) { this.zielCursor.z = p.z; this.zielCursor.y = p.y; } }
     }
-    const lane = klemme(this.zielCursor.z * 1.6, -2.4, 2.4), vor = Math.max(2.5, TOR.x - 2 - S.pos.x);
-    const A = { aktiv: true, richtung: new V3(vor, 0, (lane - S.pos.z) * 1.2).normalize(), tempo: 0.8,
-      laden: Eingabe.aktionGehalten(), finte: this.finteFlag, lupfer: Eingabe.lupferGehalten() || this.wischHochFlag, zielZ: this.zielCursor.z, zielY: this.zielCursor.y };
-    this.finteFlag = false;
+    // Laufen: Tasten, Joystick (linke Hälfte) oder linker Stick; ohne Eingabe läuft der Spieler selbst Richtung Ziel
+    const len = Math.hypot(L.x, L.y);
+    let richtung, tempo;
+    if (L.quelle !== 'keine' && len > 0.15) {
+      richtung = new V3().addScaledVector(r, L.x).addScaledVector(f, L.y); if (richtung.lengthSq() < 1e-6) richtung.set(1, 0, 0); richtung.normalize();
+      tempo = L.quelle === 'tasten' ? 1 : klemme(len, 0.25, 1); this.manuellGelaufen = true;
+    } else if (this.manuellGelaufen) { richtung = new V3(1, 0, 0); tempo = 0.22; }      // leichtes Weiterrollen: die Vorwärtsregel bleibt erfüllt
+    else { const lane = klemme(this.zielCursor.z * 1.6, -2.4, 2.4), vor = Math.max(2.5, TOR.x - 2 - S.pos.x); richtung = new V3(vor, 0, (lane - S.pos.z) * 1.2).normalize(); tempo = 0.8; }
+    const A = { aktiv: true, richtung, tempo, laden: Eingabe.aktionGehalten(), finte: this.finteFlag, trick: this.trickWunsch, lupfer: Eingabe.lupferGehalten() || this.wischHochFlag, zielZ: this.zielCursor.z, zielY: this.zielCursor.y };
+    this.finteFlag = false; this.trickWunsch = null;
     if (S.zustand === 'lauf' && !S.imSchussbereich()) this.wischHochFlag = false;
     return A;
   },
@@ -2758,9 +2914,13 @@ const Spiel = {
   menschTorwart(dt) {
     const T = this.torwart, L = Eingabe.lenkung(), { r } = Kam.rechtsVorne(), seite = Math.abs(r.z) > 0.3 ? Math.sign(r.z) : -1;
     let A = { bewegen: new V3(), parade: null };
-    if (L.quelle === 'tasten' || L.quelle === 'pad') { A.bewegen.set(-L.y * 0.9, 0, seite * L.x); this.manuellBis = this.simZeit + 1.2; }
+    if (L.quelle !== 'keine' && Math.hypot(L.x, L.y) > 0.12) { A.bewegen.set(-L.y, 0, seite * L.x); this.manuellBis = this.simZeit + 1.2; }
     else if (!this.versuch.geschossen && this.simZeit > (this.manuellBis || 0) && this.hilfsTW) A = this.hilfsTW.absicht(dt, this.schuetze, ball, false);
-    if (this.paradePunkt) {
+    if (this.rausWunsch) {
+      this.rausWunsch = false;
+      const ziel = ball.p.clone(); if (this.rausZiel && ball.p.distanceTo(new V3(this.rausZiel.x, 0, this.rausZiel.z)) > 1.6) ziel.set(this.rausZiel.x, 0, this.rausZiel.z);
+      this.rausZiel = null; A.parade = { typ: 'raus', ziel };
+    } else if (this.paradePunkt) {
       const { z, y } = this.paradePunkt; this.paradePunkt = null;
       A.parade = { typ: waehleParade(T, z, y), ziel: new V3(T.pos.x, y, z) };
     } else if (this.paradeWunsch) {
@@ -2780,10 +2940,17 @@ const Spiel = {
     if (z !== 'anlauf' && z !== 'aufstellung') return;
     if (this.menschSchiesst) {
       if (e.typ === 'finte' || e.typ === 'doppeltipp') this.finteFlag = true;
+      if (e.typ === 'trick' && ['zieher', 'drehung', 'zorro'].includes(e.name)) this.trickWunsch = e.name;
       if (e.typ === 'los' && e.wischHoch && this.schuetze.zustand === 'laden') this.wischHochFlag = true;
     } else if (this.menschHaelt && z === 'anlauf') {
-      if (e.typ === 'druck' && e.x !== undefined) { const p = this.torPunkt(e.x, e.y); if (p) this.paradePunkt = p; }
-      if (e.typ === 'finte' || e.typ === 'aktionDruck') { const L = Eingabe.lenkung(); this.paradeWunsch = { dx: L.x, dy: L.quelle === 'keine' ? -1 : L.y }; }
+      if (e.typ === 'druck' && e.x !== undefined) {
+        const p = this.torPunkt(e.x, e.y);
+        // Tipp auf den Ball (bzw. dicht daneben), solange nicht geschossen wurde = herausspringen; sonst Parade zum Punkt im Tor
+        const nahAmBall = p && p.boden && Math.hypot(p.boden.x - ball.p.x, p.boden.z - ball.p.z) < 1.5;
+        if (p && nahAmBall && !this.versuch.geschossen) { this.rausWunsch = true; this.rausZiel = p.boden; } else if (p) this.paradePunkt = p;
+      }
+      if (e.typ === 'trick' && e.name === 'raus') { this.rausWunsch = true; this.rausZiel = null; }
+      if (e.typ === 'finte' || e.typ === 'aktionDruck') { const L = Eingabe.lenkung(); if (L.y > 0.5 && !this.versuch.geschossen) { this.rausWunsch = true; this.rausZiel = null; } else this.paradeWunsch = { dx: L.x, dy: L.quelle === 'keine' ? -1 : L.y }; }
     }
   },
   /* ---------- Ereignisse aus Physik und Spielern ---------- */
@@ -2977,7 +3144,7 @@ class Siegerehrung {
 const HUD = {
   init() {
     const $ = (id) => document.getElementById(id);
-    this.el = { hud: $('hud'), a: $('hudA'), b: $('hudB'), stand: $('hudStand'), info: $('hudInfo'), zeit: $('zeitbalken').firstElementChild, zeitBox: $('zeitbalken'), schiri: $('schiri'), banner: $('banner'), hinweis: $('steuerHinweis'), training: $('trainingInfo'), joy: $('joystick'), anzeige: $('anzeige') };
+    this.el = { hud: $('hud'), a: $('hudA'), b: $('hudB'), stand: $('hudStand'), info: $('hudInfo'), zeit: $('zeitbalken').firstElementChild, zeitBox: $('zeitbalken'), schiri: $('schiri'), banner: $('banner'), hinweis: $('steuerHinweis'), training: $('trainingInfo'), joy: $('joystick'), tricks: $('trickLeiste'), anzeige: $('anzeige') };
     $('btnPause').addEventListener('click', () => UI.pauseUmschalten());
     $('btnTuning').addEventListener('click', () => TuningPanel.umschalten());
     $('btnKamera').addEventListener('click', () => Kam.wechseln());
@@ -3019,9 +3186,20 @@ const HUD = {
     const el = this.el.training; el.classList.toggle('versteckt', !an); if (!an) return; const tr = Spiel.training;
     el.innerHTML = tr.art === 'schiessen' ? `<b>${t('training')}</b> · ${t('t_treffer')}: ${tr.treffer}/${tr.versuche} · ${t('t_scheiben')}: ${tr.scheiben || 0}` : `<b>${t('training')}</b> · ${t('t_paraden')}: ${tr.paraden}/${tr.versuche}`;
   },
+  /** Trick-Knöpfe (Touch und Maus): Schütze = Täuschung/Zieher/Drehung/Zorro, Torhüter = Raus! */
+  trickLeiste(rolle) {
+    const el = this.el.tricks; el.innerHTML = '';
+    const liste = rolle === 'schuetze' ? [['finte', 'trick_finte'], ['zieher', 'trick_zieher'], ['drehung', 'trick_drehung'], ['zorro', 'trick_zorro']] : rolle === 'torwart' ? [['raus', 'trick_raus']] : [];
+    el.classList.toggle('versteckt', !liste.length);
+    for (const [name, key] of liste) {
+      const b = document.createElement('button'); b.className = 'trickKnopf' + (name === 'raus' ? ' raus' : ''); b.textContent = t(key);
+      const ausloesen = (e) => { e.preventDefault(); Ton.init(); Eingabe.ereignisse.push(name === 'finte' ? { typ: 'finte' } : { typ: 'trick', name }); };
+      b.addEventListener('pointerdown', ausloesen); el.appendChild(b);
+    }
+  },
   joystick() {
-    const z = Eingabe.zeiger, j = this.el.joy;
-    const an = false && z;   // neue Steuerung zielt direkt – kein virtueller Joystick mehr
+    const z = Eingabe.joy, j = this.el.joy;
+    const an = !!z;
     j.classList.toggle('versteckt', !an); if (!an) return;
     j.style.left = z.sx + 'px'; j.style.top = z.sy + 'px';
     const r = Eingabe.radius, dx = klemme(z.x - z.sx, -r, r), dy = klemme(z.y - z.sy, -r, r);
@@ -3377,7 +3555,7 @@ const UI = {
   einstellungen(ausPause) {
     const zeile = (label, inhalt) => `<div class="einstZeile"><span>${label}</span>${inhalt}</div>`;
     const chips = (name, werte, akt, lab) => `<div class="chips">${werte.map(w => `<button class="chip ${akt === w ? 'an' : ''}" data-${name}="${w}">${lab(w)}</button>`).join('')}</div>`;
-    const aktionen = ['hoch', 'runter', 'links', 'rechts', 'aktion', 'finte', 'lupfer', 'kamera', 'pause', 'tuning'];
+    const aktionen = ['hoch', 'runter', 'links', 'rechts', 'aktion', 'finte', 'lupfer', 'zieher', 'drehung', 'zorro', 'raus', 'kamera', 'pause', 'tuning'];
     const d = this.html(`<div class="kopfzeile">${ausPause ? `<button class="knopf" data-zurueck>${t('fortsetzen')}</button>` : this.zurueckKnopf()}<h2>${t('einstellungen')}</h2></div>
       <div class="karte" style="width:min(46rem,100%)">
         ${zeile(t('schwierigkeit'), this.schwierigkeitChips())}
@@ -3390,7 +3568,7 @@ const UI = {
         ${zeile(t('e_ton'), `<input type="range" min="0" max="1" step="0.05" value="${Einst.ton}" data-r="ton">`)}
         <h3 style="margin:1rem 0 .3rem">${t('e_tasten')}</h3>
         ${aktionen.map(a => zeile(t('a_' + a), `<button class="knopf klein tastenKnopf" data-taste="${a}">${esc(Eingabe.tastenName(Einst.tasten[a]))}</button>`)).join('')}
-        <p class="hinweisText">Pfeiltasten, Enter (Schuss) und P (Pause) funktionieren immer zusätzlich. Gamepad: linker Stick, A = Schuss/Parade, B = Finte, X = Lupfer, Y = Kamera, Start = Pause.</p>
+        <p class="hinweisText">Pfeiltasten, Enter (Schuss) und P (Pause) funktionieren immer zusätzlich. Gamepad: linker Stick = laufen, rechter Stick = zielen, A = Schuss/Parade, B = Täuschung, X = Lupfer, LB = Zieher, RB = Drehung, LT = Zorro bzw. Raus, Y = Kamera, Start = Pause.</p>
         <div class="chips" style="margin-top:.8rem"><button class="knopf" data-tut>${t('e_tutorial')}</button><button class="knopf klein" data-tstd>Tasten zurücksetzen</button></div>
         ${Speicher.ok ? '' : `<p class="hinweisText">${t('e_speicher_aus')}</p>`}
       </div>`);
@@ -3513,6 +3691,7 @@ function frame(jetzt) {
   requestAnimationFrame(frame);
   const dt = Math.min(0.1, Math.max(0, (jetzt - letzteZeit) / 1000)); letzteZeit = jetzt;
   Eingabe.pollen();
+  Eingabe.joyZone = (Spiel.menschSchiesst || Spiel.menschHaelt) && ['aufstellung', 'anlauf'].includes(Spiel.zustand) && !Spiel.pausiert;
   for (const e of Eingabe.holeEreignisse()) {
     if (e.typ === 'tuning') { TuningPanel.umschalten(); continue; }
     if (e.typ === 'pause') { if (TuningPanel.offen && !['anlauf', 'aufstellung', 'auswertung', 'intro', 'wiederholung'].includes(Spiel.zustand)) TuningPanel.schliessen(); else UI.pauseUmschalten(); continue; }

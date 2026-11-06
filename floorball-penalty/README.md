@@ -6,20 +6,26 @@ Alle anderen Inhalte (Geometrie, Texturen, Ton) entstehen prozedural.
 
 ## Bedienung
 
-**Schütze** (eine Eingabe: zeigen und halten)
-- **Maus oder Finger zeigt auf die Stelle im Tor**, wo der Ball hin soll. Das gelbe Fadenkreuz folgt, der Spieler dribbelt automatisch in diese Richtung. Tastatur: WASD/Pfeile verschieben das Fadenkreuz, Gamepad: linker Stick.
-- **In Schussnähe** (Ring am Boden) **gedrückt halten**: Der Power-Ring füllt sich, eine gestrichelte Linie zeigt die Flugbahn. Kurz = Handgelenkschuss, mittel = Schlenzer, lang = Schlagschuss (stärker, aber ungenauer). Tastatur: J oder Enter halten.
-- **Loslassen** löst den Schuss aus.
+**Schütze**
+- **Laufen**: W/A/S/D, Pfeiltasten, linker Gamepad-Stick oder auf dem Handy der Joystick in der linken Bildschirmhälfte. Ohne Eingabe läuft der Spieler selbst Richtung Ziel.
+- **Zielen**: Maus oder Touchpad zeigt auf die Stelle im Tor (gelbes Fadenkreuz); am Handy der Finger in der rechten Hälfte, am Gamepad der rechte Stick.
+- **Schuss**: In Schussnähe (Ring am Boden) Maustaste bzw. Finger **halten** – der Ring füllt sich, eine gestrichelte Linie zeigt die Flugbahn. **Loslassen** schießt. Kurz = Handgelenkschuss, mittel = Schlenzer, lang = Schlagschuss.
 - **Lupfer**: rechte Maustaste halten, Shift, oder beim Loslassen nach oben wischen.
-- **Finte**: Leertaste oder Doppeltipp.
+- **Tricks beim Anlauf** (Tasten frei belegbar, am Handy die Knöpfe unten rechts):
+  - **Täuschung** (Leertaste / Doppeltipp / B): Körpertäuschung, der Torhüter kann hineinfallen.
+  - **Zieher** (Q / LB): der Ball wird mit gekippter Kelle quer vor dem Körper auf die andere Seite gezogen.
+  - **Drehung** (E / RB): 360°-Drehung mit Ball, der Torhüter verliert kurz den Überblick.
+  - **Zorro** (R / LT): der Ball wird auf die Kelle gehoben und getragen; der nächste Schuss geht aus der Luft (gut für die oberen Ecken).
+  - Jeder Trick kann misslingen (abhängig vom Technik-Wert): dann verspringt der Ball kurz.
 
-**Torhüter** (Timing entscheidet)
-- Das Stellungsspiel läuft automatisch. A/D, Pfeile oder Stick verschieben selbst, nach vorn = herauskommen.
-- **Parade**: Im richtigen Moment dorthin **tippen oder klicken, wo der Ball ins Tor fliegt**. Der Torhüter wählt die passende Parade (Hechtsprung, Fußabwehr, Butterfly, Fangen). Alternativ Richtung + Leertaste oder wischen.
+**Torhüter**
+- **Bewegen** im ganzen Torraum (4 × 5 m): W/A/S/D, Pfeile, linker Stick oder Joystick links. Ohne Eingabe stellt er sich selbst.
+- **Parade**: Im richtigen Moment dorthin tippen oder klicken, wo der Ball ins Tor fliegt. Alternativ Richtung + Leertaste oder wischen.
+- **Raus!**: Kommt der Schütze zu nah, auf den Ball tippen/klicken, F, LT oder den roten Knopf drücken – der Torhüter springt dem Schützen entgegen und nimmt ihm den Ball ab. Berührt er den Ball, darf der Schütze nicht mehr nachschießen.
+- KI-Torhüter kommen ebenfalls heraus, wenn man in den Torraum dribbelt (abhängig vom Wert „Mut“).
 - In der Stufe **Einsteiger** läuft beim Schuss ein kurzes Zeitlupenfenster.
 
-**Allgemein**: **T** oder ⚙ öffnet das Tuning (auch im Spiel), **C** oder 🎥 wechselt die Kamera, **Esc/P** oder ⏸ pausiert. Ein Tipp überspringt Intro und Wiederholung.
-Gamepad: A = Schuss/Parade, B = Finte, X = Lupfer, Y = Kamera, Start = Pause. Die Tasten lassen sich unter *Einstellungen* frei belegen.
+**Allgemein**: **T** oder ⚙ öffnet das Tuning (auch im Spiel), **C** oder 🎥 wechselt die Kamera, **Esc/P** oder ⏸ pausiert. Ein Tipp überspringt Intro und Wiederholung. Alle Tasten lassen sich unter *Einstellungen* frei belegen.
 
 ## Modi
 - **Schnelles Spiel**: Hauptmenü → Schnelles Spiel → Anpfiff (Zufallsgegner ist vorgewählt). Du schießt und hältst abwechselnd. „KI gegen KI“ lässt dich nur zuschauen.
@@ -35,5 +41,5 @@ Der Knopf **„Regeltests ausführen“** prüft 13 Fälle: Stopp- und Rückwär
 - Ohne Internet startet das Spiel nicht, weil Three.js vom CDN kommt. Abhilfe: `three.module.js` neben die Datei legen und die Importmap anpassen.
 - Figuren sind prozedural: gehäuteter Körper (SkinnedMesh) mit modelliertem Kopf, Ausrüstung aus Grundkörpern. Kein echtes 3D-Modell, aus der Nähe bleibt der Puppenlook sichtbar. Das Trikot schwingt nur am Saum nach.
 - Zuschauer sind instanzierte Sitzfiguren (drei Meshes für alle), Hallenmodell und Torhüter-Hitboxen (Kapseln) sind vereinfacht.
-- Die Torraum-Regel (Schütze darf vor dem Schuss nicht in den Torraum) und die Lage des Torhüterraums sind nach bestem Wissen umgesetzt, aber nicht am Regelwerk verifiziert. Die Torraum-Regel ist im Tuning abschaltbar.
+- Regelannahmen, nicht am IFF-Regelwerk verifiziert: Der Schütze darf in den Torraum (4 × 5 m), aber nicht in den Torhüterraum (1 × 2,5 m) – sonst Fehlversuch (im Tuning abschaltbar). Der Torhüter bleibt im Spiel auf den Torraum beschränkt. Der Zorro-Trick trägt den Ball unterhalb Kniehöhe.
 - Getestet nur in Chromium (Desktop und emulierter Pixel-7-Touch), ohne echte GPU. Firefox, Safari, Edge, echte Smartphones und die 60 FPS auf realer Hardware sind nicht geprüft.
