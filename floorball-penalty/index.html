@@ -256,9 +256,9 @@ const TEXTE = {
     tor_banner: 'TOR!', gehalten_banner: 'GEHALTEN!', fehl_banner: 'KEIN TOR',
     banner_sieg: 'gewinnt das Shootout', banner_remis: 'Unentschieden',
     wiederholung: 'WIEDERHOLUNG', ueberspringen: 'Tippen zum Überspringen',
-    hinweis_schuetze_maus: 'Ziehen = laufen · in Schussnähe halten = Kraft, Richtung = Ziel · Loslassen = Schuss · Shift/Wisch ↑ = Lupfer · Leertaste/Doppeltipp = Finte',
-    hinweis_schuetze_touch: 'Ziehen = laufen · nah am Tor halten & zielen · Loslassen = Schuss · Wisch ↑ = Lupfer · Doppeltipp = Finte',
-    hinweis_torwart: 'Ziehen/Pfeile = verschieben, nach vorn = herauskommen · Wischen bzw. Richtung + Leertaste = Parade',
+    hinweis_schuetze_maus: 'Maus zeigt das Ziel im Tor, der Spieler läuft dorthin · in Schussnähe Maustaste halten = Kraft · loslassen = Schuss · Rechtsklick/Shift = Lupfer · Leertaste = Finte',
+    hinweis_schuetze_touch: 'Finger zeigt das Ziel (Fadenkreuz) · in Schussnähe halten = Kraft · loslassen = Schuss · nach oben wischen = Lupfer · Doppeltipp = Finte',
+    hinweis_torwart: 'Tippe/klicke im richtigen Moment dorthin, wo der Ball ins Tor fliegt · Stellungsspiel automatisch, A/D bzw. Stick verschiebt selbst',
     hinweis_zuschauen: 'KI gegen KI · C = Kamera · Esc = Pause',
     schussnah: 'Schussnähe – halten zum Aufladen',
     // Ergebnis
@@ -293,9 +293,9 @@ const TEXTE = {
     a_hoch: 'Vor / Ziel hoch', a_runter: 'Zurück / Ziel tief', a_links: 'Links', a_rechts: 'Rechts', a_aktion: 'Schuss (halten) / Parade', a_finte: 'Finte / Parade',
     a_lupfer: 'Lupfer', a_kamera: 'Kamera', a_pause: 'Pause', a_tuning: 'Tuning',
     // Tutorial
-    tut_titel: 'So spielst du', tut_1: 'Ziehen mit Maus oder Finger = Laufrichtung. Der Ball bleibt am Schläger, Vor- und Rückhand wechseln automatisch.',
-    tut_2: 'In Schussnähe gedrückt halten: der Ring füllt sich (Kraft). Die Zugrichtung ist das Ziel. Loslassen = Schuss. Shift oder Wisch nach oben = Lupfer, Leertaste oder Doppeltipp = Finte.',
-    tut_3: 'Im Tor: ziehen zum Verschieben und Herauskommen. Im richtigen Moment in die Ecke wischen (oder Pfeil + Leertaste) – das Timing entscheidet.',
+    tut_titel: 'So spielst du', tut_1: 'Zeige mit Maus oder Finger auf die Stelle im Tor, wo der Ball hin soll. Das gelbe Fadenkreuz folgt dir, der Spieler dribbelt automatisch in diese Richtung.',
+    tut_2: 'In Schussnähe gedrückt halten: der Ring füllt sich (Kraft), eine gestrichelte Linie zeigt die Flugbahn. Loslassen = Schuss. Rechtsklick, Shift oder nach oben wischen = Lupfer, Leertaste oder Doppeltipp = Finte.',
+    tut_3: 'Im Tor stellt sich dein Torhüter selbst. Tippe oder klicke im richtigen Moment dorthin, wo der Ball ins Tor fliegt – er springt genau dorthin.',
     tut_weiter: 'Weiter', tut_los: 'Los geht’s', tut_skip: 'Überspringen',
     // Tuning
     tuning: 'Tuning', tu_presets: 'Presets', tu_eigene: 'Eigene Presets', tu_speichern: 'Speichern', tu_name: 'Name des Presets',
@@ -550,9 +550,11 @@ class EingabeSystem {
     this.radius = Math.max(60, Math.min(130, Math.min(innerWidth, innerHeight) * 0.16));
     const jetzt = performance.now();
     this.zeiger = { id: e.pointerId, sx: e.clientX, sy: e.clientY, x: e.clientX, y: e.clientY, t0: jetzt, verlauf: [{ x: e.clientX, y: e.clientY, t: jetzt }] };
-    this.wischGemeldet = false; this.ereignisse.push({ typ: 'druck' });
+    this.zeiger.lupfer = e.button === 2;
+    this.wischGemeldet = false; this.ereignisse.push({ typ: 'druck', x: e.clientX, y: e.clientY });
   }
   _bewegen(e) {
+    if (e.pointerType === 'mouse') this.hover = { x: e.clientX, y: e.clientY, t: performance.now() };
     const z = this.zeiger; if (!z || e.pointerId !== z.id) return; e.preventDefault();
     z.x = e.clientX; z.y = e.clientY; const jetzt = performance.now();
     z.verlauf.push({ x: z.x, y: z.y, t: jetzt }); while (z.verlauf.length > 2 && jetzt - z.verlauf[0].t > 160) z.verlauf.shift();
@@ -587,6 +589,7 @@ class EingabeSystem {
     const b = Einst.tasten;
     if (an) {
       Ton.init();
+      this.letzteTaste = performance.now();
       if (!this.tasten.has(e.code)) {
         if (e.code === b.finte) this.ereignisse.push({ typ: 'finte' });
         if (e.code === b.aktion) this.ereignisse.push({ typ: 'aktionDruck' });
@@ -637,7 +640,13 @@ class EingabeSystem {
   }
   /** Ist die Aktion (Schuss laden) gehalten? */
   aktionGehalten() { return !!this.zeiger || this.tasten.has(Einst.tasten.aktion) || this.tasten.has('Enter') || this.pad.a; }
-  lupferGehalten() { return this.tasten.has(Einst.tasten.lupfer) || this.tasten.has('ShiftRight') || this.pad.x; }
+  lupferGehalten() { return this.tasten.has(Einst.tasten.lupfer) || this.tasten.has('ShiftRight') || this.pad.x || !!(this.zeiger && this.zeiger.lupfer); }
+  /** Bildschirmpunkt zum Zielen: Finger (leicht darüber, damit das Fadenkreuz sichtbar bleibt) oder Mauszeiger. */
+  zielBildschirm() {
+    if (this.zeiger) return { x: this.zeiger.x, y: this.zeiger.y - (this.geraet === 'touch' ? 70 : 0) };
+    if (this.hover && this.hover.t > (this.letzteTaste || 0)) return this.hover;
+    return null;
+  }
   holeEreignisse() { const e = this.ereignisse; this.ereignisse = []; return e; }
   tastenName(code) { return String(code || '').replace(/^Key/, '').replace(/^Digit/, '').replace('Left', ' L').replace('Right', ' R').replace('Space', 'Leertaste').replace('Escape', 'Esc'); }
 }
@@ -888,6 +897,14 @@ function loeseSchuss(start, ziel, speed, spin, lupfer) {
   return v.set(Math.cos(pitch) * Math.cos(yaw), Math.sin(pitch), Math.cos(pitch) * Math.sin(yaw)).multiplyScalar(s);
 }
 
+/** Punkte der vorhergesagten Flugbahn (Zielhilfe). */
+function bahnPunkte(p0, v0, w0, zielX, max = 120) {
+  const b = _simBall; b.nurBoden = true; b.kinematisch = false; b.p.copy(p0); b.v.copy(v0); b.w.copy(w0);
+  const pts = [p0.clone()]; let t = 0, i = 0;
+  while (t < 2.2 && b.p.x < zielX + 0.02 && pts.length < max) { b.schritt(DT, null); t += DT; if (++i % 2 === 0) pts.push(b.p.clone()); if (b.v.lengthSq() < 0.05) break; }
+  return pts;
+}
+
 /* =====================================================================
    MODUL: ENTITÄTEN – Halle, Bande, Boden, Tor mit Netz, Ball, Zuschauer, Anzeigetafel
    ===================================================================== */
@@ -1053,43 +1070,80 @@ function ballMesh() {
   g.userData.anzahlLoecher = dirs.length;
   return g;
 }
-/** Zuschauer als InstancedMesh, Aufspringen per Vertex-Shader (GPU). */
+/** Zuschauer: sitzende Figuren (Körper, Kopf, Haare als drei InstancedMeshes).
+    Aufspringen und Arme-Hochreißen laufen im Vertex-Shader (GPU), damit Tausende Fans flüssig bleiben. */
 function zuschauerMesh(tribuenen) {
-  const koerper = new THREE.BoxGeometry(0.42, 0.62, 0.28); koerper.translate(0, 0.31, 0);
-  const kopf = new THREE.SphereGeometry(0.11, 8, 6); kopf.translate(0, 0.74, 0);
-  const geo = mergeGeos([koerper, kopf]);
+  // --- Geometrien (lokal: Sitzfläche bei y = 0, Blick nach +z) ---
+  const teil = (geo, x, y, z, rx, arm, farbe) => { geo = geo.index ? geo.toNonIndexed() : geo; if (rx) geo.rotateX(rx); geo.translate(x, y, z); const n = geo.getAttribute('position').count; geo.setAttribute('aArm', new THREE.Float32BufferAttribute(new Array(n).fill(arm), 1)); const c = []; for (let i = 0; i < n; i++) c.push(farbe, farbe, farbe); geo.setAttribute('color', new THREE.Float32BufferAttribute(c, 3)); return geo; };
+  const kapsel = (r, l, seg = 6) => new THREE.CapsuleGeometry(r, l, 1, seg);
+  const koerperTeile = [
+    teil(kapsel(0.15, 0.28, 7).scale(1, 1, 0.62), 0, 0.36, 0, 0, 0, 1),                               // Rumpf (Oberteil)
+    ...[1, -1].flatMap(s => [
+      teil(kapsel(0.048, 0.24, 4), s * 0.2, 0.42, 0.04, 0.35, s, 1),                                     // Arm
+      teil(new THREE.BoxGeometry(0.12, 0.11, 0.4), s * 0.09, 0.07, 0.18, 0, 0, 0.32),                   // Oberschenkel (Hose)
+      teil(new THREE.BoxGeometry(0.1, 0.42, 0.11), s * 0.09, -0.15, 0.36, 0, 0, 0.32),                   // Unterschenkel
+      teil(new THREE.BoxGeometry(0.1, 0.06, 0.2), s * 0.09, -0.35, 0.42, 0, 0, 0.18)                     // Schuh
+    ])
+  ];
+  const mergeMit = (liste) => {
+    const g = new THREE.BufferGeometry(), at = { position: 3, normal: 3, color: 3, aArm: 1 };
+    for (const [k, n] of Object.entries(at)) { const arr = []; for (const t of liste) { const a = t.getAttribute(k); for (let i = 0; i < a.count * n; i++) arr.push(a.array[i]); } g.setAttribute(k, new THREE.Float32BufferAttribute(arr, n)); }
+    return g;
+  };
+  const geoK = mergeMit(koerperTeile);
+  const geoH = mergeMit([teil(new THREE.SphereGeometry(0.098, 8, 6).scale(0.86, 1.08, 0.95), 0, 0.77, 0.01, 0, 0, 1)]);
+  const geoHaar = mergeMit([teil(new THREE.SphereGeometry(0.104, 8, 3, 0, Math.PI * 2, 0, Math.PI * 0.5).scale(0.88, 1.1, 1.0), 0, 0.785, -0.004, -0.25, 0, 1)]);
+  // --- Sitzplätze ---
   const sitze = [];
-  for (const t of tribuenen) for (let r = 0; r < t.reihen; r++) for (let i = 0; i < t.plaetze; i++) {
-    const f = (i + 0.5) / t.plaetze;
-    sitze.push({ x: mix(t.a[0], t.b[0], f) + (Math.random() - 0.5) * 0.12, y: t.y0 + r * t.dy, z: mix(t.a[1], t.b[1], f) + (Math.random() - 0.5) * 0.12, dx: t.dx * r, dz: t.dz * r, rot: t.rot });
+  for (const tb of tribuenen) for (let r = 0; r < tb.reihen; r++) for (let i = 0; i < tb.plaetze; i++) {
+    const f = (i + 0.5) / tb.plaetze;
+    sitze.push({ x: mix(tb.a[0], tb.b[0], f) + (Math.random() - 0.5) * 0.12, y: tb.y0 + r * tb.dy, z: mix(tb.a[1], tb.b[1], f) + (Math.random() - 0.5) * 0.08, dx: tb.dx * r, dz: tb.dz * r, rot: tb.rot });
   }
   for (let i = sitze.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sitze[i], sitze[j]] = [sitze[j], sitze[i]]; }
-  const n = sitze.length;
-  const phase = new Float32Array(n), freq = new Float32Array(n);
-  const mat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+  const n = sitze.length, phase = new Float32Array(n), freq = new Float32Array(n), eifer = new Float32Array(n);
   const uni = { uJubel: { value: 0 }, uZeit: { value: 0 } };
-  mat.onBeforeCompile = (sh) => {
-    sh.uniforms.uJubel = uni.uJubel; sh.uniforms.uZeit = uni.uZeit;
-    sh.vertexShader = 'uniform float uJubel; uniform float uZeit; attribute float aPhase; attribute float aFreq;\n' + sh.vertexShader.replace('#include <begin_vertex>',
-      `#include <begin_vertex>
-       float sprung = max(0.0, sin(uZeit * aFreq + aPhase));
-       transformed.y += uJubel * sprung * 0.42 + 0.015 * sin(uZeit * 1.3 + aPhase * 3.0);
-       if (position.y > 0.5) transformed.x += uJubel * 0.06 * sin(uZeit * 9.0 + aPhase);`);
+  const shaderAnpassen = (mat) => {
+    mat.onBeforeCompile = (sh) => {
+      sh.uniforms.uJubel = uni.uJubel; sh.uniforms.uZeit = uni.uZeit;
+      sh.vertexShader = 'uniform float uJubel; uniform float uZeit; attribute float aPhase; attribute float aFreq; attribute float aEifer; attribute float aArm;\n' + sh.vertexShader.replace('#include <begin_vertex>',
+        `#include <begin_vertex>
+         float j = uJubel * aEifer;
+         float sprung = max(0.0, sin(uZeit * aFreq + aPhase));
+         // Arme hochreißen (Drehung um die Schulter)
+         if (abs(aArm) > 0.5) {
+           vec2 piv = vec2(aArm * 0.2, 0.55);
+           float w = aArm * j * (2.3 + 0.5 * sprung) + aArm * 0.05 * sin(uZeit * 1.7 + aPhase);
+           vec2 q = transformed.xy - piv; float c = cos(w), s = sin(w);
+           transformed.xy = piv + vec2(c * q.x - s * q.y, s * q.x + c * q.y);
+         }
+         // Aufstehen und Springen, sonst leichtes Wippen
+         float hoch = j * (0.22 + sprung * 0.3);
+         if (position.y > -0.05) transformed.y += hoch; else transformed.y += hoch * 0.4;
+         transformed.y += 0.012 * sin(uZeit * 1.3 + aPhase * 3.0);
+         transformed.z += j * 0.05 * sin(uZeit * 8.0 + aPhase);`);
+    };
+    return mat;
   };
-  const mesh = new THREE.InstancedMesh(geo, mat, n);
-  const palette = ['#d62828', '#003049', '#f77f00', '#fcbf49', '#eae2b7', '#2a9d8f', '#264653', '#e9c46a', '#6a4c93', '#1982c4', '#8ac926', '#ffffff', '#222222', '#a8dadc'];
-  const m = new THREE.Matrix4(), q = new Q4(), col = new THREE.Color();
-  sitze.forEach((s, i) => {
-    q.setFromAxisAngle(new V3(0, 1, 0), s.rot + (Math.random() - 0.5) * 0.4);
-    const sk = 0.9 + Math.random() * 0.2;
-    m.compose(new V3(s.x + s.dx, s.y, s.z + s.dz), q, new V3(sk, sk, sk)); mesh.setMatrixAt(i, m);
-    col.set(palette[Math.floor(Math.random() * palette.length)]); mesh.setColorAt(i, col);
-    phase[i] = Math.random() * Math.PI * 2; freq[i] = 7 + Math.random() * 5;
+  const gruppe = new THREE.Group(), meshes = [];
+  const machen = (geo, vertexFarben, rough) => { const mat = shaderAnpassen(new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: vertexFarben })); const im = new THREE.InstancedMesh(geo, mat, n); im.frustumCulled = false; meshes.push(im); gruppe.add(im); return im; };
+  const mK = machen(geoK, true), mH = machen(geoH, false), mHaar = machen(geoHaar, false);
+  const kleidung = ['#d62828', '#003049', '#f77f00', '#fcbf49', '#eae2b7', '#2a9d8f', '#264653', '#e9c46a', '#6a4c93', '#1982c4', '#8ac926', '#ffffff', '#3a3a3a', '#a8dadc', '#0a3d91', '#c8102e'];
+  const haut = ['#f1c9a5', '#e0ac85', '#c68b62', '#9a6340', '#6e4429', '#f5d6bd'], haare = ['#2b1d14', '#4a3020', '#7a5230', '#b8935a', '#111111', '#d6bf8e', '#8a8a8a', '#c0392b'];
+  const m4 = new THREE.Matrix4(), q = new Q4(), col = new THREE.Color();
+  sitze.forEach((st, i) => {
+    q.setFromAxisAngle(new V3(0, 1, 0), st.rot + (Math.random() - 0.5) * 0.35);
+    const sk = 0.9 + Math.random() * 0.18; m4.compose(new V3(st.x + st.dx, st.y + 0.02, st.z + st.dz), q, new V3(sk, sk, sk));
+    for (const im of meshes) im.setMatrixAt(i, m4);
+    mK.setColorAt(i, col.set(kleidung[Math.floor(Math.random() * kleidung.length)]));
+    mH.setColorAt(i, col.set(haut[Math.floor(Math.random() * haut.length)]));
+    mHaar.setColorAt(i, col.set(haare[Math.floor(Math.random() * haare.length)]));
+    phase[i] = Math.random() * Math.PI * 2; freq[i] = 7 + Math.random() * 5; eifer[i] = Math.random() < 0.25 ? 0.25 + Math.random() * 0.3 : 0.7 + Math.random() * 0.3;
   });
-  geo.setAttribute('aPhase', new THREE.InstancedBufferAttribute(phase, 1)); geo.setAttribute('aFreq', new THREE.InstancedBufferAttribute(freq, 1));
-  mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-  mesh.frustumCulled = false;
-  return { mesh, uni, gesamt: n };
+  for (const im of meshes) {
+    im.geometry.setAttribute('aPhase', new THREE.InstancedBufferAttribute(phase, 1)); im.geometry.setAttribute('aFreq', new THREE.InstancedBufferAttribute(freq, 1)); im.geometry.setAttribute('aEifer', new THREE.InstancedBufferAttribute(eifer, 1));
+    im.instanceMatrix.needsUpdate = true; if (im.instanceColor) im.instanceColor.needsUpdate = true;
+  }
+  return { mesh: gruppe, meshes, uni, gesamt: n, setzeAnzahl(k) { for (const im of meshes) im.count = k; gruppe.visible = k > 0; } };
 }
 /** Statische Meshes mit gleichem Material zu einem Mesh zusammenfassen (weniger Draw Calls, wichtig für Smartphones). */
 function statischZusammenfassen(gruppe) {
@@ -1130,9 +1184,9 @@ class Halle {
     const stufe = (x0, x1, z0, z1, hy) => { const b = new THREE.Mesh(new THREE.BoxGeometry(Math.abs(x1 - x0), hy, Math.abs(z1 - z0)), tribMat); b.position.set((x0 + x1) / 2, hy / 2, (z0 + z1) / 2); b.receiveShadow = true; this.gruppe.add(b); };
     for (const s of [-1, 1]) {
       for (let r = 0; r < 9; r++) stufe(-22, 22, s * (11.6 + r * 0.85), s * (12.45 + r * 0.85), 0.3 + r * 0.42);
-      trib.push({ a: [-21.5, s * 12.0], b: [21.5, s * 12.0], reihen: 9, plaetze: 72, y0: 0.3, dy: 0.42, dx: 0, dz: s * 0.85, rot: s > 0 ? Math.PI : 0 });
+      trib.push({ a: [-21.5, s * 12.15], b: [21.5, s * 12.15], reihen: 9, plaetze: 64, y0: 0.3, dy: 0.42, dx: 0, dz: s * 0.85, rot: s > 0 ? Math.PI : 0 });
       for (let r = 0; r < 7; r++) stufe(s * (22.3 + r * 0.85), s * (23.15 + r * 0.85), -10.5, 10.5, 0.3 + r * 0.42);
-      trib.push({ a: [s * 22.7, -10], b: [s * 22.7, 10], reihen: 7, plaetze: 32, y0: 0.3, dy: 0.42, dx: s * 0.85, dz: 0, rot: s > 0 ? -Math.PI / 2 : Math.PI / 2 });
+      trib.push({ a: [s * 22.85, -10], b: [s * 22.85, 10], reihen: 7, plaetze: 30, y0: 0.3, dy: 0.42, dx: s * 0.85, dz: 0, rot: s > 0 ? -Math.PI / 2 : Math.PI / 2 });
     }
     this.zuschauer = zuschauerMesh(trib); this.gruppe.add(this.zuschauer.mesh);
     // Wände und Decke
@@ -1187,10 +1241,11 @@ const ARM_REICH = (MASS.oa + MASS.ua) * 0.97;
 const ACHSE_Y = new V3(0, 1, 0);
 const _texCache = new Map();
 function trikotTextur(team, nummer, name, variante) {
-  const key = [team.primaer, team.sekundaer, team.muster, nummer, name, variante].join('|');
+  const key = [team.primaer, team.sekundaer, team.muster, nummer, name, variante, team.gepolstert ? 'p' : ''].join('|');
   if (_texCache.has(key)) return _texCache.get(key);
   const [c, g] = leinwand(512, 256), P = team.primaer, S = team.sekundaer;
   g.fillStyle = P; g.fillRect(0, 0, 512, 256);
+  if (team.gepolstert) { g.strokeStyle = 'rgba(0,0,0,.2)'; g.lineWidth = 2; for (let i = -10; i < 20; i++) { g.beginPath(); g.moveTo(i * 40, 0); g.lineTo(i * 40 + 256, 256); g.stroke(); g.beginPath(); g.moveTo(i * 40, 256); g.lineTo(i * 40 + 256, 0); g.stroke(); } }
   g.fillStyle = S;
   if (team.muster === 'streifen') { for (let i = 0; i < 9; i++) g.fillRect(i * 57 + 8, 0, 22, 256); }
   else if (team.muster === 'schaerpe') { for (const o of [0, -512]) { g.beginPath(); g.moveTo(400 + o, 0); g.lineTo(470 + o, 0); g.lineTo(640 + o, 256); g.lineTo(570 + o, 256); g.closePath(); g.fill(); } }
@@ -1215,12 +1270,36 @@ function trikotTextur(team, nummer, name, variante) {
   }
   const tx = texturAus(c); _texCache.set(key, tx); return tx;
 }
-function kelleTextur() {
-  const [c, g] = leinwand(256, 64); g.fillStyle = '#f2f2f2'; g.fillRect(0, 0, 256, 64);
-  g.fillStyle = '#1a1a1a'; for (let i = 0; i < 9; i++) for (let j = 0; j < 2; j++) { g.beginPath(); g.ellipse(26 + i * 25 + j * 12, 22 + j * 20, 7, 5, 0, 0, 7); g.fill(); }
-  return texturAus(c);
+/** Kellenblatt: Farbtextur mit Rippen und eine Alpha-Maske mit echten Durchbrüchen (Schlitze wie bei Floorball-Kellen). */
+function kelleTexturen() {
+  const [c, g] = leinwand(512, 128); g.fillStyle = '#f4f4f1'; g.fillRect(0, 0, 512, 128);
+  const gr = g.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, 'rgba(0,0,0,.22)'); gr.addColorStop(0.5, 'rgba(255,255,255,.12)'); gr.addColorStop(1, 'rgba(0,0,0,.25)'); g.fillStyle = gr; g.fillRect(0, 0, 512, 128);
+  g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = 3; for (let i = 1; i < 10; i++) { g.beginPath(); g.moveTo(i * 51, 0); g.lineTo(i * 51, 128); g.stroke(); }
+  const [ca, ga] = leinwand(512, 128); ga.fillStyle = '#fff'; ga.fillRect(0, 0, 512, 128); ga.fillStyle = '#000';
+  const schlitz = (x, y, w, h) => { ga.beginPath(); ga.roundRect(x, y, w, h, 7); ga.fill(); g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.roundRect(x - 2, y - 2, w + 4, h + 4, 9); g.fill(); };
+  for (let i = 0; i < 9; i++) { const x = 42 + i * 51; schlitz(x, 16, 30, 36); schlitz(x, 70, 30, 40); }
+  return { map: texturAus(c), alpha: (() => { const t = new THREE.CanvasTexture(ca); return t; })() };
 }
-let _kelleTex = null, _haarTex = null;
+/** Griffband: schräg gewickeltes Band mit Nahtkante. */
+function griffTextur() {
+  const [c, g] = leinwand(64, 128); g.fillStyle = '#17181b'; g.fillRect(0, 0, 64, 128);
+  g.strokeStyle = 'rgba(255,255,255,.14)'; g.lineWidth = 2;
+  for (let y = -64; y < 192; y += 16) { g.beginPath(); g.moveTo(0, y); g.lineTo(64, y + 24); g.stroke(); }
+  g.strokeStyle = 'rgba(0,0,0,.6)'; for (let y = -64; y < 192; y += 16) { g.beginPath(); g.moveTo(0, y + 4); g.lineTo(64, y + 28); g.stroke(); }
+  const t = texturAus(c, true); t.repeat.set(1, 3); return t;
+}
+/** Hose: Grundfarbe, Seitenstreifen, Bund; optional gesteppte Polsterung (Torhüter). */
+const _hoseCache = new Map();
+function hoseTextur(farbe, akzent, gepolstert) {
+  const key = farbe + '|' + akzent + '|' + gepolstert; if (_hoseCache.has(key)) return _hoseCache.get(key);
+  const [c, g] = leinwand(256, 128); g.fillStyle = farbe; g.fillRect(0, 0, 256, 128);
+  const sch = g.createLinearGradient(0, 0, 256, 0); [[0, '.08'], [0.25, '-.16'], [0.5, '.03'], [0.75, '-.16'], [1, '.08']].forEach(([o, v]) => sch.addColorStop(o, +v >= 0 ? `rgba(255,255,255,${v})` : `rgba(0,0,0,${-v})`)); g.fillStyle = sch; g.fillRect(0, 0, 256, 128);
+  if (gepolstert) { g.strokeStyle = 'rgba(0,0,0,.28)'; g.lineWidth = 2; for (let i = -8; i < 16; i++) { g.beginPath(); g.moveTo(i * 24, 0); g.lineTo(i * 24 + 128, 128); g.stroke(); g.beginPath(); g.moveTo(i * 24, 128); g.lineTo(i * 24 + 128, 0); g.stroke(); } g.strokeStyle = 'rgba(255,255,255,.12)'; for (let i = -8; i < 16; i++) { g.beginPath(); g.moveTo(i * 24 + 2, 0); g.lineTo(i * 24 + 130, 128); g.stroke(); } }
+  else { g.fillStyle = akzent; for (const x of [62, 190]) g.fillRect(x, 0, 6, 128); }
+  g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(0, 118, 256, 10);                      // Bund oben (v = 1)
+  const t = texturAus(c); _hoseCache.set(key, t); return t;
+}
+let _kelleTex = null, _haarTex = null, _griffTex = null;
 /** Haarsträhnen als graue Rauschtextur (wird mit der Haarfarbe multipliziert). */
 function haarTextur() {
   if (_haarTex) return _haarTex;
@@ -1229,12 +1308,36 @@ function haarTextur() {
   _haarTex = texturAus(c, true); _haarTex.colorSpace = THREE.NoColorSpace; return _haarTex;
 }
 
+/** Modellierter Kopf aus einer verformten Kugel (Kiefer, Kinn, Nase, Brauen, Augenhöhlen, Hinterkopf). haar=true: Frisur-Schale. */
+function kopfGeometrie(haar) {
+  const g = new THREE.SphereGeometry(0.1, 36, 28);
+  const p = g.getAttribute('position'), v = new V3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i); const n = v.clone().normalize();
+    let x = v.x * 0.84, y = v.y * 1.12, z = v.z * 0.98;
+    if (n.z < 0) z *= 1.06;                                                    // Hinterkopf
+    if (n.y < 0) { const u = Math.pow(-n.y, 1.4); x *= 1 - 0.3 * u; if (n.z > 0) z += 0.014 * -n.y * n.z; if (n.z < 0) z *= 1 - 0.25 * u; } // Kiefer, Kinn
+    if (!haar && n.z > 0) {
+      z += 0.022 * Math.exp(-((n.x / 0.11) ** 2 + ((n.y + 0.06) / 0.17) ** 2));  // Nase
+      z += 0.008 * Math.exp(-(((n.y - 0.24) / 0.07) ** 2)) * n.z;                   // Brauenwulst
+      for (const s of [-1, 1]) z -= 0.008 * Math.exp(-(((n.x - s * 0.33) / 0.12) ** 2 + ((n.y - 0.12) / 0.09) ** 2)); // Augenhöhlen
+      for (const s of [-1, 1]) x += s * 0.004 * Math.exp(-(((n.x - s * 0.6) / 0.2) ** 2 + ((n.y + 0.05) / 0.15) ** 2)); // Wangenknochen
+    }
+    if (haar) {
+      // Haaransatz: vorn hoch (Stirn frei), seitlich über den Ohren, hinten tief im Nacken
+      const grenze = n.z > 0 ? 0.5 * n.z - 0.06 : -0.06 - 0.32 * -n.z, istHaar = n.y > grenze;
+      const k = istHaar ? 1.045 + 0.014 * Math.max(0, n.y) : 0.9; x *= k; y = y * k + (istHaar ? 0.004 : 0); z *= k;
+    }
+    p.setXYZ(i, x, y, z);
+  }
+  g.computeVertexNormals(); return g;
+}
 class Figur {
   constructor(o = {}) {
     this.torwart = !!o.torwart; this.hand = o.hand === 'L' ? 'L' : 'R'; this.s = this.hand === 'R' ? -1 : 1; // Schlägerseite im lokalen X (+X = links)
     this.objekt = new THREE.Group(); this.wurzel = new THREE.Group(); this.koerper = new THREE.Group();
     this.objekt.add(this.wurzel); this.wurzel.add(this.koerper); this.j = {};
-    const J = (n, p, x, y, z) => { const ob = new THREE.Object3D(); ob.name = n; ob.position.set(x, y, z); p.add(ob); this.j[n] = ob; return ob; };
+    const J = (n, p, x, y, z) => { const ob = new THREE.Bone(); ob.name = n; ob.position.set(x, y, z); p.add(ob); this.j[n] = ob; return ob; };
     const becken = J('becken', this.koerper, 0, 0.95, 0), wirbel = J('wirbel', becken, 0, 0.10, 0), brust = J('brust', wirbel, 0, 0.20, 0);
     const hals = J('hals', brust, 0, 0.25, 0); J('kopf', hals, 0, 0.07, 0);
     for (const [s, n] of [[1, 'L'], [-1, 'R']]) {
@@ -1255,79 +1358,143 @@ class Figur {
   baueKoerper(o) {
     const std = (c, r = 0.75) => new THREE.MeshStandardMaterial({ color: c, roughness: r });
     const rng = Math.random, hautTon = o.haut || ['#f1c9a5', '#e0ac85', '#c68b62', '#9a6340', '#6e4429', '#f5d6bd'][Math.floor(rng() * 6)];
-    const haarTon = ['#2b1d14', '#5a3b22', '#c9a15b', '#111111', '#7a4b2a', '#d9c08a'][Math.floor(rng() * 6)];
-    const m = this.mats; m.haut = std(hautTon, 0.55); m.trikotOben = std('#fff', 0.82); m.trikotUnten = std('#fff', 0.82); m.trikot = m.trikotOben;
-    m.hose = std('#111', 0.85); m.stutzen = std('#fff', 0.9); m.schuh = std(this.torwart ? '#2a2d33' : '#f4f4f4', 0.5); m.sohle = std('#b5835a', 0.8);
-    m.haar = std(haarTon, 0.95); m.haar.map = haarTextur(); m.haar.bumpMap = m.haar.map; m.haar.bumpScale = 0.002; m.dunkel = std('#1d1f24', 0.6); m.auge = std('#f4f4f0', 0.3); m.pupille = std('#1a1410', 0.2); m.lippe = std('#9c5b4f', 0.6);
-    m.schuhAkzent = std(['#e63946', '#1d3557', '#2a9d8f', '#f4a261', '#111'][Math.floor(rng() * 5)], 0.5);
+    const haarTon = ['#2b1d14', '#4a3020', '#7a5230', '#b8935a', '#111111', '#d6bf8e'][Math.floor(rng() * 6)];
+    const m = this.mats;
+    m.haut = std(hautTon, 0.58); m.trikotOben = std('#fff', 0.82); m.trikotUnten = std('#fff', 0.82); m.trikot = m.trikotOben; m.saum = m.trikotUnten;
+    m.hose = std('#111', 0.85); m.stutzen = std('#fff', 0.92); m.schuh = std(this.torwart ? '#2a2d33' : '#f4f4f4', 0.5); m.sohle = std('#b5835a', 0.8);
+    m.haar = std(haarTon, 0.95); m.haar.map = haarTextur(); m.haar.bumpMap = m.haar.map; m.haar.bumpScale = 0.002;
+    m.dunkel = std('#1d1f24', 0.6); m.auge = std('#f2f0ea', 0.3); m.iris = std(['#3b2a1c', '#2c5d8a', '#4b6b3a', '#5a4030'][Math.floor(rng() * 4)], 0.25); m.pupille = std('#0d0b0a', 0.2); m.lippe = std(new THREE.Color(hautTon).multiplyScalar(0.72).getStyle(), 0.55);
+    m.schuhAkzent = std(['#e63946', '#1d3557', '#2a9d8f', '#f4a261', '#111111'][Math.floor(rng() * 5)], 0.5);
     const M = (geo, mat, p, x = 0, y = 0, z = 0, sx = 1, sy = 1, sz = 1) => { const me = new THREE.Mesh(geo, mat); me.position.set(x, y, z); me.scale.set(sx, sy, sz); me.castShadow = true; p.add(me); return me; };
-    // Körperteile als Drehkörper mit anatomischem Profil (Radius, Höhe), aufsteigend
-    const L = (profil, seg = 16, zs = 1) => { const g = new THREE.LatheGeometry(profil.map(([r, y]) => new THREE.Vector2(Math.max(0.002, r), y)), seg); if (zs !== 1) g.scale(1, 1, zs); return g; };
     const J = this.j, gk = this.torwart, d = gk ? 1.18 : 1;
-    // --- Rumpf: Brustkorb mit Schultern, Bauch, Saum, Becken/Hose ---
-    M(L([[0.142 * d, -0.07], [0.152 * d, 0.0], [0.168 * d, 0.08], [0.182 * d, 0.15], [0.188 * d, 0.2], [0.17 * d, 0.24], [0.115, 0.27], [0.06, 0.285]], 24, 0.64), m.trikotOben, J.brust);
-    M(L([[0.15 * d, -0.04], [0.146 * d, 0.05], [0.14 * d, 0.13], [0.145 * d, 0.21]], 24, 0.64), m.trikotUnten, J.wirbel);
-    const saumGeo = L([[0.172 * d, -0.085], [0.164 * d, -0.04], [0.156 * d, 0.0]], 24, 0.68);
-    const saumMat = m.trikotUnten.clone(); saumMat.side = THREE.DoubleSide; m.saum = saumMat; M(saumGeo, saumMat, this.saum);
-    M(L([[0.105, -0.13], [0.16 * d, -0.1], [0.168 * d, -0.04], [0.158 * d, 0.03], [0.15 * d, 0.07]], 22, 0.72), m.hose, J.becken);
-    // --- Hals und Kopf ---
-    M(L([[0.058, -0.01], [0.05, 0.04], [0.048, 0.09]], 14), m.haut, J.hals);
-    const K = J.kopf;
-    M(new THREE.SphereGeometry(0.1, 24, 18), m.haut, K, 0, 0.115, -0.005, 0.86, 1.0, 1.0);          // Schädel
-    M(new THREE.SphereGeometry(0.066, 18, 12), m.haut, K, 0, 0.06, 0.018, 0.9, 0.84, 0.97);          // Kiefer/Kinn
+    // ---------- Durchgehender Körper als Skinned Mesh (weiche Gelenke statt Einzelteile) ----------
+    this.objekt.updateMatrixWorld(true);
+    const knochen = Object.values(J); this.skelett = new THREE.Skeleton(knochen);
+    const bi = (n) => knochen.indexOf(J[n]);
+    const wy = (n) => J[n].getWorldPosition(new V3());
+    const P = { becken: wy('becken').y, wirbel: wy('wirbel').y, brust: wy('brust').y, hals: wy('hals').y, sch: wy('schulterL').y, ell: wy('ellbogenL').y, hand: wy('handL').y, huefte: wy('huefteL').y, knie: wy('knieL').y, fuss: wy('fussL').y };
+    const schX = wy('schulterL').x, schZ = wy('schulterL').z, hX = wy('huefteL').x;
+    /** Schlauch aus Ringen [y, rx, rz, zVersatz] mit Gewichts-Stützstellen [[y, {knochen: gewicht}]] */
+    const schlauch = (ringe, keys, cx, cz, mat, seg = 22) => {
+      ringe = ringe.slice().sort((a, b) => a[0] - b[0]); keys = keys.slice().sort((a, b) => a[0] - b[0]);
+      const y0 = ringe[0][0], y1 = ringe[ringe.length - 1][0], pos = [], uv = [], si = [], sw = [], idx = [];
+      const gew = (y) => {
+        let k = keys.length - 1; for (let i = 0; i < keys.length - 1; i++) if (y <= keys[i + 1][0]) { k = i; break; }
+        const a = keys[Math.max(0, Math.min(k, keys.length - 1))], b = keys[Math.min(k + 1, keys.length - 1)];
+        const f = b[0] === a[0] ? 0 : klemme((y - a[0]) / (b[0] - a[0]), 0, 1), w = {};
+        for (const [n, v] of Object.entries(a[1])) w[n] = (w[n] || 0) + v * (1 - f);
+        for (const [n, v] of Object.entries(b[1])) w[n] = (w[n] || 0) + v * f;
+        const l = Object.entries(w).sort((p, q) => q[1] - p[1]).slice(0, 4), sum = l.reduce((s, e) => s + e[1], 0) || 1;
+        while (l.length < 4) l.push([Object.keys(J)[0], 0]);
+        return l.map(([n, v]) => [bi(n), v / sum]);
+      };
+      for (const [y, rx, rz, zo = 0] of ringe) {
+        const w = gew(y);
+        for (let j = 0; j <= seg; j++) {
+          const th = j / seg * Math.PI * 2;
+          pos.push(cx + Math.sin(th) * rx, y, cz + zo + Math.cos(th) * rz); uv.push(j / seg, (y - y0) / ((y1 - y0) || 1));
+          si.push(w[0][0], w[1][0], w[2][0], w[3][0]); sw.push(w[0][1], w[1][1], w[2][1], w[3][1]);
+        }
+      }
+      for (let i = 0; i < ringe.length - 1; i++) for (let j = 0; j < seg; j++) { const a = i * (seg + 1) + j, b = a + seg + 1; idx.push(a, a + 1, b, b, a + 1, b + 1); }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+      g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(si, 4)); g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(sw, 4));
+      g.setIndex(idx); g.computeVertexNormals();
+      const me = new THREE.SkinnedMesh(g, mat); me.castShadow = true; me.frustumCulled = false;
+      this.objekt.add(me); me.updateMatrixWorld(true); me.bind(this.skelett); return me;
+    };
+    const B = P.becken, W = P.wirbel, R = P.brust, H = P.hals, S = P.sch, E = P.ell, HA = P.hand, HU = P.huefte, K = P.knie, F = P.fuss;
+    // Trikot-Rumpf mit Saum (Saum hängt am Feder-Knochen und schwingt nach)
+    schlauch([[B - 0.11, 0.178, 0.13], [B - 0.05, 0.171, 0.125], [B + 0.02, 0.163, 0.119], [W, 0.156, 0.115], [W + 0.08, 0.157, 0.117, 0.004], [R - 0.04, 0.164, 0.122, 0.009], [R + 0.04, 0.176, 0.128, 0.012], [R + 0.11, 0.187, 0.128, 0.01], [R + 0.17, 0.19, 0.122], [R + 0.21, 0.176, 0.11, -0.005], [R + 0.24, 0.12, 0.086, -0.006], [H + 0.005, 0.064, 0.058], [H + 0.012, 0.058, 0.052]].map(r => [r[0], r[1] * d, r[2] * d, r[3] || 0]),
+      [[B - 0.11, { saum: 0.75, becken: 0.25 }], [B - 0.02, { saum: 0.35, becken: 0.65 }], [B + 0.03, { becken: 1 }], [W, { becken: 0.5, wirbel: 0.5 }], [W + 0.08, { wirbel: 1 }], [R, { wirbel: 0.5, brust: 0.5 }], [R + 0.08, { brust: 1 }], [R + 0.22, { brust: 1 }], [H + 0.012, { brust: 0.45, hals: 0.55 }]], 0, 0, m.trikotOben, 28);
+    // Hals
+    schlauch([[H - 0.03, 0.058, 0.056], [H + 0.03, 0.05, 0.05], [H + 0.08, 0.047, 0.048, 0.004], [H + 0.11, 0.044, 0.046, 0.008]], [[H - 0.03, { brust: 0.6, hals: 0.4 }], [H + 0.03, { hals: 1 }], [H + 0.07, { hals: 0.6, kopf: 0.4 }], [H + 0.11, { kopf: 1 }]], 0, 0, m.haut, 14);
+    // Hose: Becken + zwei Hosenbeine
+    const hb = gk ? 1.12 : 1;
+    schlauch([[B - 0.1, 0.172 * hb, 0.126 * hb], [B - 0.03, 0.168 * hb, 0.122 * hb], [B + 0.04, 0.16 * hb, 0.118 * hb], [B + 0.07, 0.156 * hb, 0.116 * hb]], [[B - 0.1, { becken: 1 }], [B + 0.07, { becken: 1 }]], 0, 0, m.hose, 24);
+    for (const sx of [1, -1]) {
+      const n = sx > 0 ? 'L' : 'R', cx = sx * hX, sh = sx * schX;
+      const hBein = gk ? [[K - 0.04, 0.092, 0.095], [K + 0.04, 0.104, 0.106], [K + 0.15, 0.112, 0.112], [HU - 0.12, 0.118, 0.118], [HU - 0.02, 0.118, 0.12]] : [[HU - 0.23, 0.098, 0.093], [HU - 0.13, 0.099, 0.095], [HU - 0.04, 0.1, 0.098], [HU + 0.01, 0.1, 0.1]];
+      schlauch(hBein, [[K - 0.04, { knie: 1 }], [K + 0.03, { huefte: 0.5, knie: 0.5 }], [K + 0.1, { huefte: 1 }], [HU - 0.06, { huefte: 1 }], [HU + 0.01, { huefte: 0.6, becken: 0.4 }]].map(([y, w]) => [y, Object.fromEntries(Object.entries(w).map(([k, v]) => [k === 'becken' ? k : k + n, v]))]), cx, 0, m.hose, 18);
+      // Bein (Haut) und Stutzen bzw. Beinschoner
+      if (!gk) schlauch([[K - 0.07, 0.05, 0.05], [K - 0.03, 0.052, 0.052], [K, 0.054, 0.055], [K + 0.03, 0.056, 0.058, 0.002], [K + 0.09, 0.064, 0.066], [K + 0.17, 0.074, 0.076], [K + 0.25, 0.082, 0.082], [K + 0.33, 0.086, 0.086]],
+        [[K - 0.07, { ['knie' + n]: 1 }], [K - 0.02, { ['knie' + n]: 0.75, ['huefte' + n]: 0.25 }], [K, { ['knie' + n]: 0.5, ['huefte' + n]: 0.5 }], [K + 0.04, { ['huefte' + n]: 0.8, ['knie' + n]: 0.2 }], [K + 0.1, { ['huefte' + n]: 1 }]], cx, 0, m.haut, 18);
+      const st = gk ? [[F + 0.02, 0.06, 0.07, 0.005], [F + 0.12, 0.068, 0.08, 0.008], [F + 0.25, 0.076, 0.088, 0.01], [K - 0.1, 0.08, 0.09, 0.01], [K - 0.02, 0.082, 0.092, 0.012], [K + 0.03, 0.07, 0.08, 0.012]]
+        : [[F + 0.015, 0.034, 0.037], [F + 0.06, 0.035, 0.038], [F + 0.13, 0.041, 0.045, -0.003], [F + 0.22, 0.053, 0.06, -0.008], [F + 0.3, 0.058, 0.064, -0.01], [K - 0.09, 0.055, 0.059, -0.006], [K - 0.05, 0.053, 0.055], [K - 0.03, 0.055, 0.056]];
+      schlauch(st, [[F + 0.015, { ['fuss' + n]: 0.45, ['knie' + n]: 0.55 }], [F + 0.06, { ['knie' + n]: 0.85, ['fuss' + n]: 0.15 }], [F + 0.12, { ['knie' + n]: 1 }], [K - 0.04, { ['knie' + n]: 1 }], [K + 0.03, { ['knie' + n]: 0.6, ['huefte' + n]: 0.4 }]], cx, 0, m.stutzen, 18);
+      // Ärmel (Torhüter: lang bis zum Handgelenk)
+      const aerm = gk ? [[HA + 0.02, 0.046 * d, 0.044 * d], [E - 0.07, 0.054 * d, 0.052 * d], [E, 0.058 * d, 0.056 * d], [E + 0.08, 0.062 * d, 0.06 * d], [S - 0.1, 0.068 * d, 0.066 * d], [S - 0.02, 0.07 * d, 0.068 * d], [S + 0.03, 0.05 * d, 0.05 * d], [S + 0.06, 0.02, 0.02]]
+        : [[S - 0.19, 0.06, 0.058], [S - 0.12, 0.065, 0.063], [S - 0.05, 0.07, 0.068], [S + 0.01, 0.066, 0.064], [S + 0.045, 0.046, 0.046], [S + 0.065, 0.02, 0.02]];
+      schlauch(aerm, [[HA + 0.02, { ['ellbogen' + n]: 0.7, ['hand' + n]: 0.3 }], [E - 0.04, { ['ellbogen' + n]: 1 }], [E, { ['ellbogen' + n]: 0.5, ['schulter' + n]: 0.5 }], [E + 0.05, { ['schulter' + n]: 1 }], [S - 0.03, { ['schulter' + n]: 1 }], [S + 0.03, { ['schulter' + n]: 0.6, brust: 0.4 }], [S + 0.065, { ['schulter' + n]: 0.3, brust: 0.7 }]], sh, schZ, m.trikotUnten, 18);
+      if (!gk) schlauch([[HA - 0.005, 0.026, 0.022], [HA + 0.03, 0.029, 0.025], [HA + 0.09, 0.038, 0.034], [E - 0.08, 0.045, 0.042], [E - 0.025, 0.045, 0.043], [E, 0.043, 0.042], [E + 0.03, 0.046, 0.044], [E + 0.09, 0.053, 0.05], [S - 0.15, 0.055, 0.052]],
+        [[HA - 0.005, { ['ellbogen' + n]: 0.5, ['hand' + n]: 0.5 }], [HA + 0.04, { ['ellbogen' + n]: 0.85, ['hand' + n]: 0.15 }], [HA + 0.08, { ['ellbogen' + n]: 1 }], [E - 0.04, { ['ellbogen' + n]: 1 }], [E, { ['ellbogen' + n]: 0.5, ['schulter' + n]: 0.5 }], [E + 0.04, { ['schulter' + n]: 1 }]], sh, schZ, m.haut, 16);
+    }
+    // ---------- Kopf: modellierter Schädel mit Kiefer, Nase, Brauen und Augenhöhlen ----------
+    const Kf = J.kopf;
+    M(kopfGeometrie(false), m.haut, Kf, 0, 0.11, 0);
     for (const sx of [-1, 1]) {
-      M(new THREE.SphereGeometry(0.022, 10, 8), m.haut, K, sx * 0.084, 0.1, 0.0, 0.45, 1.0, 0.8);     // Ohren
-      M(new THREE.SphereGeometry(0.0095, 10, 8), m.auge, K, sx * 0.031, 0.121, 0.082, 1.1, 0.62, 0.5);  // Augen
-      M(new THREE.SphereGeometry(0.0052, 8, 6), m.pupille, K, sx * 0.031, 0.121, 0.0855, 1, 1, 0.5);
-      M(new THREE.SphereGeometry(0.011, 10, 6, 0, Math.PI * 2, 0, Math.PI * 0.5), m.haut, K, sx * 0.031, 0.1225, 0.081, 1.2, 0.5, 0.75); // Oberlid
-      M(new THREE.BoxGeometry(0.026, 0.005, 0.008), m.haar, K, sx * 0.032, 0.137, 0.088).rotation.z = -sx * 0.1; // Augenbrauen
+      M(new THREE.SphereGeometry(0.022, 12, 8), m.haut, Kf, sx * 0.083, 0.106, -0.005, 0.42, 1.05, 0.75);   // Ohr
+      M(new THREE.SphereGeometry(0.0105, 12, 10), m.auge, Kf, sx * 0.028, 0.124, 0.083, 1.2, 0.72, 0.55);   // Augapfel
+      M(new THREE.SphereGeometry(0.0056, 10, 8), m.iris, Kf, sx * 0.028, 0.124, 0.0878, 1, 1, 0.4);
+      M(new THREE.SphereGeometry(0.0026, 8, 6), m.pupille, Kf, sx * 0.028, 0.124, 0.09, 1, 1, 0.4);
+      M(new THREE.SphereGeometry(0.0125, 12, 6, 0, Math.PI * 2, 0, Math.PI * 0.45), m.haut, Kf, sx * 0.028, 0.1245, 0.0815, 1.25, 0.55, 0.8); // Oberlid
+      M(new THREE.BoxGeometry(0.026, 0.0045, 0.008), m.haar, Kf, sx * 0.03, 0.14, 0.09).rotation.z = -sx * 0.1;                   // Braue
     }
-    const nase = M(new THREE.ConeGeometry(0.014, 0.038, 8), m.haut, K, 0, 0.1, 0.098); nase.rotation.x = Math.PI / 2 + 0.35;
-    M(new THREE.BoxGeometry(0.03, 0.006, 0.008), m.lippe, K, 0, 0.065, 0.086);
+    M(new THREE.SphereGeometry(0.013, 12, 8), m.lippe, Kf, 0, 0.064, 0.087, 1.55, 0.38, 0.5);                  // Lippen
     if (!gk) {
-      const frisur = Math.floor(rng() * 3);
-      const haar = M(new THREE.SphereGeometry(0.104, 20, 12, 0, Math.PI * 2, 0, Math.PI * (frisur === 2 ? 0.45 : 0.56)), m.haar, K, 0, 0.118, -0.016, 0.9, 1.04, 1.05); haar.rotation.x = -0.32; // Haaransatz vorn höher
-      for (const sx of [-1, 1]) M(new THREE.BoxGeometry(0.008, 0.024, 0.014), m.haar, K, sx * 0.081, 0.112, 0.05); // Koteletten
-      if (frisur === 1) M(new THREE.SphereGeometry(0.1, 16, 10, 0, Math.PI * 2, Math.PI * 0.45, Math.PI * 0.35), m.haar, K, 0, 0.12, -0.02, 0.92, 1.02, 1.05); // längeres Haar hinten
-      if (rng() < 0.45) { m.band = std(['#ffffff', '#111111', '#e63946', '#ffd23f'][Math.floor(rng() * 4)], 0.7); M(L([[0.088, -0.011], [0.089, 0.011]], 20, 1.15), m.band, K, 0, 0.15, -0.006); } // Stirnband
+      M(kopfGeometrie(true), m.haar, Kf, 0, 0.11, 0);
+      if (rng() < 0.4) { m.band = std(['#ffffff', '#111111', '#e63946', '#ffd23f'][Math.floor(rng() * 4)], 0.7); M(new THREE.TorusGeometry(0.081, 0.0065, 6, 32), m.band, Kf, 0, 0.152, 0.003, 1, 1.15, 1).rotation.x = Math.PI / 2 + 0.12; }
     } else {
-      m.helm = std('#f0f0f0', 0.35);
-      M(new THREE.SphereGeometry(0.126, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.62), m.helm, K, 0, 0.11, -0.01, 0.95, 1.05, 1.06);
-      const gitter = std('#cfd3d8', 0.3); gitter.metalness = 0.6;
-      for (let i = 0; i < 4; i++) { const tor = new THREE.Mesh(new THREE.TorusGeometry(0.122 - i * 0.004, 0.0045, 4, 18, Math.PI), gitter); tor.rotation.set(Math.PI / 2, 0, Math.PI); tor.position.set(0, 0.16 - i * 0.045, 0.012); K.add(tor); }
-      for (let i = -2; i <= 2; i++) { const st = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.15, 4), gitter); const a = i * 0.32; st.position.set(Math.sin(a) * 0.12, 0.095, Math.cos(a) * 0.12 + 0.01); K.add(st); }
+      // Helm: Schale mit Belüftungsrillen, Ohrschalen, Kinnbügel; Gitter aus waagerechten Ringen und senkrechten Bügeln
+      m.helm = std('#f0f0f0', 0.3); m.helm.metalness = 0.05;
+      M(new THREE.SphereGeometry(0.126, 24, 14, 0, Math.PI * 2, 0, Math.PI * 0.64), m.helm, Kf, 0, 0.108, -0.012, 0.95, 1.06, 1.08);
+      M(new THREE.SphereGeometry(0.128, 24, 10, Math.PI * 0.75, Math.PI * 1.5, Math.PI * 0.45, Math.PI * 0.35), m.helm, Kf, 0, 0.108, -0.012, 0.95, 1.06, 1.08); // Hinterkopf/Nacken
+      for (const sx of [-1, 1]) M(new THREE.CylinderGeometry(0.04, 0.045, 0.012, 14), m.helm, Kf, sx * 0.12, 0.1, -0.005).rotation.z = sx * Math.PI / 2;  // Ohrschalen
+      m.rille = std('#2a2d33', 0.6); for (const sx of [-0.5, 0, 0.5]) M(new THREE.BoxGeometry(0.01, 0.004, 0.11), m.rille, Kf, sx * 0.07, 0.228 - Math.abs(sx) * 0.02, -0.03);
+      const gitter = std('#262930', 0.35); gitter.metalness = 0.7;
+      for (let i = 0; i < 5; i++) { const tor = new THREE.Mesh(new THREE.TorusGeometry(0.124 - i * 0.003, 0.0038, 5, 22, Math.PI * 1.1), gitter); tor.rotation.set(Math.PI / 2, 0, Math.PI * 0.95); tor.position.set(0, 0.168 - i * 0.038, 0.004); Kf.add(tor); }
+      for (let i = -3; i <= 3; i++) { const bue = new THREE.Mesh(new THREE.TorusGeometry(0.124, 0.0038, 5, 14, Math.PI * 0.62), gitter); bue.rotation.set(0, i * 0.26, -0.3); bue.rotation.order = 'YZX'; bue.position.set(0, 0.098, 0.004); Kf.add(bue); }
+      const kinn = new THREE.Mesh(new THREE.TorusGeometry(0.118, 0.006, 6, 20, Math.PI * 1.1), gitter); kinn.rotation.set(Math.PI / 2, 0, Math.PI * 0.95); kinn.position.set(0, 0.018, 0.004); Kf.add(kinn);
     }
-    // --- Arme und Beine mit Muskelprofil ---
+    if (gk) {
+      m.riemen ||= std('#15161a', 0.7);
+      for (const n of ['L', 'R']) {
+        const k = J['knie' + n], el = J['ellbogen' + n];
+        M(new THREE.CapsuleGeometry(0.074, 0.07, 5, 14), m.helm, k, 0, -0.03, 0.05, 1.2, 1, 0.75);                           // Knieschoner (Schale)
+        M(new THREE.CapsuleGeometry(0.062, 0.14, 5, 14), m.helm, k, 0, -0.17, 0.045, 1.25, 1, 0.6);                           // Schienbeinschale
+        for (const y of [-0.1, -0.3]) M(new THREE.TorusGeometry(0.092, 0.0065, 6, 18), m.riemen, k, 0, y, 0.01).rotation.x = Math.PI / 2; // Riemen
+        M(new THREE.SphereGeometry(0.066, 14, 10), m.trikotUnten, el, 0, 0.0, 0.012, 1.05, 1.25, 1.05);                      // Ellbogenpolster unter dem Ärmel
+      }
+      M(new THREE.TorusGeometry(0.168 * hb, 0.014, 8, 28), m.riemen, J.becken, 0, 0.068, 0, 1, 1, 0.74).rotation.x = Math.PI / 2; // Hosenbund
+    } else {
+      m.schweiss ||= std('#f2f2f2', 0.9);
+      M(new THREE.CylinderGeometry(0.032, 0.03, 0.045, 12), m.schweiss, J['hand' + (this.s < 0 ? 'R' : 'L')], 0, 0.012, 0); // Schweißband an der unteren Hand
+    }
+    // ---------- Hände und Hallenschuhe (starr) ----------
     for (const n of ['L', 'R']) {
-      const sch = J['schulter' + n], ell = J['ellbogen' + n], hand = J['hand' + n], h = J['huefte' + n], k = J['knie' + n], f = J['fuss' + n], sx = n === 'L' ? 1 : -1;
-      M(new THREE.SphereGeometry(0.068 * d, 14, 12), m.trikotOben, sch, 0, -0.012, 0, 1, 1, 0.95);                         // Schulter
-      M(L([[0.04, -0.29], [0.047, -0.22], [0.056, -0.12], [0.057, -0.04], [0.054, 0.0]], 14), m.haut, sch);                  // Oberarm (Bizeps)
-      M(L([[0.063 * d, gk ? -0.29 : -0.16], [0.066 * d, -0.08], [0.07 * d, -0.01], [0.062 * d, 0.03]], 16), m.trikotUnten, sch); // Ärmel
-      M(new THREE.SphereGeometry(0.041, 12, 10), m.haut, ell);                                                              // Ellbogen
-      M(L([[0.027, -0.26], [0.032, -0.2], [0.045, -0.09], [0.044, -0.03], [0.04, 0.0]], 14), gk ? m.trikotUnten : m.haut, ell, 0, 0, 0, gk ? 1.4 : 1, 1, gk ? 1.4 : 1); // Unterarm
-      if (gk) { M(new THREE.CapsuleGeometry(0.05, 0.05, 4, 10), m.dunkel, hand, 0, -0.06, 0.01, 1.05, 1, 0.75); M(new THREE.CylinderGeometry(0.055, 0.05, 0.05, 12), m.dunkel, hand, 0, 0.0, 0.0); }                                 // Handschuh
-      else {
-        M(new THREE.BoxGeometry(0.055, 0.075, 0.03), m.haut, hand, 0, -0.04, 0.008);                                         // Handfläche
-        M(new THREE.CapsuleGeometry(0.016, 0.035, 4, 8), m.haut, hand, 0, -0.075, 0.022).rotation.x = 0.9;                  // Finger (umgreifend)
-        M(new THREE.CapsuleGeometry(0.011, 0.025, 4, 8), m.haut, hand, sx * 0.03, -0.045, 0.02).rotation.z = sx * 0.6;      // Daumen
-      }
-      // Oberschenkel, Knie, Wade
+      const hand = J['hand' + n], f = J['fuss' + n], sx = n === 'L' ? 1 : -1;
       if (gk) {
-        M(L([[0.085, -0.44], [0.1, -0.3], [0.112, -0.12], [0.118, 0.0]], 16), m.hose, h);
-        M(L([[0.072, -0.44], [0.082, -0.3], [0.088, -0.12], [0.08, 0.0]], 16, 1.2), m.stutzen, k, 0, 0, 0.015);              // Beinschoner
-        M(new THREE.SphereGeometry(0.09, 14, 10), m.helm, k, 0, 0, 0.03, 1, 1, 1.1);                                        // Knieschoner
-      } else {
-        M(L([[0.052, -0.44], [0.056, -0.38], [0.07, -0.25], [0.08, -0.12], [0.085, 0.0]], 16), m.haut, h);                  // Oberschenkel
-        M(L([[0.094, -0.2], [0.092, -0.12], [0.09, -0.02], [0.086, 0.03]], 16), m.hose, h);                                  // Hosenbein
-        M(new THREE.SphereGeometry(0.049, 12, 10), m.haut, k, 0, 0, 0.004);                                                  // Knie
-        M(L([[0.031, -0.44], [0.034, -0.36], [0.05, -0.2], [0.058, -0.11], [0.05, -0.02]], 16), m.stutzen, k);               // Wade im Stutzen
-        M(L([[0.052, -0.1], [0.053, -0.04]], 16), m.schuhAkzent, k);                                                         // Stutzenstreifen
+        m.handflaeche ||= std('#8d8f94', 0.9); m.riemen ||= std('#15161a', 0.7);
+        M(new THREE.CapsuleGeometry(0.046, 0.05, 4, 12), m.dunkel, hand, 0, -0.058, 0.004, 1.15, 1, 0.7);                  // Handrücken gepolstert
+        M(new THREE.BoxGeometry(0.075, 0.07, 0.012), m.handflaeche, hand, 0, -0.06, 0.024);                                 // Griffige Innenhand
+        for (let i = 0; i < 4; i++) M(new THREE.CapsuleGeometry(0.0115, 0.038, 3, 8), m.dunkel, hand, (i - 1.5) * 0.026, -0.118, 0.006 + Math.abs(i - 1.5) * 0.002); // Finger
+        M(new THREE.CapsuleGeometry(0.012, 0.03, 3, 8), m.dunkel, hand, sx * 0.055, -0.06, 0.012).rotation.z = sx * 0.9;  // Daumen
+        M(new THREE.CylinderGeometry(0.058, 0.052, 0.07, 12), m.trikotUnten, hand, 0, 0.0, 0);                               // Stulpe
+        M(new THREE.TorusGeometry(0.056, 0.005, 6, 14), m.riemen, hand, 0, -0.02, 0).rotation.x = Math.PI / 2;               // Klettriemen
       }
-      // Hallenschuh: abgerundeter Schaft, Sohle, Akzent
-      const sk = M(new THREE.CapsuleGeometry(0.045, 0.17, 6, 12), m.schuh, f, 0, -0.04, 0.05, 1.08, 0.78, 1); sk.rotation.x = Math.PI / 2;
+      else {
+        M(new THREE.CapsuleGeometry(0.022, 0.035, 4, 10), m.haut, hand, 0, -0.035, 0.006, 1.2, 1, 0.65);      // Handballen
+        M(new THREE.CapsuleGeometry(0.015, 0.035, 4, 8), m.haut, hand, 0, -0.07, 0.022, 1.45, 1, 1).rotation.x = 1.0; // Finger umgreifend
+        M(new THREE.CapsuleGeometry(0.01, 0.024, 4, 8), m.haut, hand, sx * 0.026, -0.045, 0.022).rotation.z = sx * 0.6; // Daumen
+      }
+      const sk = M(new THREE.CapsuleGeometry(0.045, 0.17, 6, 14), m.schuh, f, 0, -0.04, 0.05, 1.08, 0.78, 1); sk.rotation.x = Math.PI / 2;
       M(new THREE.BoxGeometry(0.09, 0.014, 0.245), m.sohle, f, 0, -0.073, 0.05);
-      M(new THREE.BoxGeometry(0.1, 0.018, 0.12), m.schuhAkzent, f, 0, -0.045, 0.03);
-      M(L([[0.036, -0.06], [0.037, 0.0]], 12), m.stutzen, f);                                                                 // Knöchel/Socke
+      M(new THREE.BoxGeometry(0.1, 0.016, 0.11), m.schuhAkzent, f, 0, -0.046, 0.035);
+      M(new THREE.CylinderGeometry(0.038, 0.04, 0.05, 14), m.schuh, f, 0, -0.01, -0.005);
+      m.schnuer ||= std(gk ? '#444' : '#dadada', 0.9);
+      for (let i = 0; i < 4; i++) M(new THREE.BoxGeometry(0.05, 0.004, 0.008), m.schnuer, f, 0, -0.012 + i * 0.001, 0.055 + i * 0.022).rotation.x = -0.35; // Schnürsenkel
+      M(new THREE.CapsuleGeometry(0.036, 0.03, 3, 10), m.schuhAkzent, f, 0, -0.05, 0.145, 1.2, 0.7, 1).rotation.x = Math.PI / 2;                 // Zehenkappe
     }
     this.zusammenfassen();
   }
@@ -1351,22 +1518,29 @@ class Figur {
     }
   }
   baueSchlaeger() {
-    if (!_kelleTex) _kelleTex = kelleTextur();
+    if (!_kelleTex) _kelleTex = kelleTexturen(); if (!_griffTex) _griffTex = griffTextur();
     this.schlaeger = new THREE.Group(); this.objekt.add(this.schlaeger);
     this.kelleObj = new THREE.Group(); this.schaftObj = new THREE.Group(); this.schlaeger.add(this.kelleObj, this.schaftObj);
-    const kg = new THREE.BoxGeometry(0.28, 0.07, 0.012, 12, 1, 1); kg.translate(0.14, 0, 0);
-    const p = kg.getAttribute('position');
-    for (let i = 0; i < p.count; i++) { const x = p.getX(i); p.setZ(i, p.getZ(i) + this.s * 0.028 * (x / 0.28) * (x / 0.28)); }
-    kg.computeVertexNormals();
-    this.mats.kelle = new THREE.MeshStandardMaterial({ map: _kelleTex, roughness: 0.45 });
-    const ke = new THREE.Mesh(kg, this.mats.kelle); ke.castShadow = true; this.kelleObj.add(ke);
-    const sg = new THREE.CylinderGeometry(0.0125, 0.0135, MASS.schaft, 10); sg.translate(0, MASS.schaft / 2, 0);
-    this.mats.schaft = new THREE.MeshStandardMaterial({ color: 0x20232a, roughness: 0.35, metalness: 0.3 });
+    // Kellenblatt: gebogene Fläche mit echten Durchbrüchen, dazu Rahmen (Ober- und Unterkante, Ferse) und Hakenspitze
+    const biege = (geo) => { const p = geo.getAttribute('position'); for (let i = 0; i < p.count; i++) { const x = p.getX(i); p.setZ(i, p.getZ(i) + this.s * 0.03 * (x / 0.28) * (x / 0.28)); } geo.computeVertexNormals(); return geo; };
+    const blatt = new THREE.PlaneGeometry(0.27, 0.06, 14, 1); blatt.translate(0.145, 0, 0); biege(blatt);
+    this.mats.kelle = new THREE.MeshStandardMaterial({ map: _kelleTex.map, alphaMap: _kelleTex.alpha, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.5 });
+    const ke = new THREE.Mesh(blatt, this.mats.kelle); ke.castShadow = true; this.kelleObj.add(ke);
+    this.mats.rahmen = new THREE.MeshStandardMaterial({ color: 0xf0f0ee, roughness: 0.45 });
+    for (const y of [0.034, -0.034]) { const r = new THREE.BoxGeometry(0.29, 0.009, 0.016, 14, 1, 1); r.translate(0.145, y, 0); biege(r); const m = new THREE.Mesh(r, this.mats.rahmen); m.castShadow = true; this.kelleObj.add(m); }
+    const ferse = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.076, 0.02), this.mats.rahmen); ferse.position.set(0.006, 0, 0); this.kelleObj.add(ferse);
+    const spitze = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.072, 8), this.mats.rahmen); spitze.position.set(0.288, 0, this.s * 0.03); this.kelleObj.add(spitze);
+    // Schaft: leicht konisch, Verbindungsmuffe zur Kelle, Grafikband in Teamfarbe, Griffband mit Endkappe
+    const sg = new THREE.CylinderGeometry(0.0118, 0.0135, MASS.schaft, 12); sg.translate(0, MASS.schaft / 2, 0);
+    this.mats.schaft = new THREE.MeshStandardMaterial({ color: 0x1c1e24, roughness: 0.3, metalness: 0.35 });
     const sch = new THREE.Mesh(sg, this.mats.schaft); sch.castShadow = true; this.schaftObj.add(sch);
-    const grip = new THREE.Mesh(new THREE.CylinderGeometry(0.0155, 0.0155, 0.26, 10), new THREE.MeshStandardMaterial({ color: 0x0c0c0c, roughness: 0.95 }));
-    grip.position.y = MASS.schaft - 0.13; this.schaftObj.add(grip);
+    const muffe = new THREE.Mesh(new THREE.CylinderGeometry(0.0165, 0.0145, 0.07, 12), new THREE.MeshStandardMaterial({ color: 0x33363d, roughness: 0.6 })); muffe.position.y = 0.045; this.schaftObj.add(muffe);
     this.mats.streifen = new THREE.MeshStandardMaterial({ color: 0xffd23f, roughness: 0.4 });
-    const st = new THREE.Mesh(new THREE.CylinderGeometry(0.0138, 0.0138, 0.12, 10), this.mats.streifen); st.position.y = 0.32; this.schaftObj.add(st);
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(0.0138, 0.0142, 0.3, 12), this.mats.streifen); band.position.y = 0.33; this.schaftObj.add(band);
+    const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.0142, 0.0142, 0.012, 12), this.mats.rahmen); ring.position.y = 0.5; this.schaftObj.add(ring);
+    const grip = new THREE.Mesh(new THREE.CylinderGeometry(0.0152, 0.0145, 0.3, 12), new THREE.MeshStandardMaterial({ map: _griffTex, roughness: 0.95 }));
+    grip.position.y = MASS.schaft - 0.15; this.schaftObj.add(grip);
+    const kappe = new THREE.Mesh(new THREE.CylinderGeometry(0.017, 0.0155, 0.014, 12), new THREE.MeshStandardMaterial({ color: 0x0b0b0b, roughness: 0.8 })); kappe.position.y = MASS.schaft + 0.004; this.schaftObj.add(kappe);
     this.ferse = new V3(); this.kelleDir = new V3(1, 0, 0); this.schaftTop = new V3();
   }
   baueKapseln() {
@@ -1401,11 +1575,13 @@ class Figur {
   setzeTeam(team, nummer, name, alternativ) {
     const T = alternativ ? { primaer: team.sekundaer, sekundaer: team.primaer, muster: team.muster } : team;
     let farben = T;
-    if (this.torwart) farben = { primaer: alternativ ? team.primaer : (team.tw || '#2d3436'), sekundaer: alternativ ? '#111' : team.primaer, muster: 'uni' };
+    if (this.torwart) farben = { primaer: alternativ ? team.primaer : (team.tw || '#2d3436'), sekundaer: alternativ ? '#111' : team.primaer, muster: 'uni', gepolstert: true };
     const m = this.mats;
     m.trikotOben.map = trikotTextur(farben, nummer, name, 'oben'); m.trikotOben.color.set('#fff'); m.trikotOben.needsUpdate = true;
     const unten = trikotTextur(farben, nummer, name, 'unten'); m.trikotUnten.map = unten; m.saum.map = unten; m.trikotUnten.needsUpdate = true; m.saum.needsUpdate = true;
-    m.hose.color.set(this.torwart ? '#24272e' : (helligkeit(T.primaer) > 0.75 ? T.sekundaer : (T.hose || '#15171c')));
+    const hoseFarbe = this.torwart ? '#24272e' : (helligkeit(T.primaer) > 0.75 ? T.sekundaer : (T.hose || '#15171c'));
+    m.hose.color.set('#fff'); m.hose.map = hoseTextur(hoseFarbe, this.torwart ? hoseFarbe : T.primaer, this.torwart); m.hose.needsUpdate = true;
+    if (m.rahmen) m.rahmen.color.set(helligkeit(T.primaer) > 0.3 ? T.primaer : T.sekundaer);
     m.stutzen.color.set(this.torwart ? farben.primaer : T.primaer);
     if (m.helm) m.helm.color.set(farben.sekundaer === '#111' ? '#e8e8e8' : farben.sekundaer);
     if (m.streifen) m.streifen.color.set(T.primaer);
@@ -1864,7 +2040,7 @@ class Schuetze {
     ball.fuehre(ziel, vel, dt);
   }
   starteSchuss(A) {
-    const typ = A.lupfer ? 'lupfer' : this.power < 0.42 ? 'handgelenk' : this.power < 0.78 ? 'schlenzer' : 'schlag';
+    const typ = this.schussTyp(this.power, A.lupfer);
     const seite = this.ballSeite, P = this.anim.letzte || basisPose();
     const zielLok = zuLokal(_b, _c.set(TOR.x, 0, A.zielZ), this.pos, this.yaw).normalize();
     const push = [zielLok.x, zielLok.z], d = BALLD.r + 0.013;
@@ -1876,19 +2052,26 @@ class Schuetze {
       animParam: { typ, seite, start: P.kelle.slice(), kontakt, neu: true } };
     this.schussU = 0; this.abgeschossen = false; this.setzeZustand('schuss'); this.zielAbsicht.aktiv = true;
   }
+  /** Geschwindigkeit und Spin eines Schusses (auch für die Flugbahn-Vorschau). */
+  schussParameter(power, typ, rueckhand, start, ziel, welt) {
+    const cfg = Config.schuetze, P = Config.physik, d = this.daten;
+    const speed = P.maxSchuss * (0.5 + 0.5 * Math.pow(power, cfg.powerKurve)) * (0.78 + 0.22 * d.schuss / 100) * SCHUSS_FAKTOR[typ] * (rueckhand ? 0.82 : 1) * ((welt && welt.kiSchussFaktor) || 1);
+    const richtung = new V3().subVectors(ziel, start).setY(0).normalize();
+    const w = new V3().crossVectors(richtung, ACHSE_Y).multiplyScalar(typ === 'lupfer' ? 55 : typ === 'schlag' ? 8 : 22);
+    w.y = (typ === 'schlag' ? 0 : -this.ballSeite * this.s * 18);
+    return { speed, w };
+  }
+  schussTyp(power, lupfer) { return lupfer ? 'lupfer' : power < 0.42 ? 'handgelenk' : power < 0.78 ? 'schlenzer' : 'schlag'; }
   abschuss(ball, welt) {
     const s = this.schuss, d = this.daten, cfg = Config.schuetze, P = Config.physik;
     this.abgeschossen = true; this.kontrolle = false;
-    const kurve = Math.pow(s.power, cfg.powerKurve);
-    let speed = P.maxSchuss * (0.5 + 0.5 * kurve) * (0.78 + 0.22 * d.schuss / 100) * SCHUSS_FAKTOR[s.typ] * (s.rueckhand ? 0.82 : 1) * (welt.kiSchussFaktor || 1);
     const druck = welt.druck || 0.3;
-    const basis = 1 - cfg.zielgenauigkeit * (0.55 + 0.45 * d.technik / 100) * (welt.zielFaktor || 1);
-    const sigma = Math.max(0.01, basis) * (0.1 + 0.3 * s.power * s.power) * (1 + druck * cfg.nervendruck * (1 - d.nerven / 100) * 1.6) * (s.rueckhand ? 1.3 : 1) * (s.typ === 'lupfer' ? 0.7 : 1);
+    let sigma;
+    if (welt.menschPraezise) sigma = Math.max(0.006, (0.012 + 0.06 * s.power * s.power) * (1.5 - cfg.zielgenauigkeit) * (1 + druck * cfg.nervendruck * (1 - d.nerven / 100) * 0.5) * (s.rueckhand ? 1.2 : 1));
+    else { const basis = 1 - cfg.zielgenauigkeit * (0.55 + 0.45 * d.technik / 100) * (welt.zielFaktor || 1);
+      sigma = Math.max(0.01, basis) * (0.1 + 0.3 * s.power * s.power) * (1 + druck * cfg.nervendruck * (1 - d.nerven / 100) * 1.6) * (s.rueckhand ? 1.3 : 1) * (s.typ === 'lupfer' ? 0.7 : 1); }
     const ziel = new V3(TOR.x, klemme(s.zielY + gauss() * sigma * 0.7, 0.05, 1.6), s.zielZ + gauss() * sigma);
-    const richtung = _b.subVectors(ziel, ball.p).setY(0).normalize();
-    const seitwaerts = _c.crossVectors(richtung, ACHSE_Y);           // Rückspin-Achse
-    const w = new V3().copy(seitwaerts).multiplyScalar(s.typ === 'lupfer' ? 55 : s.typ === 'schlag' ? 8 : 22);
-    w.y = (s.typ === 'schlag' ? 0 : -this.ballSeite * this.s * 18);
+    const { speed, w } = this.schussParameter(s.power, s.typ, s.rueckhand, ball.p, ziel, welt);
     const v = loeseSchuss(ball.p.clone(), ziel, speed, w, s.typ === 'lupfer');
     ball.kinematisch = false; ball.v.copy(v); ball.w.copy(w);
     Ton.klick(0.3 + s.power * 0.7);
@@ -1998,6 +2181,14 @@ class KISchuetze {
   }
 }
 TORRAUM.x0 = TOR.x - TORRAUM.vorne;
+/** Passende Parade für einen Zielpunkt (von KI und Mensch genutzt). */
+function waehleParade(tw, z, y) {
+  const adz = Math.abs(z - tw.pos.z);
+  if (adz < 0.3 && y < 0.45) return 'butterfly';
+  if (adz < 0.4 && y < 1.25) return 'fangen';
+  if (y < 0.33 && adz < 1.05) return 'fuss';
+  return 'hecht';
+}
 class KITorwart {
   constructor(tw) { this.tw = tw; this.reset(); }
   reset() { this.reaktionBei = -1; this.geplant = false; this.gebissen = 0; this.lesen = 0; this.versatz = 0; this.uhr = 0; }
@@ -2014,7 +2205,7 @@ class KITorwart {
       const mutF = 0.35 + d.mut / 100 * 0.65;
       const raus = klemme(0.25 + Config.torwart.herauslaufen * mutF * (0.3 + 1.3 * klemme((dist - 3.5) / 7, 0, 1)), 0.2, 2.2);
       const zLinie = ball.p.z * raus / dist;
-      const lesbar = Config.torwart.antizipation * (1.0 - sch.daten.technik / 100 * 0.55) * (1 + schw().anti) * (0.6 + d.stellung / 100 * 0.6);
+      const lesbar = this.nurStellung ? 0 : Config.torwart.antizipation * (1.0 - sch.daten.technik / 100 * 0.55) * (1 + schw().anti) * (0.6 + d.stellung / 100 * 0.6);
       const zielZ = sch.zielAbsicht.aktiv ? sch.zielAbsicht.z : 0;
       this.lesen = daempf(this.lesen, zielZ * lesbar, 3, dt);
       if (this.gebissen <= 0) this.versatz = daempf(this.versatz, 0, 1.5, dt);
@@ -2035,12 +2226,7 @@ class KITorwart {
       // Lupfer: Ball fliegt über die Torhüterebene – zurück zur Linie und hoch greifen
       if (y > 1.05 && ball.v.length() < 13 && !torWeg && Math.random() < 0.22 + d.stellung / 100 * 0.33 - schw().anti * 0.5 * (this.istGegnerMensch ? 0 : 1)) { A.parade = { typ: 'fangen', ziel: new V3(TOR.x - 0.12, Math.min(1.25, h2.y), h2.z) }; return A; }
       const dz = z - tw.pos.z, adz = Math.abs(dz), ziel = new V3(tw.pos.x, y, z);
-      let typ;
-      if (adz < 0.3 && y < 0.45) typ = 'butterfly';
-      else if (adz < 0.4 && y < 1.25) typ = 'fangen';
-      else if (y < 0.33 && adz < 1.05) typ = 'fuss';
-      else typ = 'hecht';
-      A.parade = { typ, ziel };
+      A.parade = { typ: waehleParade(tw, z, y), ziel };
     }
     return A;
   }
@@ -2318,8 +2504,7 @@ function grafikAnwenden() {
   renderer.shadowMap.enabled = an; halle.sonne.castShadow = an;
   if (halle.sonne.shadow.mapSize.x !== q.schatten) { halle.sonne.shadow.mapSize.set(q.schatten, q.schatten); if (halle.sonne.shadow.map) { halle.sonne.shadow.map.dispose(); halle.sonne.shadow.map = null; } }
   szene.traverse(o => { if (o.material) { const m = Array.isArray(o.material) ? o.material : [o.material]; m.forEach(x => x.needsUpdate = true); } });
-  halle.zuschauer.mesh.count = Math.floor(halle.zuschauer.gesamt * klemme(Config.grafik.zuschauer, 0, 1) * q.zuschauer);
-  halle.zuschauer.mesh.visible = halle.zuschauer.mesh.count > 0;
+  halle.zuschauer.setzeAnzahl(Math.floor(halle.zuschauer.gesamt * klemme(Config.grafik.zuschauer, 0, 1) * q.zuschauer));
   document.getElementById('fps').classList.toggle('versteckt', !Config.grafik.fps);
 }
 
@@ -2375,8 +2560,10 @@ const Kam = {
       const m = this.aufgeloest(), sp = S.schuetze.pos, bp = ball.p, gk = S.torwart.pos;
       if (m === 'schuetze') {
         const dir = _b.set(TOR.x - sp.x, 0, -sp.z * 0.6); if (dir.lengthSq() < 0.5) dir.set(1, 0, 0); dir.normalize();
-        wp.copy(sp).addScaledVector(dir, -3.9 * C.abstand); wp.y = 1.95 * C.hoehe;
-        wz.copy(sp).addScaledVector(dir, 5.5); wz.y = 0.55;
+        // hinter und leicht über dem Schützen, seitlich versetzt: das Tor bleibt über der Schulter sichtbar
+        const seitl = _c.set(-dir.z, 0, dir.x).multiplyScalar(-0.75 * (S.schuetze.s || 1));
+        wp.copy(sp).addScaledVector(dir, -3.4 * C.abstand).add(seitl); wp.y = 2.45 * C.hoehe;
+        wz.set(mix(sp.x, TOR.x, 0.62), 0.75, mix(sp.z, 0, 0.6));
         if (S.versuch && S.versuch.geschossen) { wz.lerp(_c.set(TOR.x - 0.5, 0.5, bp.z * 0.5), 0.5); }
       } else if (m === 'torwart') {
         wp.set(TOR.x + 3.0 * C.abstand, 2.25 * C.hoehe, gk.z * 0.4); wz.set(Math.min(bp.x, TOR.x - 4), 0.35, bp.z * 0.45);
@@ -2425,6 +2612,9 @@ const Spiel = {
     this.ringHG.rotation.x = -Math.PI / 2; szene.add(this.ringHG);
     this.zielKreis = new THREE.Mesh(mergeGeos([new THREE.RingGeometry(0.1, 0.14, 28), new THREE.PlaneGeometry(0.42, 0.025), new THREE.PlaneGeometry(0.025, 0.42)]), new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.95, depthTest: false, side: THREE.DoubleSide }));
     this.zielKreis.rotation.y = -Math.PI / 2; this.zielKreis.renderOrder = 5; szene.add(this.zielKreis);
+    const bg = new THREE.BufferGeometry(); bg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(100 * 3), 3));
+    this.bahn = new THREE.Line(bg, new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 0.12, gapSize: 0.08, transparent: true, opacity: 0.75, depthTest: false }));
+    this.bahn.frustumCulled = false; this.bahn.renderOrder = 4; this.bahn.visible = false; szene.add(this.bahn);
     this.debug = new DebugAnsicht();
     this.leerlauf();
   },
@@ -2475,6 +2665,8 @@ const Spiel = {
     this.kiS = this.menschSchiesst ? null : new KISchuetze(sd);
     this.kiT = this.menschHaelt || trainingOhneTW ? null : new KITorwart(this.torwart);
     if (this.kiT) this.kiT.istGegnerMensch = this.menschSchiesst;
+    this.hilfsTW = this.menschHaelt ? Object.assign(new KITorwart(this.torwart), { nurStellung: true }) : null; this.manuellBis = 0; this.paradePunkt = null;
+    this.welt.menschPraezise = this.menschSchiesst;
     ent.reset(0, 0); this.torwart.reset(); if (trainingOhneTW) this.torwart.pos.set(TOR.x + 3, 0, 4);
     ball.reset(0, 0); halle.netz.zuruecksetzen();
     this.versuch = new Versuch({ training: this.modus === 'training' }); this.aufnahme.leeren(); this.simZeit = 0;
@@ -2535,35 +2727,48 @@ const Spiel = {
   },
   zeitSkala() { return this.zeitlupeBis > 0 && this.simZeit < this.zeitlupeBis ? Config.animation.zeitlupe : 1; },
   /* ---------- Menschliche Eingabe → Absicht ---------- */
+  /** Bildschirmpunkt → Punkt auf der Torebene (z = seitlich, y = Höhe). */
+  torPunkt(sx, sy) {
+    this._ray ||= new THREE.Raycaster(); this._ndc ||= new THREE.Vector2();
+    this._ndc.set(sx / innerWidth * 2 - 1, -(sy / innerHeight) * 2 + 1); this._ray.setFromCamera(this._ndc, kamera);
+    const r = this._ray.ray; if (Math.abs(r.direction.x) < 1e-4) return null;
+    const t = (TOR.x - r.origin.x) / r.direction.x; if (t <= 0) return null;
+    return { z: klemme(r.origin.z + r.direction.z * t, -1.5, 1.5), y: klemme(r.origin.y + r.direction.y * t, 0.05, 1.55) };
+  },
+  /* Schütze: Zeiger/Finger zeigt das Ziel im Tor, der Spieler läuft selbst in diese Richtung.
+     In Schussnähe gedrückt halten = Kraft, loslassen = Schuss. */
   menschSchuetze(dt) {
-    const L = Eingabe.lenkung(), { r, f } = Kam.rechtsVorne();
-    const welt = new V3().addScaledVector(r, L.x).addScaledVector(f, L.y), len = Math.min(1, Math.hypot(L.x, L.y));
-    const A = { aktiv: L.quelle !== 'keine' && len > 0.12, richtung: welt.lengthSq() > 1e-6 ? welt.clone().normalize() : new V3(1, 0, 0), tempo: L.quelle === 'tasten' ? 1 : klemme((len - 0.12) / 0.75, 0.15, 1),
+    const S = this.schuetze, L = Eingabe.lenkung(), sp = Eingabe.zielBildschirm();
+    if (L.quelle === 'tasten') { const sg = Kam.rechtsVorne().r.z >= 0 ? 1 : -1; this.zielCursor.z = klemme(this.zielCursor.z + L.x * dt * 1.7 * sg, -1.4, 1.4); this.zielCursor.y = klemme(this.zielCursor.y + L.y * dt * 1.2, 0.06, 1.4); }
+    else if (L.quelle === 'pad') { this.zielCursor.z = klemme(L.x * 1.2, -1.4, 1.4); this.zielCursor.y = klemme(0.1 + (L.y + 1) / 2 * 1.05, 0.06, 1.3); }
+    else if (sp) {
+      // Nur bei Zeigerbewegung neu zielen – ein ruhender Zeiger hält den Zielpunkt im Tor fest (kein Wandern beim Anlaufen)
+      const key = Math.round(sp.x) + ',' + Math.round(sp.y);
+      if (key !== this._letzterZeiger) { this._letzterZeiger = key; const p = this.torPunkt(sp.x, sp.y); if (p) { this.zielCursor.z = p.z; this.zielCursor.y = p.y; } }
+    }
+    const lane = klemme(this.zielCursor.z * 1.6, -2.4, 2.4), vor = Math.max(2.5, TOR.x - 2 - S.pos.x);
+    const A = { aktiv: true, richtung: new V3(vor, 0, (lane - S.pos.z) * 1.2).normalize(), tempo: 0.8,
       laden: Eingabe.aktionGehalten(), finte: this.finteFlag, lupfer: Eingabe.lupferGehalten() || this.wischHochFlag, zielZ: this.zielCursor.z, zielY: this.zielCursor.y };
     this.finteFlag = false;
-    const S = this.schuetze;
-    if (S.zustand === 'laden') {
-      A.aktiv = false;
-      const sz = welt.z, sy = L.y;
-      if (L.quelle === 'tasten') { this.zielCursor.z = klemme(this.zielCursor.z + L.x * dt * 2.0 * Math.sign(r.z || 1), -1.15, 1.15); this.zielCursor.y = klemme(this.zielCursor.y + L.y * dt * 1.4, 0.06, 1.12); }
-      else if (L.quelle !== 'keine') { this.zielCursor.z = klemme(sz * 1.12, -1.15, 1.15); this.zielCursor.y = klemme(0.1 + Math.max(0, sy) * 1.0, 0.06, 1.12); }
-      A.zielZ = this.zielCursor.z; A.zielY = this.zielCursor.y;
-    }
     if (S.zustand === 'lauf' && !S.imSchussbereich()) this.wischHochFlag = false;
     return A;
   },
+  /* Torhüter: Stellungsspiel automatisch (A/D bzw. Stick übersteuert),
+     Parade durch Tippen/Klicken auf den Punkt im Tor – das Timing entscheidet. */
   menschTorwart(dt) {
-    const L = Eingabe.lenkung(), { r } = Kam.rechtsVorne(), seite = Math.abs(r.z) > 0.3 ? Math.sign(r.z) : -1;
-    const A = { bewegen: new V3(-L.y * 0.9, 0, seite * L.x), parade: null };
-    if (this.paradeWunsch) {
+    const T = this.torwart, L = Eingabe.lenkung(), { r } = Kam.rechtsVorne(), seite = Math.abs(r.z) > 0.3 ? Math.sign(r.z) : -1;
+    let A = { bewegen: new V3(), parade: null };
+    if (L.quelle === 'tasten' || L.quelle === 'pad') { A.bewegen.set(-L.y * 0.9, 0, seite * L.x); this.manuellBis = this.simZeit + 1.2; }
+    else if (!this.versuch.geschossen && this.simZeit > (this.manuellBis || 0) && this.hilfsTW) A = this.hilfsTW.absicht(dt, this.schuetze, ball, false);
+    if (this.paradePunkt) {
+      const { z, y } = this.paradePunkt; this.paradePunkt = null;
+      A.parade = { typ: waehleParade(T, z, y), ziel: new V3(T.pos.x, y, z) };
+    } else if (this.paradeWunsch) {
       const { dx, dy } = this.paradeWunsch; this.paradeWunsch = null;
-      const T = this.torwart, lat = seite * dx; let typ, y = 0.5, z = T.pos.z;
-      if (Math.abs(dx) < 0.4 && dy < -0.4) { typ = 'butterfly'; y = 0.2; }
-      else if (Math.abs(dx) < 0.4 && dy > 0.35) { typ = 'fangen'; y = 1.05; z = T.pos.z + lat * 0.3; }
-      else if (Math.abs(dx) < 0.4) { typ = 'fangen'; y = 0.7; }
-      else if (dy < -0.3) { typ = 'fuss'; y = 0.15; z = T.pos.z + Math.sign(lat) * 0.95; }
-      else { typ = 'hecht'; y = 0.35 + Math.max(0, dy) * 0.75; z = T.pos.z + Math.sign(lat) * 1.1; }
-      A.parade = { typ, ziel: new V3(T.pos.x, y, z) };
+      const lat = seite * dx; let y = 0.5, z = T.pos.z;
+      if (Math.abs(dx) < 0.4 && dy < -0.4) y = 0.2; else if (Math.abs(dx) < 0.4 && dy > 0.35) y = 1.05;
+      else if (Math.abs(dx) >= 0.4) { z = T.pos.z + Math.sign(lat) * (dy < -0.3 ? 0.95 : 1.1); y = dy < -0.3 ? 0.15 : 0.35 + Math.max(0, dy) * 0.75; }
+      A.parade = { typ: waehleParade(T, z, y), ziel: new V3(T.pos.x, y, z) };
     }
     return A;
   },
@@ -2576,9 +2781,9 @@ const Spiel = {
     if (this.menschSchiesst) {
       if (e.typ === 'finte' || e.typ === 'doppeltipp') this.finteFlag = true;
       if (e.typ === 'los' && e.wischHoch && this.schuetze.zustand === 'laden') this.wischHochFlag = true;
-    } else if (this.menschHaelt) {
-      if (e.typ === 'wisch') this.paradeWunsch = { dx: e.dx, dy: e.dy };
-      if (e.typ === 'finte' || e.typ === 'aktionDruck') { const L = Eingabe.lenkung(); this.paradeWunsch = { dx: L.quelle === 'zeiger' ? 0 : L.x, dy: L.quelle === 'zeiger' ? -1 : L.y }; }
+    } else if (this.menschHaelt && z === 'anlauf') {
+      if (e.typ === 'druck' && e.x !== undefined) { const p = this.torPunkt(e.x, e.y); if (p) this.paradePunkt = p; }
+      if (e.typ === 'finte' || e.typ === 'aktionDruck') { const L = Eingabe.lenkung(); this.paradeWunsch = { dx: L.x, dy: L.quelle === 'keine' ? -1 : L.y }; }
     }
   },
   /* ---------- Ereignisse aus Physik und Spielern ---------- */
@@ -2651,7 +2856,7 @@ const Spiel = {
   replayStart() {
     const r = this.replay; r.ende = this.torFrameT + 0.5; r.start = Math.max(this.aufnahme.zeiten[0], this.torFrameT - 1.5); r.t = r.start; r.pass = 0;
     this.zustand = 'wiederholung'; Kam.schnitt = true; HUD.banner(`${t('wiederholung')}<small>${t('ueberspringen')}</small>`); HUD.schiri(null);
-    this.ring.visible = this.ringHG.visible = this.zielKreis.visible = false; halle.netz.zuruecksetzen(); r.naechsterStoss = 0;
+    this.ring.visible = this.ringHG.visible = this.zielKreis.visible = this.bahn.visible = false; halle.netz.zuruecksetzen(); r.naechsterStoss = 0;
     this.replaySchritt(0);
   },
   replaySchritt(dt) {
@@ -2703,9 +2908,22 @@ const Spiel = {
       this.ring.material.color.setHSL((1 - p) * 0.33, 0.9, 0.5);
       this.ringHG.material.opacity = S.zustand === 'laden' ? 0.22 : 0.12 + Math.sin(performance.now() * 0.008) * 0.08;
     }
-    const zeigeZiel = S && this.menschSchiesst && Einst.zielhilfe && S.zustand === 'laden' && this.zustand === 'anlauf';
+    const zeigeZiel = S && this.menschSchiesst && this.zustand === 'anlauf' && ['lauf', 'laden'].includes(S.zustand);
     this.zielKreis.visible = !!zeigeZiel;
-    if (zeigeZiel) { this.zielKreis.position.set(TOR.x - 0.02, this.zielCursor.y, this.zielCursor.z); this.zielKreis.material.color.set(S.lupfer || this.wischHochFlag ? 0x38c6ff : 0xffd23f); }
+    if (zeigeZiel) {
+      const lob = S.lupfer || this.wischHochFlag || Eingabe.lupferGehalten();
+      this.zielKreis.position.set(TOR.x - 0.02, this.zielCursor.y, this.zielCursor.z); this.zielKreis.material.color.set(lob ? 0x38c6ff : 0xffd23f);
+      this.zielKreis.scale.setScalar(S.zustand === 'laden' ? 1 + 0.15 * Math.sin(performance.now() * 0.02) : 0.85);
+    }
+    const zeigeBahn = zeigeZiel && Einst.zielhilfe && S.zustand === 'laden' && S.power > 0.04;
+    this.bahn.visible = !!zeigeBahn;
+    if (zeigeBahn && (this._bahnZ = (this._bahnZ || 0) + 1) % 3 === 0) {
+      const lob = S.lupfer || this.wischHochFlag || Eingabe.lupferGehalten(), typ = S.schussTyp(S.power, lob), ziel = new V3(TOR.x, this.zielCursor.y, this.zielCursor.z);
+      const { speed, w } = S.schussParameter(S.power, typ, S.ballSeite !== S.s, ball.p, ziel, this.welt);
+      const v = loeseSchuss(ball.p.clone(), ziel, speed, w, typ === 'lupfer'), pts = bahnPunkte(ball.p, v, w, TOR.x, 100);
+      const a = this.bahn.geometry.attributes.position; pts.forEach((q, i) => a.setXYZ(i, q.x, q.y, q.z)); a.needsUpdate = true;
+      this.bahn.geometry.setDrawRange(0, pts.length); this.bahn.computeLineDistances();
+    }
     if (this.zustand === 'anlauf' && this.versuch) HUD.zeit(1 - this.versuch.t / this.versuch.zeitlimit);
     if (this.ehrung && this.zustand === 'siegerehrung') this.ehrung.update(dt);
     Kam.update(dt);
@@ -2803,7 +3021,7 @@ const HUD = {
   },
   joystick() {
     const z = Eingabe.zeiger, j = this.el.joy;
-    const an = z && Spiel.zustand === 'anlauf' && (Spiel.menschSchiesst || Spiel.menschHaelt);
+    const an = false && z;   // neue Steuerung zielt direkt – kein virtueller Joystick mehr
     j.classList.toggle('versteckt', !an); if (!an) return;
     j.style.left = z.sx + 'px'; j.style.top = z.sy + 'px';
     const r = Eingabe.radius, dx = klemme(z.x - z.sx, -r, r), dy = klemme(z.y - z.sy, -r, r);

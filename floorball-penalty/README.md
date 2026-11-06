@@ -6,20 +6,16 @@ Alle anderen Inhalte (Geometrie, Texturen, Ton) entstehen prozedural.
 
 ## Bedienung
 
-**Schütze**
-- **Ziehen** (Maus/Finger), **WASD/Pfeile** oder **linker Stick**: Laufrichtung und Tempo. Der Ball bleibt am Schläger, Vor- und Rückhand wechseln automatisch. Ohne Eingabe läuft der Schütze mit mittlerem Tempo geradeaus weiter.
-- **In Schussnähe** (Ring am Boden pulsiert) **gedrückt halten**: Der Power-Ring füllt sich. Die Zugrichtung bestimmt das Ziel (seitlich = Ecke, nach oben = hoch), die gelbe Zielhilfe zeigt es im Tor an.
-- **Loslassen** löst den Schuss aus. Kurz = Handgelenkschuss, mittel = Schlenzer, lang = Schlagschuss (stärker, aber ungenauer). Tastatur: **J** oder Enter halten.
-- **Lupfer**: Shift halten oder beim Loslassen nach oben wischen.
+**Schütze** (eine Eingabe: zeigen und halten)
+- **Maus oder Finger zeigt auf die Stelle im Tor**, wo der Ball hin soll. Das gelbe Fadenkreuz folgt, der Spieler dribbelt automatisch in diese Richtung. Tastatur: WASD/Pfeile verschieben das Fadenkreuz, Gamepad: linker Stick.
+- **In Schussnähe** (Ring am Boden) **gedrückt halten**: Der Power-Ring füllt sich, eine gestrichelte Linie zeigt die Flugbahn. Kurz = Handgelenkschuss, mittel = Schlenzer, lang = Schlagschuss (stärker, aber ungenauer). Tastatur: J oder Enter halten.
+- **Loslassen** löst den Schuss aus.
+- **Lupfer**: rechte Maustaste halten, Shift, oder beim Loslassen nach oben wischen.
 - **Finte**: Leertaste oder Doppeltipp.
 
-**Torhüter**
-- Langsam ziehen, WASD oder Stick: seitlich verschieben, nach vorn ziehen = herauskommen.
-- **Parade**: schnell in die Richtung wischen (Touch/Maus) oder Richtung + Leertaste/J drücken.
-  - seitlich = Hechtsprung
-  - seitlich unten = Fußabwehr
-  - nur unten = Butterfly
-  - nur oben = Fangen
+**Torhüter** (Timing entscheidet)
+- Das Stellungsspiel läuft automatisch. A/D, Pfeile oder Stick verschieben selbst, nach vorn = herauskommen.
+- **Parade**: Im richtigen Moment dorthin **tippen oder klicken, wo der Ball ins Tor fliegt**. Der Torhüter wählt die passende Parade (Hechtsprung, Fußabwehr, Butterfly, Fangen). Alternativ Richtung + Leertaste oder wischen.
 - In der Stufe **Einsteiger** läuft beim Schuss ein kurzes Zeitlupenfenster.
 
 **Allgemein**: **T** oder ⚙ öffnet das Tuning (auch im Spiel), **C** oder 🎥 wechselt die Kamera, **Esc/P** oder ⏸ pausiert. Ein Tipp überspringt Intro und Wiederholung.
@@ -37,7 +33,7 @@ Der Knopf **„Regeltests ausführen“** prüft 13 Fälle: Stopp- und Rückwär
 
 ## Bekannte Grenzen
 - Ohne Internet startet das Spiel nicht, weil Three.js vom CDN kommt. Abhilfe: `three.module.js` neben die Datei legen und die Importmap anpassen.
-- Figuren sind aus Grundkörpern gebaut (Gelenkhierarchie, kein Skinning). Das Trikot schwingt nur am Saum nach.
-- Zuschauer, Hallenmodell und Torhüter-Hitboxen (Kapseln) sind vereinfacht.
+- Figuren sind prozedural: gehäuteter Körper (SkinnedMesh) mit modelliertem Kopf, Ausrüstung aus Grundkörpern. Kein echtes 3D-Modell, aus der Nähe bleibt der Puppenlook sichtbar. Das Trikot schwingt nur am Saum nach.
+- Zuschauer sind instanzierte Sitzfiguren (drei Meshes für alle), Hallenmodell und Torhüter-Hitboxen (Kapseln) sind vereinfacht.
 - Die Torraum-Regel (Schütze darf vor dem Schuss nicht in den Torraum) und die Lage des Torhüterraums sind nach bestem Wissen umgesetzt, aber nicht am Regelwerk verifiziert. Die Torraum-Regel ist im Tuning abschaltbar.
 - Getestet nur in Chromium (Desktop und emulierter Pixel-7-Touch), ohne echte GPU. Firefox, Safari, Edge, echte Smartphones und die 60 FPS auf realer Hardware sind nicht geprüft.
