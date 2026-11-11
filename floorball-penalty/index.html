@@ -27,7 +27,7 @@ html{ font-size:calc(16px * var(--skala)); }
 body{ margin:0; background:#05080f; color:var(--text); overflow:hidden; touch-action:none;
   font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif; -webkit-user-select:none; user-select:none;
   -webkit-tap-highlight-color:transparent; }
-canvas#szene{ position:fixed; inset:0; width:100vw; height:100vh; display:block; z-index:0; }
+canvas#szene{ position:fixed; inset:0; width:100vw; height:100vh; display:block; z-index:0; cursor:crosshair; }
 canvas#vorschau{ position:fixed; inset:0; width:100vw; height:100vh; display:block; z-index:20; pointer-events:none; }
 button{ font:inherit; color:inherit; cursor:pointer; }
 input,select{ font:inherit; }
@@ -63,6 +63,10 @@ input,select{ font:inherit; }
 #banner{ position:absolute; top:38%; left:50%; transform:translate(-50%,-50%); font-size:clamp(2.2rem,7vw,5rem); font-weight:900;
   letter-spacing:.06em; text-shadow:0 .3rem 1.2rem rgba(0,0,0,.6); text-align:center; white-space:nowrap; }
 #banner small{ display:block; font-size:.32em; letter-spacing:.1em; font-weight:700; color:var(--mute); }
+/* Kleine Marke (z. B. „Wiederholung“) unten links, damit das Geschehen frei bleibt */
+#banner.klein{ top:auto; bottom:calc(max(1rem,env(safe-area-inset-bottom)) + 3.4rem); left:max(1rem,env(safe-area-inset-left)); transform:none; font-size:1.15rem; letter-spacing:.12em;
+  background:rgba(200,16,46,.94); padding:.4rem .9rem; border-radius:.5rem; text-align:left; text-shadow:none; box-shadow:0 .3rem 1rem rgba(0,0,0,.45); }
+#banner.klein small{ display:inline; font-size:.7em; margin-left:.8rem; color:#ffd9de; letter-spacing:.02em; }
 #hudKnoepfe{ position:absolute; top:max(.6rem,env(safe-area-inset-top)); right:max(.6rem,env(safe-area-inset-right)); display:flex; gap:.5rem; pointer-events:auto; }
 .rundKnopf{ width:3.1rem; height:3.1rem; border-radius:50%; border:1px solid var(--rand); background:var(--panel); font-size:1.35rem; display:flex; align-items:center; justify-content:center; }
 .rundKnopf:active{ transform:scale(.95); }
@@ -74,7 +78,9 @@ input,select{ font:inherit; }
 .trickKnopf:active{ background:var(--akzent); color:#111; }
 .trickKnopf.raus{ background:var(--schlecht); color:#fff; min-height:3.6rem; font-size:1.15rem; }
 #steuerHinweis{ position:absolute; bottom:max(.6rem,env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); display:flex; flex-wrap:wrap; justify-content:center; gap:.3rem .8rem;
-  color:var(--mute); font-size:.82rem; background:rgba(4,8,16,.6); padding:.4rem .8rem; border-radius:.6rem; width:max-content; max-width:min(96vw,66rem); }
+  color:var(--mute); font-size:.8rem; background:rgba(4,8,16,.6); padding:.35rem .8rem; border-radius:.6rem; width:max-content; max-width:min(96vw,72rem); transition:opacity .6s; }
+#steuerHinweis.aus{ opacity:0; }
+@media (max-height:480px){ #steuerHinweis{ font-size:.68rem; gap:.2rem .6rem; padding:.25rem .6rem; } }
 #steuerHinweis span{ white-space:nowrap; }
 #steuerHinweis kbd{ font:inherit; font-weight:800; color:var(--text); background:rgba(255,255,255,.13); border:1px solid rgba(255,255,255,.24); border-bottom-width:2px; border-radius:.35rem; padding:.02rem .4rem; margin-right:.3rem; }
 #tempoAnzeige{ position:absolute; top:calc(max(.6rem,env(safe-area-inset-top)) + 7.1rem); left:50%; transform:translateX(-50%); background:var(--panel); border:1px solid var(--rand);
@@ -239,7 +245,7 @@ const TEXTE = {
     m_turnier: 'Turnier', m_turnier_u: '4 oder 8 Teams, Gruppen & K.-o.',
     m_turnier_weiter: 'Turnier fortsetzen', m_training: 'Training', m_training_u: 'Schießen oder Halten, Zielscheiben',
     m_teams: 'Teams', m_teams_u: 'Editor, Import & Export', m_tuning: 'Tuning', m_tuning_u: 'Physik, KI, Kamera, Debug',
-    m_einst: 'Einstellungen', m_einst_u: 'Steuerung, Grafik, Ton', m_kivski: 'KI gegen KI', m_kivski_u: 'Zuschauen',
+    m_einst: 'Einstellungen', m_einst_u: 'Steuerung, Grafik, Ton', m_kivski: 'KI gegen KI', 
     zurueck: '← Zurück', anpfiff: 'Anpfiff ▶', weiter: 'Weiter ▶', menue: 'Menü', neustart: 'Neustart', fortsetzen: 'Fortsetzen',
     pause: 'Pause', zum_menue: 'Zurück zum Menü', revanche: 'Revanche',
     teamwahl: 'Teamwahl', dein_team: 'DU', gegner: 'GEGNER', waehle_hinweis: 'Karte tippen: erst dein Team, dann den Gegner. Zufallsgegner ist vorgewählt.',
@@ -247,7 +253,7 @@ const TEXTE = {
     angriff: 'Angriff', torwart_wert: 'Torhüter', schuss: 'Schuss', technik: 'Technik', nerven: 'Nerven',
     reflexe: 'Reflexe', stellung: 'Stellungsspiel', mut: 'Mut',
     schuetze: 'Schütze', torhueter: 'Torhüter', hand: 'Hand', links: 'links', rechts: 'rechts', nummer: 'Nr.', name: 'Name',
-    zeit: 'Zeit', sudden: 'SUDDEN DEATH',
+    sudden: 'SUDDEN DEATH',
     // Schiedsrichter-Entscheidungen
     r_tor: 'Tor! Der Ball hat die Torlinie vollständig überquert.',
     r_gehalten: 'Gehalten – der Torhüter kontrolliert den Ball.',
@@ -265,20 +271,20 @@ const TEXTE = {
     r_ballgestoppt: 'Ball gestoppt – kein Tor.',
     r_training: 'Training',
     tor_banner: 'TOR!', gehalten_banner: 'GEHALTEN!', fehl_banner: 'KEIN TOR',
-    banner_sieg: 'gewinnt das Shootout', banner_remis: 'Unentschieden',
+    banner_sieg: 'gewinnt das Shootout', 
     wiederholung: 'WIEDERHOLUNG', ueberspringen: 'Tippen zum Überspringen',
     // Steuerhinweise im Spiel: [Taste/Geste, Bedeutung]
     h_laufen: 'Laufen', h_zielen: 'Zielen', h_kraft: 'Kraft aufladen', h_schuss: 'Schuss', h_lupfer: 'Lupfer', h_tricks: 'Tricks', h_torraum: 'Im Torraum bewegen', h_parade: 'Parade', h_zuschauen: 'KI gegen KI',
     g_maus: 'Maus', g_halten: 'Maustaste halten', g_loslassen: 'Loslassen', g_rechtsklick: 'Rechtsklick', g_klick_tor: 'Klick ins Tor', g_klick_ball: 'Klick auf den Ball',
     g_links: 'Links: Joystick', g_rechts: 'Rechts: Finger', g_finger_halten: 'Halten', g_hochwischen: 'Hochwischen', g_doppeltipp: 'Doppeltipp', g_knoepfe: 'Knöpfe', g_tipp_tor: 'Tipp ins Tor', g_tipp_ball: 'Tipp auf den Ball',
-    tempo_schuss: 'Schuss', typ_handgelenk: 'Handgelenkschuss', typ_schlenzer: 'Schlenzer', typ_schlag: 'Schlagschuss', typ_lupfer: 'Lupfer', typ_zorro: 'Zorro',
+    typ_handgelenk: 'Handgelenkschuss', typ_schlenzer: 'Schlenzer', typ_schlag: 'Schlagschuss', typ_lupfer: 'Lupfer', typ_zorro: 'Zorro',
     // Ergebnis
-    ergebnis: 'Ergebnis', sieger: 'Sieger', remis: 'Unentschieden nach Penaltys',
+    ergebnis: 'Ergebnis', remis: 'Unentschieden nach Penaltys',
     du_gewinnst: 'Du gewinnst!', du_verlierst: 'Leider verloren',
     // Training
     training: 'Training', t_schiessen: 'Schießen', t_schiessen_u: 'Freies Schießen auf Zielscheiben',
     t_halten: 'Halten', t_halten_u: 'Die KI schießt, du hältst', t_mit_tw: 'Mit Torhüter',
-    t_treffer: 'Treffer', t_versuche: 'Versuche', t_scheiben: 'Zielscheiben', t_paraden: 'Paraden',
+    t_treffer: 'Treffer', t_scheiben: 'Zielscheiben', t_paraden: 'Paraden',
     // Turnier
     turnier: 'Turnier', tn_groesse: 'Teilnehmer', tn_gruppen: 'Gruppenphase', tn_dein_team: 'Dein Team wählen',
     tn_start: 'Turnier starten', tn_spielplan: 'Spielplan', tn_tabelle: 'Tabelle', tn_statistik: 'Statistik',
@@ -287,19 +293,19 @@ const TEXTE = {
     tn_punkte: 'Pkt', tn_sp: 'Sp', tn_s: 'S', tn_n: 'N', tn_u: 'U', tn_tore: 'Tore',
     tn_bester_schuetze: 'Bester Schütze', tn_bester_tw: 'Bester Torhüter', tn_trefferquote: 'Trefferquote', tn_paradenquote: 'Paradenquote',
     tn_ausgeschieden: 'Dein Team ist ausgeschieden – du kannst die restlichen Spiele ansehen oder simulieren.',
-    tn_siegerehrung: 'Siegerehrung', tn_champion: 'TURNIERSIEGER', tn_neu: 'Neues Turnier', tn_verwerfen: 'Turnier beenden',
-    tn_gespeichert: 'Der Turnierstand wird automatisch gespeichert.', tn_platz: 'Platz',
+    tn_champion: 'TURNIERSIEGER', tn_neu: 'Neues Turnier', tn_verwerfen: 'Turnier beenden',
+    tn_gespeichert: 'Der Turnierstand wird automatisch gespeichert.', 
     // Teams
     teams: 'Teams', team_neu: '+ Neues Team', team_bearbeiten: 'Bearbeiten', team_loeschen: 'Löschen', team_export: 'Export (JSON)',
     team_import: 'Import (JSON)', team_standard: 'Standardteams wiederherstellen', team_speichern: 'Speichern', team_abbrechen: 'Abbrechen',
     team_name: 'Teamname', team_kuerzel: 'Kürzel (max. 4)', team_primaer: 'Primärfarbe', team_sekundaer: 'Sekundärfarbe', team_muster: 'Trikotmuster',
-    mu_uni: 'Uni', mu_streifen: 'Streifen', mu_schaerpe: 'Schärpe', mu_verlauf: 'Verlauf', team_national: 'Nationalteam',
+    mu_uni: 'Uni', mu_streifen: 'Streifen', mu_schaerpe: 'Schärpe', mu_verlauf: 'Verlauf', 
     team_import_ok: 'Import erfolgreich: {n} Team(s).', team_import_fehler: 'Import fehlgeschlagen: Datei ungültig.',
     team_loeschen_frage: 'Team „{n}“ wirklich löschen?', team_min: 'Mindestens zwei Teams müssen bleiben.',
     // Einstellungen
     einstellungen: 'Einstellungen', e_kamera: 'Kamera', k_auto: 'Automatisch', k_broadcast: 'Broadcast', k_schuetze: 'Schütze', k_torwart: 'Torhüter',
     e_zielhilfe: 'Zielhilfe einblenden', e_wiederholung: 'Wiederholung nach Toren und Paraden', e_schrift: 'Schriftgröße', e_farbenblind: 'Farbenblind-freundliche Farben',
-    e_ton: 'Lautstärke', e_qualitaet: 'Grafikqualität', q_niedrig: 'Niedrig', q_mittel: 'Mittel', q_hoch: 'Hoch', q_parkett: 'Parkett', q_kunststoff: 'Kunststoff (blau)',
+    e_ton: 'Lautstärke', e_qualitaet: 'Grafikqualität', e_boden: 'Hallenboden', q_niedrig: 'Niedrig', q_mittel: 'Mittel', q_hoch: 'Hoch', q_parkett: 'Parkett', q_kunststoff: 'Kunststoff (blau)',
     e_tasten: 'Tastenbelegung', e_taste_druecken: 'Taste drücken …', e_tutorial: 'Tutorial erneut zeigen', e_speicher_aus: 'Hinweis: Speicher nicht verfügbar – Einstellungen gelten nur für diese Sitzung.',
     a_hoch: 'Vor / Ziel hoch', a_runter: 'Zurück / Ziel tief', a_links: 'Links', a_rechts: 'Rechts', a_aktion: 'Schuss (halten) / Parade', a_finte: 'Finte / Parade',
     a_lupfer: 'Lupfer', a_zieher: 'Trick: Zieher', a_drehung: 'Trick: Drehung', a_zorro: 'Trick: Zorro', a_raus: 'Torhüter: Raus', a_kamera: 'Kamera', a_pause: 'Pause', a_tuning: 'Tuning',
@@ -311,9 +317,9 @@ const TEXTE = {
     tut_3: 'Im Tor bewegst du dich mit W/A/S/D oder Joystick im ganzen Torraum. Tippe oder klicke dorthin, wo der Ball ins Tor fliegt. Kommt der Schütze zu nah: F, „Raus!“ oder ein Tipp vor das Tor – dein Torhüter springt ihm entgegen.',
     tut_weiter: 'Weiter', tut_los: 'Los geht’s', tut_skip: 'Überspringen',
     // Tuning
-    tuning: 'Tuning', tu_presets: 'Presets', tu_eigene: 'Eigene Presets', tu_speichern: 'Speichern', tu_name: 'Name des Presets',
+    tuning: 'Tuning', tu_presets: 'Presets', tu_speichern: 'Speichern', tu_name: 'Name des Presets',
     tu_export: 'Export JSON', tu_import: 'Import JSON', tu_reset: 'Auf Standard zurücksetzen', tu_debug: 'Debug-Ansicht', tu_tests: 'Regeltests ausführen',
-    tu_laden: 'Laden', tu_loeschen: '✕', tu_arcade: 'Arcade', tu_realistisch: 'Realistisch', tu_simulation: 'Simulation', tu_heat_reset: 'Heatmap leeren',
+    tu_loeschen: '✕', tu_arcade: 'Arcade', tu_realistisch: 'Realistisch', tu_simulation: 'Simulation', tu_heat_reset: 'Heatmap leeren',
     tu_import_ok: 'Preset importiert.', tu_import_fehler: 'Preset-Datei ungültig.',
     quer: 'Für die beste Steuerung das Gerät ins Querformat drehen.',
     ki: 'KI', mensch: 'Du',
@@ -543,10 +549,14 @@ class AudioSystem {
     for (const f of [233, 294, 349]) { const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = (Math.random() - 0.5) * 16; o.connect(lp); o.start(t0); o.stop(t0 + 1.25); }
     lp.connect(g); g.connect(this.sfx);
   }
-  /** Applaus: viele kurze Klatscher, an- und abschwellend. */
+  /** Applaus: eine Rauschquelle, deren Lautstärke einer Kurve aus vielen kurzen Klatschern folgt (an- und abschwellend). */
   applaus(st = 0.6, dauer = 2.2) {
-    if (!this.ctx) return; const n = Math.floor(dauer * 60);
-    for (let i = 0; i < n; i++) { const u = Math.random(), huelle = Math.sin(Math.PI * Math.min(1, u * 1.15)); this._rausch(0.022, 'bandpass', 1000 + Math.random() * 1600, 1.6, 0.035 * st * (0.3 + huelle), this.master, 0.001, 0.8 + Math.random() * 0.6, u * dauer); }
+    if (!this.ctx) return; const c = this.ctx, t0 = c.currentTime + 0.02, n = Math.floor(dauer * 250), kurve = new Float32Array(n);
+    for (let k = 0; k < dauer * 55; k++) { const i0 = Math.floor(Math.random() * (n - 6)), a = (0.35 + Math.random() * 0.65) * Math.sin(Math.PI * Math.min(1, i0 / n * 1.15)); for (let j = 0; j < 5; j++) kurve[i0 + j] += a * Math.exp(-j * 0.9); }
+    for (let i = 0; i < n; i++) kurve[i] = Math.min(1, kurve[i]) * 0.11 * st;
+    const src = c.createBufferSource(); src.buffer = this.rausch; src.loop = true; const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1700; bp.Q.value = 0.9;
+    const g = c.createGain(); g.gain.value = 0; g.gain.setValueCurveAtTime(kurve, t0, dauer);
+    src.connect(bp); bp.connect(g); g.connect(this.master); src.start(t0, Math.random()); src.stop(t0 + dauer + 0.05);
   }
   /** Leiser Klick für Menüknöpfe. */
   tick() { if (!this.ctx) return; this._ton(1150, 0.03, 0.035, 'sine', this.master); }
@@ -1542,9 +1552,15 @@ const _texCache = new Map();
 function texMerken(key, erzeuge) {
   if (_texCache.has(key)) { const t = _texCache.get(key); _texCache.delete(key); _texCache.set(key, t); return t; }
   const t = erzeuge(); _texCache.set(key, t);
-  if (_texCache.size > 96) { const [k, alt] = _texCache.entries().next().value; _texCache.delete(k); alt.dispose(); }
+  if (_texCache.size > 56) { const [k, alt] = _texCache.entries().next().value; _texCache.delete(k); alt.dispose(); }
   return t;
 }
+/* Große Figurentexturen (Trikot, Gesicht) unterhalb der Stufe „hoch“ mit halber Kantenlänge: spart Speicher auf Mobilgeräten */
+const texSkala = () => Config.grafik.qualitaet === 'hoch' ? 1 : 0.5;
+function leinwandS(W, H) { const k = texSkala(), [c, g] = leinwand(Math.round(W * k), Math.round(H * k)); g.scale(k, k); return [c, g]; }
+/* Geometrien werden einmal erzeugt und von allen Figuren geteilt (Spieler, Vorschau, Siegerehrung) */
+const _geoCache = new Map();
+const geoMerken = (key, erzeuge) => { let g = _geoCache.get(key); if (!g) _geoCache.set(key, g = erzeuge()); return g; };
 /** Aussehen eines Spielers, fest aus Name und Nummer abgeleitet (jeder Spieler sieht immer gleich aus). */
 const AUGEN_TOENE = ['#5b3a1e', '#2f6f9f', '#4f7a3e', '#6b4a2a', '#7d858e'];
 const SCHUH_FARBEN = [['#f4f4f2', '#e63946'], ['#f4f4f2', '#1d3557'], ['#1b1d22', '#ffd23f'], ['#f4f4f2', '#2a9d8f'], ['#e63946', '#f4f4f2'], ['#1f6feb', '#f4f4f2'], ['#1b1d22', '#f4f4f2'], ['#c6f135', '#1b1d22']];
@@ -1557,8 +1573,8 @@ function aussehenVon(name, nummer) {
 }
 /** Trikot-Rumpf: u läuft um den Körper (0 = vorn Mitte, 0,5 = Rücken), v vom Saum (0) bis zum Kragen (1). */
 function trikotTextur(F, nummer, name, kuerzel) {
-  return texMerken(['tr', F.primaer, F.sekundaer, F.muster, nummer, name, kuerzel, F.gepolstert ? 'p' : ''].join('|'), () => {
-    const W = 1024, H = 512, [c, g] = leinwand(W, H), P = F.primaer, S = F.sekundaer;
+  return texMerken(['tr', F.primaer, F.sekundaer, F.muster, nummer, name, kuerzel, F.gepolstert ? 'p' : '', texSkala()].join('|'), () => {
+    const W = 1024, H = 512, [c, g] = leinwandS(W, H), P = F.primaer, S = F.sekundaer;
     g.fillStyle = P; g.fillRect(0, 0, W, H); g.fillStyle = S;
     if (F.muster === 'streifen') for (let i = 0; i < 12; i++) g.fillRect(i * (W / 12) + 22, 0, 40, H);
     else if (F.muster === 'schaerpe') for (const o of [0, W]) { g.beginPath(); g.moveTo(o + 70, 0); g.lineTo(o + 250, 0); g.lineTo(o - 170, H); g.lineTo(o - 350, H); g.closePath(); g.fill(); }
@@ -1696,8 +1712,8 @@ const FRISUREN = [
 const haarGrenze = (nz, F) => (nz > 0 ? F.stirn * nz - 0.05 : -0.05 - F.nacken * -nz) + F.ohr * Math.exp(-(((nz + 0.05) / 0.2) ** 2));
 /** Gesicht als Textur über die ganze Kopfkugel: Augen, Brauen, Nase, Mund, Wangen, Bartschatten, Haaransatz. */
 function gesichtTextur(a) {
-  return texMerken(['ge', a.haut, a.haar, a.augen, a.bart ? 1 : 0, Math.round(a.brauen * 10)].join('|'), () => {
-    const W = 1024, H = 512, [c, g] = leinwand(W, H), K = 163;                         // K: Pixel je Einheit auf der Kopfkugel
+  return texMerken(['ge', a.haut, a.haar, a.augen, a.bart ? 1 : 0, Math.round(a.brauen * 10), texSkala()].join('|'), () => {
+    const W = 1024, H = 512, [c, g] = leinwandS(W, H), K = 163;                         // K: Pixel je Einheit auf der Kopfkugel
     const P = (nx, ny) => { const nz = Math.sqrt(Math.max(0, 1 - nx * nx - ny * ny)); return [Math.atan2(nz, -nx) / (2 * Math.PI) * W, Math.acos(klemme(ny, -1, 1)) / Math.PI * H]; };
     const haut = new THREE.Color(a.haut), haar = new THREE.Color(a.haar), ton = (col, f) => '#' + col.clone().multiplyScalar(f).getHexString();
     const fleck = (x, y, rx, ry, farbe, al) => { const gr = g.createRadialGradient(0, 0, 0, 0, 0, 1); gr.addColorStop(0, farbe); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.save(); g.translate(x, y); g.scale(rx, ry); g.globalAlpha = al; g.fillStyle = gr; g.beginPath(); g.arc(0, 0, 1, 0, 7); g.fill(); g.restore(); };
@@ -1707,7 +1723,7 @@ function gesichtTextur(a) {
     { const [x, y] = P(0, -0.53); fleck(x, y, 34, 12, ton(haut, 0.45), 0.3); const [tx, ty] = P(0, -0.09); fleck(tx, ty, 16, 14, 'rgba(255,255,255,1)', 0.10); }
     // Augen
     for (const s of [-1, 1]) {
-      const [ex, ey] = P(s * 0.33, 0.115), rx = 25, ry = 10;
+      const [ex, ey] = P(s * 0.33, 0.115), rx = 27, ry = 11.5;
       const mandel = () => { g.beginPath(); g.moveTo(ex - rx, ey + 1.5); g.quadraticCurveTo(ex - s * 2, ey - ry * 1.5, ex + rx, ey + 1.5); g.quadraticCurveTo(ex, ey + ry * 1.25, ex - rx, ey + 1.5); g.closePath(); };
       g.save(); mandel(); g.clip(); g.fillStyle = '#efeae3'; g.fillRect(ex - 30, ey - 20, 60, 40);
       fleck(ex - s * 20, ey, 14, 14, 'rgba(120,80,70,1)', 0.25); fleck(ex + s * 20, ey, 14, 14, 'rgba(120,80,70,1)', 0.25);
@@ -1715,7 +1731,7 @@ function gesichtTextur(a) {
       g.fillStyle = a.augen; g.beginPath(); g.ellipse(ix, iy, 9.6, 8.5, 0, 0, 7); g.fill();
       g.fillStyle = '#0b0908'; g.beginPath(); g.ellipse(ix, iy, 4.6, 4.2, 0, 0, 7); g.fill();
       g.fillStyle = 'rgba(255,255,255,.9)'; g.beginPath(); g.arc(ix - 3.2, iy - 3.4, 2.1, 0, 7); g.fill();
-      g.fillStyle = 'rgba(0,0,0,.28)'; g.fillRect(ex - 30, ey - 20, 60, 13);                                   // Schatten des Oberlids
+      g.fillStyle = 'rgba(0,0,0,.2)'; g.fillRect(ex - 32, ey - 22, 64, 13);                                   // Schatten des Oberlids
       g.restore();
       g.strokeStyle = ton(haut, 0.16); g.lineWidth = 3.4; g.lineCap = 'round'; g.beginPath(); g.moveTo(ex - rx - s * 1, ey + 2); g.quadraticCurveTo(ex - s * 2, ey - ry * 1.55, ex + rx + s * 2, ey + 0.5); g.stroke();   // Wimpernkranz
       g.strokeStyle = ton(haut, 0.5); g.lineWidth = 1.4; g.globalAlpha = 0.6; g.beginPath(); g.moveTo(ex - rx, ey + 2); g.quadraticCurveTo(ex, ey + ry * 1.3, ex + rx, ey + 2); g.stroke();
@@ -1752,7 +1768,7 @@ function gesichtTextur(a) {
 
 /** Modellierter Kopf (verformte Kugel): Kiefer, Kinn, Nase, Lippen, Brauenwulst, Augenhöhlen, Wangenknochen. frisur = Schale einer Frisur. */
 function kopfGeometrie(frisur) {
-  const g = new THREE.SphereGeometry(0.1, frisur ? 32 : 52, frisur ? 24 : 40);
+  const g = new THREE.SphereGeometry(0.1, frisur ? 46 : 52, frisur ? 34 : 40);
   const p = g.getAttribute('position'), v = new V3();
   for (let i = 0; i < p.count; i++) {
     v.fromBufferAttribute(p, i); const n = v.clone().normalize();
@@ -1768,9 +1784,10 @@ function kopfGeometrie(frisur) {
       for (const s of [-1, 1]) { z -= 0.0085 * G(s * 0.33, 0.12, 0.13, 0.09); x += s * 0.004 * G(s * 0.6, -0.05, 0.2, 0.15); }  // Augenhöhlen, Wangenknochen
     }
     if (frisur) {
-      const istHaar = n.y > haarGrenze(n.z, frisur);
-      const k = istHaar ? 1 + frisur.dick + frisur.oben * Math.pow(Math.max(0, n.y), 1.5) + frisur.tolle * Math.max(0, n.z) * Math.max(0, n.y) * 2 + frisur.wirr * Math.sin(15 * Math.atan2(n.x, n.z) + n.y * 7) : 0.9;
-      x *= k; y = y * k + (istHaar ? 0.004 : 0); z *= k;
+      // weicher Übergang am Haaransatz: darunter liegt die Schale knapp unter der Kopfhaut
+      const f = glatt((n.y - haarGrenze(n.z, frisur) + 0.03) / 0.06);
+      const k = mix(0.94, 1 + frisur.dick + frisur.oben * Math.pow(Math.max(0, n.y), 1.5) + frisur.tolle * Math.max(0, n.z) * Math.max(0, n.y) * 2 + frisur.wirr * Math.sin(15 * Math.atan2(n.x, n.z) + n.y * 7), f);
+      x *= k; y = y * k + f * 0.004; z *= k;
     }
     p.setXYZ(i, x, y, z);
   }
@@ -1929,11 +1946,12 @@ class Figur {
     this.objekt.updateMatrixWorld(true);
     const knochen = Object.values(J); this.skelett = new THREE.Skeleton(knochen);
     const bi = (n) => knochen.indexOf(J[n]), wy = (n) => J[n].getWorldPosition(new V3());
+    const koerperGeos = geoMerken('koerper' + (gk ? 'T' : 'S'), () => {
     const puffer = new Map();
     /** Schlauch aus Ringen [y, rx, rz, zVersatz, vorn, hinten] mit Gewichts-Stützstellen [[y, {knochen: gewicht}]]; form < 1 = kantiger Querschnitt */
     const schlauch = (ringe, keys, cx, cz, mat, seg = 22, form = 1) => {
       ringe = ringe.slice().sort((a, b) => a[0] - b[0]); keys = keys.slice().sort((a, b) => a[0] - b[0]);
-      let P = puffer.get(mat); if (!P) puffer.set(mat, P = { pos: [], uv: [], si: [], sw: [], idx: [], naehte: [] });
+      let P = puffer.get(mat); if (!P) puffer.set(mat, P = { pos: [], uv: [], si: [], sw: [], idx: [], naehte: [] });   // mat = Name des Materials
       const y0 = ringe[0][0], y1 = ringe[ringe.length - 1][0], basis = P.pos.length / 3; P.naehte.push([basis, ringe.length, seg]);
       const gew = (y) => {
         let k = keys.length - 1; for (let i = 0; i < keys.length - 1; i++) if (y <= keys[i + 1][0]) { k = i; break; }
@@ -1961,61 +1979,65 @@ class Figur {
     // Trikot-Rumpf, locker geschnitten; der Saum hängt am Feder-Knochen und schwingt nach
     schlauch([[B - 0.13, 0.186, 0.142, 0, 1, 1.02], [B - 0.06, 0.179, 0.136], [B + 0.02, 0.169, 0.128], [W, 0.163, 0.122], [W + 0.08, 0.164, 0.123, 0.004], [R - 0.04, 0.171, 0.128, 0.008, 1.03, 1],
       [R + 0.04, 0.183, 0.133, 0.012, 1.06, 1], [R + 0.11, 0.193, 0.133, 0.01, 1.05, 1.03], [R + 0.17, 0.197, 0.126, 0, 1, 1.05], [R + 0.21, 0.183, 0.112, -0.005], [R + 0.24, 0.126, 0.09, -0.006], [H + 0.005, 0.068, 0.062], [H + 0.02, 0.061, 0.057]].map(r => [r[0], r[1] * d, r[2] * d, r[3] || 0, r[4] || 1, r[5] || 1]),
-      [[B - 0.13, { saum: 0.75, becken: 0.25 }], [B - 0.02, { saum: 0.35, becken: 0.65 }], [B + 0.03, { becken: 1 }], [W, { becken: 0.5, wirbel: 0.5 }], [W + 0.08, { wirbel: 1 }], [R, { wirbel: 0.5, brust: 0.5 }], [R + 0.08, { brust: 1 }], [R + 0.22, { brust: 1 }], [H + 0.02, { brust: 0.45, hals: 0.55 }]], 0, 0, m.trikot, 30, 0.9);
+      [[B - 0.13, { saum: 0.75, becken: 0.25 }], [B - 0.02, { saum: 0.35, becken: 0.65 }], [B + 0.03, { becken: 1 }], [W, { becken: 0.5, wirbel: 0.5 }], [W + 0.08, { wirbel: 1 }], [R, { wirbel: 0.5, brust: 0.5 }], [R + 0.08, { brust: 1 }], [R + 0.22, { brust: 1 }], [H + 0.02, { brust: 0.45, hals: 0.55 }]], 0, 0, 'trikot', 30, 0.9);
     // Hals
-    schlauch([[H - 0.03, 0.068, 0.062], [H + 0.03, 0.055, 0.054, 0, 1, 1.06], [H + 0.08, 0.049, 0.05, 0.004], [H + 0.11, 0.045, 0.047, 0.008]], [[H - 0.03, { brust: 0.6, hals: 0.4 }], [H + 0.03, { hals: 1 }], [H + 0.07, { hals: 0.6, kopf: 0.4 }], [H + 0.11, { kopf: 1 }]], 0, 0, m.haut, 14);
+    schlauch([[H - 0.03, 0.068, 0.062], [H + 0.03, 0.055, 0.054, 0, 1, 1.06], [H + 0.08, 0.049, 0.05, 0.004], [H + 0.11, 0.045, 0.047, 0.008]], [[H - 0.03, { brust: 0.6, hals: 0.4 }], [H + 0.03, { hals: 1 }], [H + 0.07, { hals: 0.6, kopf: 0.4 }], [H + 0.11, { kopf: 1 }]], 0, 0, 'haut', 14);
     // Hose: Becken und Hosenbeine
     const hb = gk ? 1.1 : 1;
-    schlauch([[B - 0.1, 0.174 * hb, 0.128 * hb, 0, 1, 1.08], [B - 0.03, 0.17 * hb, 0.124 * hb, 0, 1, 1.06], [B + 0.04, 0.162 * hb, 0.12 * hb], [B + 0.07, 0.158 * hb, 0.118 * hb]], [[B - 0.1, { becken: 1 }], [B + 0.07, { becken: 1 }]], 0, 0, m.hose, 24);
+    schlauch([[B - 0.1, 0.174 * hb, 0.128 * hb, 0, 1, 1.08], [B - 0.03, 0.17 * hb, 0.124 * hb, 0, 1, 1.06], [B + 0.04, 0.162 * hb, 0.12 * hb], [B + 0.07, 0.158 * hb, 0.118 * hb]], [[B - 0.1, { becken: 1 }], [B + 0.07, { becken: 1 }]], 0, 0, 'hose', 24);
     for (const sx of [1, -1]) {
       const n = sx > 0 ? 'L' : 'R', cx = sx * hX, sh = sx * schX, kn = 'knie' + n, hu = 'huefte' + n, fu = 'fuss' + n, el = 'ellbogen' + n, sc = 'schulter' + n, ha = 'hand' + n;
       if (gk) {
         // Lange gepolsterte Torhüterhose mit eingearbeitetem Knieschutz
         schlauch([[F + 0.04, 0.062, 0.07, 0.004], [F + 0.14, 0.07, 0.08, 0.006], [F + 0.27, 0.078, 0.088, 0.008], [K - 0.12, 0.082, 0.092, 0.01, 1.12, 1], [K - 0.04, 0.088, 0.098, 0.014, 1.22, 1], [K + 0.04, 0.094, 0.104, 0.014, 1.18, 1], [K + 0.14, 0.108, 0.11, 0.006], [HU - 0.12, 0.116, 0.116], [HU - 0.02, 0.118, 0.12]],
-          [[F + 0.04, { [fu]: 0.3, [kn]: 0.7 }], [F + 0.12, { [kn]: 1 }], [K - 0.05, { [kn]: 1 }], [K + 0.03, { [hu]: 0.5, [kn]: 0.5 }], [K + 0.1, { [hu]: 1 }], [HU - 0.06, { [hu]: 1 }], [HU - 0.02, { [hu]: 0.6, becken: 0.4 }]], cx, 0, m.hose, 18);
+          [[F + 0.04, { [fu]: 0.3, [kn]: 0.7 }], [F + 0.12, { [kn]: 1 }], [K - 0.05, { [kn]: 1 }], [K + 0.03, { [hu]: 0.5, [kn]: 0.5 }], [K + 0.1, { [hu]: 1 }], [HU - 0.06, { [hu]: 1 }], [HU - 0.02, { [hu]: 0.6, becken: 0.4 }]], cx, 0, 'hose', 18);
       } else {
         schlauch([[HU - 0.25, 0.106, 0.102], [HU - 0.15, 0.106, 0.104], [HU - 0.05, 0.104, 0.104], [HU + 0.01, 0.1, 0.1]],
-          [[K - 0.04, { [kn]: 1 }], [K + 0.03, { [hu]: 0.5, [kn]: 0.5 }], [K + 0.1, { [hu]: 1 }], [HU - 0.06, { [hu]: 1 }], [HU + 0.01, { [hu]: 0.6, becken: 0.4 }]], cx, 0, m.hose, 18);
+          [[K - 0.04, { [kn]: 1 }], [K + 0.03, { [hu]: 0.5, [kn]: 0.5 }], [K + 0.1, { [hu]: 1 }], [HU - 0.06, { [hu]: 1 }], [HU + 0.01, { [hu]: 0.6, becken: 0.4 }]], cx, 0, 'hose', 18);
         // Bein (Haut) und Stutzen mit Wade
         schlauch([[K - 0.07, 0.05, 0.05], [K - 0.03, 0.052, 0.052], [K, 0.054, 0.055, 0, 1.07, 1], [K + 0.03, 0.056, 0.058, 0.002], [K + 0.09, 0.064, 0.066], [K + 0.17, 0.074, 0.076, 0, 1, 1.05], [K + 0.25, 0.082, 0.082, 0, 1, 1.06], [K + 0.33, 0.086, 0.086]],
-          [[K - 0.07, { [kn]: 1 }], [K - 0.02, { [kn]: 0.75, [hu]: 0.25 }], [K, { [kn]: 0.5, [hu]: 0.5 }], [K + 0.04, { [hu]: 0.8, [kn]: 0.2 }], [K + 0.1, { [hu]: 1 }]], cx, 0, m.haut, 18);
+          [[K - 0.07, { [kn]: 1 }], [K - 0.02, { [kn]: 0.75, [hu]: 0.25 }], [K, { [kn]: 0.5, [hu]: 0.5 }], [K + 0.04, { [hu]: 0.8, [kn]: 0.2 }], [K + 0.1, { [hu]: 1 }]], cx, 0, 'haut', 18);
         schlauch([[F + 0.015, 0.034, 0.037], [F + 0.06, 0.035, 0.038], [F + 0.13, 0.041, 0.045, -0.003, 1, 1.08], [F + 0.22, 0.052, 0.058, -0.008, 0.96, 1.14], [F + 0.3, 0.057, 0.062, -0.01, 0.96, 1.12], [K - 0.09, 0.055, 0.059, -0.006], [K - 0.05, 0.053, 0.055], [K - 0.03, 0.055, 0.056]],
-          [[F + 0.015, { [fu]: 0.45, [kn]: 0.55 }], [F + 0.06, { [kn]: 0.85, [fu]: 0.15 }], [F + 0.12, { [kn]: 1 }], [K - 0.04, { [kn]: 1 }], [K + 0.03, { [kn]: 0.6, [hu]: 0.4 }]], cx, 0, m.stutzen, 18);
+          [[F + 0.015, { [fu]: 0.45, [kn]: 0.55 }], [F + 0.06, { [kn]: 0.85, [fu]: 0.15 }], [F + 0.12, { [kn]: 1 }], [K - 0.04, { [kn]: 1 }], [K + 0.03, { [kn]: 0.6, [hu]: 0.4 }]], cx, 0, 'stutzen', 18);
       }
       // Ärmel (Torhüter: lang und gepolstert bis zum Handgelenk)
       const aerm = gk ? [[HA + 0.03, 0.044, 0.042], [HA + 0.1, 0.05, 0.048], [E - 0.07, 0.057, 0.055], [E, 0.064, 0.062, 0, 1, 1.1], [E + 0.08, 0.066, 0.064], [S - 0.1, 0.072, 0.07], [S - 0.02, 0.075, 0.072], [S + 0.03, 0.054, 0.054], [S + 0.06, 0.02, 0.02]]
         : [[S - 0.2, 0.067, 0.065], [S - 0.13, 0.07, 0.068], [S - 0.05, 0.074, 0.071], [S + 0.01, 0.069, 0.066], [S + 0.045, 0.048, 0.048], [S + 0.065, 0.02, 0.02]];
-      schlauch(aerm, [[HA + 0.02, { [el]: 0.7, [ha]: 0.3 }], [E - 0.04, { [el]: 1 }], [E, { [el]: 0.5, [sc]: 0.5 }], [E + 0.05, { [sc]: 1 }], [S - 0.03, { [sc]: 1 }], [S + 0.03, { [sc]: 0.6, brust: 0.4 }], [S + 0.065, { [sc]: 0.3, brust: 0.7 }]], sh, schZ, m.aermel, 18);
+      schlauch(aerm, [[HA + 0.02, { [el]: 0.7, [ha]: 0.3 }], [E - 0.04, { [el]: 1 }], [E, { [el]: 0.5, [sc]: 0.5 }], [E + 0.05, { [sc]: 1 }], [S - 0.03, { [sc]: 1 }], [S + 0.03, { [sc]: 0.6, brust: 0.4 }], [S + 0.065, { [sc]: 0.3, brust: 0.7 }]], sh, schZ, 'aermel', 18);
       if (!gk) schlauch([[HA - 0.005, 0.026, 0.022], [HA + 0.03, 0.028, 0.024], [HA + 0.09, 0.037, 0.033], [E - 0.08, 0.044, 0.041], [E - 0.025, 0.044, 0.042], [E, 0.042, 0.041], [E + 0.03, 0.045, 0.043], [E + 0.09, 0.052, 0.049], [S - 0.16, 0.054, 0.051]],
-        [[HA - 0.005, { [el]: 0.5, [ha]: 0.5 }], [HA + 0.04, { [el]: 0.85, [ha]: 0.15 }], [HA + 0.08, { [el]: 1 }], [E - 0.04, { [el]: 1 }], [E, { [el]: 0.5, [sc]: 0.5 }], [E + 0.04, { [sc]: 1 }]], sh, schZ, m.haut, 16);
+        [[HA - 0.005, { [el]: 0.5, [ha]: 0.5 }], [HA + 0.04, { [el]: 0.85, [ha]: 0.15 }], [HA + 0.08, { [el]: 1 }], [E - 0.04, { [el]: 1 }], [E, { [el]: 0.5, [sc]: 0.5 }], [E + 0.04, { [sc]: 1 }]], sh, schZ, 'haut', 16);
     }
-    for (const [mat, P] of puffer) {
+    const geos = new Map();
+    for (const [name, P] of puffer) {
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.Float32BufferAttribute(P.pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(P.uv, 2));
       g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(P.si, 4)); g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(P.sw, 4));
       g.setIndex(P.idx); g.computeVertexNormals(); for (const [st, ri, sg] of P.naehte) nahtGlaetten(g, ri, sg, st);
-      const me = new THREE.SkinnedMesh(g, mat); me.castShadow = true; me.frustumCulled = false; this.objekt.add(me); me.updateMatrixWorld(true); me.bind(this.skelett);
+      geos.set(name, g);
     }
+    return geos;
+    });
+    for (const [name, g] of koerperGeos) { const me = new THREE.SkinnedMesh(g, m[name]); me.castShadow = true; me.frustumCulled = false; this.objekt.add(me); me.updateMatrixWorld(true); me.bind(this.skelett); }
     // ---------- Kopf mit gemaltem Gesicht, Ohren, Frisuren bzw. Torhütermaske ----------
     const Kf = J.kopf, ohr = (sx) => teilGeo(new THREE.SphereGeometry(0.022, 12, 8), sx * 0.083, -0.004, -0.005, 0, 0, 0, 0.42, 1.05, 0.75);
-    M(verbinde([kopfGeometrie(null), ohr(1), ohr(-1)], [null, [0.75, 0.3], [0.75, 0.3]]), m.kopf, Kf, 0, 0.11, 0);
+    M(geoMerken('kopf', () => verbinde([kopfGeometrie(null), ohr(1), ohr(-1)], [null, [0.75, 0.3], [0.75, 0.3]])), m.kopf, Kf, 0, 0.11, 0);
     if (!gk) {
       m.haar = std('#231711', 0.55, { map: haarTextur() }); m.band = std('#ffffff', 0.75);
-      this.frisuren = FRISUREN.map(f => { const me = M(kopfGeometrie(f), m.haar, Kf, 0, 0.11, 0); me.visible = false; return me; });
-      this.band = M(teilGeo(new THREE.TorusGeometry(0.0835, 0.0075, 6, 36), 0, 0, 0, Math.PI / 2 + 0.12, 0, 0, 1, 1.12, 1), m.band, Kf, 0, 0.152, 0.003); this.band.visible = false;
+      this.frisuren = FRISUREN.map((f, i) => { const me = M(geoMerken('frisur' + i, () => kopfGeometrie(f)), m.haar, Kf, 0, 0.11, 0); me.visible = false; return me; });
+      this.band = M(geoMerken('band', () => teilGeo(new THREE.TorusGeometry(0.0835, 0.0075, 6, 36), 0, 0, 0, Math.PI / 2 + 0.12, 0, 0, 1, 1.12, 1)), m.band, Kf, 0, 0.152, 0.003); this.band.visible = false;
       m.schweiss = std('#f2f2f2', 0.9);
-      M(new THREE.CylinderGeometry(0.031, 0.029, 0.045, 12), m.schweiss, J['hand' + (this.s < 0 ? 'R' : 'L')], 0, 0.014, 0);              // Schweißband an der unteren Hand
+      M(geoMerken('schweiss', () => new THREE.CylinderGeometry(0.031, 0.029, 0.045, 12)), m.schweiss, J['hand' + (this.s < 0 ? 'R' : 'L')], 0, 0.014, 0);              // Schweißband an der unteren Hand
     } else {
       m.helm = std('#ffffff', 0.28, { side: THREE.DoubleSide }); m.gitter = std('#22252b', 0.32, { metalness: 0.85 });
-      const gi = maskenGitter();
-      M(maskenSchale(), m.helm, Kf, 0, 0.112, -0.004); M(gi.rahmen, m.helm, Kf, 0, 0.112, -0.004); M(gi.staebe, m.gitter, Kf, 0, 0.112, -0.004);
+      const gi = geoMerken('gitter', maskenGitter);
+      M(geoMerken('maske', maskenSchale), m.helm, Kf, 0, 0.112, -0.004); M(gi.rahmen, m.helm, Kf, 0, 0.112, -0.004); M(gi.staebe, m.gitter, Kf, 0, 0.112, -0.004);
       m.handschuh = std('#16181c', 0.8);
     }
     // ---------- Hände (Faust um den Schaft bzw. offene Torhüterhandschuhe) und Hallenschuhe ----------
-    const schuh = schuhGeometrie();
+    const schuh = geoMerken('schuh', schuhGeometrie);
     for (const n of ['L', 'R']) {
       const sx = n === 'L' ? 1 : -1;
-      if (gk) M(handGeometrie('offen', sx, 1.28), m.handschuh, J['hand' + n]); else M(handGeometrie('faust', sx), m.haut, J['hand' + n]);
+      if (gk) M(geoMerken('offen' + n, () => handGeometrie('offen', sx, 1.28)), m.handschuh, J['hand' + n]); else M(geoMerken('faust' + n, () => handGeometrie('faust', sx)), m.haut, J['hand' + n]);
       M(schuh, m.schuh, J['fuss' + n]);
     }
   }
@@ -2025,18 +2047,20 @@ class Figur {
     this.kelleObj = new THREE.Group(); this.schaftObj = new THREE.Group(); this.schlaeger.add(this.kelleObj, this.schaftObj);
     // Kellenblatt: gebogene Fläche mit echten Durchbrüchen, dazu Rahmen (Ober- und Unterkante, Ferse) und Hakenspitze
     const biege = (geo) => { const p = geo.getAttribute('position'); for (let i = 0; i < p.count; i++) { const x = p.getX(i); p.setZ(i, p.getZ(i) + this.s * 0.03 * (x / 0.28) * (x / 0.28)); } geo.computeVertexNormals(); return geo; };
-    const blatt = new THREE.PlaneGeometry(0.27, 0.06, 14, 1); blatt.translate(0.145, 0, 0); biege(blatt);
+    const blatt = geoMerken('blatt' + this.s, () => { const g = new THREE.PlaneGeometry(0.27, 0.06, 14, 1); g.translate(0.145, 0, 0); return biege(g); });
     this.mats.kelle = new THREE.MeshStandardMaterial({ map: _kelleTex.map, alphaMap: _kelleTex.alpha, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.45 });
     const ke = new THREE.Mesh(blatt, this.mats.kelle); ke.castShadow = true; this.kelleObj.add(ke);
     this.mats.rahmen = new THREE.MeshStandardMaterial({ color: 0xf2f2ee, roughness: 0.4 });
-    const teile = [];
-    for (const y of [0.034, -0.034]) { const r = new THREE.BoxGeometry(0.29, 0.009, 0.016, 14, 1, 1); r.translate(0.145, y, 0); teile.push(biege(r)); }
-    teile.push(teilGeo(new THREE.BoxGeometry(0.026, 0.076, 0.02), 0.006, 0, 0)); teile.push(teilGeo(new THREE.CylinderGeometry(0.009, 0.009, 0.072, 8), 0.288, 0, this.s * 0.03));
-    const rahmen = new THREE.Mesh(verbinde(teile), this.mats.rahmen); rahmen.castShadow = true; this.kelleObj.add(rahmen);
+    const rahmenGeo = geoMerken('rahmen' + this.s, () => {
+      const teile = [];
+      for (const y of [0.034, -0.034]) { const r = new THREE.BoxGeometry(0.29, 0.009, 0.016, 14, 1, 1); r.translate(0.145, y, 0); teile.push(biege(r)); }
+      teile.push(teilGeo(new THREE.BoxGeometry(0.026, 0.076, 0.02), 0.006, 0, 0)); teile.push(teilGeo(new THREE.CylinderGeometry(0.009, 0.009, 0.072, 8), 0.288, 0, this.s * 0.03));
+      return verbinde(teile);
+    });
+    const rahmen = new THREE.Mesh(rahmenGeo, this.mats.rahmen); rahmen.castShadow = true; this.kelleObj.add(rahmen);
     // Schaft als Drehkörper: Muffe zur Kelle, leicht konisch, dickeres Griffband, Endknauf – eine Textur über die ganze Länge
     const L = MASS.schaft, profil = [[0.0145, 0], [0.0166, 0.02], [0.0166, 0.068], [0.0136, 0.088], [0.0128, 0.6], [0.0123, 0.672], [0.0152, 0.69], [0.0148, 0.962], [0.0174, 0.97], [0.0174, 0.984], [0.0005, 0.988]].map(p => new THREE.Vector2(p[0], p[1]));
-    const sg = new THREE.LatheGeometry(profil, 12), uv = sg.getAttribute('uv'), sp = sg.getAttribute('position');
-    for (let i = 0; i < uv.count; i++) uv.setY(i, sp.getY(i) / L);
+    const sg = geoMerken('schaft', () => { const g = new THREE.LatheGeometry(profil, 12), uv = g.getAttribute('uv'), sp = g.getAttribute('position'); for (let i = 0; i < uv.count; i++) uv.setY(i, sp.getY(i) / L); return g; });
     this.mats.schaft = new THREE.MeshStandardMaterial({ roughness: 0.38, metalness: 0.2 });
     const sch = new THREE.Mesh(sg, this.mats.schaft); sch.castShadow = true; this.schaftObj.add(sch);
     this.ferse = new V3(); this.kelleDir = new V3(1, 0, 0); this.schaftTop = new V3();
@@ -2402,8 +2426,10 @@ const POSEN_TORWART = {
   stehen(e, t) { const P = basisPose(); P.hoehe = 0.86; P.pitch = 0.18; P.beuge = 0.3; P.hL = [0.42, 0.7, 0.3]; P.hR = [-0.42, 0.7, 0.3]; P.elL = [1, -0.4, -0.3]; P.elR = [-1, -0.4, -0.3]; return P; },
   grund(e, t) {
     const P = basisPose(), lean = klemme(e.lokVel.x * 0.06, -0.15, 0.15);
-    P.hoehe = 0.6 + Math.sin(t * 2.4) * 0.006; P.pitch = 0.06; P.beuge = 0.18; P.roll = -lean; P.fW = 1; P.fNeig = 1.5;
-    P.fL = [0.2, 0.075, -0.42]; P.fR = [-0.2, 0.075, -0.42]; P.knL = [0.25, -0.6, 1]; P.knR = [-0.25, -0.6, 1];
+    // Rutschen auf den Knien: beim Verschieben wechseln die Knie leicht die Last (kleine Wippbewegung)
+    const g = Math.sin(t * 13) * Math.min(1, Math.hypot(e.lokVel.x, e.lokVel.z) / 1.6);
+    P.hoehe = 0.6 + Math.sin(t * 2.4) * 0.006 + Math.abs(g) * 0.012; P.pitch = 0.06; P.beuge = 0.18; P.roll = -lean + g * 0.035; P.fW = 1; P.fNeig = 1.5;
+    P.fL = [0.2, 0.075 + Math.max(0, g) * 0.03, -0.42]; P.fR = [-0.2, 0.075 + Math.max(0, -g) * 0.03, -0.42]; P.knL = [0.25, -0.6, 1]; P.knR = [-0.25, -0.6, 1];
     P.hL = [0.42, 0.52, 0.22]; P.hR = [-0.42, 0.52, 0.22]; P.elL = [1, -0.3, -0.4]; P.elR = [-1, -0.3, -0.4];
     return P;
   },
@@ -2557,7 +2583,7 @@ class Schuetze {
       case 'jubel': case 'enttaeuscht': wunsch.set(0, 0, 0); animName = this.zustand; break;
     }
     // Bewegung (begrenzte Beschleunigung)
-    const acc = this.zustand === 'lauf' ? 10 : 7;
+    const acc = this.zustand === 'lauf' ? (welt.menschPraezise ? 15 : 10) : 7;      // vom Menschen gesteuert reagiert der Spieler direkter
     _c.subVectors(wunsch, this.vel); const l = _c.length(); if (l > acc * dt) _c.multiplyScalar(acc * dt / l);
     this.vel.add(_c); this.vel.y = 0;
     this.pos.addScaledVector(this.vel, dt);
@@ -2580,7 +2606,8 @@ class Schuetze {
     if (this.kontrolle) { this.fuehreBall(dt, ball); zuLokal(this.lokBall, ball.p, this.pos, this.yaw); }
     this.pushSeite = daempf(this.pushSeite, this.dribbelDir, this.finteT >= 0 ? 40 : 24, dt);
     // Animation
-    if (this.anim.name !== animName || animParam?.neu) this.anim.setze(animName, animParam, animName === 'schuss' ? 0.06 : undefined);
+    // „neu“ startet eine Animation genau einmal neu (sonst begänne die Überblendung in jedem Schritt von vorn)
+    if (this.anim.name !== animName || (animParam && animParam.neu)) { this.anim.setze(animName, animParam, animName === 'schuss' ? 0.05 : undefined); if (animParam) animParam.neu = false; }
     const P = this.anim.update(dt, this);
     this.fig.anwenden(P, { pos: this.pos, yaw: this.yaw, vel: this.vel, dt, ballPos: ball.p && ball.p.isVector3 ? ball.p : null, blickZiel: this.zustand === 'laden' || this.zustand === 'schuss' ? _d.set(TOR.x, 0.4, this.zielAbsicht.z * 0.7) : this.zustand === 'lauf' && ball.p.isVector3 ? _d.set(mix(ball.p.x, TOR.x, 0.55), mix(ball.p.y, 0.9, 0.55), mix(ball.p.z, 0, 0.55)) : ball.p, schrittCb: welt.schrittCb });
   }
@@ -3119,7 +3146,7 @@ const QUALI = {
   hoch: { pr: 1.5, schatten: 2048, zuschauer: 1, effekte: true, spiegel: true, msaa: 4 }
 };
 /* Kann der Browser in Gleitkomma-Texturen rendern? (Voraussetzung für Bloom und Spiegelung) */
-const KANN_FLOAT = (() => { try { const gl = document.createElement('canvas').getContext('webgl2'); return !!(gl && (gl.getExtension('EXT_color_buffer_float') || gl.getExtension('EXT_color_buffer_half_float'))); } catch (e) { return false; } })();
+const KANN_FLOAT = (() => { try { const gl = document.createElement('canvas').getContext('webgl2'); if (!gl) return false; const ok = !!(gl.getExtension('EXT_color_buffer_float') || gl.getExtension('EXT_color_buffer_half_float')); const weg = gl.getExtension('WEBGL_lose_context'); if (weg) weg.loseContext(); return ok; } catch (e) { return false; } })();
 function initSzene() {
   renderer = new THREE.WebGLRenderer({ antialias: !KANN_FLOAT, powerPreference: 'high-performance' });
   renderer.domElement.id = 'szene'; document.body.prepend(renderer.domElement);
@@ -3138,7 +3165,7 @@ function initSzene() {
   kontaktSchatten.frustumCulled = false; kontaktSchatten.layers.set(2); kontaktSchatten.count = 0; kontaktSchatten.renderOrder = 1; szene.add(kontaktSchatten);
   Bild.init(); grafikAnwenden();
   addEventListener('resize', groesse); groesse();
-  Bus.an('config', (pfad) => { if (pfad === '*' || pfad.startsWith('grafik')) grafikAnwenden(); if (pfad === '*' || pfad === 'kamera.fov') { kamera.fov = Config.kamera.fov; kamera.updateProjectionMatrix(); } });
+  Bus.an('config', (pfad) => { if (pfad === '*' || pfad.startsWith('grafik')) grafikAnwenden(); });
 }
 function groesse() { renderer.setSize(innerWidth, innerHeight); kamera.aspect = innerWidth / innerHeight; kamera.updateProjectionMatrix(); Bild.groesse(); Vorschau.groesse(); }
 function grafikAnwenden() {
@@ -3148,8 +3175,9 @@ function grafikAnwenden() {
   renderer.shadowMap.enabled = an; halle.sonne.castShadow = an;
   if (halle.sonne.shadow.mapSize.x !== q.schatten) { halle.sonne.shadow.mapSize.set(q.schatten, q.schatten); if (halle.sonne.shadow.map) { halle.sonne.shadow.map.dispose(); halle.sonne.shadow.map = null; } }
   if (halle.bodenArt !== Config.grafik.boden) { halle.setzeBoden(Config.grafik.boden); const alt = szene.environment; szene.environment = umgebungErzeugen(renderer, Config.grafik.boden === 'kunststoff' ? 0x2a6aa3 : 0xb08552); if (alt) alt.dispose(); }
-  halle.bodenMat.roughness = Bild.spiegel ? 0.7 : 0.42;
-  szene.traverse(o => { if (o.material) { const m = Array.isArray(o.material) ? o.material : [o.material]; m.forEach(x => x.needsUpdate = true); } });
+  halle.bodenMat.roughness = Bild.spiegel ? 0.7 : 0.52;
+  // Schatten an/aus ändert die Shader: Materialien nur dann neu übersetzen lassen
+  if (grafikAnwenden.schatten !== an) { grafikAnwenden.schatten = an; szene.traverse(o => { if (o.material) { const m = Array.isArray(o.material) ? o.material : [o.material]; m.forEach(x => x.needsUpdate = true); } }); }
   halle.zuschauer.setzeAnzahl(Math.floor(halle.zuschauer.gesamt * klemme(Config.grafik.zuschauer, 0, 1) * q.zuschauer));
   document.getElementById('fps').classList.toggle('versteckt', !Config.grafik.fps);
 }
@@ -3159,7 +3187,7 @@ function grafikAnwenden() {
    Fällt ohne Gleitkomma-Texturen oder in der Stufe „niedrig“ auf direktes Zeichnen zurück.
    ===================================================================== */
 const Bild = {
-  effekte: false, spiegel: false, skala: 1, basisPr: 1, msaa: 0, ohneRender: false, rt: null, bloom: [], rtSpiegel: null, zeit: 0, lastMs: 16, hochT: 0, tiefT: 0,
+  effekte: false, spiegel: false, skala: 1, basisPr: 1, msaa: 0, ohneRender: false, rt: null, bloom: [], rtSpiegel: null, zeit: 0, lastMs: 16, hochT: 0, tiefT: 0, kann: KANN_FLOAT, geprueft: false, notStufe: 0, hochZeit: -99, hochSperre: false,
   init() {
     const dreieck = new THREE.BufferGeometry();
     dreieck.setAttribute('position', new THREE.Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3)); dreieck.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, 2, 0, 0, 2], 2));
@@ -3188,7 +3216,9 @@ const Bild = {
   },
   /** Qualitätsstufe übernehmen. */
   einrichten(q) {
-    this.effekte = !!(q.effekte && KANN_FLOAT); this.spiegel = !!(q.spiegel && KANN_FLOAT && Config.grafik.spiegelung !== false); this.msaa = q.msaa; this.basisPr = Math.min(window.devicePixelRatio || 1, q.pr);
+    const neu = [!!(q.effekte && this.kann), !!(q.spiegel && this.kann && this.notStufe < 1 && Config.grafik.spiegelung !== false), q.msaa, Math.min(window.devicePixelRatio || 1, q.pr)];
+    if (this._stand && neu.every((x, i) => x === this._stand[i])) return;          // nichts geändert (z. B. nur die Zuschauerdichte)
+    this._stand = neu; [this.effekte, this.spiegel, this.msaa, this.basisPr] = neu;
     this.groesse();
   },
   groesse() {
@@ -3199,6 +3229,10 @@ const Bild = {
     weg(this.rt); this.bloom.forEach(weg); weg(this.rtSpiegel); this.rt = null; this.bloom = []; this.rtSpiegel = null;
     if (this.effekte) {
       this.rt = new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType, samples: this.msaa });
+      // Einmalige Selbstprüfung: lässt sich in das Gleitkomma-Ziel wirklich zeichnen? Sonst dauerhaft direkt zeichnen.
+      if (!this.geprueft) { this.geprueft = true; if (!this.zielBrauchbar(this.rt)) { this.kann = false; this.effekte = this.spiegel = false; this._stand = null; this.rt.dispose(); this.rt = null; } }
+    }
+    if (this.effekte) {
       for (let i = 1; i <= 4; i++) this.bloom.push(new THREE.WebGLRenderTarget(Math.max(4, w >> i), Math.max(4, h >> i), { type: THREE.HalfFloatType, depthBuffer: false }));
     }
     if (this.spiegel) {
@@ -3206,6 +3240,10 @@ const Bild = {
       halle.spiegelUni.tSpiegel.value = this.rtSpiegel.texture; halle.spiegelUni.uSpiegelPx.value.set(1 / this.rtSpiegel.width, 1 / this.rtSpiegel.height);
     }
     if (halle) halle.spiegelUni.uSpiegelSt.value = this.spiegel ? 1 : 0;
+  },
+  zielBrauchbar(rt) {
+    try { renderer.setRenderTarget(rt); const gl = renderer.getContext(), ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE; renderer.setRenderTarget(null); return ok; }
+    catch (e) { try { renderer.setRenderTarget(null); } catch (x) { /* egal */ } return false; }
   },
   pass(mat, quelle, ziel) {
     mat.uniforms.t.value = quelle.texture; mat.uniforms.px.value.set(0.5 / quelle.width, 0.5 / quelle.height);
@@ -3244,8 +3282,13 @@ const Bild = {
     if (this.ohneRender || dt <= 0) return;
     this.lastMs = mix(this.lastMs, dt * 1000, 0.06);
     if (this.lastMs > 23) { this.tiefT += dt; this.hochT = 0; } else if (this.lastMs < 17.5) { this.hochT += dt; this.tiefT = 0; } else { this.hochT = 0; this.tiefT = 0; }
-    if (this.tiefT > 2.5 && this.skala > 0.55) { this.skala = Math.max(0.55, this.skala - 0.15); this.tiefT = 0; this.groesse(); }
-    else if (this.hochT > 8 && this.skala < 1) { this.skala = Math.min(1, this.skala + 0.15); this.hochT = 0; this.groesse(); }
+    if (this.tiefT > 2.5 && this.skala > 0.55) { this.skala = Math.max(0.55, this.skala - 0.15); this.tiefT = 0; if (this.zeit - this.hochZeit < 20) this.hochSperre = true; this.groesse(); }   // kein Pendeln: nach einem Rückfall nicht erneut anheben
+    else if (this.tiefT > 4 && this.notStufe < 2) {
+      // Kleinste Auflösung reicht nicht: erst die Bodenspiegelung abschalten, dann die Zuschauerzahl halbieren
+      this.notStufe++; this.tiefT = 0;
+      if (this.notStufe === 1) { this._stand = null; grafikAnwenden(); } else halle.zuschauer.setzeAnzahl(Math.floor(halle.zuschauer.mesh.count / 2));
+    }
+    else if (this.hochT > 8 && this.skala < 1 && !this.hochSperre) { this.skala = Math.min(1, this.skala + 0.15); this.hochT = 0; this.hochZeit = this.zeit; this.groesse(); }
   }
 };
 
@@ -3504,8 +3547,8 @@ const Spiel = {
     if (Math.abs(r.direction.y) > 1e-4) { const tb = -r.origin.y / r.direction.y; if (tb > 0) { const bx = r.origin.x + r.direction.x * tb; if (bx < TOR.x - 0.3 && bx > TORRAUM.vorne - 4) out.boden = { x: bx, z: r.origin.z + r.direction.z * tb }; } }
     return out;
   },
-  /* Schütze: Zeiger/Finger zeigt das Ziel im Tor, der Spieler läuft selbst in diese Richtung.
-     In Schussnähe gedrückt halten = Kraft, loslassen = Schuss. */
+  /* Schütze: Tasten, Joystick oder Stick bewegen den Spieler (relativ zur Kamera); Zeiger, Finger oder rechter Stick
+     zeigen das Ziel im Tor. Gedrückt halten = Kraft, loslassen = Schuss. Ohne Laufeingabe läuft der Spieler selbst. */
   menschSchuetze(dt) {
     const S = this.schuetze, L = Eingabe.lenkung(), sp = Eingabe.zielBildschirm(), { r, f } = Kam.rechtsVorne();
     // Zielen: Maus/Finger auf die Torebene, Gamepad rechter Stick
@@ -3530,8 +3573,8 @@ const Spiel = {
     if (S.zustand === 'lauf' && !S.imSchussbereich()) this.wischHochFlag = false;
     return A;
   },
-  /* Torhüter: Stellungsspiel automatisch (A/D bzw. Stick übersteuert),
-     Parade durch Tippen/Klicken auf den Punkt im Tor – das Timing entscheidet. */
+  /* Torhüter: frei im Torraum beweglich (ohne Eingabe stellt er sich selbst), Parade durch Tippen/Klicken auf den
+     Punkt im Tor – das Timing entscheidet. „Raus!“ = dem Schützen entgegenspringen. */
   menschTorwart(dt) {
     const T = this.torwart, L = Eingabe.lenkung(), { r } = Kam.rechtsVorne(), seite = Math.abs(r.z) > 0.3 ? Math.sign(r.z) : -1;
     let A = { bewegen: new V3(), parade: null };
@@ -3654,7 +3697,7 @@ const Spiel = {
   /** Wiederholung um den Zeitpunkt „mitte“ (Tor bzw. Torhüterkontakt), zweimal aus verschiedenen Blickwinkeln. */
   replayStart(mitte, tor) {
     const r = this.replay, Z = this.aufnahme.zeiten; r.ende = Math.min(Z[Z.length - 1], mitte + (tor ? 0.5 : 0.75)); r.start = Math.max(Z[0], mitte - 1.5); r.t = r.start; r.pass = 0;
-    this.zustand = 'wiederholung'; Kam.schnitt = true; HUD.banner(`${t('wiederholung')}<small>${t('ueberspringen')}</small>`); HUD.schiri(null);
+    this.zustand = 'wiederholung'; Kam.schnitt = true; HUD.banner(`● ${t('wiederholung')}<small>${t('ueberspringen')}</small>`, true); HUD.schiri(null);
     this.ring.visible = this.ringHG.visible = this.zielKreis.visible = this.zielKraft.visible = this.zielStreu.visible = this.bahn.visible = false; halle.netz.zuruecksetzen();
     this.replaySchritt(0);
   },
@@ -3834,7 +3877,7 @@ const HUD = {
     }
   },
   zeit(f) { this.el.zeit.style.transform = `scaleX(${klemme(f, 0, 1)})`; },
-  banner(html) { const b = this.el.banner; if (!html) { b.classList.add('versteckt'); return; } b.innerHTML = html; b.classList.remove('versteckt'); },
+  banner(html, klein) { const b = this.el.banner; if (!html) { b.classList.add('versteckt'); return; } b.innerHTML = html; b.classList.toggle('klein', !!klein); b.classList.remove('versteckt'); },
   schiri(text) { const s = this.el.schiri; if (!text) { s.classList.add('versteckt'); return; } s.querySelector('.text').textContent = text; s.classList.remove('versteckt'); },
   /** Steuerhinweise als Tastenkärtchen – passend zur Rolle (Schütze, Torhüter, Zuschauer) und zum Eingabegerät. */
   steuerHinweis() {
@@ -3845,7 +3888,9 @@ const HUD = {
     else if (S.menschHaelt) z = touch ? [[t('g_links'), t('h_torraum')], [t('g_tipp_tor'), t('h_parade')], [t('g_tipp_ball'), t('trick_raus')]]
       : [[lauf, t('h_torraum')], [t('g_klick_tor'), t('h_parade')], [`${N('raus')} / ${t('g_klick_ball')}`, t('trick_raus')]];
     else z = [[N('kamera'), t('a_kamera')], [N('pause'), t('pause')], ['', t('h_zuschauen')]];
-    this.el.hinweis.innerHTML = z.map(([k, txt]) => `<span>${k ? `<kbd>${esc(k)}</kbd>` : ''}${esc(txt)}</span>`).join('');
+    const el = this.el.hinweis; el.innerHTML = z.map(([k, txt]) => `<span>${k ? `<kbd>${esc(k)}</kbd>` : ''}${esc(txt)}</span>`).join('');
+    // Auf Touch-Geräten nach einigen Sekunden ausblenden (das Spielfeld bleibt frei), beim nächsten Versuch wieder zeigen
+    el.classList.remove('aus'); clearTimeout(this._hinweisT); if (touch) this._hinweisT = setTimeout(() => el.classList.add('aus'), 7000);
   },
   /** Schussgeschwindigkeit kurz einblenden. */
   tempo(kmh, typ) {
@@ -4235,6 +4280,7 @@ const UI = {
         ${zeile(t('schwierigkeit'), this.schwierigkeitChips())}
         ${zeile(t('e_kamera'), chips('kam', ['auto', 'broadcast', 'schuetze', 'torwart'], Einst.kamera, w => t('k_' + w)))}
         ${zeile(t('e_qualitaet'), chips('q', ['niedrig', 'mittel', 'hoch'], Config.grafik.qualitaet, w => t('q_' + w)))}
+        ${zeile(t('e_boden'), chips('bd', ['parkett', 'kunststoff'], Config.grafik.boden, w => t('q_' + w)))}
         ${zeile(t('e_zielhilfe'), `<input type="checkbox" data-b="zielhilfe" ${Einst.zielhilfe ? 'checked' : ''}>`)}
         ${zeile(t('e_wiederholung'), `<input type="checkbox" data-b="wiederholung" ${Einst.wiederholung ? 'checked' : ''}>`)}
         ${zeile(t('e_farbenblind'), `<input type="checkbox" data-b="farbenblind" ${Einst.farbenblind ? 'checked' : ''}>`)}
@@ -4250,6 +4296,7 @@ const UI = {
     this.klick(d, '[data-zurueck]', () => ausPause ? (this.schliesseAlles(true), this.pauseZu()) : this.hauptmenue());
     this.klick(d, '[data-kam]', (el) => { Einst.kamera = el.dataset.kam; Kam.override = null; einstSpeichern(); d.querySelectorAll('[data-kam]').forEach(x => x.classList.toggle('an', x === el)); });
     this.klick(d, '[data-q]', (el) => { cfgSet('grafik.qualitaet', el.dataset.q); d.querySelectorAll('[data-q]').forEach(x => x.classList.toggle('an', x === el)); TuningPanel.werteAktualisieren(); });
+    this.klick(d, '[data-bd]', (el) => { cfgSet('grafik.boden', el.dataset.bd); d.querySelectorAll('[data-bd]').forEach(x => x.classList.toggle('an', x === el)); TuningPanel.werteAktualisieren(); });
     d.querySelectorAll('[data-b]').forEach(el => el.addEventListener('change', () => { Einst[el.dataset.b] = el.checked; einstSpeichern(); einstAnwenden(); }));
     d.querySelectorAll('[data-r]').forEach(el => el.addEventListener('input', () => { Einst[el.dataset.r] = +el.value; einstSpeichern(); einstAnwenden(); }));
     this.klick(d, '[data-taste]', (el) => { el.textContent = t('e_taste_druecken'); Eingabe.belegungWartet = (code) => { Einst.tasten[el.dataset.taste] = code; einstSpeichern(); el.textContent = Eingabe.tastenName(code); }; });

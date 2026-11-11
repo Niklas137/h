@@ -39,3 +39,4 @@ Prüfbefunde in `kader-manager/UMSETZUNG_Pruefbericht_2026-10-08.md`. Lokal star
 
 Eigenständiges 3D-Spiel in einer Datei: `floorball-penalty/index.html` (Three.js per CDN, sonst alles prozedural).
 Anleitung und bekannte Grenzen in `floorball-penalty/README.md`. Regeltests im Tuning-Panel (Taste T) oder per `window.__fps.Regeltests.ausfuehren()`.
+Prüfskripte (Playwright, Chromium) unter `floorball-penalty/pruefung/`: `node floorball-penalty/pruefung/regression.js` (18 Prüfungen) und `touch.js`.
