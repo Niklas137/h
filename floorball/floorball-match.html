@@ -1603,7 +1603,10 @@ const texSkala = () => Config.grafik.qualitaet === 'hoch' ? 1 : 0.5;
 function leinwandS(W, H) { const k = texSkala(), [c, g] = leinwand(Math.round(W * k), Math.round(H * k)); g.scale(k, k); return [c, g]; }
 /* Geometrien werden einmal erzeugt und von allen Figuren geteilt (Spieler, Vorschau, Siegerehrung) */
 const _geoCache = new Map();
-const geoMerken = (key, erzeuge) => { let g = _geoCache.get(key); if (!g) _geoCache.set(key, g = erzeuge()); return g; };
+/* Detailstufe der Figurengeometrie: 'niedrig' vereinfacht Kopf, Frisur und Hände (≈ 7 100 statt 18 200 Dreiecke je Figur),
+   für viele Figuren auf schwachen Geräten (Match auf dem Handy). Wird nur während des Figurenaufbaus gesetzt. */
+let FIG_DETAIL = 'hoch';
+const geoMerken = (key, erzeuge) => { const k = FIG_DETAIL === 'niedrig' ? key + '~n' : key; let g = _geoCache.get(k); if (!g) _geoCache.set(k, g = erzeuge()); return g; };
 /** Aussehen eines Spielers, fest aus Name und Nummer abgeleitet (jeder Spieler sieht immer gleich aus). */
 const AUGEN_TOENE = ['#5b3a1e', '#2f6f9f', '#4f7a3e', '#6b4a2a', '#7d858e'];
 const SCHUH_FARBEN = [['#f4f4f2', '#e63946'], ['#f4f4f2', '#1d3557'], ['#1b1d22', '#ffd23f'], ['#f4f4f2', '#2a9d8f'], ['#e63946', '#f4f4f2'], ['#1f6feb', '#f4f4f2'], ['#1b1d22', '#f4f4f2'], ['#c6f135', '#1b1d22']];
@@ -1811,7 +1814,7 @@ function gesichtTextur(a) {
 
 /** Modellierter Kopf (verformte Kugel): Kiefer, Kinn, Nase, Lippen, Brauenwulst, Augenhöhlen, Wangenknochen. frisur = Schale einer Frisur. */
 function kopfGeometrie(frisur) {
-  const g = new THREE.SphereGeometry(0.1, frisur ? 46 : 52, frisur ? 34 : 40);
+  const n = FIG_DETAIL === 'niedrig', g = new THREE.SphereGeometry(0.1, n ? (frisur ? 18 : 20) : (frisur ? 46 : 52), n ? (frisur ? 12 : 14) : (frisur ? 34 : 40));
   const p = g.getAttribute('position'), v = new V3();
   for (let i = 0; i < p.count; i++) {
     v.fromBufferAttribute(p, i); const n = v.clone().normalize();
@@ -1850,7 +1853,7 @@ function verbinde(liste, festUv) {
 /** Einzelteil für verbinde(): Geometrie verschieben, drehen, skalieren. */
 function teilGeo(geo, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0, sx = 1, sy = 1, sz = 1) { geo.scale(sx, sy, sz); if (rx) geo.rotateX(rx); if (ry) geo.rotateY(ry); if (rz) geo.rotateZ(rz); geo.translate(x, y, z); return geo; }
 /** Kapselstück zwischen zwei Punkten (für Finger). */
-function glied(a, b, r) { const A = new V3(...a), B = new V3(...b), l = A.distanceTo(B), g = new THREE.CapsuleGeometry(r, l, 3, 7); g.applyQuaternion(new Q4().setFromUnitVectors(ACHSE_Y, B.clone().sub(A).normalize())); g.translate((A.x + B.x) / 2, (A.y + B.y) / 2, (A.z + B.z) / 2); return g; }
+function glied(a, b, r) { const A = new V3(...a), B = new V3(...b), l = A.distanceTo(B), g = FIG_DETAIL === 'niedrig' ? new THREE.CapsuleGeometry(r, l, 1, 4) : new THREE.CapsuleGeometry(r, l, 3, 7); g.applyQuaternion(new Q4().setFromUnitVectors(ACHSE_Y, B.clone().sub(A).normalize())); g.translate((A.x + B.x) / 2, (A.y + B.y) / 2, (A.z + B.z) / 2); return g; }
 /**
  * Hand. Handgelenk im Ursprung, die Hand zeigt nach −Y, der Handrücken nach −Z.
  * 'faust': Finger schließen sich um eine Stange entlang der X-Achse durch (0, −GRIFF, 0). 'offen': flache Hand, Finger leicht gebeugt.
@@ -1859,8 +1862,9 @@ function glied(a, b, r) { const A = new V3(...a), B = new V3(...b), l = A.distan
 function handGeometrie(art, daumen, dick = 1) {
   const T = [], r = 0.0088 * dick, C = [-GRIFF, 0.004], rf = 0.0135 + r;                        // Mittelpunkt der Stange (y, z) und Bahnradius der Finger
   const bogen = (w) => [C[0] + rf * Math.cos(w), C[1] + rf * Math.sin(w)];
-  T.push(teilGeo(new THREE.CapsuleGeometry(0.027 * dick, 0.036, 4, 10), 0, -0.043, -0.017, 0, 0, 0, 1.42, 1, 0.5));                // Mittelhand
-  T.push(teilGeo(new THREE.CapsuleGeometry(0.026 * dick, 0.02, 4, 10), 0, -0.006, -0.006, 0, 0, 0, 1.05, 1, 0.78));                // Handgelenk
+  const kc = FIG_DETAIL === 'niedrig' ? [2, 6] : [4, 10];
+  T.push(teilGeo(new THREE.CapsuleGeometry(0.027 * dick, 0.036, ...kc), 0, -0.043, -0.017, 0, 0, 0, 1.42, 1, 0.5));                // Mittelhand
+  T.push(teilGeo(new THREE.CapsuleGeometry(0.026 * dick, 0.02, ...kc), 0, -0.006, -0.006, 0, 0, 0, 1.05, 1, 0.78));                // Handgelenk
   if (art === 'faust') {
     const winkel = [-2.3, -3.3, -4.55, -5.6];                                                   // Fingerbahn um die Stange (Knöchel → Fingerspitze)
     for (let i = 0; i < 4; i++) {
@@ -1955,6 +1959,11 @@ function hautSchein(mat) {
 }
 class Figur {
   constructor(o = {}) {
+    const detailVorher = FIG_DETAIL; if (o.detail) FIG_DETAIL = o.detail;
+    try { this._baue(o); } finally { FIG_DETAIL = detailVorher; }
+    this.detail = o.detail || 'hoch';
+  }
+  _baue(o) {
     this.torwart = !!o.torwart; this.hand = o.hand === 'L' ? 'L' : 'R'; this.s = this.hand === 'R' ? -1 : 1; // Schlägerseite im lokalen X (+X = links)
     this.objekt = new THREE.Group(); this.wurzel = new THREE.Group(); this.koerper = new THREE.Group();
     this.objekt.add(this.wurzel); this.wurzel.add(this.koerper); this.j = {};
@@ -3259,7 +3268,7 @@ const Bild = {
   },
   /** Qualitätsstufe übernehmen. */
   einrichten(q) {
-    const neu = [!!(q.effekte && this.kann), !!(q.spiegel && this.kann && this.notStufe < 1 && Config.grafik.spiegelung !== false), q.msaa, Math.min(window.devicePixelRatio || 1, q.pr)];
+    const neu = [!!(q.effekte && this.kann), !!(q.spiegel && this.kann && this.notStufe < 1 && Config.grafik.spiegelung !== false && !this.sparSpiegel), q.msaa, Math.min(window.devicePixelRatio || 1, q.pr)];
     if (this._stand && neu.every((x, i) => x === this._stand[i])) return;          // nichts geändert (z. B. nur die Zuschauerdichte)
     this._stand = neu; [this.effekte, this.spiegel, this.msaa, this.basisPr] = neu;
     this.groesse();
@@ -4472,7 +4481,9 @@ const M_GEFUEHL = {
   passBasis: 6.8, passProM: 0.85, passMin: 8.5, passMax: 18.5,
   totzone: 0.16, kurve: 1.35                                                            // runde Totzone, feinere Steuerung bei kleinem Ausschlag
 };
-const M_OPT = Object.assign({ drittel: 3, stufe: 'mittel', verl: true, kamera: 'tv', gegner: null, hilfe: true }, Speicher.lesen('fb_match_v1', {}));
+const M_OPT = Object.assign({ drittel: 3, stufe: 'mittel', verl: true, kamera: 'tv', gegner: null, hilfe: true, grafik: 'auto' }, Speicher.lesen('fb_match_v1', {}));
+/** Grafik im Match: 'spar' = vereinfachte Figuren ohne Schattenwurf, keine Bodenspiegelung (Handy, schwache Grafik) */
+function mGrafikSpar() { return M_OPT.grafik === 'spar' || (M_OPT.grafik !== 'voll' && (istMobil || Config.grafik.qualitaet === 'niedrig')); }
 function mOptSpeichern() { Speicher.schreiben('fb_match_v1', M_OPT); }
 const M_POSEN = Object.assign({}, POSEN_SCHUETZE, {
   frei(e, t) {
@@ -4488,9 +4499,10 @@ const M_POSEN = Object.assign({}, POSEN_SCHUETZE, {
 
 /** Feldspieler oder Torhüter im Match. */
 class MSpieler {
-  constructor(team, rolle, daten, T, alternativ) {
+  constructor(team, rolle, daten, T, alternativ, spar) {
     this.team = team; this.rolle = rolle; this.daten = daten; this.tw = rolle === 'TW'; this.d = team === 'A' ? 1 : -1;
-    this.fig = new Figur({ torwart: this.tw, hand: daten.hand, team: T, nummer: daten.nummer, name: daten.name, alternativ });
+    this.fig = new Figur({ torwart: this.tw, hand: daten.hand, team: T, nummer: daten.nummer, name: daten.name, alternativ, detail: spar ? 'niedrig' : 'hoch' });
+    if (spar) this.fig.objekt.traverse(o => { if (o.isMesh) o.castShadow = false; });   // Kontaktschatten genügen, spart den zweiten Zeichendurchgang
     this.s = this.fig.s; this.anim = new AnimMaschine(this.tw ? POSEN_TORWART : M_POSEN);
     this.pos = new V3(); this.vel = new V3(); this.yaw = 0; this.speed = 0;
     this.lokBall = new V3(this.s * 0.27, BALLD.r, 0.62); this.ballSeite = this.s; this.pushSeite = -this.s * 0.3;
@@ -4526,6 +4538,7 @@ const Match = {
         ${reihe('Drittellänge', M_OPT.drittel + ' Minuten', 'drittel')}${reihe('Schwierigkeit', { leicht: 'Leicht', mittel: 'Mittel', schwer: 'Schwer' }[M_OPT.stufe], 'stufe')}
         ${reihe('Bei Gleichstand', M_OPT.verl ? 'Verlängerung, dann Penaltys' : 'Unentschieden', 'verl')}
         ${reihe('Kamera', { tv: 'TV-Seite', hoch: 'Von oben', hinten: 'Hinter dem Tor' }[M_OPT.kamera], 'kamera')}
+        ${reihe('Grafik', { auto: 'Automatisch' + (mGrafikSpar() ? ' (sparsam)' : ' (voll)'), spar: 'Sparsam (Handy)', voll: 'Voll' }[M_OPT.grafik] || 'Automatisch', 'grafik')}
         <div class="mKnoepfe"><button class="knopf primaer" data-los>Anpfiff</button><button class="knopf" data-hilfe>Steuerung</button><button class="knopf" data-zurueck>${t('zurueck')}</button></div>
         <p class="hinweisText">Controller: Steuerkreuz oder Stick wählt, A bestätigt, B geht zurück.</p></div></div>`, 'dunkel');
       const dreh = (liste, akt, r = 1) => liste[(liste.indexOf(akt) + r + liste.length) % liste.length];
@@ -4537,6 +4550,7 @@ const Match = {
         else if (w === 'stufe') M_OPT.stufe = dreh(['leicht', 'mittel', 'schwer'], M_OPT.stufe);
         else if (w === 'verl') M_OPT.verl = !M_OPT.verl;
         else if (w === 'kamera') M_OPT.kamera = dreh(['tv', 'hoch', 'hinten'], M_OPT.kamera);
+        else if (w === 'grafik') M_OPT.grafik = dreh(['auto', 'spar', 'voll'], M_OPT.grafik || 'auto');
         M_OPT.gegner = gegner; mOptSpeichern(); zeichne();
         const neu = UI.aktuell && UI.aktuell.querySelector(`[data-w="${w}"]`); if (neu) PadMenue.fokus(neu);
       });
@@ -4598,7 +4612,8 @@ const Match = {
   _starte(tA, tB) {
     this.teamA = tA; this.teamB = tB; const alt = TeamDB.ausweich(tA, tB);
     const rollen = ['C', 'LF', 'RF', 'LV', 'RV'];
-    const bau = (team, T, a) => { const l = rollen.map((r, i) => new MSpieler(team, r, T.schuetzen[i % T.schuetzen.length], T, a)); const tw = new MSpieler(team, 'TW', T.torwart, T, a); return [l, tw]; };
+    const spar = this.spar = mGrafikSpar();
+    const bau = (team, T, a) => { const l = rollen.map((r, i) => new MSpieler(team, r, T.schuetzen[i % T.schuetzen.length], T, a, spar)); const tw = new MSpieler(team, 'TW', T.torwart, T, a, spar); return [l, tw]; };
     [this.A, this.twA] = bau('A', tA, false); [this.B, this.twB] = bau('B', tB, alt);
     this.spieler = [...this.A, ...this.B, this.twA, this.twB]; this.feld = [...this.A, ...this.B];
     for (const p of this.spieler) szene.add(p.fig.objekt);
@@ -4607,6 +4622,7 @@ const Match = {
     for (const f of [Spiel.figL, Spiel.figR, Spiel.figT]) f.objekt.visible = false;
     for (const o of [Spiel.ring, Spiel.ringHG, Spiel.zielKreis, Spiel.zielKraft, Spiel.zielStreu, Spiel.bahn]) o.visible = false;
     ballGruppe.visible = true; HUD.zeigen(false); UI.schliesseAlles();
+    if (Bild.sparSpiegel !== spar) { Bild.sparSpiegel = spar; Bild._stand = null; grafikAnwenden(); }
     this.S = M_STUFEN[M_OPT.stufe] || M_STUFEN.mittel; this.kamModus = M_OPT.kamera;
     this.tore = { A: 0, B: 0 }; this.drittel = 1; this.verl = false; this.uhr = M_OPT.drittel * 60; this.zeit = 0;
     this.stat = { schA: 0, schB: 0, parA: 0, parB: 0, besA: 0, besB: 0 };
@@ -4625,6 +4641,7 @@ const Match = {
     if (this.el) { this.el.hud.classList.add('versteckt'); this.ring.visible = this.pfeil.visible = this.passRing.visible = false; }
     if (this.ueberlagerung) { this.ueberlagerung.remove(); this.ueberlagerung = null; }
     Eingabe.joyZone = false; Eingabe.joy = null; kontaktSchatten.count = 0;
+    if (Bild.sparSpiegel) { Bild.sparSpiegel = false; Bild._stand = null; grafikAnwenden(); }
     if (halle) { halle.sonne.position.set(6.5, 24, 6); halle.sonne.target.position.set(9.5, 0, 0); halle.zuschauer.uni.uJubel.value.set(0, 0, 0); }
   },
   zumMenue() { this.abbau(); Spiel.leerlauf(); UI.hauptmenue(); },
