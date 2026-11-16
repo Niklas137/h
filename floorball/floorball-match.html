@@ -1978,7 +1978,7 @@ class Figur {
     this.mats = {};
     this.baueKoerper();
     this.planer = new Schrittplaner();
-    if (!this.torwart) this.baueSchlaeger();
+    if (!this.torwart && !o.ohneSchlaeger) this.baueSchlaeger();
     this.kapseln = [];
     this.baueKapseln();
     this.saumW = new V3(); this.saumA = new V3(); this.altBecken = null; this.altVel = new V3();
@@ -2141,7 +2141,7 @@ class Figur {
         if (ob) _b.set(ob[0], ob[1], ob[2]); else _b.set(0, 0, 0); this.j[jb].localToWorld(_b);
         k.setze(_a, _b);
       }
-    } else {
+    } else if (this.schlaeger) {
       _a.copy(this.ferse); _b.copy(this.ferse).addScaledVector(this.kelleDir, 0.28); this.kKelle.setze(_a, _b);
       _a.copy(this.ferse).addScaledVector(_c.copy(this.schaftTop).sub(this.ferse).normalize(), 0.05); this.kSchaft.setze(_a, this.schaftTop);
     }
@@ -2158,7 +2158,7 @@ class Figur {
     m.haut.color.set(A.haut); m.kopf.map = gesichtTextur(A);
     if (this.torwart) { m.schuh.map = schuhTextur('#1b1d22', F.primaer); m.helm.map = helmTextur(F.primaer); }
     else {
-      m.stutzen.map = stutzenTextur(T.primaer, T.sekundaer); m.schuh.map = schuhTextur(A.schuh[0], A.schuh[1]); m.schaft.map = schaftTextur(T.primaer);
+      m.stutzen.map = stutzenTextur(T.primaer, T.sekundaer); m.schuh.map = schuhTextur(A.schuh[0], A.schuh[1]); if (m.schaft) m.schaft.map = schaftTextur(T.primaer);
       m.haar.color.set(A.haar); this.frisuren.forEach((f, i) => { f.visible = i === A.frisur; }); this.band.visible = !!A.band; if (A.band) m.band.color.set(A.band);
     }
     if (!this._texBereit) { this._texBereit = true; for (const k in m) m[k].needsUpdate = true; }
@@ -4520,6 +4520,70 @@ class MSpieler {
   ballZiel(out) { zuWelt(out, this.lokBall, this.pos, this.yaw); out.y = BALLD.r; return out; }
 }
 
+/* ---------- Schiedsrichter und Spielerbänke ---------- */
+const SR_TEAM = { primaer: '#ff7a1a', sekundaer: '#141414', muster: 'uni', kuerzel: '', hose: '#141414' };
+const BANK = { z: -10.95, x: 6.2, laenge: 5.6 };          // Bänke hinter der Bande gegenüber der TV-Kamera, je Team auf der eigenen Abwehrseite
+const SR_POSEN = {
+  stehen(e, t) {
+    const P = basisPose(); P.hoehe = 0.95 + Math.sin(t * 1.7) * 0.004; P.pitch = 0.03;
+    P.hL = [0.25, 0.8, 0.02]; P.hR = [-0.25, 0.8, 0.02]; P.elL = [0.3, 0, -1]; P.elR = [-0.3, 0, -1]; return P;
+  },
+  laufen(e, t) {
+    const P = SR_POSEN.stehen(e, t), a = Math.min(1, e.speed / 3), w = Math.sin(e.planerPhase());
+    P.pitch = 0.05 + Math.min(0.12, e.speed * 0.03); P.hoehe = 0.95 - a * 0.02;
+    P.hL = [0.24, 0.84 + a * 0.08, 0.05 + w * 0.22 * a]; P.hR = [-0.24, 0.84 + a * 0.08, 0.05 - w * 0.22 * a]; return P;
+  },
+  /** Pfeife am Mund, linker Arm gestreckt nach oben (Bully, Unterbrechung) */
+  pfiff(e, t) {
+    const P = SR_POSEN.stehen(e, t); P.hR = [-0.05, 1.56, 0.16]; P.elR = [-1, -0.4, 0]; P.hL = [0.22, 2.05, 0.08]; P.elL = [1, 0, 0]; P.kopfNick = -0.05; return P;
+  },
+  /** Torentscheidung: Arm zeigt zum Anstoßpunkt */
+  zeigen(e, t) {
+    const P = SR_POSEN.stehen(e, t); P.hR = [-0.12, 1.45, 0.62]; P.elR = [-1, 0, 0]; P.twist = -0.1; return P;
+  }
+};
+/** Sitzen auf der Bank: Schläger zwischen den Knien, Blick zum Spiel */
+M_POSEN.sitzen = function (e, t) {
+  const P = basisPose(), w = Math.sin(t * 1.3 + e.kiT * 9) * 0.01;
+  P.hoehe = 0.5; P.pitch = 0.06 + w; P.beuge = 0.16; P.fW = 1; P.blick = 0.7;
+  P.fL = [0.17, 0.08, 0.44]; P.fR = [-0.17, 0.08, 0.44]; P.knL = [0.12, 0.4, 1]; P.knR = [-0.12, 0.4, 1];
+  P.kelle = [e.s * 0.12, 0.035, 0.78]; P.kRicht = [e.s * 0.5, 0, 1]; P.oben = [-e.s * 0.04, 0.88, 0.36]; return P;
+};
+/** Ersatzspieler: aus den Teamdaten (reserve) oder reproduzierbar aus der Team-Kennung erzeugt; die Teamdatenbank bleibt unverändert. */
+function mReserven(T, n = 5) {
+  const vorhanden = Array.isArray(T.reserve) ? T.reserve.slice(0, n) : [];
+  let h = 7; for (const c of String(T.id || T.name || 'team')) h = (Math.imul(h, 31) + c.charCodeAt(0)) | 0;
+  const rng = zufallRng(h), r = (a, b) => Math.round(a + rng() * (b - a));
+  const belegt = new Set([...(T.schuetzen || []).map(p => p.nummer), T.torwart && T.torwart.nummer, ...vorhanden.map(p => p.nummer)]);
+  const schnitt = (k) => { const l = T.schuetzen || []; return l.length ? l.reduce((a, p) => a + (p[k] || 60), 0) / l.length : 60; };
+  while (vorhanden.length < n) {
+    let nr; do nr = r(2, 99); while (belegt.has(nr)); belegt.add(nr);
+    vorhanden.push({ name: VORNAMEN[Math.floor(rng() * VORNAMEN.length)] + ' ' + NACHNAMEN[Math.floor(rng() * NACHNAMEN.length)], nummer: nr, hand: rng() < 0.62 ? 'L' : 'R',
+      schuss: klemme(Math.round(schnitt('schuss') - 6 + rng() * 8), 30, 99), technik: klemme(Math.round(schnitt('technik') - 6 + rng() * 8), 30, 99), nerven: klemme(Math.round(schnitt('nerven') - 6 + rng() * 8), 30, 99) });
+  }
+  return vorhanden;
+}
+/** Schiedsrichter: Figur ohne Schläger in Orange, läuft an der Bande mit dem Spiel mit. */
+class MSchiri {
+  constructor(nr, spar) {
+    this.nr = nr; this.fig = new Figur({ hand: 'R', ohneSchlaeger: true, team: SR_TEAM, nummer: '', name: '', detail: spar ? 'niedrig' : 'hoch' });
+    if (spar) this.fig.objekt.traverse(o => { if (o.isMesh) o.castShadow = false; });
+    this.s = this.fig.s; this.anim = new AnimMaschine(SR_POSEN); this.pos = new V3(); this.vel = new V3(); this.yaw = 0; this.speed = 0; this.ziel = new V3();
+  }
+  planerPhase() { return this.fig.planer.phase; }
+}
+/** Bankspieler sitzen hinter der Bande: nur die Hauptkamera zeichnet sie (Ebene 2), kein Bodenspiegel, kein Schattenwurf. */
+function mBankEbene(p, bank) { p.fig.objekt.traverse(o => { if (o.isMesh) { o.layers.set(bank ? 2 : 0); if (bank) o.castShadow = false; } }); }
+function baueBaenke() {
+  const G = new THREE.Group(), holz = new THREE.MeshStandardMaterial({ color: 0x2b3a55, roughness: 0.7 }), fuss = new THREE.MeshStandardMaterial({ color: 0x8d97a6, roughness: 0.5, metalness: 0.4 });
+  for (const s of [-1, 1]) {
+    const sitz = new THREE.Mesh(new THREE.BoxGeometry(BANK.laenge, 0.06, 0.42), holz); sitz.position.set(s * BANK.x, 0.44, BANK.z - 0.04); sitz.castShadow = sitz.receiveShadow = true; G.add(sitz);
+    const lehne = new THREE.Mesh(new THREE.BoxGeometry(BANK.laenge, 0.36, 0.05), holz); lehne.position.set(s * BANK.x, 0.68, BANK.z - 0.27); G.add(lehne);
+    for (const dx of [-0.45, 0, 0.45]) { const f = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.42, 0.36), fuss); f.position.set(s * BANK.x + dx * BANK.laenge, 0.21, BANK.z - 0.04); G.add(f); }
+  }
+  return G;
+}
+
 const Match = {
   aktiv: false, zustand: 'aus', pausiert: false, spieler: [], A: [], B: [], twA: null, twB: null, kon: null,
   ball: { p: new V3(0, BALLD.r, 0), v: new V3(), q: new Q4(), besitzer: null, letzter: null, letzterTeam: null, imTor: 0, empf: null, schutz: null, schutzT: 0, schussVon: null, schussT: 0, hoch: false },
@@ -4615,9 +4679,15 @@ const Match = {
     const spar = this.spar = mGrafikSpar();
     const bau = (team, T, a) => { const l = rollen.map((r, i) => new MSpieler(team, r, T.schuetzen[i % T.schuetzen.length], T, a, spar)); const tw = new MSpieler(team, 'TW', T.torwart, T, a, spar); return [l, tw]; };
     [this.A, this.twA] = bau('A', tA, false); [this.B, this.twB] = bau('B', tB, alt);
-    this.spieler = [...this.A, ...this.B, this.twA, this.twB]; this.feld = [...this.A, ...this.B]; this.setzeSeite(1);
-    for (const p of this.spieler) szene.add(p.fig.objekt);
-    this.aufnahme = new Aufnahme([...this.spieler.flatMap(p => p.fig.objekte), ballGruppe]); this.aufT = 0;
+    this.spieler = [...this.A, ...this.B, this.twA, this.twB]; this.feld = [...this.A, ...this.B];
+    this.reserven = { A: mReserven(tA).map(d => new MSpieler('A', 'R', d, tA, false, spar)), B: mReserven(tB).map(d => new MSpieler('B', 'R', d, tB, alt, spar)) };
+    for (const t of ['A', 'B']) this.reserven[t].forEach((p, i) => { p.bank = true; p.bankI = i; mBankEbene(p, true); });
+    this.schiris = [new MSchiri(0, spar), new MSchiri(1, spar)];
+    this.neben = [...this.reserven.A, ...this.reserven.B, ...this.schiris];
+    this.baenke = baueBaenke(); szene.add(this.baenke);
+    this.setzeSeite(1);
+    for (const p of [...this.spieler, ...this.neben]) szene.add(p.fig.objekt);
+    this.aufnahme = new Aufnahme([...this.spieler, ...this.neben].flatMap(p => p.fig.objekte).concat(ballGruppe)); this.aufT = 0;
     // Figuren des Penalty-Modus ausblenden
     for (const f of [Spiel.figL, Spiel.figR, Spiel.figT]) f.objekt.visible = false;
     for (const o of [Spiel.ring, Spiel.ringHG, Spiel.zielKreis, Spiel.zielKraft, Spiel.zielStreu, Spiel.bahn]) o.visible = false;
@@ -4636,8 +4706,9 @@ const Match = {
     this.hinweisBis = this.zeit + 9; this.bullyStart(true);
   },
   abbau() {
-    for (const p of this.spieler) { szene.remove(p.fig.objekt); p.fig.objekt.traverse(o => { if (o.isSkinnedMesh && o.skeleton && o.skeleton.boneTexture) o.skeleton.boneTexture.dispose(); }); }
-    this.spieler = []; this.A = []; this.B = []; this.feld = []; this.aktiv = false; this.zustand = 'aus'; this.pausiert = false;
+    if (this.baenke) { szene.remove(this.baenke); this.baenke.traverse(o => { if (o.isMesh) o.geometry.dispose(); }); this.baenke = null; }
+    for (const p of [...this.spieler, ...(this.neben || [])]) { szene.remove(p.fig.objekt); p.fig.objekt.traverse(o => { if (o.isSkinnedMesh && o.skeleton && o.skeleton.boneTexture) o.skeleton.boneTexture.dispose(); }); }
+    this.spieler = []; this.A = []; this.B = []; this.feld = []; this.neben = []; this.schiris = []; this.reserven = { A: [], B: [] }; this.aktiv = false; this.zustand = 'aus'; this.pausiert = false;
     if (this.el) { this.el.hud.classList.add('versteckt'); this.ring.visible = this.pfeil.visible = this.passRing.visible = false; }
     if (this.ueberlagerung) { this.ueberlagerung.remove(); this.ueberlagerung = null; }
     Eingabe.joyZone = false; Eingabe.joy = null; kontaktSchatten.count = 0;
@@ -5189,7 +5260,50 @@ const Match = {
   },
   /** Spielrichtung: +1 = greift nach +X an. Team A beginnt nach +X, nach jedem Drittel wird getauscht. */
   richtung(team) { return (team === 'A' ? 1 : -1) * this.seite; },
-  setzeSeite(s) { this.seite = s; for (const p of this.spieler) p.d = this.richtung(p.team); },
+  setzeSeite(s) {
+    this.seite = s; for (const p of [...this.spieler, ...this.reserven.A, ...this.reserven.B]) p.d = this.richtung(p.team);
+    this.bankPlaetze(); this.schiriStart();
+  },
+  /** Ersatzspieler auf die Bank der eigenen Abwehrseite setzen */
+  bankPlaetze() {
+    for (const t of ['A', 'B']) { const x0 = -this.richtung(t) * BANK.x, L = this.reserven[t].filter(p => p.bank);
+      L.forEach((p, i) => { p.pos.set(x0 + (i - (L.length - 1) / 2) * (BANK.laenge / 5.4), 0, BANK.z); p.vel.set(0, 0, 0); p.yaw = 0; p.jubel = 0; p.anim.setze('sitzen', null, 0); p.fig.altBecken = null; }); }
+  },
+  schiriStart() { if (!this.schiris) return; this.schiris.forEach((r, i) => { r.pos.set(i ? -7 : 0.4, 0, i ? 8.9 : -2.6); r.vel.set(0, 0, 0); r.yaw = i ? Math.PI : 0; r.fig.altBecken = null; }); },
+  /** Schiedsrichter laufen diagonal mit (einer an jeder Längsseite), Bank sitzt und jubelt bei eigenen Toren. */
+  nebenDarstellen(dt) {
+    if (!this.neben || !this.neben.length) return;
+    const b = this.ball, Z = this.zustand, torT = Z === 'tor' && this.torInfo ? this.torInfo.team : null; this.nebenTakt = (this.nebenTakt || 0) + 1;
+    for (const t of ['A', 'B']) for (const p of this.reserven[t]) {
+      if (!p.bank) continue;
+      const jub = torT === t || (Z === 'ende' && p.jubel > 0);
+      p.anim.setze(jub ? 'jubel' : 'sitzen', null, 0.35);
+      p.pos.z = daempf(p.pos.z, BANK.z + (jub ? 0.42 : 0), 5, dt); p.speed = 0;
+      // Sitzend kaum Bewegung: nur jedes vierte Bild neu stellen (spart Rechenzeit, vor allem auf dem Handy)
+      p.bankDt = (p.bankDt || 0) + dt;
+      const ruhig = !jub && p.anim.name === 'sitzen' && p.anim.blend >= 1 && Math.abs(p.pos.z - BANK.z) < 0.01;
+      if (ruhig && dt > 0 && (this.nebenTakt + p.bankI) % 4) continue;
+      const P = p.anim.update(p.bankDt, p); p.fig.anwenden(P, { pos: p.pos, yaw: p.yaw, vel: p.vel, dt: p.bankDt, ballPos: null, blickZiel: jub ? null : b.p }); p.bankDt = 0;
+    }
+    for (const r of this.schiris) {
+      const nah = r.nr === 1; let tx, tz;
+      if (Z === 'bully') { tx = nah ? -7 : 0.4; tz = nah ? 8.9 : -2.6; }
+      else if (Z === 'pauseDrittel' || Z === 'ende') { tx = nah ? -1.2 : 1.2; tz = nah ? 3 : -3; }
+      else if (Z === 'tor') { tx = r.pos.x; tz = r.pos.z; }
+      else { tx = nah ? klemme(b.p.x * 0.75 - 3, -14, 9) : klemme(b.p.x * 0.75 + 3, -9, 14); tz = nah ? 8.9 : -8.9; }
+      const wx = klemme((tx - r.pos.x) * 1.6, -5.5, 5.5), wz = klemme((tz - r.pos.z) * 1.6, -5.5, 5.5);
+      r.vel.x = daempf(r.vel.x, wx, 6, dt); r.vel.z = daempf(r.vel.z, wz, 6, dt);
+      // Spielern und Ball ausweichen (keine Kollision, nur Abstand halten)
+      for (const p of this.feld) { const dx = r.pos.x - p.pos.x, dz = r.pos.z - p.pos.z, d = Math.hypot(dx, dz); if (d < 1.1 && d > 1e-3) { r.vel.x += dx / d * 4 * dt * 10; r.vel.z += dz / d * 4 * dt * 10; } }
+      r.pos.x += r.vel.x * dt; r.pos.z = klemme(r.pos.z + r.vel.z * dt, -9.4, 9.4); r.pos.x = klemme(r.pos.x, -17.5, 17.5);
+      r.speed = Math.hypot(r.vel.x, r.vel.z);
+      let soll = Math.atan2(b.p.x - r.pos.x, b.p.z - r.pos.z), dy = soll - r.yaw; while (dy > Math.PI) dy -= 2 * Math.PI; while (dy < -Math.PI) dy += 2 * Math.PI; r.yaw += dy * Math.min(1, dt * 5);
+      const pf = Z === 'bully' && !nah && this.bully && (!this.bully.gepfiffen || this.bully.t < this.bully.pfiff + 0.6);
+      const name = Z === 'tor' && this.torInfo && this.torInfo.t < 3.2 ? 'zeigen' : pf ? 'pfiff' : r.speed > 0.5 ? 'laufen' : 'stehen';
+      r.anim.setze(name, null, 0.25);
+      const P = r.anim.update(dt, r); r.fig.anwenden(P, { pos: r.pos, yaw: r.yaw, vel: r.vel, dt, ballPos: null, blickZiel: b.p });
+    }
+  },
   drittelEnde() {
     Ton.horn(); const b = this.ball; b.besitzer = null; b.v.set(0, 0, 0); b.empf = null;
     const gleich = this.tore.A === this.tore.B;
@@ -5269,6 +5383,7 @@ const Match = {
         const P = p.anim.update(dt, p);
         p.fig.anwenden(P, { pos: p.pos, yaw: p.yaw, vel: p.vel, dt, ballPos: hat && !p.tw ? b.p : null, blickZiel: p.jubel > 0 ? null : b.p });
       }
+      this.nebenDarstellen(dt);
       ballGruppe.position.copy(b.p); ballGruppe.quaternion.copy(b.q);
       // Aufzeichnung für die Zeitlupe (Ringspeicher)
       if (dt > 0 && (this.zustand === 'spiel' || this.zustand === 'tor')) {
@@ -5285,7 +5400,7 @@ const Match = {
     u.uSpannung.value = daempf(u.uSpannung.value, this.zustand === 'spiel' ? nah : 0, 2.5, dt); u.uKlatsch.value = daempf(u.uKlatsch.value, this.zustand === 'bully' ? 0.6 : 0, 3, dt);
     halle.update(dt);
     // Kontaktschatten
-    let n = 0; for (const p of this.spieler) { if (n >= 16) break; const q = p.fig.j.becken.getWorldPosition(mA); _m.makeScale(1.0, 1, 1.0); _m.setPosition(q.x, 0.006 + n * 0.0004, q.z); kontaktSchatten.setMatrixAt(n++, _m); }
+    let n = 0; for (const p of [...this.spieler, ...(this.schiris || [])]) { if (n >= 16) break; const q = p.fig.j.becken.getWorldPosition(mA); _m.makeScale(1.0, 1, 1.0); _m.setPosition(q.x, 0.006 + n * 0.0004, q.z); kontaktSchatten.setMatrixAt(n++, _m); }
     kontaktSchatten.count = n; kontaktSchatten.instanceMatrix.needsUpdate = true;
     // Markierungen
     const k = this.kon, zeig = !!k && !R && this.zustand !== 'tor' && this.zustand !== 'ende' && this.zustand !== 'pauseDrittel';
