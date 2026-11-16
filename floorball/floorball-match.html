@@ -4481,7 +4481,7 @@ const M_GEFUEHL = {
   passBasis: 6.8, passProM: 0.85, passMin: 8.5, passMax: 18.5,
   totzone: 0.16, kurve: 1.35                                                            // runde Totzone, feinere Steuerung bei kleinem Ausschlag
 };
-const M_OPT = Object.assign({ drittel: 3, stufe: 'mittel', verl: true, kamera: 'tv', gegner: null, hilfe: true, grafik: 'auto' }, Speicher.lesen('fb_match_v1', {}));
+const M_OPT = Object.assign({ drittel: 3, stufe: 'mittel', verl: true, kamera: 'tv', gegner: null, hilfe: true, grafik: 'auto', linie: 'manuell' }, Speicher.lesen('fb_match_v1', {}));
 /** Grafik im Match: 'spar' = vereinfachte Figuren ohne Schattenwurf, keine Bodenspiegelung (Handy, schwache Grafik) */
 function mGrafikSpar() { return M_OPT.grafik === 'spar' || (M_OPT.grafik !== 'voll' && (istMobil || Config.grafik.qualitaet === 'niedrig')); }
 function mOptSpeichern() { Speicher.schreiben('fb_match_v1', M_OPT); }
@@ -4602,6 +4602,7 @@ const Match = {
         ${reihe('Drittellänge', M_OPT.drittel + ' Minuten', 'drittel')}${reihe('Schwierigkeit', { leicht: 'Leicht', mittel: 'Mittel', schwer: 'Schwer' }[M_OPT.stufe], 'stufe')}
         ${reihe('Bei Gleichstand', M_OPT.verl ? 'Verlängerung, dann Penaltys' : 'Unentschieden', 'verl')}
         ${reihe('Kamera', { tv: 'TV-Seite', hoch: 'Von oben', hinten: 'Hinter dem Tor' }[M_OPT.kamera], 'kamera')}
+        ${reihe('Linienwechsel', M_OPT.linie === 'auto' || istTouch ? 'Automatisch' : 'Per Knopf (Steuerkreuz ↑ / L)', 'linie')}
         ${reihe('Grafik', { auto: 'Automatisch' + (mGrafikSpar() ? ' (sparsam)' : ' (voll)'), spar: 'Sparsam (Handy)', voll: 'Voll' }[M_OPT.grafik] || 'Automatisch', 'grafik')}
         <div class="mKnoepfe"><button class="knopf primaer" data-los>Anpfiff</button><button class="knopf" data-hilfe>Steuerung</button><button class="knopf" data-zurueck>${t('zurueck')}</button></div>
         <p class="hinweisText">Controller: Steuerkreuz oder Stick wählt, A bestätigt, B geht zurück.</p></div></div>`, 'dunkel');
@@ -4614,6 +4615,7 @@ const Match = {
         else if (w === 'stufe') M_OPT.stufe = dreh(['leicht', 'mittel', 'schwer'], M_OPT.stufe);
         else if (w === 'verl') M_OPT.verl = !M_OPT.verl;
         else if (w === 'kamera') M_OPT.kamera = dreh(['tv', 'hoch', 'hinten'], M_OPT.kamera);
+        else if (w === 'linie') M_OPT.linie = M_OPT.linie === 'auto' ? 'manuell' : 'auto';
         else if (w === 'grafik') M_OPT.grafik = dreh(['auto', 'spar', 'voll'], M_OPT.grafik || 'auto');
         M_OPT.gegner = gegner; mOptSpeichern(); zeichne();
         const neu = UI.aktuell && UI.aktuell.querySelector(`[data-w="${w}"]`); if (neu) PadMenue.fokus(neu);
@@ -4632,7 +4634,7 @@ const Match = {
       ${z('Hoher Pass', 'Y / △', 'E', 'HOCH')}${z('Finte', 'B / ○', 'Q', '–')}
       ${z('Schuss hoch zielen', 'Rechter Stick hoch', 'beim Laden R halten', 'lange laden')}
       ${z('Abwehr: Spieler wechseln', 'A / ✕ oder LB', 'Leertaste', 'PASS')}${z('Abwehr: Stockcheck', 'X / ▢', 'F oder Enter', 'SCHUSS')}
-      ${z('Bully gewinnen', 'A nach dem Pfiff', 'Leertaste', 'PASS')}${z('Kamera · Pause', 'Select · Start', 'C · P', '⏸')}</table>
+      ${z('Bully gewinnen', 'A nach dem Pfiff', 'Leertaste', 'PASS')}${z('Linienwechsel', 'Steuerkreuz ↑', 'L', 'automatisch')}${z('Kamera · Pause', 'Select · Start', 'C · P', '⏸')}</table>
       <p class="hinweisText">Direktabnahme: Schuss gedrückt halten, während der Pass unterwegs ist. Ecke wählen: beim Schuss den Stick nach oben oder unten halten.</p>`;
   },
   zeigeSteuerung(danach) {
@@ -4682,7 +4684,8 @@ const Match = {
     this.spieler = [...this.A, ...this.B, this.twA, this.twB]; this.feld = [...this.A, ...this.B];
     this.reserven = { A: mReserven(tA).map(d => new MSpieler('A', 'R', d, tA, false, spar)), B: mReserven(tB).map(d => new MSpieler('B', 'R', d, tB, alt, spar)) };
     for (const t of ['A', 'B']) this.reserven[t].forEach((p, i) => { p.bank = true; p.bankI = i; mBankEbene(p, true); });
-    this.schiris = [new MSchiri(0, spar), new MSchiri(1, spar)];
+    this.schiris = [new MSchiri(0, spar), new MSchiri(1, spar)]; this.linie = { A: 1, B: 1 }; this.linieT = { A: 0, B: 0 }; this.linieCheck = 0;
+    for (const p of [...this.A, ...this.B, ...this.reserven.A, ...this.reserven.B]) p.frische = 1;
     this.neben = [...this.reserven.A, ...this.reserven.B, ...this.schiris];
     this.baenke = baueBaenke(); szene.add(this.baenke);
     this.setzeSeite(1);
@@ -4735,7 +4738,7 @@ const Match = {
     const jetzt = {
       pass: k(0) || T.has('Space') || !!this.touch.pass, schuss: k(2) || k(5) || T.has('KeyF') || T.has('Enter') || !!this.touch.schuss,
       hoch: k(3) || T.has('KeyE') || !!this.touch.hoch, finte: k(1) || T.has('KeyQ'), sprint: k(7) || k(6) || T.has('ShiftLeft') || T.has('ShiftRight') || !!this.touch.sprint,
-      wechsel: k(4), kamera: k(8) || T.has('KeyC')
+      wechsel: k(4), kamera: k(8) || T.has('KeyC'), linie: k(12) || T.has('KeyL')
     };
     for (const n in jetzt) { I[n] = jetzt[n]; I[n + 'D'] = jetzt[n] && !v[n]; I[n + 'L'] = !jetzt[n] && !!v[n]; v[n] = jetzt[n]; }
     let x, y, m;
@@ -4758,6 +4761,7 @@ const Match = {
   },
   bullyStart(sofortSchnitt) {
     this.aufstellung(); const b = this.ball; b.p.set(0, BALLD.r, 0); b.v.set(0, 0, 0); b.besitzer = null; b.imTor = 0; b.empf = null; b.schutz = null; b.schussVon = null;
+    if (this.reserven && this.linieT) { this.zustand = 'bully'; for (const t of ['A', 'B']) if (this.linieAuto(t) && this.linieT[t] > 25 && this.frischeVon(t) < 0.8) this.linienWechsel(t); }
     this.kon = this.A[0]; this.zustand = 'bully'; this.bully = { t: 0, pfiff: 1.5 + Math.random() * 0.9, ki: 0, gepfiffen: false, fehl: -1 };
     this.bully.ki = this.S.bully * (0.7 + Math.random() * 0.7); this.status('BULLY'); if (sofortSchnitt) this.kamSchnitt = true;
     halle.netz.zuruecksetzen();
@@ -4786,6 +4790,7 @@ const Match = {
     if (!this.pausiert && this.zustand !== 'ende') {
       const h = Math.min(dt, 1 / 24); this.zeit += h; this.liesEingabe();
       if (this.I.kameraD) { this.kamModus = { tv: 'hoch', hoch: 'hinten', hinten: 'tv' }[this.kamModus]; M_OPT.kamera = this.kamModus; mOptSpeichern(); }
+      if (this.I.linieD && !this.linieAuto('A')) this.linienWechsel('A');
       if (this.zustand === 'replay') this.replaySchritt(h); else this.schritt(h);
     }
     this.render(this.pausiert ? 0 : Math.min(dt, 1 / 24));
@@ -4800,6 +4805,7 @@ const Match = {
     if (Z === 'tor') { this.torInfo.t += dt; if (this.torInfo.t > 3.1 || (this.torInfo.t > 0.8 && this.I.passD)) this.replayStart(); }
     if (Z === 'pauseDrittel') { this.pauseT -= dt; if (this.pauseT <= 0) this.naechstesDrittel(); }
     const lebt = this.zustand === 'spiel' || this.zustand === 'tor';
+    this.linienSchritt(dt);
     // Spieler
     for (const p of this.feld) this.spielerSchritt(p, dt, lebt);
     for (const g of [this.twA, this.twB]) this.torwartSchritt(g, dt);
@@ -4815,7 +4821,7 @@ const Match = {
     const b = this.ball, hatBall = b.besitzer === p, mensch = p === this.kon && this.zustand !== 'tor';
     p.sperre = Math.max(0, p.sperre - dt); p.stossCd = Math.max(0, p.stossCd - dt); p.finteCd = Math.max(0, p.finteCd - dt); p.immun = Math.max(0, p.immun - dt);
     if (p.stossT >= 0) { p.stossT += dt; if (p.stossT > 0.34) p.stossT = -1; }
-    const wunsch = mB.set(0, 0, 0), G = M_GEFUEHL; let maxV = (hatBall ? G.laufBall : G.lauf);
+    const wunsch = mB.set(0, 0, 0), G = M_GEFUEHL; let maxV = (hatBall ? G.laufBall : G.lauf) * (0.88 + 0.12 * (p.frische ?? 1));   // müde Linie wird langsamer
     if (this.zustand === 'tor' || this.zustand === 'pauseDrittel') {
       // Jubel bzw. Auslaufen
       if (p.jubel > 0 && this.torInfo) { const s = this.torInfo.schuetze; if (p !== s && p.team === s.team) { mA.subVectors(s.pos, p.pos).setY(0); const l = mA.length(); if (l > 1.4) wunsch.copy(mA).multiplyScalar(4.2 / l); } }
@@ -5267,7 +5273,7 @@ const Match = {
   /** Ersatzspieler auf die Bank der eigenen Abwehrseite setzen */
   bankPlaetze() {
     for (const t of ['A', 'B']) { const x0 = -this.richtung(t) * BANK.x, L = this.reserven[t].filter(p => p.bank);
-      L.forEach((p, i) => { p.pos.set(x0 + (i - (L.length - 1) / 2) * (BANK.laenge / 5.4), 0, BANK.z); p.vel.set(0, 0, 0); p.yaw = 0; p.jubel = 0; p.anim.setze('sitzen', null, 0); p.fig.altBecken = null; }); }
+      L.forEach((p) => { if (p.abgang) p.abgang = false; mBankEbene(p, true); p.pos.set(x0 + (p.bankI - 2) * (BANK.laenge / 5.4), 0, BANK.z); p.vel.set(0, 0, 0); p.yaw = 0; p.jubel = 0; p.anim.setze('sitzen', null, 0); p.fig.altBecken = null; }); }
   },
   schiriStart() { if (!this.schiris) return; this.schiris.forEach((r, i) => { r.pos.set(i ? -7 : 0.4, 0, i ? 8.9 : -2.6); r.vel.set(0, 0, 0); r.yaw = i ? Math.PI : 0; r.fig.altBecken = null; }); },
   /** Schiedsrichter laufen diagonal mit (einer an jeder Längsseite), Bank sitzt und jubelt bei eigenen Toren. */
@@ -5275,7 +5281,7 @@ const Match = {
     if (!this.neben || !this.neben.length) return;
     const b = this.ball, Z = this.zustand, torT = Z === 'tor' && this.torInfo ? this.torInfo.team : null; this.nebenTakt = (this.nebenTakt || 0) + 1;
     for (const t of ['A', 'B']) for (const p of this.reserven[t]) {
-      if (!p.bank) continue;
+      if (p.abgang) { this.abgangSchritt(p, dt, b); continue; }
       const jub = torT === t || (Z === 'ende' && p.jubel > 0);
       p.anim.setze(jub ? 'jubel' : 'sitzen', null, 0.35);
       p.pos.z = daempf(p.pos.z, BANK.z + (jub ? 0.42 : 0), 5, dt); p.speed = 0;
@@ -5304,6 +5310,56 @@ const Match = {
       const P = r.anim.update(dt, r); r.fig.anwenden(P, { pos: r.pos, yaw: r.yaw, vel: r.vel, dt, ballPos: null, blickZiel: b.p });
     }
   },
+  /** Linienwechsel: Team A per Knopf (Steuerkreuz ↑ / L) oder automatisch, Team B immer automatisch. */
+  linieAuto(team) { return team === 'B' || istTouch || M_OPT.linie === 'auto'; },
+  frischeVon(team) { const L = team === 'A' ? this.A : this.B; return L.reduce((a, p) => a + (p.frische ?? 1), 0) / L.length; },
+  linienSchritt(dt) {
+    if (!this.reserven) return;
+    if (this.zustand === 'spiel') {
+      for (const p of this.feld) p.frische = Math.max(0, (p.frische ?? 1) - dt / 110);
+      this.linieT.A += dt; this.linieT.B += dt;
+    }
+    for (const t of ['A', 'B']) for (const p of this.reserven[t]) p.frische = Math.min(1, (p.frische ?? 1) + dt / 30);
+    this.linieCheck -= dt; if (this.linieCheck > 0 || this.zustand !== 'spiel') return; this.linieCheck = 0.5;
+    const b = this.ball;
+    for (const t of ['A', 'B']) {
+      if (!this.linieAuto(t) || this.linieT[t] < 35) continue;
+      const tief = b.p.x * this.richtung(t) < -6, gegnerBall = b.besitzer && b.besitzer.team !== t;
+      if (this.frischeVon(t) < 0.62 && !tief && !(gegnerBall && b.p.x * this.richtung(t) < 0)) this.linienWechsel(t);
+    }
+  },
+  linienWechsel(team) {
+    const Z = this.zustand; if (Z !== 'spiel' && Z !== 'bully') return false;
+    const L = team === 'A' ? this.A : this.B, R = this.reserven[team], b = this.ball, sofort = Z === 'bully';
+    if (R.some(p => p.abgang)) return false;                       // die alte Linie ist noch nicht auf der Bank
+    const frei = R.slice().sort((a, c) => a.bankI - c.bankI); let n = 0;
+    for (let i = 0; i < L.length; i++) {
+      const alt = L[i]; if (!sofort && (b.besitzer === alt || b.empf === alt || alt.aktion)) continue;   // Ballführer und Passempfänger bleiben
+      const neu = frei.shift(); if (!neu) break; const ri = R.indexOf(neu);
+      neu.rolle = alt.rolle; neu.d = alt.d; neu.bank = false; neu.abgang = false; mBankEbene(neu, false); if (this.spar) neu.fig.objekt.traverse(o => { if (o.isMesh) o.castShadow = false; });
+      Object.assign(neu, { aktion: null, power: 0, sperre: 0, stossT: -1, finteT: 0, jubel: 0, speed: 0 }); neu.vel.set(0, 0, 0); neu.fig.altBecken = null;
+      if (sofort) { neu.pos.copy(alt.pos); neu.yaw = alt.yaw; } else { neu.pos.set(neu.pos.x, 0, -9.35); neu.yaw = 0; }
+      neu.anim.setze('frei', null, 0.2);
+      alt.bank = true; alt.bankI = neu.bankI; alt.aktion = null; alt.power = 0; alt.jubel = 0; alt.abgang = !sofort; if (sofort) mBankEbene(alt, true);
+      L[i] = neu; R[ri] = alt; if (this.kon === alt) this.kon = neu; n++;
+    }
+    if (!n) return false;
+    this.feld = [...this.A, ...this.B]; this.spieler = [...this.A, ...this.B, this.twA, this.twB];
+    if (sofort) { this.bankPlaetze(); this.aufstellung(); }
+    if (this.kon && this.kon.bank) this.kon = this.A[0];
+    this.linie[team] = 3 - this.linie[team]; this.linieT[team] = 0;
+    if (team === 'A') { Ton.tick(); this.banner(`Linienwechsel<small>Linie ${this.linie.A}</small>`, 1.2); }
+    return true;
+  },
+  /** Ausgewechselter Spieler läuft zur Bank, steigt über die Bande und setzt sich. */
+  abgangSchritt(p, dt, b) {
+    const x0 = -this.richtung(p.team) * BANK.x, sx = x0 + (p.bankI - 2) * (BANK.laenge / 5.4);
+    mA.set(sx - p.pos.x, 0, -9.35 - p.pos.z); const l = mA.length();
+    if (l < 0.25) { p.abgang = false; p.pos.set(sx, 0, BANK.z); p.vel.set(0, 0, 0); p.yaw = 0; p.fig.altBecken = null; mBankEbene(p, true); p.anim.setze('sitzen', null, 0.3); return; }
+    const v = Math.min(4.6, l * 3); p.vel.lerp(mB.copy(mA).multiplyScalar(v / l), 1 - Math.exp(-8 * dt)); p.pos.addScaledVector(p.vel, dt); p.speed = p.vel.length();
+    const soll = Math.atan2(p.vel.x, p.vel.z); let dy = soll - p.yaw; while (dy > Math.PI) dy -= 2 * Math.PI; while (dy < -Math.PI) dy += 2 * Math.PI; p.yaw += dy * Math.min(1, dt * 8);
+    p.anim.setze('frei', null, 0.2); const P = p.anim.update(dt, p); p.fig.anwenden(P, { pos: p.pos, yaw: p.yaw, vel: p.vel, dt, ballPos: null, blickZiel: b.p });
+  },
   drittelEnde() {
     Ton.horn(); const b = this.ball; b.besitzer = null; b.v.set(0, 0, 0); b.empf = null;
     const gleich = this.tore.A === this.tore.B;
@@ -5324,7 +5380,7 @@ const Match = {
     const penaltys = gleich && M_OPT.verl;
     if (!gleich) { Ton.jubel(1); halle.zuschauer.uni.uJubel.value.set(a > c ? 1 : 0, c > a ? 1 : 0, 0.5); for (const p of this.spieler) p.jubel = (p.team === 'A') === (a > c) ? 1 : -1; }
     const zeile = (n, x, y) => `<tr><td>${x}</td><th>${n}</th><td>${y}</td></tr>`;
-    const tore = [...this.A, ...this.B].filter(p => p.tore > 0).map(p => `${esc(p.daten.name)} (${p.tore})`).join(' · ');
+    const tore = [...this.A, ...this.B, ...this.reserven.A, ...this.reserven.B].filter(p => p.tore > 0).map(p => `${esc(p.daten.name)} (${p.tore})`).join(' · ');
     const d = document.createElement('div'); d.className = 'bildschirm dunkel mEnde'; d.style.zIndex = 40;
     d.innerHTML = `<div class="mitte"><div class="karte mSetup"><h2>${gleich ? 'Unentschieden' : a > c ? 'Sieg!' : 'Niederlage'}${this.verl && !gleich ? ' <small>nach Verlängerung</small>' : ''}</h2>
       <p class="mErgebnis">${esc(this.teamA.name)} <b>${a} : ${c}</b> ${esc(this.teamB.name)}</p>
@@ -5410,11 +5466,13 @@ const Match = {
     this.passRing.visible = !!pz; if (pz) this.passRing.position.set(pz.pos.x, 0.018, pz.pos.z);
     // HUD
     if (k) {
-      const e = this.el, txt = `${k.daten.nummer} ${k.daten.name}`; if (e.name.textContent !== txt) e.name.textContent = txt;
+      const e = this.el, txt = `L${this.linie ? this.linie.A : 1} · ${k.daten.nummer} ${k.daten.name}`; if (e.name.textContent !== txt) e.name.textContent = txt;
       e.ausdauer.style.transform = `scaleX(${k.ausdauer.toFixed(2)})`; e.kraft.style.transform = `scaleX(${(k.power || 0).toFixed(2)})`;
       const s = Math.max(0, Math.ceil(this.uhr)), ut = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; if (e.uhr.textContent !== ut) e.uhr.textContent = ut;
-      const hz = this.zeit < this.hinweisBis && M_OPT.hilfe;
-      e.hinweis.classList.toggle('versteckt', !hz);
+      const hz = this.zeit < this.hinweisBis && M_OPT.hilfe, tipp = !hz && M_OPT.hilfe && !this.linieAuto('A') && this.zustand === 'spiel' && this.frischeVon('A') < 0.5;
+      e.hinweis.classList.toggle('versteckt', !hz && !tipp);
+      if (tipp && this._tipp !== 1) { this._tipp = 1; e.hinweis.innerHTML = 'Linie müde: <b>Steuerkreuz ↑</b> oder <b>L</b> = Linienwechsel'; }
+      if (hz && this._tipp !== 0) { this._tipp = 0; e.hinweis.textContent = ''; }
       if (hz && !e.hinweis.textContent) e.hinweis.innerHTML = istTouch ? 'Links laufen · <b>PASS</b> · <b>SCHUSS</b> halten = härter' : '<b>A</b> Pass · <b>X</b> Schuss (halten) · <b>RT</b> Sprint · <b>B</b> Finte · Abwehr: <b>A</b> Wechsel, <b>X</b> Stockcheck';
       // Touch-Joystick
       const j = Eingabe.joy; e.joy.classList.toggle('versteckt', !j);
