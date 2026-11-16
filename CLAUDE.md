@@ -34,3 +34,10 @@ Eigenständiges Web-Modul unter `kader-manager/` (HTML, CSS, JavaScript, JSON, k
 Kleiderstange mit Trikot-Animation nach Videoreferenz, Spielerkarte, Admin-Seite, optional `server.py` mit
 tokengeschütztem Veröffentlichen. Anleitung, Datenmodell und Einbau in `kader-manager/README.md`; Status der
 Prüfbefunde in `kader-manager/UMSETZUNG_Pruefbericht_2026-10-08.md`. Lokal starten: `cd kader-manager && python3 server.py`.
+
+## Floorball Match (Spiel, eine Datei)
+
+`floorball/floorball-match.html` (Three.js über CDN, kein Build): 5-gegen-5-Match (Module MATCH, PAD-MENÜ) plus
+Penalty-Modus. Auftrag in `floorball/CLAUDE-CODE-AUFTRAG.md`, Stand und offene Punkte in
+`floorball/PRUEFBERICHT_Match_2026-11-16.md`, automatische Prüfungen in `floorball/pruefung/`.
+Lokal starten: `cd floorball && python3 -m http.server`. Steuerung nicht ohne Rückfrage ändern.

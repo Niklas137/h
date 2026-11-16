@@ -1,0 +1,22 @@
+// Aufgabe 4: Schiedsrichter und Bänke – Sichtprüfung und Positionen
+import { oeffne, starteMatch, bullyGewinnen, vorspulen, foto, zeichenlast, erzwingeTor, bis } from './tb.mjs';
+const out = process.argv[2] || 'shots';
+const { browser, p, fehler } = await oeffne({ pads: 1, breite: 1280, hoehe: 720 });
+const ok = (b, t) => console.log((b ? 'OK   ' : 'FEHLT') + ' ' + t);
+await starteMatch(p);
+const st = () => p.evaluate(() => { const M = window.__fps.Match; return { sr: M.schiris.map(r => [+r.pos.x.toFixed(1), +r.pos.z.toFixed(1), r.anim.name]), bankA: M.reserven.A.map(q => +q.pos.x.toFixed(1)), bankB: M.reserven.B.map(q => +q.pos.x.toFixed(1)), namen: M.reserven.A.map(q => q.daten.nummer + ' ' + q.daten.name).join(', '), anim: M.reserven.A[0].anim.name }; });
+let s = await st(); console.log(JSON.stringify(s));
+ok(s.sr.length === 2 && s.bankA.length === 5 && s.bankB.length === 5, '2 Schiedsrichter, je 5 Ersatzspieler');
+ok(s.bankA.every(x => x < 0) && s.bankB.every(x => x > 0), 'Bank A auf der eigenen Abwehrseite (links), B rechts');
+await foto(p, out + '/04-bully-schiri.png', 4); console.log('Zeichenlast', JSON.stringify(await zeichenlast(p)));
+await bullyGewinnen(p); await vorspulen(p, 6);
+s = await st(); console.log(JSON.stringify(s));
+ok(s.sr[0][1] < -8 && s.sr[1][1] > 8, 'Schiedsrichter laufen an den Längsseiten mit');
+await foto(p, out + '/05-spiel-schiri.png', 4);
+await erzwingeTor(p, 'A'); await bis(p, () => window.__fps.Match.zustand === 'tor', null, 30000).catch(() => {});
+await vorspulen(p, 1.2);
+s = await st(); const zz = await p.evaluate(() => [window.__fps.Match.zustand, JSON.stringify(window.__fps.Match.tore)]); ok(s.anim === 'jubel', 'Bank A jubelt beim Tor: ' + s.anim + ' ' + zz);
+await p.evaluate(() => { const M = window.__fps.Match; M.kamModus = 'hoch'; });
+await foto(p, out + '/06-tor-bank.png', 6);
+ok(fehler.length === 0, 'Konsole ohne Fehler' + (fehler.length ? ': ' + fehler.slice(0, 5).join(' | ') : ''));
+await browser.close();
