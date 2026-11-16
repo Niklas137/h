@@ -188,6 +188,9 @@ table.tab td.z{ text-align:right; font-variant-numeric:tabular-nums; }
 #testErgebnis{ font:12px/1.4 ui-monospace,monospace; padding:.4rem .7rem; white-space:pre-wrap; }
 /* ---------- Match 5 gegen 5 ---------- */
 #mHud{ position:fixed; inset:0; z-index:10; pointer-events:none; font-variant-numeric:tabular-nums; }
+#mStrafen{ position:absolute; top:calc(max(.5rem,env(safe-area-inset-top)) + 2.5rem); left:50%; transform:translateX(-50%); display:flex; gap:.35rem; font-size:.74rem; font-weight:700; pointer-events:none; }
+#mStrafen span{ background:rgba(8,12,22,.88); padding:.18rem .5rem; border-radius:.3rem; white-space:nowrap; border-left:.3rem solid var(--f,#888); }
+#mStrafen span.uz{ border-left-color:#ffd23f; color:#ffd23f; letter-spacing:.06em; }
 #mTafel{ position:absolute; top:max(.5rem,env(safe-area-inset-top)); left:50%; transform:translateX(-50%); display:flex; align-items:stretch; height:2.3rem;
   background:rgba(8,12,22,.9); border-radius:.35rem; overflow:hidden; box-shadow:0 4px 18px rgba(0,0,0,.45); font-weight:800; }
 #mTafel .kz{ display:flex; align-items:center; padding:0 .75rem; letter-spacing:.06em; font-size:1rem; }
@@ -4470,9 +4473,9 @@ let letzteZeit = performance.now(), akku = 0, fpsZaehler = 0, fpsZeit = 0;
 const mA = new V3(), mB = new V3(), mC = new V3(), mD = new V3(), mN = new V3(), mQ = new Q4();
 const M_STUFEN = {
   // twGegner/twEigen: Reaktionszeit des gegnerischen bzw. eigenen Torhüters (s); twHaltG/twHaltE: Zuschlag auf die Haltewahrscheinlichkeit
-  leicht: { kiTempo: 0.86, klau: 0.20, twGegner: 0.28, twEigen: 0.14, twHaltG: -0.09, twHaltE: 0.05, kiFehler: 0.55, kiDenk: 1.5, bully: 0.5 },
-  mittel: { kiTempo: 0.95, klau: 0.32, twGegner: 0.20, twEigen: 0.17, twHaltG: -0.02, twHaltE: 0.03, kiFehler: 0.36, kiDenk: 1.0, bully: 0.34 },
-  schwer: { kiTempo: 1.02, klau: 0.44, twGegner: 0.15, twEigen: 0.18, twHaltG: 0.05, twHaltE: 0.08, kiFehler: 0.22, kiDenk: 0.7, bully: 0.22 }
+  leicht: { kiTempo: 0.86, klau: 0.20, twGegner: 0.28, twEigen: 0.14, twHaltG: -0.09, twHaltE: 0.05, kiFehler: 0.55, kiDenk: 1.5, bully: 0.5, kiFoul: 0.10 },
+  mittel: { kiTempo: 0.95, klau: 0.32, twGegner: 0.20, twEigen: 0.17, twHaltG: -0.02, twHaltE: 0.03, kiFehler: 0.36, kiDenk: 1.0, bully: 0.34, kiFoul: 0.07 },
+  schwer: { kiTempo: 1.02, klau: 0.44, twGegner: 0.15, twEigen: 0.18, twHaltG: 0.05, twHaltE: 0.08, kiFehler: 0.22, kiDenk: 0.7, bully: 0.22, kiFoul: 0.05 }
 };
 /* Spielgefühl (Aufgabe 1): Tempo, Antritt, Schuss, Pass und Stick an einer Stelle, Werte in m/s bzw. s */
 const M_GEFUEHL = {
@@ -4581,6 +4584,9 @@ function baueBaenke() {
     const lehne = new THREE.Mesh(new THREE.BoxGeometry(BANK.laenge, 0.36, 0.05), holz); lehne.position.set(s * BANK.x, 0.68, BANK.z - 0.27); G.add(lehne);
     for (const dx of [-0.45, 0, 0.45]) { const f = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.42, 0.36), fuss); f.position.set(s * BANK.x + dx * BANK.laenge, 0.21, BANK.z - 0.04); G.add(f); }
   }
+  // Strafbank in der Mitte (zwei Plätze je Team), dunkelgrau abgesetzt
+  const sb = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.06, 0.42), new THREE.MeshStandardMaterial({ color: 0x3a3f48, roughness: 0.7 })); sb.position.set(0, 0.44, BANK.z - 0.04); G.add(sb);
+  const sl = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.36, 0.05), new THREE.MeshStandardMaterial({ color: 0x3a3f48, roughness: 0.7 })); sl.position.set(0, 0.68, BANK.z - 0.27); G.add(sl);
   return G;
 }
 
@@ -4645,7 +4651,7 @@ const Match = {
     if (this.el) return;
     const w = document.createElement('div'); w.id = 'mHud'; w.className = 'versteckt';
     w.innerHTML = `<div id="mTafel"><span class="kz" id="mKzA"></span><b id="mTA">0</b><span id="mMitte"><i id="mDrittel">1.</i><i id="mUhr">3:00</i></span><b id="mTB">0</b><span class="kz" id="mKzB"></span></div>
-      <div id="mStatus" class="versteckt"></div><div id="mBanner" class="versteckt"></div>
+      <div id="mStrafen"></div><div id="mStatus" class="versteckt"></div><div id="mBanner" class="versteckt"></div>
       <div id="mSpieler"><b id="mName"></b><span class="mBalken"><i id="mAusdauer"></i></span><span class="mBalken kraft"><i id="mKraft"></i></span></div>
       <div id="mHinweis" class="versteckt"></div>
       <button id="mPause" aria-label="Pause">⏸</button>
@@ -4653,7 +4659,7 @@ const Match = {
       <div id="mTouch" class="versteckt"><button data-t="hoch">HOCH</button><button data-t="sprint">SPRINT</button><button data-t="pass" class="gross">PASS</button><button data-t="schuss" class="gross rot">SCHUSS</button></div>`;
     document.body.appendChild(w);
     const g = (id) => w.querySelector('#' + id);
-    this.el = { hud: w, kzA: g('mKzA'), kzB: g('mKzB'), tA: g('mTA'), tB: g('mTB'), drittel: g('mDrittel'), uhr: g('mUhr'), status: g('mStatus'), banner: g('mBanner'), name: g('mName'), ausdauer: g('mAusdauer'), kraft: g('mKraft'), hinweis: g('mHinweis'), joy: g('mJoy'), touch: g('mTouch') };
+    this.el = { hud: w, kzA: g('mKzA'), kzB: g('mKzB'), tA: g('mTA'), tB: g('mTB'), drittel: g('mDrittel'), uhr: g('mUhr'), status: g('mStatus'), banner: g('mBanner'), name: g('mName'), ausdauer: g('mAusdauer'), kraft: g('mKraft'), hinweis: g('mHinweis'), strafen: g('mStrafen'), joy: g('mJoy'), touch: g('mTouch') };
     g('mPause').addEventListener('click', (e) => { e.currentTarget.blur(); this.pause(); });
     for (const b of w.querySelectorAll('[data-t]')) {
       const n = b.dataset.t, an = (e) => { e.preventDefault(); e.stopPropagation(); Ton.init(); this.touch[n] = true; b.classList.add('an'); }, aus = (e) => { e.preventDefault(); this.touch[n] = false; b.classList.remove('an'); };
@@ -4698,7 +4704,7 @@ const Match = {
     if (Bild.sparSpiegel !== spar) { Bild.sparSpiegel = spar; Bild._stand = null; grafikAnwenden(); }
     this.S = M_STUFEN[M_OPT.stufe] || M_STUFEN.mittel; this.kamModus = M_OPT.kamera;
     this.tore = { A: 0, B: 0 }; this.drittel = 1; this.verl = false; this.uhr = M_OPT.drittel * 60; this.zeit = 0;
-    this.stat = { schA: 0, schB: 0, parA: 0, parB: 0, besA: 0, besB: 0 };
+    this.stat = { schA: 0, schB: 0, parA: 0, parB: 0, besA: 0, besB: 0, foulA: 0, foulB: 0, minA: 0, minB: 0 }; this.strafbank = []; this.foulCd = 0; this.pfiffZeit = -9;
     this.kon = this.A[0]; this.aktiv = true; this.pausiert = false; this.kamSchnitt = true; Spiel.zustand = 'menue';
     const e = this.el; e.hud.classList.remove('versteckt'); e.kzA.textContent = tA.kuerzel; e.kzB.textContent = tB.kuerzel;
     e.kzA.style.background = tA.primaer; e.kzA.style.color = textFarbe(tA.primaer); e.kzB.style.background = tB.primaer; e.kzB.style.color = textFarbe(tB.primaer);
@@ -4710,8 +4716,8 @@ const Match = {
   },
   abbau() {
     if (this.baenke) { szene.remove(this.baenke); this.baenke.traverse(o => { if (o.isMesh) o.geometry.dispose(); }); this.baenke = null; }
-    for (const p of [...this.spieler, ...(this.neben || [])]) { szene.remove(p.fig.objekt); p.fig.objekt.traverse(o => { if (o.isSkinnedMesh && o.skeleton && o.skeleton.boneTexture) o.skeleton.boneTexture.dispose(); }); }
-    this.spieler = []; this.A = []; this.B = []; this.feld = []; this.neben = []; this.schiris = []; this.reserven = { A: [], B: [] }; this.aktiv = false; this.zustand = 'aus'; this.pausiert = false;
+    for (const p of [...this.spieler, ...(this.neben || []), ...(this.strafbank || [])]) { szene.remove(p.fig.objekt); p.fig.objekt.traverse(o => { if (o.isSkinnedMesh && o.skeleton && o.skeleton.boneTexture) o.skeleton.boneTexture.dispose(); }); }
+    this.spieler = []; this.A = []; this.B = []; this.feld = []; this.neben = []; this.schiris = []; this.strafbank = []; this.reserven = { A: [], B: [] }; this.aktiv = false; this.zustand = 'aus'; this.pausiert = false;
     if (this.el) { this.el.hud.classList.add('versteckt'); this.ring.visible = this.pfeil.visible = this.passRing.visible = false; }
     if (this.ueberlagerung) { this.ueberlagerung.remove(); this.ueberlagerung = null; }
     Eingabe.joyZone = false; Eingabe.joy = null; kontaktSchatten.count = 0;
@@ -4805,7 +4811,7 @@ const Match = {
     if (Z === 'tor') { this.torInfo.t += dt; if (this.torInfo.t > 3.1 || (this.torInfo.t > 0.8 && this.I.passD)) this.replayStart(); }
     if (Z === 'pauseDrittel') { this.pauseT -= dt; if (this.pauseT <= 0) this.naechstesDrittel(); }
     const lebt = this.zustand === 'spiel' || this.zustand === 'tor';
-    this.linienSchritt(dt);
+    this.linienSchritt(dt); this.strafenSchritt(dt); this.foulCd = Math.max(0, (this.foulCd || 0) - dt);
     // Spieler
     for (const p of this.feld) this.spielerSchritt(p, dt, lebt);
     for (const g of [this.twA, this.twB]) this.torwartSchritt(g, dt);
@@ -4881,6 +4887,11 @@ const Match = {
     const L = this.feld;
     for (let i = 0; i < L.length; i++) for (let j = i + 1; j < L.length; j++) {
       const a = L[i], c = L[j], dx = c.pos.x - a.pos.x, dz = c.pos.z - a.pos.z, d = Math.hypot(dx, dz);
+      if (d < 0.58 && d > 1e-4 && a.team !== c.team && this.zustand === 'spiel') {
+        const bes = this.ball.besitzer; let tae = null, opf = null, v = 0;
+        if (bes === c) { tae = a; opf = c; v = (a.vel.x * dx + a.vel.z * dz) / d; } else if (bes === a) { tae = c; opf = a; v = -(c.vel.x * dx + c.vel.z * dz) / d; }
+        if (tae && v > 4.8 && Math.random() < (v > 6.4 ? 0.9 : 0.45)) this.foul(tae, opf, 'Stoßen', v > 6.4);
+      }
       if (d < 0.58 && d > 1e-4) { const f = (0.58 - d) / d * 0.5; a.pos.x -= dx * f; a.pos.z -= dz * f; c.pos.x += dx * f; c.pos.z += dz * f; }
     }
   },
@@ -5031,7 +5042,12 @@ const Match = {
   stossVersuch(p) {
     const b = this.ball, c = b.besitzer; if (!c || c.team === p.team || c.tw) return;
     const d = Math.hypot(b.p.x - p.pos.x, b.p.z - p.pos.z); if (d > 1.25 || c.immun > 0) return;
-    if (Math.random() < 0.62 - d * 0.18) this.ballweg(c, p, Math.random() < 0.55);
+    if (Math.random() < 0.62 - d * 0.18) { this.ballweg(c, p, Math.random() < 0.55); return; }
+    // daneben: Schlag auf Stock oder Körper; von hinten und aus großer Distanz häufiger, gehäufte Checks werden teurer
+    mA.subVectors(p.pos, c.pos).setY(0).normalize(); const hinten = mA.x * Math.sin(c.yaw) + mA.z * Math.cos(c.yaw) < -0.2;
+    p.checks = (p.checks || []).filter(t => this.zeit - t < 4); p.checks.push(this.zeit);
+    const q = (hinten ? 0.42 : d > 1.0 ? 0.22 : 0.08) + Math.max(0, p.checks.length - 2) * 0.12;
+    if (Math.random() < q) this.foul(p, c, 'Stockschlag', hinten && Math.random() < 0.4);
   },
   zweikampf(dt) {
     const b = this.ball, c = b.besitzer; if (!c || c.tw || c.immun > 0) return;
@@ -5044,6 +5060,7 @@ const Match = {
       let chance = (ki ? (g.team === 'B' ? this.S.klau : 0.3) : 0.22) * (vorn < -0.2 ? 0.35 : 1) * (c.speed > 5.6 ? 0.8 : 1);
       if (ki) { g.stossT = 0; }
       if (Math.random() < chance) { this.ballweg(c, g, Math.random() < 0.5); return; }
+      if (ki && Math.random() < (g.team === 'B' ? (this.S.kiFoul || 0.07) : 0.03) * (vorn < -0.2 ? 2.5 : 1)) { this.foul(g, c, vorn < -0.2 ? 'Stockschlag' : 'Halten', Math.random() < 0.3); return; }
     }
   },
   ballweg(von, an, direkt) {
@@ -5232,7 +5249,8 @@ const Match = {
     const b = this.ball; let sch = b.schussVon || b.letzter || (team === 'A' ? this.A[0] : this.B[0]);
     if (sch.team !== team || sch.tw) sch = (team === 'A' ? this.A : this.B).reduce((a, c) => c.pos.distanceTo(b.p) < a.pos.distanceTo(b.p) ? c : a);
     if (b.besitzer) { b.v.copy(b.besitzer.vel).multiplyScalar(1.2); b.v.x = this.richtung(team) * Math.max(3, Math.abs(b.v.x)); b.besitzer = null; }
-    this.tore[team]++; sch.tore++; this.zustand = 'tor'; this.torInfo = { t: 0, team, schuetze: sch, zeitpunkt: this.zeit, sudden: this.verl };
+    this.tore[team]++; sch.tore++;
+    { const g = (this.strafbank || []).filter(p => p.team !== team).sort((a, c) => a.strafe.rest - c.strafe.rest)[0]; if (g && this.team(g).length < (team === 'A' ? this.A : this.B).length) g.strafe.rest = 0; } this.zustand = 'tor'; this.torInfo = { t: 0, team, schuetze: sch, zeitpunkt: this.zeit, sudden: this.verl };
     for (const p of this.spieler) { p.aktion = null; p.power = 0; p.jubel = p.team === team ? 1 : -1; }
     this.status('TOR'); this.anzeige();
     const T = team === 'A' ? this.teamA : this.teamB;
@@ -5267,7 +5285,7 @@ const Match = {
   /** Spielrichtung: +1 = greift nach +X an. Team A beginnt nach +X, nach jedem Drittel wird getauscht. */
   richtung(team) { return (team === 'A' ? 1 : -1) * this.seite; },
   setzeSeite(s) {
-    this.seite = s; for (const p of [...this.spieler, ...this.reserven.A, ...this.reserven.B]) p.d = this.richtung(p.team);
+    this.seite = s; for (const p of [...this.spieler, ...this.reserven.A, ...this.reserven.B, ...(this.strafbank || [])]) p.d = this.richtung(p.team);
     this.bankPlaetze(); this.schiriStart();
   },
   /** Ersatzspieler auf die Bank der eigenen Abwehrseite setzen */
@@ -5291,6 +5309,11 @@ const Match = {
       if (ruhig && dt > 0 && (this.nebenTakt + p.bankI) % 4) continue;
       const P = p.anim.update(p.bankDt, p); p.fig.anwenden(P, { pos: p.pos, yaw: p.yaw, vel: p.vel, dt: p.bankDt, ballPos: null, blickZiel: jub ? null : b.p }); p.bankDt = 0;
     }
+    for (const p of this.strafbank || []) {
+      if (p.abgang) { this.abgangSchritt(p, dt, b); continue; }
+      p.anim.setze('sitzen', null, 0.3); const P = p.anim.update(dt, p); p.fig.anwenden(P, { pos: p.pos, yaw: p.yaw, vel: p.vel, dt, ballPos: null, blickZiel: b.p });
+    }
+    const pfiffR = this.schiris.reduce((a, c) => c.pos.distanceTo(b.p) < a.pos.distanceTo(b.p) ? c : a);
     for (const r of this.schiris) {
       const nah = r.nr === 1; let tx, tz;
       if (Z === 'bully') { tx = nah ? -7 : 0.4; tz = nah ? 8.9 : -2.6; }
@@ -5305,10 +5328,63 @@ const Match = {
       r.speed = Math.hypot(r.vel.x, r.vel.z);
       let soll = Math.atan2(b.p.x - r.pos.x, b.p.z - r.pos.z), dy = soll - r.yaw; while (dy > Math.PI) dy -= 2 * Math.PI; while (dy < -Math.PI) dy += 2 * Math.PI; r.yaw += dy * Math.min(1, dt * 5);
       const pf = Z === 'bully' && !nah && this.bully && (!this.bully.gepfiffen || this.bully.t < this.bully.pfiff + 0.6);
-      const name = Z === 'tor' && this.torInfo && this.torInfo.t < 3.2 ? 'zeigen' : pf ? 'pfiff' : r.speed > 0.5 ? 'laufen' : 'stehen';
+      const name = Z === 'tor' && this.torInfo && this.torInfo.t < 3.2 ? 'zeigen' : pf || (r === pfiffR && this.zeit - this.pfiffZeit < 1.1) ? 'pfiff' : r.speed > 0.5 ? 'laufen' : 'stehen';
       r.anim.setze(name, null, 0.25);
       const P = r.anim.update(dt, r); r.fig.anwenden(P, { pos: r.pos, yaw: r.yaw, vel: r.vel, dt, ballPos: null, blickZiel: b.p });
     }
+  },
+  /** Strafdauer: 2 von 20 Minuten echter Spielzeit, auf die gewählte Drittellänge umgerechnet */
+  strafDauer() { return klemme(M_OPT.drittel * 60 * 0.1, 15, 120); },
+  foul(taeter, opfer, art, schwer) {
+    if (this.zustand !== 'spiel' || this.foulCd > 0 || !taeter || taeter.tw || taeter.bank) return false;
+    this.foulCd = 1.2; const S = this.stat; S['foul' + taeter.team]++;
+    const wieder = taeter.letzterFoul !== undefined && this.zeit - taeter.letzterFoul < 40; taeter.letzterFoul = this.zeit;
+    const zwei = (schwer || wieder) && this.team(taeter).length > 3;           // höchstens zwei Spieler je Team auf der Strafbank
+    const ort = opfer.pos.clone(); this.pfiffZeit = this.zeit; Ton.pfiff(false); Ton.koerper(0.5);
+    if (zwei) this.strafeGeben(taeter, art);
+    this.freischlag(opfer.team, ort.x, ort.z, zwei ? null : art);
+    return true;
+  },
+  strafeGeben(p, art) {
+    const L = this.team(p), i = L.indexOf(p); if (i < 0) return;
+    L.splice(i, 1); this.feld = [...this.A, ...this.B]; this.spieler = [...this.A, ...this.B, this.twA, this.twB];
+    p.strafe = { rest: this.strafDauer(), art }; p.abgang = true; p.aktion = null; p.power = 0; p.jubel = 0; this.strafbank.push(p);
+    this.stat['min' + p.team] += 2;
+    const b = this.ball; if (b.besitzer === p) b.besitzer = null; if (b.empf === p) b.empf = null;
+    if (this.kon === p) this.kon = this.A.reduce((a, c) => c.pos.distanceTo(b.p) < a.pos.distanceTo(b.p) ? c : a);
+    const T = p.team === 'A' ? this.teamA : this.teamB;
+    this.banner(`2 Minuten<small>#${p.daten.nummer} ${esc(p.daten.name)} (${esc(T.kuerzel)}) · ${art}</small>`, 2.4);
+  },
+  /** Strafzeit läuft nur bei laufender Uhr; abgelaufene Spieler kommen zurück (im Spiel über die Bande, beim Bully direkt in die Aufstellung) */
+  strafenSchritt(dt) {
+    if (!this.strafbank || !this.strafbank.length) return;
+    if (this.zustand === 'spiel') for (const p of this.strafbank) p.strafe.rest -= dt;
+    for (const p of this.strafbank.slice()) if (p.strafe.rest <= 0 && !p.abgang && (this.zustand === 'spiel' || this.zustand === 'bully')) this.strafeEnde(p);
+  },
+  strafeEnde(p) {
+    this.strafbank.splice(this.strafbank.indexOf(p), 1); p.strafe = null; p.abgang = false; p.bank = false;
+    mBankEbene(p, false); if (this.spar) p.fig.objekt.traverse(o => { if (o.isMesh) o.castShadow = false; });
+    Object.assign(p, { aktion: null, power: 0, sperre: 0, stossT: -1, finteT: 0, jubel: 0, speed: 0 }); p.vel.set(0, 0, 0); p.fig.altBecken = null; p.d = this.richtung(p.team);
+    p.pos.set(p.pos.x, 0, -9.35); p.yaw = 0; p.anim.setze('frei', null, 0.2);
+    this.team(p).push(p); this.feld = [...this.A, ...this.B]; this.spieler = [...this.A, ...this.B, this.twA, this.twB];
+    if (this.zustand === 'bully') this.aufstellung();
+  },
+  strafbankPlatz(p) { const L = this.strafbank.filter(q => q.team === p.team), i = Math.max(0, L.indexOf(p)); return (p.team === 'A' ? -0.65 : 0.65) + (p.team === 'A' ? -1 : 1) * i * 0.55; },
+  /** Freischlag für ein Team am Foulort (Aufgabe 7 ergänzt den Abstand der Gegner) */
+  freischlag(team, x, z, grund) {
+    const b = this.ball; b.besitzer = null; b.empf = null; b.schussVon = null; b.v.set(0, 0, 0);
+    b.p.set(klemme(x, -18.3, 18.3), BALLD.r, klemme(z, -8.6, 8.6)); b.schutz = team; b.schutzT = 3.5; b.letzterTeam = team;
+    for (const p of this.feld) { p.aktion = null; p.power = 0; }
+    if (grund) this.banner(`<small>${grund} · Freischlag</small>${esc((team === 'A' ? this.teamA : this.teamB).name)}`, 1.4);
+  },
+  strafenAnzeige() {
+    const e = this.el; if (!e || !e.strafen) return;
+    const teile = (this.strafbank || []).slice().sort((a, c) => a.strafe.rest - c.strafe.rest).map(p => {
+      const T = p.team === 'A' ? this.teamA : this.teamB, r = Math.max(0, Math.ceil(p.strafe.rest));
+      return `<span style="--f:${T.primaer}">${esc(T.kuerzel)} #${p.daten.nummer} ${Math.floor(r / 60)}:${String(r % 60).padStart(2, '0')}</span>`; });
+    const na = this.A.length, nb = this.B.length;
+    if (na !== nb) teile.unshift(`<span class="uz">${na > nb ? 'Überzahl' : 'Unterzahl'} ${na}:${nb}</span>`);
+    const h = teile.join(''); if (this._strafenHtml !== h) { this._strafenHtml = h; e.strafen.innerHTML = h; }
   },
   /** Linienwechsel: Team A per Knopf (Steuerkreuz ↑ / L) oder automatisch, Team B immer automatisch. */
   linieAuto(team) { return team === 'B' || istTouch || M_OPT.linie === 'auto'; },
@@ -5353,9 +5429,9 @@ const Match = {
   },
   /** Ausgewechselter Spieler läuft zur Bank, steigt über die Bande und setzt sich. */
   abgangSchritt(p, dt, b) {
-    const x0 = -this.richtung(p.team) * BANK.x, sx = x0 + (p.bankI - 2) * (BANK.laenge / 5.4);
+    const sx = p.strafe ? this.strafbankPlatz(p) : -this.richtung(p.team) * BANK.x + (p.bankI - 2) * (BANK.laenge / 5.4);
     mA.set(sx - p.pos.x, 0, -9.35 - p.pos.z); const l = mA.length();
-    if (l < 0.25) { p.abgang = false; p.pos.set(sx, 0, BANK.z); p.vel.set(0, 0, 0); p.yaw = 0; p.fig.altBecken = null; mBankEbene(p, true); p.anim.setze('sitzen', null, 0.3); return; }
+    if (l < 0.25) { p.abgang = false; p.pos.set(sx, 0, BANK.z); p.vel.set(0, 0, 0); p.yaw = 0; p.fig.altBecken = null; mBankEbene(p, true); if (p.strafe) p.bank = true; p.anim.setze('sitzen', null, 0.3); return; }
     const v = Math.min(4.6, l * 3); p.vel.lerp(mB.copy(mA).multiplyScalar(v / l), 1 - Math.exp(-8 * dt)); p.pos.addScaledVector(p.vel, dt); p.speed = p.vel.length();
     const soll = Math.atan2(p.vel.x, p.vel.z); let dy = soll - p.yaw; while (dy > Math.PI) dy -= 2 * Math.PI; while (dy < -Math.PI) dy += 2 * Math.PI; p.yaw += dy * Math.min(1, dt * 8);
     p.anim.setze('frei', null, 0.2); const P = p.anim.update(dt, p); p.fig.anwenden(P, { pos: p.pos, yaw: p.yaw, vel: p.vel, dt, ballPos: null, blickZiel: b.p });
@@ -5380,11 +5456,11 @@ const Match = {
     const penaltys = gleich && M_OPT.verl;
     if (!gleich) { Ton.jubel(1); halle.zuschauer.uni.uJubel.value.set(a > c ? 1 : 0, c > a ? 1 : 0, 0.5); for (const p of this.spieler) p.jubel = (p.team === 'A') === (a > c) ? 1 : -1; }
     const zeile = (n, x, y) => `<tr><td>${x}</td><th>${n}</th><td>${y}</td></tr>`;
-    const tore = [...this.A, ...this.B, ...this.reserven.A, ...this.reserven.B].filter(p => p.tore > 0).map(p => `${esc(p.daten.name)} (${p.tore})`).join(' · ');
+    const tore = [...this.A, ...this.B, ...this.reserven.A, ...this.reserven.B, ...this.strafbank].filter(p => p.tore > 0).map(p => `${esc(p.daten.name)} (${p.tore})`).join(' · ');
     const d = document.createElement('div'); d.className = 'bildschirm dunkel mEnde'; d.style.zIndex = 40;
     d.innerHTML = `<div class="mitte"><div class="karte mSetup"><h2>${gleich ? 'Unentschieden' : a > c ? 'Sieg!' : 'Niederlage'}${this.verl && !gleich ? ' <small>nach Verlängerung</small>' : ''}</h2>
       <p class="mErgebnis">${esc(this.teamA.name)} <b>${a} : ${c}</b> ${esc(this.teamB.name)}</p>
-      <table class="mStat">${zeile('Schüsse', S.schA, S.schB)}${zeile('Paraden', S.parA, S.parB)}${zeile('Ballbesitz', bes + ' %', (100 - bes) + ' %')}</table>
+      <table class="mStat">${zeile('Schüsse', S.schA, S.schB)}${zeile('Paraden', S.parA, S.parB)}${zeile('Ballbesitz', bes + ' %', (100 - bes) + ' %')}${zeile('Fouls', S.foulA, S.foulB)}${zeile('Strafminuten', S.minA, S.minB)}</table>
       ${tore ? `<p class="hinweisText">Tore: ${tore}</p>` : ''}
       <div class="mKnoepfe">${penaltys ? '<button class="knopf primaer" data-e="penalty">Penaltyschießen</button>' : ''}<button class="knopf ${penaltys ? '' : 'primaer'}" data-e="neu">Revanche</button><button class="knopf" data-e="menue">${t('zum_menue')}</button></div></div></div>`;
     document.body.appendChild(d); this.ueberlagerung = d;
@@ -5468,6 +5544,7 @@ const Match = {
     if (k) {
       const e = this.el, txt = `L${this.linie ? this.linie.A : 1} · ${k.daten.nummer} ${k.daten.name}`; if (e.name.textContent !== txt) e.name.textContent = txt;
       e.ausdauer.style.transform = `scaleX(${k.ausdauer.toFixed(2)})`; e.kraft.style.transform = `scaleX(${(k.power || 0).toFixed(2)})`;
+      this.strafenAnzeige();
       const s = Math.max(0, Math.ceil(this.uhr)), ut = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; if (e.uhr.textContent !== ut) e.uhr.textContent = ut;
       const hz = this.zeit < this.hinweisBis && M_OPT.hilfe, tipp = !hz && M_OPT.hilfe && !this.linieAuto('A') && this.zustand === 'spiel' && this.frischeVon('A') < 0.5;
       e.hinweis.classList.toggle('versteckt', !hz && !tipp);
