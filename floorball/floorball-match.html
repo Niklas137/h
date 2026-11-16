@@ -2522,6 +2522,16 @@ const POSEN_TORWART = {
     return P;
   },
   liegt(e, t, p) { const P = POSEN_TORWART.hecht(e, 1, p); return P; },
+  /** Auswurf: aufstehen, rechten Arm nach hinten oben ausholen, Ausfallschritt, Durchschwung nach vorn */
+  auswurf(e, t) {
+    const P = POSEN_TORWART.stehen(e, t), u = glatt(klemme(t / 0.32, 0, 1)), w = glatt(klemme((t - 0.32) / 0.3, 0, 1));
+    P.hoehe = mix(0.72, 0.88, u) - 0.06 * w; P.pitch = mix(0.0, 0.3, w); P.twist = 0.35 * u - 0.6 * w; P.beuge = 0.1 + 0.25 * w; P.blick = 0;
+    const zu = [-0.3, 0.9, 0.2], hinten = [-0.38, 1.55, -0.32], vorn = [-0.12, 1.3, 0.7];
+    P.hR = w > 0 ? [mix(hinten[0], vorn[0], w), mix(hinten[1], vorn[1], w), mix(hinten[2], vorn[2], w)] : [mix(zu[0], hinten[0], u), mix(zu[1], hinten[1], u), mix(zu[2], hinten[2], u)];
+    P.elR = [-1, 0.3, -0.2]; P.hL = [0.3, mix(1.15, 0.85, w), 0.55]; P.elL = [1, -0.2, 0];
+    P.fW = 1; P.fL = [0.18, 0.075, mix(0.1, 0.38, u)]; P.fR = [-0.2, 0.075, mix(-0.1, -0.3, u)]; P.knL = [0.2, 0, 1]; P.knR = [-0.2, 0, 1];
+    return P;
+  },
   /** Herausspringen: Körper kippt nach vorn, Arme strecken sich zum Ball, Beine schieben nach hinten weg. */
   raus(e, t, p) {
     const P = POSEN_TORWART.grund(e, t), u = glatt(t / 0.35), z = e.zielLokal;
@@ -4546,6 +4556,20 @@ const SR_POSEN = {
     const P = SR_POSEN.stehen(e, t); P.hR = [-0.12, 1.45, 0.62]; P.elR = [-1, 0, 0]; P.twist = -0.1; return P;
   }
 };
+/** Ballannahme: Kelle geht dem Pass entgegen und federt zurück, Körper tief */
+M_POSEN.annahme = function (e, t) {
+  const P = POSEN_SCHUETZE.dribbel(e, t), u = klemme(t / 0.32, 0, 1), a = Math.sin(Math.PI * u), s = e.annahmeSeite || 0;
+  P.hoehe -= 0.07 * a; P.beuge += 0.18 * a; P.pitch += 0.08 * a; P.twist += s * 0.28 * a;
+  P.kelle = [P.kelle[0] + s * 0.1 * a, P.kelle[1], P.kelle[2] + (u < 0.35 ? 0.22 * (u / 0.35) : 0.22 * (1 - u) / 0.65) * a];
+  P.oben = [P.oben[0] + s * 0.04 * a, P.oben[1] - 0.06 * a, P.oben[2] + 0.08 * a]; return P;
+};
+/** Gruppenjubel: Mitspieler stehen im Kreis um den Torschützen, hüpfen im Takt, Schläger hoch über den Köpfen */
+M_POSEN.gruppe = function (e, t) {
+  const P = basisPose(), h = Math.abs(Math.sin((typeof Match !== 'undefined' ? Match.zeit : t) * 6.5)) * 0.1;
+  P.hoehe = 0.94 + h; P.fW = 1; P.fL = [0.13, 0.08 + h, 0.02]; P.fR = [-0.13, 0.08 + h, -0.02];
+  P.pitch = 0.14; P.beuge = 0.12; P.kopfNick = 0.1; P.blick = 0;
+  P.kelle = [e.s * 0.5, 1.3 + h, 0.2]; P.kRicht = [1, 0, 0.2]; P.oben = [-e.s * 0.22, 1.55 + h, 0.32]; return P;
+};
 /** Sitzen auf der Bank: Schläger zwischen den Knien, Blick zum Spiel */
 M_POSEN.sitzen = function (e, t) {
   const P = basisPose(), w = Math.sin(t * 1.3 + e.kiT * 9) * 0.01;
@@ -4837,7 +4861,7 @@ const Match = {
       if (!this.frei) this.uhr -= dt; if (b.besitzer) this.stat[b.besitzer.team === 'A' ? 'besA' : 'besB'] += dt;
       if (this.uhr <= 0) { this.uhr = 0; this.drittelEnde(); }
     }
-    if (Z === 'tor') { this.torInfo.t += dt; if (this.torInfo.t > 3.1 || (this.torInfo.t > 0.8 && (this.I.passD || (this.zweiB && this.I2.passD)))) this.replayStart(); }
+    if (Z === 'tor') { this.torInfo.t += dt; if (this.torInfo.t > 3.7 || (this.torInfo.t > 0.8 && (this.I.passD || (this.zweiB && this.I2.passD)))) this.replayStart(); }
     if (Z === 'pauseDrittel') { this.pauseT -= dt; if (this.pauseT <= 0) this.naechstesDrittel(); }
     const lebt = this.zustand === 'spiel' || this.zustand === 'tor';
     this.linienSchritt(dt); this.strafenSchritt(dt); this.freiSchritt(dt); this.foulCd = Math.max(0, (this.foulCd || 0) - dt);
@@ -4860,7 +4884,10 @@ const Match = {
     const wunsch = mB.set(0, 0, 0), G = M_GEFUEHL; let maxV = (hatBall ? G.laufBall : G.lauf) * (0.88 + 0.12 * (p.frische ?? 1));   // müde Linie wird langsamer
     if (this.zustand === 'tor' || this.zustand === 'pauseDrittel') {
       // Jubel bzw. Auslaufen
-      if (p.jubel > 0 && this.torInfo) { const s = this.torInfo.schuetze; if (p !== s && p.team === s.team) { mA.subVectors(s.pos, p.pos).setY(0); const l = mA.length(); if (l > 1.4) wunsch.copy(mA).multiplyScalar(4.2 / l); } }
+      if (p.jubel > 0 && this.torInfo) { const s = this.torInfo.schuetze; if (p !== s && p.team === s.team) {
+        const L = this.team(p).filter(q => q !== s), i = L.indexOf(p), w = (i + 0.5) / Math.max(1, L.length) * Math.PI * 2 + s.yaw;
+        mA.set(s.pos.x + Math.sin(w) * 0.92 - p.pos.x, 0, s.pos.z + Math.cos(w) * 0.92 - p.pos.z); const l = mA.length(); if (l > 0.12) wunsch.copy(mA).multiplyScalar(Math.min(G.lauf * G.sprint, l * 3.2) / l);
+      } }
     } else if (this.zustand === 'bully') { /* stehen */ }
     else if (mensch) {
       const I = this.eingabe(p), sprint = I.sprint && p.ausdauer > 0.04 && I.m > 0.3;
@@ -4894,8 +4921,9 @@ const Match = {
     p.pos.addScaledVector(p.vel, dt); p.speed = Math.hypot(p.vel.x, p.vel.z);
     this.begrenze(p);
     // Blickrichtung
-    let zy = p.yaw;
-    if (p.aktion && p.aktion.richt) zy = Math.atan2(p.aktion.richt.x, p.aktion.richt.z);
+    let zy = p.yaw; const jS = p.jubel > 0 && this.torInfo && this.zustand === 'tor' ? this.torInfo.schuetze : null;
+    if (jS && jS !== p && jS.team === p.team && p.pos.distanceTo(jS.pos) < 1.8) zy = Math.atan2(jS.pos.x - p.pos.x, jS.pos.z - p.pos.z);   // im Jubelkreis zum Schützen schauen
+    else if (p.aktion && p.aktion.richt) zy = Math.atan2(p.aktion.richt.x, p.aktion.richt.z);
     else if (p.speed > 0.7) zy = Math.atan2(p.vel.x, p.vel.z);
     else if (!hatBall) zy = Math.atan2(b.p.x - p.pos.x, b.p.z - p.pos.z);
     p.yaw = winkelDaempf(p.yaw, zy, p.aktion ? 22 : hatBall ? 9 : 11, dt);
@@ -5082,7 +5110,9 @@ const Match = {
     if (Math.random() < q) this.foul(p, c, 'Stockschlag', hinten && Math.random() < 0.4);
   },
   zweikampf(dt) {
-    const b = this.ball, c = b.besitzer; if (!c || c.tw || c.immun > 0) return;
+    const b = this.ball, c = b.besitzer; if (!c || c.tw) return;
+    for (const g of this.gegner(c)) if (g.pos.distanceTo(c.pos) < 1.1) { g.kampfT = c.kampfT = 0.35; g.kampfMit = c; c.kampfMit = g; }   // Körperkontakt: beide lehnen sich hinein
+    if (c.immun > 0) return;
     for (const g of this.gegner(c)) {
       const d = Math.hypot(b.p.x - g.pos.x, b.p.z - g.pos.z); if (d > 0.95) continue;
       g.klauT -= dt; if (g.klauT > 0) continue;
@@ -5111,8 +5141,9 @@ const Match = {
       const p = b.besitzer;
       if (p.tw) {
         // Torhüter hält den Ball und wirft ihn aus
-        mA.set(p.pos.x + Math.sin(p.yaw) * 0.3, 0.55, p.pos.z + Math.cos(p.yaw) * 0.3); b.p.lerp(mA, 1 - Math.exp(-20 * dt)); b.v.set(0, 0, 0);
-        p.gk.halten -= dt; if (p.gk.halten <= 0 && this.zustand === 'spiel') this.auswurf(p);
+        if (p.gk.zustand === 'wurf') p.fig.j.handR.getWorldPosition(mA); else mA.set(p.pos.x + Math.sin(p.yaw) * 0.3, 0.55, p.pos.z + Math.cos(p.yaw) * 0.3);
+        b.p.lerp(mA, 1 - Math.exp(-(p.gk.zustand === 'wurf' ? 40 : 20) * dt)); b.v.set(0, 0, 0);
+        p.gk.halten -= dt; if (p.gk.halten <= 0 && this.zustand === 'spiel' && p.gk.zustand !== 'wurf') this.wurfStart(p);
         return;
       }
       const vorher = mD.copy(b.p);
@@ -5186,7 +5217,9 @@ const Match = {
       mA.subVectors(b.p, best.pos).setY(0).normalize(); const vn = b.v.dot(mA); if (vn < 0) { b.v.addScaledVector(mA, -1.35 * vn); b.v.multiplyScalar(0.4); b.v.y = 1 + Math.random() * 1.5; best.sperre = 0.3; b.letzter = best; b.letzterTeam = best.team; b.empf = null; Ton.koerper(0.7); }
       return;
     }
-    const warEmpf = b.empf === best; this.gibBall(best); Ton.klick(0.18);
+    const warEmpf = b.empf === best;
+    if (sp > 4 && !best.tw) { best.annahmeT = 0.32; best.annahmeSeite = Math.sign(b.v.x * Math.cos(best.yaw) - b.v.z * Math.sin(best.yaw)) * -1 || 0; }
+    this.gibBall(best); Ton.klick(0.18);
     // Direktabnahme: Schuss wird gehalten oder wurde kurz vorher gedrückt
     if (this.istMensch(best) && warEmpf && (this.eingabe(best).schuss || this.zeit - this.puffer[best.team] < 0.35)) { this.starteSchuss(best, 0.8, null, this.eingabe(best).zielHoch); if (best.aktion) { best.aktion.direkt = true; best.aktion.dauer = 0.12; } this.schussPuffer = -9; }
     if (best.team === 'B' && !this.zweiB && warEmpf) { const dist = Math.hypot(best.d * TOR.x - best.pos.x, best.pos.z); if (dist < 8.5 && Math.random() < 0.55) { this.starteSchuss(best, 0.75, null, Math.random() < 0.3); if (best.aktion) best.aktion.direkt = true; } else best.kiT = 0.2; }
@@ -5197,6 +5230,7 @@ const Match = {
     const b = this.ball, G = g.gk, s = -g.d, tx = s * TOR.x, S = this.S; G.t += dt;
     const reaktZeit = (this.zweiB ? (S.twGegner + S.twEigen) / 2 : g.team === 'B' ? S.twGegner : S.twEigen) * (1.25 - g.daten.reflexe / 250);
     if (this.zustand === 'tor' || this.zustand === 'pauseDrittel' || g.jubel > 0) { g.lokVel.set(0, 0, 0); return; }
+    if (G.zustand === 'wurf') { this.wurfSchritt(g, dt); return; }
     if (G.liegt > 0) { G.liegt -= dt; if (G.liegt <= 0) { G.zustand = 'grund'; G.reakt = -1; } g.lokVel.set(0, 0, 0); return; }
     // Grundstellung: auf der Linie Ball–Tormitte, etwas vor der Torlinie
     mA.set(b.p.x - tx, 0, b.p.z); const dl = mA.length() || 1; mA.multiplyScalar(1 / dl);
@@ -5267,12 +5301,24 @@ const Match = {
     g.gk.halten = 1.1 + Math.random() * 0.5; Ton.koerper(0.5);
     if (g.gk.zustand !== 'hecht' && g.gk.zustand !== 'liegt') { g.gk.zustand = 'grund'; g.anim.setze('fangen', { gefangen: true, neu: true }, 0.1); }
   },
-  auswurf(g) {
-    const b = this.ball, L = g.team === 'A' ? this.A : this.B; let best = L[3], bw = -1e9;
+  auswurfZiel(g) {
+    const L = g.team === 'A' ? this.A : this.B; let best = L[Math.min(3, L.length - 1)], bw = -1e9;
     for (const m of L) { const dd = m.pos.distanceTo(g.pos); if (dd < 3 || dd > 17) continue; const w = Math.min(4, this.naechsterGegner(m).d) + Math.min(2, this.bahnFrei(g.pos, m.pos, g.team)) * 1.5 - dd * 0.08 + Math.random(); if (w > bw) { bw = w; best = m; } }
-    b.besitzer = null; b.p.set(g.pos.x + g.d * 0.5, 0.7, g.pos.z); mA.subVectors(best.pos, b.p).setY(0); const l = mA.length() || 1, vh = klemme(l / 0.9, 7, 13), tt = l / vh;
+    return best;
+  },
+  /** Torhüter steht auf, dreht sich zum Ziel, holt aus und wirft (Ball liegt bis zum Abwurf in der Hand) */
+  wurfStart(g) { const G = g.gk; G.zustand = 'wurf'; G.wurfT = 0; G.wurfZiel = this.auswurfZiel(g); g.anim.setze('auswurf', { neu: true }, 0.14); },
+  wurfSchritt(g, dt) {
+    const G = g.gk, b = this.ball, z = G.wurfZiel; G.wurfT += dt; g.lokVel.set(0, 0, 0); g.vel.set(0, 0, 0);
+    if (z) g.yaw = winkelDaempf(g.yaw, Math.atan2(z.pos.x - g.pos.x, z.pos.z - g.pos.z), 10, dt);
+    if (G.wurfT >= 0.4 && b.besitzer === g) this.auswurf(g, z && this.team(z).includes(z) ? z : null);
+    if (G.wurfT > 0.75) { G.zustand = 'grund'; G.reakt = -1; g.anim.setze('grund', null, 0.3); }
+  },
+  auswurf(g, ziel) {
+    const b = this.ball, best = ziel || this.auswurfZiel(g);
+    b.besitzer = null; if (g.gk.zustand === 'wurf') g.fig.j.handR.getWorldPosition(b.p); else b.p.set(g.pos.x + g.d * 0.5, 0.7, g.pos.z); b.p.y = Math.max(0.5, b.p.y); mA.subVectors(best.pos, b.p).setY(0); const l = mA.length() || 1, vh = klemme(l / 0.9, 7, 13), tt = l / vh;
     b.v.copy(mA).multiplyScalar(vh / l); b.v.y = 0.5 * 9.81 * tt - 0.7 / tt; b.empf = best; b.letzterTeam = g.team; this.setzeKon(best);
-    g.gk.zustand = 'grund'; g.gk.reakt = -1; g.anim.setze('grund', null, 0.2);
+    if (g.gk.zustand !== 'wurf') { g.gk.zustand = 'grund'; g.gk.reakt = -1; g.anim.setze('grund', null, 0.2); }
   },
 
   /* ---------- Tor, Zeitlupe, Drittel ---------- */
@@ -5581,12 +5627,13 @@ const Match = {
       for (const p of this.spieler) {
         const hat = b.besitzer === p; let name, param = null;
         if (p.tw) {
-          const G = p.gk; name = p.jubel > 0 ? 'jubel' : p.jubel < 0 ? 'enttaeuscht' : G.zustand === 'hecht' ? 'hecht' : G.zustand === 'liegt' ? 'liegt' : G.zustand === 'block' ? p.anim.name : (b.besitzer === p ? 'fangen' : 'grund');
+          const G = p.gk; name = p.jubel > 0 ? 'jubel' : p.jubel < 0 ? 'enttaeuscht' : G.zustand === 'hecht' ? 'hecht' : G.zustand === 'wurf' ? 'auswurf' : G.zustand === 'liegt' ? 'liegt' : G.zustand === 'block' ? p.anim.name : (b.besitzer === p ? 'fangen' : 'grund');
           if (name === 'grund' || name === 'jubel' || name === 'enttaeuscht') p.anim.setze(name, null, 0.2);
         } else {
-          if (p.jubel > 0 && this.zustand !== 'spiel') name = p.speed > 1.5 ? 'frei' : 'jubel';
+          if (p.jubel > 0 && this.zustand !== 'spiel') { const sch = this.torInfo && this.torInfo.schuetze; const imKreis = sch && sch !== p && sch.team === p.team && p.pos.distanceTo(sch.pos) < 1.8; name = imKreis && p.speed < 3 ? 'gruppe' : p.speed > 1.5 ? 'frei' : 'jubel'; }
           else if (p.jubel < 0 && this.zustand !== 'spiel') name = 'enttaeuscht';
           else if (p.aktion) { name = 'schuss'; if (!p.aktion.gesetzt) { p.aktion.gesetzt = true; param = p.aktion.param; } }
+          else if (hat && p.annahmeT > 0 && p.power < 0.05) name = 'annahme';
           else if (hat && p.power > 0.05) name = 'ausholen';
           else if (hat) name = 'dribbel';
           else if (p.stossT >= 0) name = 'stoss';
@@ -5595,6 +5642,14 @@ const Match = {
           if (name !== 'schuss' || param) p.anim.setze(name, param, name === 'schuss' ? 0.04 : undefined);
         }
         const P = p.anim.update(dt, p);
+        if (!p.tw) {
+          p.annahmeT = Math.max(0, (p.annahmeT || 0) - dt); p.kampfT = Math.max(0, (p.kampfT || 0) - dt);
+          p.kampfW = daempf(p.kampfW || 0, p.kampfT > 0 && p.kampfMit && this.zustand === 'spiel' ? 1 : 0, 9, dt);
+          if (p.kampfW > 0.01 && p.kampfMit) {   // Zweikampf: Schulter zum Gegner, tiefer Schwerpunkt; der Ballführer dreht den Ball weg
+            const o = p.kampfMit, lx = (o.pos.x - p.pos.x) * Math.cos(p.yaw) - (o.pos.z - p.pos.z) * Math.sin(p.yaw), sg = Math.sign(lx) || 1, w = p.kampfW;
+            P.bx += sg * 0.1 * w; P.seit -= sg * 0.22 * w; P.hoehe -= 0.05 * w; P.beuge += 0.12 * w; if (hat) P.twist -= sg * 0.22 * w;
+          }
+        }
         p.fig.anwenden(P, { pos: p.pos, yaw: p.yaw, vel: p.vel, dt, ballPos: hat && !p.tw ? b.p : null, blickZiel: p.jubel > 0 ? null : b.p });
       }
       this.nebenDarstellen(dt);
