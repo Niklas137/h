@@ -4523,7 +4523,7 @@ class MSpieler {
 const Match = {
   aktiv: false, zustand: 'aus', pausiert: false, spieler: [], A: [], B: [], twA: null, twB: null, kon: null,
   ball: { p: new V3(0, BALLD.r, 0), v: new V3(), q: new Q4(), besitzer: null, letzter: null, letzterTeam: null, imTor: 0, empf: null, schutz: null, schutzT: 0, schussVon: null, schussT: 0, hoch: false },
-  tore: { A: 0, B: 0 }, drittel: 1, uhr: 0, verl: false, t: 0, zeit: 0, stat: null, pad: { vor: {} }, touch: {}, I: {}, kamModus: 'tv', kamPos: new V3(0, 12, 15), kamZiel: new V3(), kamSchnitt: true,
+  tore: { A: 0, B: 0 }, seite: 1, drittel: 1, uhr: 0, verl: false, t: 0, zeit: 0, stat: null, pad: { vor: {} }, touch: {}, I: {}, kamModus: 'tv', kamPos: new V3(0, 12, 15), kamZiel: new V3(), kamSchnitt: true,
   torInfo: null, replay: null, bully: null, ueberlagerung: null, schussPuffer: -9, hinweisBis: 0,
 
   /* ---------- Aufbau / Abbau ---------- */
@@ -4615,7 +4615,7 @@ const Match = {
     const spar = this.spar = mGrafikSpar();
     const bau = (team, T, a) => { const l = rollen.map((r, i) => new MSpieler(team, r, T.schuetzen[i % T.schuetzen.length], T, a, spar)); const tw = new MSpieler(team, 'TW', T.torwart, T, a, spar); return [l, tw]; };
     [this.A, this.twA] = bau('A', tA, false); [this.B, this.twB] = bau('B', tB, alt);
-    this.spieler = [...this.A, ...this.B, this.twA, this.twB]; this.feld = [...this.A, ...this.B];
+    this.spieler = [...this.A, ...this.B, this.twA, this.twB]; this.feld = [...this.A, ...this.B]; this.setzeSeite(1);
     for (const p of this.spieler) szene.add(p.fig.objekt);
     this.aufnahme = new Aufnahme([...this.spieler.flatMap(p => p.fig.objekte), ballGruppe]); this.aufT = 0;
     // Figuren des Penalty-Modus ausblenden
@@ -4682,7 +4682,7 @@ const Match = {
   /* ---------- Bully / Unterbrechungen ---------- */
   aufstellung() {
     const P = [[-0.75, 0], [-1.6, -5], [-1.6, 5], [-6, -2.8], [-6, 2.8]];
-    for (const [L, d] of [[this.A, 1], [this.B, -1]]) L.forEach((p, i) => { p.pos.set(P[i][0] * d, 0, P[i][1]); p.vel.set(0, 0, 0); p.yaw = d > 0 ? Math.PI / 2 : -Math.PI / 2; p.aktion = null; p.sperre = 0; p.stossT = -1; p.jubel = 0; p.power = 0; p.fig.planer.bereit = false; p.anim.setze('frei', null, 0); });
+    for (const [L, d] of [[this.A, this.richtung('A')], [this.B, this.richtung('B')]]) L.forEach((p, i) => { p.pos.set(P[i][0] * d, 0, P[i][1]); p.vel.set(0, 0, 0); p.yaw = d > 0 ? Math.PI / 2 : -Math.PI / 2; p.aktion = null; p.sperre = 0; p.stossT = -1; p.jubel = 0; p.power = 0; p.fig.planer.bereit = false; p.anim.setze('frei', null, 0); });
     for (const g of [this.twA, this.twB]) { g.pos.set(-g.d * (TOR.x - 0.7), 0, 0); g.yaw = g.d > 0 ? Math.PI / 2 : -Math.PI / 2; g.vel.set(0, 0, 0); g.gk.zustand = 'grund'; g.gk.reakt = -1; g.gk.halten = 0; g.gk.liegt = 0; g.gk.blockZ = 0; g.jubel = 0; g.fig.planer.bereit = false; }
   },
   bullyStart(sofortSchnitt) {
@@ -4879,7 +4879,7 @@ const Match = {
   },
   wechsel() {
     const b = this.ball; let best = null, bd = 1e9;
-    for (const m of this.A) { if (m === this.kon) continue; const d = Math.hypot(m.pos.x - b.p.x, m.pos.z - b.p.z) + (m.pos.x > b.p.x ? 1.5 : 0); if (d < bd) { bd = d; best = m; } }
+    for (const m of this.A) { if (m === this.kon) continue; const d = Math.hypot(m.pos.x - b.p.x, m.pos.z - b.p.z) + ((m.pos.x - b.p.x) * this.richtung('A') > 0 ? 1.5 : 0); if (d < bd) { bd = d; best = m; } }
     if (best) { this.kon = best; Ton.tick(); }
   },
 
@@ -5028,7 +5028,7 @@ const Match = {
       }
       if (lx0 <= 0 && lx1 > 0) {
         const f = lx0 === lx1 ? 0 : -lx0 / (lx1 - lx0), z = mix(vorher.z, b.p.z, f), y = mix(vorher.y, b.p.y, f), az = Math.abs(z);
-        if (az < TOR.hb - 0.01 && y < TOR.h) { if (this.zustand === 'spiel') { b.imTor = s; b.netzTon = false; this.tor(s > 0 ? 'A' : 'B', gefuehrt); } else { b.imTor = s; } return; }
+        if (az < TOR.hb - 0.01 && y < TOR.h) { if (this.zustand === 'spiel') { b.imTor = s; b.netzTon = false; this.tor(s === this.richtung('A') ? 'A' : 'B', gefuehrt); } else { b.imTor = s; } return; }
         if (!gefuehrt && az < TOR.hb + 0.09 && y < TOR.h + 0.09) { b.p.x = s * (TOR.x - 0.02); b.v.x *= -0.55; b.v.z += Math.sign(z) * (az > TOR.hb - 0.01 ? 2 : 0); if (y >= TOR.h) b.v.y = Math.abs(b.v.y) + 1.5; Ton.pfosten(0.9); Ton.raunen(0.7); return; }
       }
       // Gehäuse von außen (Seiten, Rückwand, Dach)
@@ -5064,7 +5064,7 @@ const Match = {
     const warEmpf = b.empf === best; this.gibBall(best); Ton.klick(0.18);
     // Direktabnahme: Schuss wird gehalten oder wurde kurz vorher gedrückt
     if (best === this.kon && warEmpf && (this.I.schuss || this.zeit - this.schussPuffer < 0.35)) { this.starteSchuss(best, 0.8, null, this.I.zielHoch); if (best.aktion) { best.aktion.direkt = true; best.aktion.dauer = 0.12; } this.schussPuffer = -9; }
-    if (best.team === 'B' && warEmpf) { const dist = Math.hypot(-TOR.x - best.pos.x, best.pos.z); if (dist < 8.5 && Math.random() < 0.55) { this.starteSchuss(best, 0.75, null, Math.random() < 0.3); if (best.aktion) best.aktion.direkt = true; } else best.kiT = 0.2; }
+    if (best.team === 'B' && warEmpf) { const dist = Math.hypot(best.d * TOR.x - best.pos.x, best.pos.z); if (dist < 8.5 && Math.random() < 0.55) { this.starteSchuss(best, 0.75, null, Math.random() < 0.3); if (best.aktion) best.aktion.direkt = true; } else best.kiT = 0.2; }
   },
 
   /* ---------- Torhüter ---------- */
@@ -5154,7 +5154,7 @@ const Match = {
   tor(team, gefuehrt) {
     const b = this.ball; let sch = b.schussVon || b.letzter || (team === 'A' ? this.A[0] : this.B[0]);
     if (sch.team !== team || sch.tw) sch = (team === 'A' ? this.A : this.B).reduce((a, c) => c.pos.distanceTo(b.p) < a.pos.distanceTo(b.p) ? c : a);
-    if (b.besitzer) { b.v.copy(b.besitzer.vel).multiplyScalar(1.2); b.v.x = (team === 'A' ? 1 : -1) * Math.max(3, Math.abs(b.v.x)); b.besitzer = null; }
+    if (b.besitzer) { b.v.copy(b.besitzer.vel).multiplyScalar(1.2); b.v.x = this.richtung(team) * Math.max(3, Math.abs(b.v.x)); b.besitzer = null; }
     this.tore[team]++; sch.tore++; this.zustand = 'tor'; this.torInfo = { t: 0, team, schuetze: sch, zeitpunkt: this.zeit, sudden: this.verl };
     for (const p of this.spieler) { p.aktion = null; p.power = 0; p.jubel = p.team === team ? 1 : -1; }
     this.status('TOR'); this.anzeige();
@@ -5169,7 +5169,7 @@ const Match = {
     this.zustand = 'replay'; this.status('ZEITLUPE'); this.el.banner.classList.add('versteckt'); this.kamSchnitt = true; this.replayKamera();
   },
   replayKamera() {
-    const R = this.replay, s = this.torInfo.team === 'A' ? 1 : -1, sch = this.torInfo.schuetze;
+    const R = this.replay, s = this.richtung(this.torInfo.team), sch = this.torInfo.schuetze;
     if (R.pass === 0) { R.kamPos = new V3(s * (TOR.x - 9), 3.4, sch.pos.z > 0 ? -6.5 : 6.5); R.kamZiel = new V3(s * (TOR.x - 2.5), 0.6, 0); }
     else { R.kamPos = new V3(s * (TOR.x + 2.6), 2.3, sch.pos.z > 0 ? -1.6 : 1.6); R.kamZiel = new V3(s * (TOR.x - 5), 0.5, sch.pos.z * 0.5); }
   },
@@ -5187,6 +5187,9 @@ const Match = {
     if (this.torInfo && this.torInfo.sudden) { this.torInfo = null; this.ende(); return; }
     this.torInfo = null; this.aufnahme.leeren(); this.bullyStart(true);
   },
+  /** Spielrichtung: +1 = greift nach +X an. Team A beginnt nach +X, nach jedem Drittel wird getauscht. */
+  richtung(team) { return (team === 'A' ? 1 : -1) * this.seite; },
+  setzeSeite(s) { this.seite = s; for (const p of this.spieler) p.d = this.richtung(p.team); },
   drittelEnde() {
     Ton.horn(); const b = this.ball; b.besitzer = null; b.v.set(0, 0, 0); b.empf = null;
     const gleich = this.tore.A === this.tore.B;
@@ -5195,11 +5198,11 @@ const Match = {
     if (this.drittel >= 3 && gleich && !M_OPT.verl) { this.ende(); return; }
     this.zustand = 'pauseDrittel'; this.pauseT = 3.2; this.status(null);
     for (const p of this.spieler) { p.aktion = null; p.jubel = 0; }
-    this.banner(this.drittel >= 3 ? `Verlängerung<small>Das nächste Tor entscheidet</small>` : `Ende ${this.drittel}. Drittel<small>${this.tore.A} : ${this.tore.B}</small>`, 3.1);
+    this.banner(this.drittel >= 3 ? `Verlängerung<small>Das nächste Tor entscheidet · Seitenwechsel</small>` : `Ende ${this.drittel}. Drittel<small>${this.tore.A} : ${this.tore.B} · Seitenwechsel</small>`, 3.1);
   },
   naechstesDrittel() {
     if (this.drittel >= 3) { this.verl = true; this.uhr = Math.min(5, Math.max(2, M_OPT.drittel)) * 60; } else { this.drittel++; this.uhr = M_OPT.drittel * 60; }
-    this.aufnahme.leeren(); this.anzeige(); this.bullyStart(true);
+    this.setzeSeite(-this.seite); this.aufnahme.leeren(); this.anzeige(); this.bullyStart(true);
   },
   ende() {
     this.zustand = 'ende'; this.status(null); this.el.banner.classList.add('versteckt'); Ton.pfiff(true); Eingabe.joyZone = false;
@@ -5312,7 +5315,7 @@ const Match = {
     else if (this.zustand === 'tor' && this.torInfo.t > 0.9) {
       const s = this.torInfo.schuetze, a = this.torInfo.t * 0.35; wp.set(s.pos.x - s.d * 3.2 * Math.cos(a), 1.7, s.pos.z + 3.2 * Math.sin(a) + 1.5); wz.set(s.pos.x, 1.25, s.pos.z); rate = 4; fov = 38;
     } else if (this.kamModus === 'hoch') { wp.set(bx * 0.82, 21 * hoch, bz * 0.35 + 7.5); wz.set(bx * 0.82, 0, bz * 0.35); fov = 44; }
-    else if (this.kamModus === 'hinten') { const x = klemme(bx - 12 * hoch, -30, 14); wp.set(x, 7.2 * hoch, bz * 0.45); wz.set(bx + 5, 0.3, bz * 0.6); fov = 50; }
+    else if (this.kamModus === 'hinten') { const r = this.richtung('A'), x = r * klemme(r * bx - 12 * hoch, -30, 14); wp.set(x, 7.2 * hoch, bz * 0.45); wz.set(bx + r * 5, 0.3, bz * 0.6); fov = 50; }
     else { const x = klemme(bx * 0.86, -15.5, 15.5); wp.set(x, 11.2 * hoch, 13.2 * hoch + bz * 0.3); wz.set(x, 0, bz * 0.45 - 1.2); fov = 42; }
     if (this.kamSchnitt) { this.kamPos.copy(wp); this.kamZiel.copy(wz); this.kamSchnitt = false; }
     else { const f = 1 - Math.exp(-rate * dt); this.kamPos.lerp(wp, f); this.kamZiel.lerp(wz, f); }
