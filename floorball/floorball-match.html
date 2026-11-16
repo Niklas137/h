@@ -4460,9 +4460,17 @@ let letzteZeit = performance.now(), akku = 0, fpsZaehler = 0, fpsZeit = 0;
    ===================================================================== */
 const mA = new V3(), mB = new V3(), mC = new V3(), mD = new V3(), mN = new V3(), mQ = new Q4();
 const M_STUFEN = {
-  leicht: { kiTempo: 0.86, klau: 0.20, twGegner: 0.28, twEigen: 0.14, kiFehler: 0.55, kiDenk: 1.5, bully: 0.5 },
-  mittel: { kiTempo: 0.95, klau: 0.32, twGegner: 0.20, twEigen: 0.17, kiFehler: 0.36, kiDenk: 1.0, bully: 0.34 },
-  schwer: { kiTempo: 1.02, klau: 0.44, twGegner: 0.15, twEigen: 0.20, kiFehler: 0.22, kiDenk: 0.7, bully: 0.22 }
+  // twGegner/twEigen: Reaktionszeit des gegnerischen bzw. eigenen Torhüters (s); twHaltG/twHaltE: Zuschlag auf die Haltewahrscheinlichkeit
+  leicht: { kiTempo: 0.86, klau: 0.20, twGegner: 0.28, twEigen: 0.14, twHaltG: -0.09, twHaltE: 0.05, kiFehler: 0.55, kiDenk: 1.5, bully: 0.5 },
+  mittel: { kiTempo: 0.95, klau: 0.32, twGegner: 0.20, twEigen: 0.17, twHaltG: -0.02, twHaltE: 0.03, kiFehler: 0.36, kiDenk: 1.0, bully: 0.34 },
+  schwer: { kiTempo: 1.02, klau: 0.44, twGegner: 0.15, twEigen: 0.18, twHaltG: 0.05, twHaltE: 0.08, kiFehler: 0.22, kiDenk: 0.7, bully: 0.22 }
+};
+/* Spielgefühl (Aufgabe 1): Tempo, Antritt, Schuss, Pass und Stick an einer Stelle, Werte in m/s bzw. s */
+const M_GEFUEHL = {
+  lauf: 6.1, laufBall: 5.6, sprint: 1.26, antritt: 20, antrittBall: 17,                 // ≈ 22 / 28 km/h ohne Ball
+  ladezeit: 0.6, schussMin: 16, schussMax: 33,                                          // Handgelenkschuss ≈ 60 km/h, voller Schlagschuss ≈ 115 km/h
+  passBasis: 6.8, passProM: 0.85, passMin: 8.5, passMax: 18.5,
+  totzone: 0.16, kurve: 1.35                                                            // runde Totzone, feinere Steuerung bei kleinem Ausschlag
 };
 const M_OPT = Object.assign({ drittel: 3, stufe: 'mittel', verl: true, kamera: 'tv', gegner: null, hilfe: true }, Speicher.lesen('fb_match_v1', {}));
 function mOptSpeichern() { Speicher.schreiben('fb_match_v1', M_OPT); }
@@ -4642,7 +4650,11 @@ const Match = {
       wechsel: k(4), kamera: k(8) || T.has('KeyC')
     };
     for (const n in jetzt) { I[n] = jetzt[n]; I[n + 'D'] = jetzt[n] && !v[n]; I[n + 'L'] = !jetzt[n] && !!v[n]; v[n] = jetzt[n]; }
-    const l = Eingabe.lenkung(); let x = l.x, y = l.y; const m = Math.hypot(x, y); if (m > 1) { x /= m; y /= m; }
+    let x, y, m;
+    const rx = gp ? (gp.axes[0] || 0) : 0, ry = gp ? -(gp.axes[1] || 0) : 0, rr = Math.hypot(rx, ry), G = M_GEFUEHL;
+    if (rr > G.totzone) {                                   // Controller: runde Totzone und Kennlinie statt Totzone je Achse
+      m = Math.pow(Math.min(1, (rr - G.totzone) / (1 - G.totzone)), G.kurve); x = rx / rr * m; y = ry / rr * m;
+    } else { const l = Eingabe.lenkung(); x = l.x; y = l.y; m = Math.hypot(x, y); if (m > 1) { x /= m; y /= m; m = 1; } }
     // Stick relativ zur Kamera in Feldkoordinaten umrechnen
     const f = mA.set(0, 0, -1).applyQuaternion(kamera.quaternion); f.y = 0; if (f.lengthSq() < 1e-6) f.set(0, 0, -1); f.normalize();
     I.mx = -f.z * x + f.x * y; I.mz = f.x * x + f.z * y; I.m = Math.min(1, m);
@@ -4715,17 +4727,17 @@ const Match = {
     const b = this.ball, hatBall = b.besitzer === p, mensch = p === this.kon && this.zustand !== 'tor';
     p.sperre = Math.max(0, p.sperre - dt); p.stossCd = Math.max(0, p.stossCd - dt); p.finteCd = Math.max(0, p.finteCd - dt); p.immun = Math.max(0, p.immun - dt);
     if (p.stossT >= 0) { p.stossT += dt; if (p.stossT > 0.34) p.stossT = -1; }
-    const wunsch = mB.set(0, 0, 0); let maxV = (hatBall ? 5.3 : 5.8);
+    const wunsch = mB.set(0, 0, 0), G = M_GEFUEHL; let maxV = (hatBall ? G.laufBall : G.lauf);
     if (this.zustand === 'tor' || this.zustand === 'pauseDrittel') {
       // Jubel bzw. Auslaufen
       if (p.jubel > 0 && this.torInfo) { const s = this.torInfo.schuetze; if (p !== s && p.team === s.team) { mA.subVectors(s.pos, p.pos).setY(0); const l = mA.length(); if (l > 1.4) wunsch.copy(mA).multiplyScalar(4.2 / l); } }
     } else if (this.zustand === 'bully') { /* stehen */ }
     else if (mensch) {
       const I = this.I, sprint = I.sprint && p.ausdauer > 0.04 && I.m > 0.3;
-      p.ausdauer = klemme(p.ausdauer + (sprint ? -0.22 : 0.14) * dt, 0, 1); if (sprint) maxV *= 1.24;
+      p.ausdauer = klemme(p.ausdauer + (sprint ? -0.22 : 0.14) * dt, 0, 1); if (sprint) maxV *= G.sprint;
       wunsch.set(I.mx, 0, I.mz).multiplyScalar(maxV * I.m);
       if (hatBall && !p.aktion) {
-        if (I.schuss) p.power = Math.min(1, p.power + dt / 0.75);
+        if (I.schuss) p.power = Math.min(1, p.power + dt / G.ladezeit);
         if (I.schussL && p.power > 0) this.starteSchuss(p, Math.max(0.25, p.power), null, I.zielHoch || p.power > 0.93);
         else if (I.passD) this.starteZuspiel(p, this.passZiel(p, I.mx, I.mz, I.m), false);
         else if (I.hochD) this.starteZuspiel(p, this.passZiel(p, I.mx, I.mz, I.m), true);
@@ -4747,7 +4759,7 @@ const Match = {
     }
     if (p.aktion) this.aktionSchritt(p, dt);
     // Beschleunigen
-    const acc = (hatBall ? 15 : 18) * dt; mA.subVectors(wunsch, p.vel); const dl = mA.length(); if (dl > acc) mA.multiplyScalar(acc / dl); p.vel.add(mA);
+    const acc = (hatBall ? G.antrittBall : G.antritt) * dt; mA.subVectors(wunsch, p.vel); const dl = mA.length(); if (dl > acc) mA.multiplyScalar(acc / dl); p.vel.add(mA);
     p.pos.addScaledVector(p.vel, dt); p.speed = Math.hypot(p.vel.x, p.vel.z);
     this.begrenze(p);
     // Blickrichtung
@@ -4827,7 +4839,7 @@ const Match = {
       if (b.besitzer === p) {
         b.besitzer = null; b.letzter = p; b.letzterTeam = p.team; p.sperre = 0.35; b.schutz = null;
         if (a.typ === 'pass') {
-          const m = a.ziel, dist = m.pos.distanceTo(p.pos), v = klemme(7.5 + dist * 0.85, 9, 18), tf = dist / v;
+          const G = M_GEFUEHL, m = a.ziel, dist = m.pos.distanceTo(p.pos), v = klemme(G.passBasis + dist * G.passProM, G.passMin, G.passMax), tf = dist / v;
           mA.copy(m.pos).addScaledVector(m.vel, tf * 0.75).sub(b.p).setY(0); const l = mA.length() || 1;
           if (a.hoch) { const vh = klemme(dist / 0.95, 6, 15), tt = l / vh; b.v.copy(mA).multiplyScalar(vh / l); b.v.y = 0.5 * 9.81 * tt; b.hoch = true; }
           else { b.v.copy(mA).multiplyScalar(v / l); b.v.y = 0; }
@@ -4837,7 +4849,7 @@ const Match = {
           const gx = p.d * TOR.x, mensch = p.team === 'A';
           const sigma = mensch ? 0.16 + 0.24 * a.kraft * a.kraft + (a.direkt ? 0.05 : 0) : this.S.kiFehler * (0.7 + a.kraft * 0.6);
           const tz = a.zielZ + gauss() * sigma, ty = Math.max(0.06, a.zielY + gauss() * sigma * 0.55);
-          const vh = (15 + 13 * a.kraft) * (0.84 + 0.16 * p.daten.schuss / 100) * (a.direkt ? 1.08 : 1);
+          const vh = mix(M_GEFUEHL.schussMin, M_GEFUEHL.schussMax, a.kraft) * (0.84 + 0.16 * p.daten.schuss / 100) * (a.direkt ? 1.08 : 1);
           mA.set(gx - b.p.x, 0, tz - b.p.z); const l = mA.length() || 1, tt = l / vh;
           b.v.copy(mA).multiplyScalar(vh / l); b.v.y = (ty - b.p.y + 0.5 * 9.81 * tt * tt) / tt; b.empf = null;
           b.schussVon = p; b.schussT = this.zeit; b.durchlass = null; p.schuesse++; this.stat[mensch ? 'schA' : 'schB']++;
@@ -5098,7 +5110,8 @@ const Match = {
       if (b.v.x * s < 0.5 || b.durchlass === g) continue;
       // Nicht jeder erreichte Ball wird gehalten: Hechtparaden, hohe und harte Schüsse rutschen manchmal durch
       { const spd = b.v.length(), quer = Math.abs(b.p.z - g.pos.z); let halt = G.zustand === 'hecht' || G.zustand === 'liegt' ? 0.74 : 0.95;
-        if (b.p.y > 0.7 && quer > 0.2) halt -= 0.2; if (spd > 23) halt -= 0.08; if (quer > 0.8) halt -= 0.12; halt += (g.daten.reflexe - 75) / 400;
+        if (b.p.y > 0.7 && quer > 0.2) halt -= 0.2; if (spd > 23) halt -= 0.08; if (spd > 28) halt -= 0.05; if (quer > 0.8) halt -= 0.12; halt += (g.daten.reflexe - 75) / 400;
+        halt += g.team === 'B' ? (this.S.twHaltG || 0) : (this.S.twHaltE || 0);
         if (Math.random() > halt) { b.durchlass = g; continue; } }
       const sp = b.v.length(), schuss = b.schussVon && b.schussVon.team !== g.team;
       if (schuss) { this.stat[g.team === 'A' ? 'parA' : 'parB']++; b.schussVon = null; halle.zuschauer && Ton.raunen(0.5); }
@@ -5371,7 +5384,7 @@ function start() {
   document.getElementById('laden').remove();
   UI.hauptmenue();
   document.addEventListener('visibilitychange', () => { if (document.hidden && ['anlauf', 'aufstellung'].includes(Spiel.zustand) && !Spiel.pausiert) UI.pauseAuf(); });
-  window.__fps = { loeseSchuss, simuliereBisX, V3, THREE, renderer, szene, kamera, halle, Bild, Spiel, Config, Regeltests, Turnier, TeamDB, ball, UI, Eingabe, Kam, HUD, Ton, presetAnwenden, PRESETS, cfgSet, TuningPanel, Einst, Shootout, Match, PadMenue };
+  window.__fps = { loeseSchuss, simuliereBisX, V3, THREE, renderer, szene, kamera, halle, Bild, Spiel, Config, Regeltests, Turnier, TeamDB, ball, UI, Eingabe, Kam, HUD, Ton, presetAnwenden, PRESETS, cfgSet, TuningPanel, Einst, Shootout, Match, PadMenue, M_STUFEN, M_OPT };
   requestAnimationFrame((t0) => { letzteZeit = t0; frame(t0); });
 }
 try { start(); }
