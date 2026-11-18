@@ -8,6 +8,7 @@ Ist-Summe (leer, solange nichts gemeldet wurde). Wochennummern laufen fortlaufen
 | 1 | Mo 21.09.2026 | Ofen-Hähnchen mit Rosmarinkartoffeln und grünen Bohnen · Gefüllte Paprika mit Hack und Reis · Lachs-Spinat-Nudeln | Quark-Bowl mit Haferflocken, Apfel und Zimt | 58,11 € | | Neu erstellt am Sa 19.09. („Wocheneinkauf neu"); Einkauf auf Wunsch am Mo 21.09. in einem Gang, Zeitraum 5 Tage bis Fr 25.09. |
 | 2 | Sa 26.09.2026 | Puten-Paprika-Geschnetzeltes · Seelachs in Tomaten-Zucchini-Sugo · Hackbällchen mit Ofengemüse | Rührei mit Tomaten auf Vollkornbrot | 57,95 € | | Testlauf vom 18.09.; Woche 3 am Fr 02.10. einkaufen (Sa Feiertag) |
 | 3 (Reise) | – | entfällt | – | – | | Reise in die Ukraine ab Do 01.10. (Floorball, Lutsk), Rückkehr offen; Routine pausiert, Entwurf `wochen/2026-10-02-woche-03.md` bleibt als Vorlage |
+| 4 | Mi 18.11.2026 (10 Tage) | Puten-Gemüse-Wok · Rinderhack-Kohl-Pfanne · Seelachs in Senf-Joghurt-Soße · Schweinefilet mit Ofengemüse | – (Mittagsteller M1, M2, M4, M6) | 75,95 € | | Abend zu zweit an 6 Abenden, Niklas allein an 4; Quark statt Skyr; Schweinefilet als Medaillons eingefroren |
 
 ## Proteine der letzten Wochen
 
@@ -18,6 +19,7 @@ Pro Woche drei verschiedene Proteine; Hülsenfrüchte höchstens einmal.
 | 1 | Hähnchenbrust 600 g | Lachs TK 400 g | Hackfleisch 500 g | – |
 | 2 | Putenbrust 600 g | Seelachs TK 500 g | Rinderhack 500 g | – |
 | 3 | Hähnchenbrust 1 kg | Seelachs TK 500 g | Schweinefilet 500 g | – |
+| 4 | Putenbrust 600 g | Seelachs TK 500 g | Rinderhack 500 g, Schweinefilet 500 g | – |
 
 ## Vorrat (geschätzt, Stand nach dem Einkauf Woche 3)
 

@@ -26,33 +26,34 @@ um neue Gerichte erweitern. Sperre: 4 Wochen für Gerichte, 3 Wochen für Frühs
 | 15 | Schweinefilet mit Spitzkohl und Kartoffelpüree | Schweinefilet | Spitzkohl, Zwiebel, Kümmel, Kartoffeln, Milch | – | Püree mit Milch, wenig Butter | W3 |
 | 16 | Süßkartoffel-Hack-Auflauf | Rinderhack | Süßkartoffel, Karotten, Erbsen (TK), Tomatenmark | – | „Shepherd's Pie light" | – |
 | 17 | Fischfrikadellen mit Kartoffelsalat | Seelachs (TK) | Haferflocken, Ei, Zwiebel, Kartoffeln, Gurke, Joghurt-Dressing | – | | – |
-| 18 | Puten-Gemüse-Wok | Putenbrust | Paprika, Karotten, Lauch, Ingwer, Knoblauch, wenig Sojasoße | Vollkornnudeln oder Naturreis | Sojasoße sparsam | – |
+| 18 | Puten-Gemüse-Wok | Putenbrust | Paprika, Karotten, Lauch, Ingwer, Knoblauch, wenig Sojasoße | Vollkornnudeln oder Naturreis | Sojasoße sparsam | W4 |
 | 19 | Hähnchen-Kichererbsen-Eintopf | Hähnchenbrust | Kichererbsen, Karotten, Lauch, Kreuzkümmel, gehackte Tomaten | Vollkornbrot | Hülsenfrucht | – |
 | 20 | Kabeljau in Senf-Dill-Joghurt-Soße | Kabeljau (TK) | Joghurt, Senf, Dill, Zitrone, Brokkoli | Kartoffeln | | – |
 | 21 | Zucchini-Hack-Pfanne mit Bulgur | Hackfleisch | Zucchini, Tomaten, Zwiebel, Feta | Bulgur | | – |
 | 22 | Hähnchen-Fajita-Pfanne | Hähnchenbrust | Paprika, Zwiebel, Zitrone, Paprikapulver, Kreuzkümmel | Vollkorn-Wraps, Salat | | – |
 | 23 | Kürbis-Hähnchen-Blech | Hähnchenbrust | Hokkaido, Kartoffeln, Zwiebel, Rosmarin | – | Saison Sep–Nov | W3 |
-| 24 | Rinderhack-Kohl-Pfanne | Rinderhack | Weißkohl, Zwiebel, Kümmel, Tomatenmark | Kartoffeln | Saison Okt–Feb | – |
+| 24 | Rinderhack-Kohl-Pfanne | Rinderhack | Weißkohl, Zwiebel, Kümmel, Tomatenmark | Kartoffeln | Saison Okt–Feb | W4 |
 | 25 | Seelachs-Curry mit Erbsen | Seelachs (TK) | Kokosmilch, Erbsen (TK), Karotten, Curry, Ingwer | Naturreis | | W3 |
 | 26 | Putenschnitzel natur mit Ofengemüse | Putenschnitzel | Karotten, Zucchini, Paprika, Zwiebel | Kartoffeln | ohne Panade | – |
 | 27 | Rosenkohl-Kartoffel-Pfanne mit Schweinefilet | Schweinefilet | Rosenkohl, Kartoffeln, Zwiebel, Senf | – | Saison Okt–Feb | – |
 | 28 | Lachs-Kartoffel-Auflauf mit Lauch | Lachs (TK) | Kartoffeln, Lauch, Milch, Frischkäse, Dill | – | | – |
-| 29 | Steak mit Senf-Paprika-Schmand und Hasselback-Kartoffeln | Schweinelachs (Steak natur) | Zwiebel, Schmand, Senf, Paprikapulver, Chili, Thymian, wenig Brühe, Petersilie | Hasselback-Kartoffeln mit wenig Gouda, grüne Bohnen (TK) | Idee aus einem Reel (ontodaysbake), ohne Pilze, Sahne und Parmesan | – |
+| 29 | Steak mit Senf-Paprika-Schmand und Hasselback-Kartoffeln | Schweinelachs (Steak natur) | Zwiebel, Schmand, Senf, Paprikapulver, Chili, Thymian, wenig Brühe, Petersilie | Hasselback-Kartoffeln mit wenig Gouda, grüne Bohnen (TK) | Idee aus einem Reel (ontodaysbake), ohne Pilze, Sahne und Parmesan | W4 |
+| 30 | Schweinefilet mit Ofengemüse | Schweinefilet | Karotten, Paprika, Zwiebel, Kartoffeln, Senf, Oregano | Ofengemüse und Kartoffeln | 4 Medaillons zu je 125 g, einzeln eingefroren | W4 |
 
-## Mittagsteller (erste Mahlzeit, 850–900 kcal, 45–55 g Eiweiß, ohne Fleisch und Fisch)
+## Mittagsteller (nur Niklas, erste Mahlzeit, 800–900 kcal, ohne Fleisch und Fisch)
 
-Mittags liefern Eier, Quark, Skyr und Feta das Eiweiß; Fleisch und Fisch bleiben dem Abendessen
-vorbehalten. Pro Woche 2–3 Teller wählen, sie wiederholen sich im Wechsel.
+Mittags liefern Eier und Quark das Eiweiß; Fleisch und Fisch bleiben dem Abendessen vorbehalten.
+Quark statt Skyr: gleiches Eiweiß, deutlich günstiger.
 
-| Nr | Mittagsteller | Zutaten pro Person | kcal | Eiweiß | Zuletzt |
+| Nr | Mittagsteller | Zutaten | kcal | Eiweiß | Zuletzt |
 |---|---|---|---|---|---|
-| M1 | Rührei-Teller | 3 Eier, 2 Scheiben Vollkornbrot, 1 TL Öl, Tomaten und Gurke 200 g, dazu 200 g Skyr mit Beeren | 900 | 51 g | – |
-| M2 | Skyr-Bowl | 400 g Skyr, 60 g Haferflocken, 100 g TK-Beeren, 1 Apfel, 20 g Walnüsse, Zimt | 900 | 57 g | – |
+| M1 | Rührei-Teller | 3 Eier, 2 Scheiben Vollkornbrot, 1 TL Olivenöl, Tomate 100 g, Gurke 100 g, dazu 200 g Magerquark mit 50 g TK-Beeren | 900 | 52 g | W4 |
+| M2 | Quark-Bowl | 300 g Magerquark, 60 g Haferflocken, 80 g TK-Beeren, 1 Apfel, 10 g Walnüsse, Zimt | 850 | 48 g | W4 |
 | M3 | Bulgur-Feta-Salat | 70 g Bulgur trocken, 100 g Feta, Gurke, Tomate, Paprika 250 g, Zitrone, 1 EL Olivenöl, Petersilie, dazu 200 g Skyr | 900 | 49 g | – |
-| M4 | Ofenkartoffel mit Quark | 250 g Kartoffeln, 250 g Magerquark mit Kräutern und 1 TL Leinöl, 2 gekochte Eier, 200 g Brokkoli oder Erbsen | 900 | 56 g | – |
+| M4 | Ofenkartoffel mit Quark | 250 g Kartoffeln, 250 g Magerquark mit Kräutern, 2 Eier, 200 g Brokkoli TK | 800 | 54 g | W4 |
 | M5 | Brot mit Frischkäse und Ei | 2 Scheiben Vollkornbrot, 60 g Frischkäse, 3 gekochte Eier, Paprika und Karotte 200 g, 15 g Mandeln, dazu 200 g Skyr | 900 | 57 g | – |
-| M6 | Omelett mit Gemüse | 3 Eier, 200 g Zucchini und Paprika, 50 g Gouda, 1 Scheibe Vollkornbrot, dazu 150 g Skyr mit Beeren | 880 | 57 g | – |
-| M7 | Kichererbsen-Salat | 200 g Kichererbsen (Dose), 100 g Feta, Gurke, Tomate 250 g, Zwiebel, Zitrone, 1 EL Öl, 1 Scheibe Vollkornbrot, dazu 200 g Skyr | 900 | 56 g | Hülsenfrucht, nur 1 × pro Woche |
+| M6 | Omelett mit Zucchini | 3 Eier, 1 Zucchini (ca. 200 g), 50 g Gouda, 1 Scheibe Vollkornbrot, dazu 150 g Magerquark | 850 | 55 g | W4 |
+| M7 | Kichererbsen-Salat | 200 g Kichererbsen (Dose), 100 g Feta, Gurke, Tomate 250 g, Zwiebel, Zitrone, 1 EL Öl, 1 Scheibe Vollkornbrot, dazu 200 g Skyr | 900 | 56 g | – |
 
 ## Frühstück (optional, Wochenende oder zweite Person)
 
@@ -71,8 +72,8 @@ Werktags gibt es kein Frühstück (2 Mahlzeiten, siehe `profil.md`).
 
 ## Snacks (fest, jede Woche gleich)
 
-- 16 Uhr, fest: 250 g Magerquark oder 250 g Skyr mit 100 g TK-Beeren und Zimt, dazu 20 g Walnüsse
-  (250–300 kcal, 30–35 g Eiweiß). Alternativ 2 gekochte Eier mit Gurke und 20 g Nüsse.
+- 16 Uhr, fest: 300 g Magerquark mit Zimt, dazu 10 g Walnüsse (ca. 36 g Eiweiß).
+- Abends, nur Niklas: 150 g Magerquark mit Zimt oder 50 g TK-Beeren als Dessert.
 - Vormittags optional: 1 Apfel, nur bei Hunger.
 - Trainingstag: 1 Banane vor dem Training oder Beilage 100 g statt 75 g am Abend.
 - Gurke oder Karotte, wenn es knuspern soll.
