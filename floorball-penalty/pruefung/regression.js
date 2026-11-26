@@ -424,7 +424,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       const A = M.ents.find(e => e.team === 'A'), B = M.ents.find(e => e.team === 'B');
       // Foul von B an A → Freischlag A
       M.foul(B, A, 'stock', new V(2, 0, 1), false); erg.phase = M.phase; erg.team = M.fs && M.fs.team;
-      let minAbst = 99; for (let k = 0; k < 600 && M.phase === 'freischlag'; k++) { S.schritt(1 / 120); if (M.phaseT > 1.25) for (const e of M.ents) if (e.team === 'B') minAbst = Math.min(minAbst, M.welt(e, new V()).distanceTo(new V(M.fs.ort.x, 0, M.fs.ort.z))); }
+      let minAbst = 99; for (let k = 0; k < 600 && M.phase === 'freischlag'; k++) { S.schritt(1 / 120); if (M.phase === 'freischlag' && M.phaseT > 1.25) for (const e of M.ents) if (e.team === 'B') minAbst = Math.min(minAbst, M.welt(e, new V()).distanceTo(new V(M.fs.ort.x, 0, M.fs.ort.z))); }
       erg.danach = M.phase; erg.besitzer = M.besitzer && M.besitzer.team; erg.minAbstand = +minAbst.toFixed(2);
       // Freischlag am Torraum: Ort wird 3,5 m herausgeschoben
       M.foul(B, A, 'stock', new V(15.5, 0, 0.5), false); erg.ortX = M.fs && +M.fs.ort.x.toFixed(2); for (let k = 0; k < 900 && M.phase === 'freischlag'; k++) S.schritt(1 / 120);
@@ -440,7 +440,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       const vorTor = M.ents.filter(e => e.team === 'B').length; M.tor('A'); erg.nachTor = { zurueck: M.ents.includes(C), feldVorher: vorTor, feld: M.ents.filter(e => e.team === 'B').length };
       S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return erg;
     });
-    pruef('Regeln: Foul führt zum Freischlag, Gegner 3 m entfernt, gefoultes Team spielt', rg.phase === 'freischlag' && rg.team === 'A' && rg.danach === 'spiel' && rg.besitzer === 'A' && rg.minAbstand >= 2.95 && rg.ortX <= 13.15 - 3.5 + 0.01, JSON.stringify(rg));
+    pruef('Regeln: Foul führt zum Freischlag, Gegner 3 m entfernt, gefoultes Team spielt', rg.phase === 'freischlag' && rg.team === 'A' && rg.danach === 'spiel' && rg.besitzer === 'A' && rg.minAbstand >= 2.99 && rg.ortX <= 13.15 - 3.5 + 0.01, JSON.stringify(rg));
     pruef('Regeln: 2-Minuten-Strafe mit Unterzahl, endet nach Zeit und durch Gegentor', rg.unterzahl[0] === 5 && rg.unterzahl[1] === 4 && rg.anzeige && rg.nachZeit.strafeVorbei && rg.nachZeit.zurueck && rg.nachZeit.sichtbar && rg.nachTor.zurueck && rg.nachTor.feld === rg.nachTor.feldVorher + 1, JSON.stringify({ unterzahl: rg.unterzahl, anzeige: rg.anzeige, nachZeit: rg.nachZeit, nachTor: rg.nachTor }));
   });
 
@@ -461,6 +461,34 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     });
     pruef('Linien: beide Teams wechseln, beide Reihen spielen', li.wechselA >= 2 && li.wechselB >= 2 && li.eisReihe2 > li.eisReihe1 * 0.4 && !li.fehler, JSON.stringify({ wechselA: li.wechselA, wechselB: li.wechselB, eisReihe1: li.eisReihe1, eisReihe2: li.eisReihe2, fehler: li.fehler }));
     pruef('Linien: Spielerzahl, Plätze, Bank hinter der Bande, Energie im Rahmen', li.zahlFalsch === 0 && li.doppelt === 0 && li.bankImFeld === 0 && li.unsichtbar === 0 && li.eMin >= 0.15 && li.eMax <= 1, JSON.stringify({ zahlFalsch: li.zahlFalsch, doppelt: li.doppelt, bankImFeld: li.bankImFeld, unsichtbar: li.unsichtbar, eMin: li.eMin, eMax: li.eMax, proben: li.proben }));
+  });
+
+  // 5m) Saison: Spielplan (jeder gegen jeden, Rückrunde), Wertung 3/2/1/0, eigenes Spiel wird eingetragen, Speichern und Laden, Meister
+  await abschnitt('5m) Saison', async () => {
+    const sa = await p.evaluate(() => {
+      const F = window.__fps, Sa = F.Saison, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, ids = L.slice(0, 5).map(x => x.id), erg = {};
+      Sa.neu(ids, ids[0], true);
+      const sp = Sa.d.spiele, paare = new Map(); for (const x of sp) { const k = [x.heim, x.gast].sort().join('-'); paare.set(k, (paare.get(k) || 0) + 1); }
+      erg.plan = { spiele: sp.length, runden: Sa.d.runden, jedesPaarZweimal: [...paare.values()].every(v => v === 2) && paare.size === 10, heimGetauscht: [...paare.keys()].every(k => { const [a, b] = k.split('-'); return sp.some(x => x.heim === a && x.gast === b) && sp.some(x => x.heim === b && x.gast === a); }), keinDoppelProRunde: [...Array(Sa.d.runden)].every((_, r) => { const t = sp.filter(x => x.runde === r + 1).flatMap(x => [x.heim, x.gast]); return new Set(t).size === t.length; }) };
+      // Wertung: Sieg, Sieg nach Penaltyschießen
+      const s0 = sp[0], s1 = sp[1];
+      Sa.eintragen(s0.id, { th: 4, tg: 2, so: null, torschuetzen: [{ team: s0.heim, name: 'Testschütze' }, { team: s0.heim, name: 'Testschütze' }] });
+      Sa.eintragen(s1.id, { th: 3, tg: 3, so: 'gast', torschuetzen: [] });
+      const tb = Object.fromEntries(Sa.tabelle().map(z => [z.id, z]));
+      erg.wertung = { sieger: tb[s0.heim].pkt, verlierer: tb[s0.gast].pkt, soSieger: tb[s1.gast].pkt, soVerlierer: tb[s1.heim].pkt, torjaeger: Sa.torjaeger()[0] && Sa.torjaeger()[0].tore };
+      // eigenes Spiel: Saisonspiel starten, Ergebnis über das Spielende eintragen
+      const meins = Sa.naechstesSpiel(); const n0 = sp.filter(x => x.erg).length;
+      S.starteSpiel5(F.TeamDB.hole(meins.heim), F.TeamDB.hole(meins.gast), null, meins); M.stand = { A: 2, B: 1 }; M.tore = [{ team: 'A', name: 'X', zeit: '0:10', drittel: 1 }, { team: 'A', name: 'X', zeit: '0:20', drittel: 1 }, { team: 'B', name: 'Y', zeit: '0:30', drittel: 1 }]; M.phase = 'ende'; S.spiel5Ende();
+      erg.eigenes = { eingetragen: sp.filter(x => x.erg).length === n0 + 1 && !!Sa.d.spiele.find(x => x.id === meins.id).erg, ergebnis: Sa.d.spiele.find(x => x.id === meins.id).erg, weiterKnopf: !!document.querySelector('[data-saison]') };
+      // Speichern und Laden
+      const kopie = JSON.stringify(Sa.d.spiele.map(x => x.erg)); Sa.d = null; Sa.laden(); erg.geladen = !!Sa.d && JSON.stringify(Sa.d.spiele.map(x => x.erg)) === kopie;
+      // Rest simulieren: Meister = Tabellenerster, Punkte gesamt = 3 je Spiel
+      let s; while ((s = Sa.naechstesSpiel())) Sa.eintragen(s.id, Sa.simuliere(s.heim, s.gast));
+      const t2 = Sa.tabelle(); erg.ende = { meister: Sa.d.meister === t2[0].id, punkte: t2.reduce((a, z) => a + z.pkt, 0) === sp.length * 3, spiele: t2.reduce((a, z) => a + z.sp, 0) === sp.length * 2 };
+      Sa.verwerfen(); S.leerlauf(); F.UI.hauptmenue(); return erg;
+    });
+    pruef('Saison: Spielplan jeder gegen jeden mit Rückrunde', sa.plan.spiele === 20 && sa.plan.runden === 10 && sa.plan.jedesPaarZweimal && sa.plan.heimGetauscht && sa.plan.keinDoppelProRunde, JSON.stringify(sa.plan));
+    pruef('Saison: Wertung, eigenes Spiel, Speichern und Laden, Meister', sa.wertung.sieger === 3 && sa.wertung.verlierer === 0 && sa.wertung.soSieger === 2 && sa.wertung.soVerlierer === 1 && sa.wertung.torjaeger === 2 && sa.eigenes.eingetragen && sa.eigenes.ergebnis.th === 2 && sa.eigenes.ergebnis.tg === 1 && sa.eigenes.weiterKnopf && sa.geladen && sa.ende.meister && sa.ende.punkte && sa.ende.spiele, JSON.stringify({ wertung: sa.wertung, eigenes: sa.eigenes, geladen: sa.geladen, ende: sa.ende }));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung

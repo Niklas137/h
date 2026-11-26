@@ -56,6 +56,7 @@ Alle anderen Inhalte (Geometrie, Texturen, Ton) entstehen prozedural im Browser.
   - Ohne Eingabe bleibt der Spieler stehen, die Vorwärtsregel gilt hier nicht. Ausgelassene Übungen zählen als Fehler, nichts blockiert. Zeitlimit 60 s.
   - Kamera schräg von hinten oben mit Blick zum Tor, im Hochformat steiler und weiter. Der Boden ist im Parcours immer blau.
 - **Penaltyschießen**: Hauptmenü → Penaltyschießen → Anpfiff (Zufallsgegner ist vorgewählt). Du schießt und hältst abwechselnd. „KI gegen KI“ lässt dich zuschauen.
+- **Saison**: Liga mit allen Teams, jeder gegen jeden (wahlweise mit Rückrunde, Heimrecht getauscht). Eigene Spiele als Spiel 5 gegen 5 (spielen, zuschauen oder simulieren), die übrigen werden nach Teamstärke simuliert. Unentschieden entscheidet ein (simuliertes) Penaltyschießen. Wertung: Sieg 3 Punkte, Sieg im Penaltyschießen 2, Niederlage im Penaltyschießen 1. Mit Tabelle, Spielplan, Torjägerliste und Meisterehrung, der Stand wird gespeichert.
 - **Turnier**: 4 oder 8 Teams, Gruppenphase optional, danach K.-o. bis zum Finale. KI-Spiele lassen sich ansehen oder sofort simulieren. Mit Tabelle, Statistik und Siegerehrung. Der Stand wird gespeichert.
 - **Training**: Schießen auf Zielscheiben (mit oder ohne Torhüter) oder Halten, ohne Wertung.
 - **Freies Training** (Training → Freies Training): keine Regeln, kein Zeitlimit, keine Torhüterraum-Regel. Überall laufen, tricksen und schießen, so oft man will. Nach jedem Schuss zeigt eine kurze Meldung das Ergebnis, dann liegt der Ball wieder am Schläger. Bleibt der Ball liegen, kommt er nach 1,5 s zurück. Oben links zählen Schüsse, Tore, Paraden, Zielscheiben und der schnellste Schuss. Optional mit oder ohne Torhüter und mit den Parcours-Hütchen als Hindernisse (ohne Wertung).
@@ -87,7 +88,7 @@ node pruefung/regression.js
 node pruefung/touch.js
 ```
 
-`regression.js` prüft 48 Punkte (Regeltests, KI-Trefferquote, Kelle am Ball, Maus und Tastatur, Tricks, Torhüter, Parcours mit Testfahrer, freies Training, Spiel 5 gegen 5 bis zum Endstand, Laufstil (Fußgleiten, Beinreichweite, Knie, Kreuzen, Schrittfrequenz, Kurven- und Rücklage), Ballannahme (Blatt am Ball, Abfedern, Passquote), Schusstäuschung und Direktschuss als Mensch, Mimik, Statur und Kleidung, Zweikampf, KI-Taktik (Passlinien, Doppelpass, Manndeckung im Vergleich zur Formation), Regeln und Strafen, Linien und Ermüdung, Turnier, Editor und Import, Tuning, HUD, Konsole). `touch.js` prüft Joystick, Zielen, Trick-Knöpfe und Parade auf einem emulierten Smartphone.
+`regression.js` prüft 50 Punkte (Regeltests, KI-Trefferquote, Kelle am Ball, Maus und Tastatur, Tricks, Torhüter, Parcours mit Testfahrer, freies Training, Spiel 5 gegen 5 bis zum Endstand, Laufstil (Fußgleiten, Beinreichweite, Knie, Kreuzen, Schrittfrequenz, Kurven- und Rücklage), Ballannahme (Blatt am Ball, Abfedern, Passquote), Schusstäuschung und Direktschuss als Mensch, Mimik, Statur und Kleidung, Zweikampf, KI-Taktik (Passlinien, Doppelpass, Manndeckung im Vergleich zur Formation), Regeln und Strafen, Linien und Ermüdung, Saison, Turnier, Editor und Import, Tuning, HUD, Konsole). `touch.js` prüft Joystick, Zielen, Trick-Knöpfe und Parade auf einem emulierten Smartphone.
 
 ## Bekannte Grenzen
 - Ohne Internet startet das Spiel nicht, weil Three.js vom CDN kommt. Abhilfe: `three.module.js` neben die Datei legen und die Importmap anpassen.
