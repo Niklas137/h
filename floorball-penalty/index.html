@@ -290,7 +290,7 @@ const TEXTE = {
     titel: 'FLOORBALL PENALTY SHOWDOWN', untertitel: 'Unihockey · Spiel · Penalty · Parcours',
     m_schnell: 'Penaltyschießen', m_schnell_u: 'Shootout gegen die KI',
     m_spiel5: 'Spiel 5 gegen 5', m_spiel5_u: 'Echtes Floorball: passen, dribbeln, Tore schießen – drei Drittel',
-    s5_untertitel: 'Spiel 5 gegen 5', s5_drittel: 'Drittel', s5_dauer: 'Drittellänge', s5_min: '{n} Min', s5_pause: '{n}. DRITTEL', s5_einschlag: 'Einschlag {t}',
+    s5_untertitel: 'Spiel 5 gegen 5', s5_foul_stock: 'Stockschlag – {n}', s5_foul_stoss: 'Stoßen – {n}', s5_freischlag: 'Freischlag {t}', s5_strafe: '2 Minuten: {n} ({t})', s5_strafen: 'Strafen', s5_art_stoss: 'Stoßen', s5_art_stock: 'Stockschlag', s5_drittel: 'Drittel', s5_dauer: 'Drittellänge', s5_min: '{n} Min', s5_pause: '{n}. DRITTEL', s5_einschlag: 'Einschlag {t}',
     s5_gewinnt: 'gewinnt', s5_pass: 'Pass', s5_wechsel: 'Wechsel', s5_penalty: 'Penaltyschießen ▶', s5_tore: 'Tore', s5_keine_tore: 'Keine Tore', s5_endstand: 'Endstand',
     h_pass: 'Pass / Ball erobern / beim Ausholen Schusstäuschung', h_wechsel: 'Spieler wechseln', h_schuss_ball: 'Schuss (mit Ball oder direkt aus dem Pass)', a_wechsel: 'Spieler wechseln', pen_untertitel: 'Penaltyschießen',
     m_parcours: 'Parcours', m_parcours_u: 'Slalom, Drehungen, Tore – dann der Schuss. Auf Zeit und Punkte.',
@@ -3995,7 +3995,7 @@ const Spiel = {
   },
   spiel5Ende() {
     this.zustand = 'ergebnis'; HUD.zeigen(false); HUD.banner(null);
-    const r = { A: Match.teams.A, B: Match.teams.B, stand: { ...Match.stand }, tore: Match.tore.slice(), mensch: Match.mensch };
+    const r = { A: Match.teams.A, B: Match.teams.B, stand: { ...Match.stand }, tore: Match.tore.slice(), strafen: (Match.strafenListe || []).slice(), mensch: Match.mensch };
     if (r.stand.A !== r.stand.B) Ton.jubel(0.8);
     UI.spielErgebnis(r);
   },
@@ -4670,7 +4670,7 @@ const Match = {
     this.dummy = { zielAbsicht: { aktiv: false, z: 0, y: 0.3 }, daten: { technik: 50 }, kontrolle: false, speed: 0, vel: new V3(), trick: null, finteSeiteWelt: 1 };
     this.koll = { kapseln: [...this.gks[0].fig.kapseln, ...this.gks[1].fig.kapseln] };
   },
-  figuren() { return [...this.ents.map(e => e.s.fig), ...this.gks.map(g => g.fig)]; },
+  figuren() { return [...(this.alle || this.ents).map(e => e.s.fig), ...this.gks.map(g => g.fig)]; },
   /** Neues Spiel. mensch = 'A' (du spielst Team A) oder null (KI gegen KI). */
   start(teamA, teamB, mensch) {
     this.init();
@@ -4701,6 +4701,7 @@ const Match = {
     this.weltB = { match: true, torwartPos: gkA.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'B'), beiTrick: (s, n) => this.beiTrick(gkA, s, n), beiFinte: (s) => gkA.ki.beiFinte(s), beiDirektVerpasst: () => { this.statistik.direktVerpasst++; } };
     this.statistik = { taeuschungen: 0, gebissen: 0, direkt: 0, direktVerpasst: 0, direktTore: 0, stoesse: 0, kontakte: 0, stolpern: 0, doppelpass: 0 };
     ball.zweiTore = true; ball.ereignisHandler = (typ, st, info) => this.ballEreignis(typ, st, info);
+    this.alle = this.ents.slice(); this.strafen = []; this.fouls = { A: 0, B: 0 }; this.strafenListe = [];
     this.steuer = mensch ? this.ents[2] : null; this.sichtbar = true;
     HUD.trickLeiste(mensch ? 'match' : null); HUD.steuerHinweis(); this.bullyStart(`<span class="w">${esc(teamA.kuerzel)}</span> : ${esc(teamB.kuerzel)}<small>${t('s5_untertitel')}</small>`);
   },
@@ -4718,6 +4719,7 @@ const Match = {
     this.phase = 'bully'; this.phaseT = 0; this.besitzer = null; this.passEmpfaenger = null; this._zuteil = null;
     ball.reset(0, 0); halle.netz.zuruecksetzen(); halle.netz2.zuruecksetzen();
     for (const e of this.ents) { const [x, z] = SPIEL5.bully[e.i]; this.setze(e, x, z); }
+    HUD.schiri(null); this.fs = null;
     for (const g of this.gks) { g.T.reset(); g.T.gefangen = false; g.ki.reset(); g.bedroht = false; g.halteT = 0; g.wurfSperre = 0; g.wurfT = 0; }
     HUD.banner(banner || null, banner ? 'neon' : undefined); this.hudStand(true);
   },
@@ -4730,10 +4732,11 @@ const Match = {
   schritt(dt) {
     this.phaseT += dt;
     if (this.phase === 'bully') { if (this.phaseT > 1.4) { this.phase = 'spiel'; Ton.pfiff(false); HUD.banner(null); ball.v.set(0, 0, (Math.random() - 0.5) * 0.8); } }
-    else if (this.phase === 'spiel') { this.uhr -= dt; if (this.uhr <= 0) { this.uhr = 0; this.drittelEnde(); } }
+    else if (this.phase === 'spiel') { this.uhr -= dt; this.strafzeit(dt); if (this.uhr <= 0) { this.uhr = 0; this.drittelEnde(); } }
+    else if (this.phase === 'freischlag') this.freischlagSchritt(dt);
     else if (this.phase === 'tor' || this.phase === 'pause') { if (this.phaseT > (this.phase === 'tor' ? 2.8 : 2.6)) this.bullyStart(); }
     if (this.phase === 'ende') return;
-    const aktiv = this.phase === 'spiel';
+    const aktiv = this.phase === 'spiel' || this.phase === 'freischlag';
     // nächste Spieler zum Ball je Team (für die KI)
     this.bild = (this.bild || 0) + 1;   // Bildzähler (Zwischenspeicher der Deckungszuteilung je Bild)
     this.naechst = { A: null, B: null }; const nd = { A: 99, B: 99 };
@@ -4743,7 +4746,8 @@ const Match = {
     for (const e of this.ents) {
       const S = e.s, B = e.dreh ? this.proxy : ball, W = e.dreh ? this.weltB : this.weltA;
       e.passCD -= dt; e.lunge -= dt; if (e.dreh) this.proxy.laden();
-      const A = !aktiv ? this.stehen(e) : e === this.steuer && !this.assistent(dt) ? this.menschAbsicht(e, dt) : this.kiAbsicht(e, dt);
+      const fsGang = this.phase === 'freischlag' && this.fs && this.fs.nehmer === e;   // zum Freischlag geht auch der gesteuerte Spieler selbst
+      const A = !aktiv ? this.stehen(e) : e === this.steuer && !fsGang && !this.assistent(dt) ? this.menschAbsicht(e, dt) : this.kiAbsicht(e, dt);
       if (aktiv && e !== this.steuer && !S.kontrolle && e !== this.naechst[e.team] && A.tempo > 0) this.ausweichen(e, A);
       W.menschPraezise = e === this.steuer; const hatte = S.kontrolle;
       S.schritt(dt, A, B, W);
@@ -4760,11 +4764,12 @@ const Match = {
       const At = aktiv ? g.ki.absicht(dt, ang, B, g.bedroht) : { bewegen: null, parade: null };
       g.T.schritt(dt, At, B, {});
     }
-    if (aktiv) { this.abschirmen(dt); this.abfangen(); this.ballAufnehmen(); this.zweikampf(dt); }
+    if (this.phase === 'spiel') { this.abschirmen(dt); this.abfangen(); this.ballAufnehmen(); this.zweikampf(dt); }
+    if (this.phase === 'freischlag') { ball.v.set(0, 0, 0); ball.p.copy(this.fs.ort).setY(BALLD.r); }
     const gefangen = this.gks.some(g => g.T.gefangen);
     if (!this.besitzer && !gefangen && ball.kinematisch) ball.kinematisch = false;
     ball.schritt(dt, this.koll);
-    if (aktiv) { this.torPruefen(); this.ausPruefen(); this.torwartBall(dt); }
+    if (this.phase === 'spiel') { this.torPruefen(); this.ausPruefen(); this.torwartBall(dt); }
   },
   stehen(e) { const A = e.A, S = e.s; A.richtung.set(Math.sin(S.yaw), 0, Math.cos(S.yaw)); A.tempo = this.phase === 'tor' ? 0.15 : 0; A.laden = false; A.trick = null; A.finte = false; return A; },
   laufZu(A, p, zx, zz, tmax) {
@@ -4822,6 +4827,7 @@ const Match = {
   /* ---------- KI der Feldspieler (im eigenen System, Angriff nach +x) ---------- */
   kiAbsicht(e, dt) {
     const S = e.s, A = e.A, p = S.pos; A.laden = false; A.trick = null; A.finte = false; A.lupfer = false;
+    if (this.phase === 'freischlag' && this.fs && this.fs.nehmer === e) { const q = this.inSicht(e, this.fs.ort, _m5[1]); this.laufZu(A, p, q.x - 0.45, q.z - (this.ballSeiteHilfe(e) * 0.2), 1); if (Math.hypot(q.x - p.x, q.z - p.z) < 0.9) A.tempo = 0; return A; }
     if (S.kontrolle) return this.kiBallfuehrer(e, A, dt);
     const owner = this.besitzer, gef = this.gks.find(g => g.T.gefangen), b = this.ballSicht(e, _m5[1]);
     const unserBall = (owner && owner.team === e.team) || (gef && gef.team === e.team);
@@ -4885,7 +4891,7 @@ const Match = {
     let best = { x: fx, z: fz }, bs = -1e9;
     for (const [rr, n] of [[0, 1], [1.6, 8], [3.2, 8]]) for (let k = 0; k < n; k++) {
       const a = k / n * Math.PI * 2, x = klemme(fx + Math.cos(a) * rr, -15.2, TOR.x - 2.2), z = klemme(fz + Math.sin(a) * rr, -8.4, 8.4);
-      if (x > TOR.x - TWRAUM.vorne - 1.2 && Math.abs(z) < TWRAUM.hz + 1) continue;          // nicht in den Torraum laufen
+      if (x > TWRAUM.vorne - 1.2 && Math.abs(z) < TWRAUM.hz + 1) continue;          // nicht in den Torraum laufen
       let frei = 3.5, linie = 1; const dx = x - ow.x, dz = z - ow.z, d2 = dx * dx + dz * dz || 1;
       for (const g of geg) { frei = Math.min(frei, Math.hypot(g.x - x, g.z - z)); const t = klemme(((g.x - ow.x) * dx + (g.z - ow.z) * dz) / d2, 0, 1); if (t > 0.08 && t < 0.95 && Math.hypot(ow.x + dx * t - g.x, ow.z + dz * t - g.z) < 1.0) linie = 0; }
       let eng = 0; for (const m of mit) { const dm = Math.hypot(m.x - x, m.z - z); if (dm < 2.8) eng += 2.8 - dm; }
@@ -4917,18 +4923,20 @@ const Match = {
       for (const [v, o] of zt.map) {
         const q = sicht(v, o), tx = -TOR.x - q.x, tz = -q.z, tl = Math.hypot(tx, tz) || 1;
         const ov = this.weltV(o, _m5[9]), vk = v.dreh ? -1 : 1;   // Tempo des Angreifers im System des Verteidigers
-        zu.set(v, { x: klemme(q.x + tx / tl * 1.3, -TOR.x + TWRAUM.vorne + 0.9, 13), z: klemme(q.z + tz / tl * 1.3, -8.4, 8.4), o, qx: q.x, qz: q.z, vx: ov.x * vk, vz: ov.z * vk });
+        zu.set(v, { x: klemme(q.x + tx / tl * 1.3, -TWRAUM.vorne + 0.9, 13), z: klemme(q.z + tz / tl * 1.3, -8.4, 8.4), o, qx: q.x, qz: q.z, vx: ov.x * vk, vz: ov.z * vk });
       }
       this._deck[team] = zu;
     }
     return this._deck[team].get(e) || null;
   },
+  ballSeiteHilfe(e) { return e.s.s || 1; },
   kiBallfuehrer(e, A, dt) {
     const S = e.s, p = S.pos, tw = this.gegnerTw(e).T;
     if (!e.plan && e.rueckVon) { e.planRueck = { e: e.rueckVon }; e.rueckVon = null; }
     if (!e.plan) { var rueckPlan = e.planRueck || null; e.planRueck = null; }
     if (!e.plan) e.plan = { rueck: rueckPlan, schussDist: 6.5 + Math.random() * 5, power: 0.4 + Math.random() * 0.5, zielZ: (0.48 + Math.random() * 0.22), zielY: 0.15 + Math.random() * 0.75, passIn: 1.0 + Math.random() * 2.6, trickT: Math.random() < 0.3 ? 0.6 + Math.random() * 1.8 : -1, taeuschen: Math.random() < 0.12 + S.daten.technik / 100 * 0.2 };
     const P = e.plan; P.passIn -= dt;
+    if (e.fsPflicht > 0) { e.fsPflicht -= dt; P.passIn = Math.min(P.passIn, 0.15); }   // Freischlag: nicht dribbeln, abspielen
     const seite = tw.pos.z > 0.05 ? -1 : tw.pos.z < -0.05 ? 1 : (P.zielZ > 0.6 ? 1 : -1);
     A.zielZ = seite * P.zielZ; A.zielY = P.zielY;
     if (S.zustand === 'laden') {
@@ -5001,7 +5009,7 @@ const Match = {
     const pq = e.s.pos;
     if (e !== this.steuer && pq.x < TOR.x - 6 && Math.random() < 0.55) {
       const zz = klemme(pq.z + (pq.z > 0 ? -2.2 : 2.2) * (Math.random() < 0.7 ? 1 : -1), -6.5, 6.5);
-      e.doppel = { t: 1.7, x: Math.min(TOR.x - TWRAUM.vorne - 1.6, pq.x + 5.5), z: zz };
+      e.doppel = { t: 1.7, x: Math.min(TWRAUM.vorne - 1.6, pq.x + 5.5), z: zz };
       m.plan = null; m.rueckVon = e;
     } else e.doppel = null;
     // KI-Empfänger in Schussposition: Direktschuss je nach Technik (im eigenen System: Tor bei +x)
@@ -5076,6 +5084,11 @@ const Match = {
   },
   /** Stocherstoß: das Blatt des Verteidigers stößt den Ball vom Schläger, der Ball ist frei (kein Besitzwechsel ohne Ballweg). */
   stochern(e, B) {
+    // Stockschlag: von hinten, mit Ausfallschritt oder mit wenig Technik eher regelwidrig
+    const bv = this.weltV(B, _m5[3]), bl = Math.hypot(bv.x, bv.z), fx = bl > 0.5 ? bv.x / bl : Math.sin(B.s.yaw) * (B.dreh ? -1 : 1), fz = bl > 0.5 ? bv.z / bl : Math.cos(B.s.yaw) * (B.dreh ? -1 : 1);
+    const hx = e.w.x - B.w.x, hz = e.w.z - B.w.z, hl = Math.hypot(hx, hz) || 1, hinten = klemme(-(hx * fx + hz * fz) / hl, 0, 1);
+    const pFoul = 0.05 + 0.3 * hinten + (e.lunge > 0 ? 0.07 : 0) + (1 - e.s.daten.technik / 100) * 0.08;
+    if (Math.random() < pFoul) { this.foul(e, B, 'stock', ball.p); return; }
     const S = B.s; S.kontrolle = false; S.ballSperre = 0.45; S.zorro = false; S.trick = null; if (S.zustand === 'laden') S.setzeZustand('lauf');
     this.besitzer = null; this.passEmpfaenger = null; ball.kinematisch = false;
     const dx = ball.p.x - e.w.x, dz = ball.p.z - e.w.z, l = Math.hypot(dx, dz) || 1, a = (Math.random() - 0.5) * 1.2, c = Math.cos(a), sn = Math.sin(a), v = 2.4 + Math.random() * 1.8, ev = this.weltV(e, _m5[2]);
@@ -5151,6 +5164,7 @@ const Match = {
     if (ball.imTor && drin(ball.p.x)) this.tor('A'); else if (ball.imTor2 && drin(-ball.p.x)) this.tor('B');
   },
   tor(team) {
+    const gegen = team === 'A' ? 'B' : 'A', st = this.strafen.filter(x => x.team === gegen).sort((a, b) => a.rest - b.rest)[0]; if (st) this.strafeEnde(st);   // Gegentor beendet eine Strafe
     this.stand[team]++; this.phase = 'tor'; this.phaseT = 0; this.besitzer = null; this.passEmpfaenger = null;
     const ls = this.letzterSchuetze, name = ls && ls.team === team ? ls.name : (this.letzterBesitz[team] || '');
     const min = Math.floor((this.drittel - 1) * this.dauer + (this.dauer - this.uhr)), zeit = `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`;
@@ -5177,6 +5191,7 @@ const Match = {
       if (d < 0.6 && d > 1e-4) { const k = (0.6 - d) / 2 / d; a.x -= dx * k; a.z -= dz * k; b.x += dx * k; b.z += dz * k; this.kontakt(E[i], E[j], dx / d, dz / d); }
       else if (d < 0.9 && E[i].team !== E[j].team) this.schulter(E[i], E[j], dx / d, dz / d, d);
     }
+    if (this.phase === 'freischlag' && this.fs) for (const e of E) { if (e.team === this.fs.team) continue; const dx = e.w.x - this.fs.ort.x, dz = e.w.z - this.fs.ort.z, d = Math.hypot(dx, dz); if (d < 3) { const l = d || 1; e.w.x = this.fs.ort.x + (dx || 1) / l * 3; e.w.z = this.fs.ort.z + dz / l * 3; } }
     for (const e of E) {
       const w = e.w;
       for (const s of [1, -1]) {
@@ -5203,7 +5218,66 @@ const Match = {
     if (!gegner) return;
     if (vr > -1.2) return;                                          // nur echte Zusammenstöße zählen (kein Dauerkontakt beim Pressing)
     this.statistik.kontakte++; Ton.koerper(Math.min(1, Math.abs(j) / 5));
-    for (const [e, dv, s] of [[A, dA, -1], [B, dB, 1]]) if (Math.abs(dv) > 3.0 && !(e.s.stolperT > 0)) { e.s.stolperT = 0.45; e.s.stolperDir = { x: nx * s, z: nz * s }; this.statistik.stolpern++; }
+    for (const [e, dv, s] of [[A, dA, -1], [B, dB, 1]]) if (Math.abs(dv) > 3.0 && !(e.s.stolperT > 0)) { e.s.stolperT = 0.45; e.s.stolperDir = { x: nx * s, z: nz * s }; this.statistik.stolpern++;
+      // Stoßen: der Verursacher (schneller auf den anderen zu) foult, besonders gegen den Ballführer oder von hinten
+      if (this.phase === 'spiel') { const ta = va.x * nx + va.z * nz, tb = -(vb.x * nx + vb.z * nz), taeter = ta > tb ? A : B, opfer = taeter === A ? B : A;
+        if (opfer === e && Math.random() < (opfer === this.besitzer ? 0.7 : 0.35)) { this.foul(taeter, opfer, 'stoss', _m5[4].set((A.w.x + B.w.x) / 2, 0, (A.w.z + B.w.z) / 2)); break; } } }
+  },
+  /** Regelverstoß: Freischlag für das gefoulte Team am Tatort, bei schweren Fouls zusätzlich 2 Minuten für den Täter. */
+  foul(taeter, opfer, art, ort, schwerVorgabe) {
+    if (this.phase !== 'spiel') return;
+    this.fouls[taeter.team]++; this.statistik.fouls = (this.statistik.fouls || 0) + 1;
+    const schwer = schwerVorgabe ?? Math.random() < (art === 'stoss' ? 0.45 : 0.25);
+    HUD.schiri(t(art === 'stoss' ? 's5_foul_stoss' : 's5_foul_stock', { n: taeter.s.daten.name }));
+    if (schwer) this.strafe(taeter, art);
+    this.freischlag(opfer.team, ort);
+  },
+  /** Freischlag: Spiel ruht, Ball am Tatort (außerhalb des Torraumbereichs), Gegner 3 m entfernt; ein Spieler des gefoulten Teams spielt ab. */
+  freischlag(team, ort) {
+    let x = klemme(ort.x, -18, 18), z = klemme(ort.z, -8.4, 8.4);
+    // im Torraumbereich (3,5 m vor dem Tor) nicht erlaubt: auf den nächsten erlaubten Punkt schieben
+    // TWRAUM/TORRAUM.vorne sind Positionen (x der Vorderkante), keine Tiefen: 3,5 m Abstand zum Torraum (4 × 5 m), sonst gerade herausschieben
+    const grenze = TORRAUM.vorne - 3.5; if (Math.abs(x) > grenze && Math.abs(z) < TORRAUM.hz + 3.5) x = Math.sign(x) * grenze;
+    z = klemme(z, -8.4, 8.4);
+    this.phase = 'freischlag'; this.phaseT = 0; this.besitzer = null; this.passEmpfaenger = null;
+    for (const e of this.ents) { e.s.kontrolle = false; e.s.annahmeT = -1; if (e.s.zustand !== 'lauf') e.s.setzeZustand('lauf'); }
+    let nehmer = null, nd = 99; for (const e of this.ents) if (e.team === team) { const d = Math.hypot(this.welt(e, _m5[5]).x - x, _m5[5].z - z); if (d < nd) { nd = d; nehmer = e; } }
+    this.fs = { team, ort: new V3(x, BALLD.r, z), nehmer };
+    ball.reset(x, z); this.letzteMannschaft = team;
+    if (this.mensch && team === 'A' && nehmer) this.steuer = nehmer;
+    Ton.pfiff(false); HUD.meldung(t('s5_freischlag', { t: this.teams[team].kuerzel }), 'gut');
+  },
+  freischlagSchritt(dt) {
+    const F = this.fs; if (!F || !F.nehmer || !this.ents.includes(F.nehmer)) { this.phase = 'spiel'; HUD.schiri(null); return; }
+    const w = this.welt(F.nehmer, _m5[5]), d = Math.hypot(w.x - F.ort.x, w.z - F.ort.z);
+    if (this.phaseT > 1.3 && d < 0.9) {
+      this.phase = 'spiel'; HUD.schiri(null); Ton.pfiff(false); this.gibBall(F.nehmer); F.nehmer.plan = null; F.nehmer.fsPflicht = 1.8;
+      this.statistik.freischlaege = (this.statistik.freischlaege || 0) + 1;
+    } else if (this.phaseT > 3 && !F.neu) {
+      // Nehmer kommt nicht hin: der jetzt nächste Mitspieler übernimmt
+      F.neu = true; let nd = 99; for (const e of this.ents) if (e.team === F.team) { const q = this.welt(e, _m5[6]), dd = Math.hypot(q.x - F.ort.x, q.z - F.ort.z); if (dd < nd) { nd = dd; F.nehmer = e; } }
+      if (this.mensch && F.team === 'A') this.steuer = F.nehmer;
+    } else if (this.phaseT > 5) { const k = F.nehmer.dreh ? -1 : 1; F.nehmer.s.pos.set(k * (F.ort.x - 0.5), 0, k * F.ort.z); F.nehmer.s.vel.set(0, 0, 0); }   // notfalls an den Ball stellen
+  },
+  /** Zwei Minuten (an die Drittellänge angepasst, mindestens 20 s): Spieler verlässt das Feld, sein Team spielt in Unterzahl. */
+  strafe(e, art) {
+    const dauer = Math.max(20, 120 * this.dauer / 1200);
+    this.strafen.push({ team: e.team, e, rest: dauer, dauer }); this.strafenListe.push({ team: e.team, name: e.s.daten.name, art, drittel: this.drittel });
+    this.ents = this.ents.filter(x => x !== e); e.s.kontrolle = false; e.s.fig.objekt.visible = false; e.marke.visible = false;
+    if (this.besitzer === e) this.besitzer = null; if (this.passEmpfaenger === e) this.passEmpfaenger = null;
+    if (this.steuer === e) { this.steuer = this.ents.find(x => x.team === 'A') || null; }
+    this.statistik.strafen = (this.statistik.strafen || 0) + 1;
+    HUD.meldung(t('s5_strafe', { n: e.s.daten.name, t: this.teams[e.team].kuerzel }), 'schlecht'); this.hudStand(true);
+  },
+  strafzeit(dt) {
+    for (const st of this.strafen) st.rest -= dt;
+    for (const st of this.strafen.filter(x => x.rest <= 0)) this.strafeEnde(st);
+  },
+  strafeEnde(st) {
+    this.strafen = this.strafen.filter(x => x !== st); const e = st.e;
+    if (this.ents.includes(e)) return;
+    // zurück an der Bande der eigenen Hälfte (eigenes System: Tor bei −x)
+    this.setze(e, -3, -8.6); e.s.yaw = e.s.pyaw = 0; e.s.fig.objekt.visible = true; this.ents.push(e); this.hudStand(true);
   },
   /** Seite an Seite (Gegner, beide in Bewegung, gleiche Richtung): Schulter an Schulter, beide lehnen sich hinein. */
   schulter(A, B, nx, nz, d) {
@@ -5242,9 +5316,10 @@ const Match = {
     this.hudStand();
   },
   hudStand(zwingen) {
-    const u = Math.max(0, Math.ceil(this.uhr)), s = `${this.stand.A}|${this.stand.B}|${this.drittel}|${u}`; if (!zwingen && s === this._hud) return; this._hud = s;
+    const u = Math.max(0, Math.ceil(this.uhr)), st = (this.strafen || []).map(x => `${x.team}${Math.ceil(x.rest)}`).join(','), s = `${this.stand.A}|${this.stand.B}|${this.drittel}|${u}|${st}`; if (!zwingen && s === this._hud) return; this._hud = s;
     const uhr = `${Math.floor(u / 60)}:${String(u % 60).padStart(2, '0')}`;
-    HUD.matchStand(this.teams.A, this.teams.B, this.alt, this.stand, this.drittel, uhr);
+    const strafText = (this.strafen || []).map(x => { const r = Math.ceil(x.rest); return ` · ⏱ ${esc(this.teams[x.team].kuerzel)} ${Math.floor(r / 60)}:${String(r % 60).padStart(2, '0')}`; }).join('');
+    HUD.matchStand(this.teams.A, this.teams.B, this.alt, this.stand, this.drittel, uhr + strafText);
     halle.tafel(this.teams.A.kuerzel, this.teams.B.kuerzel, this.stand.A, this.stand.B, `${this.drittel}. ${t('s5_drittel').toUpperCase()} · ${uhr}`);
   },
   /** Kamera: dem gesteuerten Spieler von schräg hinten folgen, sonst seitliche Fernsehansicht. */
@@ -5651,6 +5726,7 @@ const UI = {
       <h2 style="margin:.2rem 0 .6rem">${sieger ? `${esc(sieger.name)} ${t('s5_gewinnt')}` : t('remis')}</h2>
       ${r.mensch && sieger ? `<p style="font-size:1.2rem;font-weight:800;color:${duGew ? 'var(--gut)' : 'var(--schlecht)'}">${duGew ? t('du_gewinnst') : t('du_verlierst')}</p>` : ''}
       <div class="hinweisText" style="text-align:left;margin-top:.4rem">${t('s5_tore')}</div>${tore}
+      ${r.strafen && r.strafen.length ? `<div class="hinweisText" style="text-align:left;margin-top:.4rem">${t('s5_strafen')}</div>${r.strafen.map(x => `<div class="pZeile"><span>${x.drittel}. ${t('s5_drittel')} · ${esc((x.team === 'A' ? A : B).kuerzel)}</span><b>${esc(x.name)} · ${t(x.art === 'stoss' ? 's5_art_stoss' : 's5_art_stock')}</b></div>`).join('')}` : ''}
       ${sieger ? '' : `<button class="knopf primaer" data-penalty>${t('s5_penalty')}</button>`}
       <button class="knopf ${sieger ? 'primaer' : ''}" data-revanche>${t('revanche')}</button><button class="knopf" data-menue>${t('menue')}</button></div></div>`, 'dunkel');
     this.klick(d, '[data-penalty]', () => Spiel.starteMatch(A, B, r.mensch));

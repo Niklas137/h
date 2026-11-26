@@ -276,7 +276,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       return { passe: st.passe, quote: +(st.ziel / Math.max(1, st.passe)).toFixed(3), annahmen: st.annahmen, erwartet: +(st.erwartet / Math.max(1, st.annahmen)).toFixed(3), blattP50: q(st.blatt, 0.5), koerperAnteil: +(st.koerper / Math.max(1, st.annahmen)).toFixed(3), ruckP50: q(st.ruck, 0.5), ruckP90: q(st.ruck, 0.9), ruckN: st.ruck.length, fehler: st.fehler };
     });
     pruef('Ballannahme: Blatt geht zum Ball, kaum Annahmen mit dem Körper', a.annahmen >= 30 && a.erwartet > 0.6 && a.blattP50 < 0.1 && a.koerperAnteil < 0.15 && !a.fehler, JSON.stringify({ annahmen: a.annahmen, erwartet: a.erwartet, blattP50: a.blattP50, koerperAnteil: a.koerperAnteil, fehler: a.fehler }));
-    pruef('Ballannahme: Ball wird weich abgefedert, Pässe kommen an', a.ruckN >= 30 && a.ruckP50 < 260 && a.ruckP90 < 700 && a.quote > 0.6, JSON.stringify({ passe: a.passe, quote: a.quote, ruckP50: a.ruckP50, ruckP90: a.ruckP90, ruckN: a.ruckN }));
+    pruef('Ballannahme: Ball wird weich abgefedert, Pässe kommen an', a.ruckN >= 30 && a.ruckP50 < 260 && a.ruckP90 < 700 && a.quote > 0.5   /* mit torseitiger Deckung fängt die Abwehr mehr ab (gemessen 0,60–0,70) */, JSON.stringify({ passe: a.passe, quote: a.quote, ruckP50: a.ruckP50, ruckP90: a.ruckP90, ruckN: a.ruckN }));
   });
 
   // 5g) Schusstäuschung und Direktschuss als Mensch (Penalty-Training und Spiel 5 gegen 5)
@@ -363,7 +363,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
   await abschnitt('5i) Zweikampf', async () => {
     const z = await p.evaluate(() => {
       const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, ball = F.ball, V = F.THREE.Vector3, st = { fehler: null, ruck: [], ueberlapp: 0, proben: 0, frei: 0, stoss: 0, schutz: 0, besitzT: 0 };
-      const os = M.stochern; M.stochern = function (e, B) { st.stoss++; os.call(this, e, B); if (M.besitzer === null && !ball.kinematisch && ball.v.length() > 1.5) st.frei++; };
+      const os = M.stochern; M.stochern = function (e, B) { os.call(this, e, B); if (M.phase === 'freischlag') { st.gepfiffen = (st.gepfiffen || 0) + 1; return; } st.stoss++; if (M.besitzer === null && !ball.kinematisch && ball.v.length() > 1.5) st.frei++; };   // gepfiffener Stockschlag zählt nicht als Stoß
       S.starteSpiel5(L[1], L[3], null); S.pausiert = true; let letzt = null, wer = null, n = 0, max = 0, alt = ball.v.clone();
       for (let i = 0; i < 180 * 120 && S.zustand === 'match'; i++) {
         try { S.schritt(1 / 120); } catch (e) { st.fehler = e.message; break; }
@@ -379,7 +379,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
         for (let k = 0; k < 360 && M.besitzer === T; k++) { T.s.pos.set(0, 0, 0); T.s.vel.set(0, 0, 0); T.s.yaw = Math.PI / 2; D.s.pos.set(-0.75, 0, -0.2); D.s.vel.set(0, 0, 0); D.lunge = 0.45; D.s.ballSperre = 0; S.schritt(1 / 120); }
       }
       M.stochern = os; st.ruck.sort((x, y) => x - y);
-      const r = { stoesse: st.stoss, freiNachStoss: st.frei, kontakte: M.statistik.kontakte, stolpern: M.statistik.stolpern, schutzAnteil: +(st.schutz / Math.max(1, st.besitzT)).toFixed(3), ueberlapp: st.ueberlapp, ruckP50: Math.round(st.ruck[Math.floor(st.ruck.length / 2)] || 0), ruckN: st.ruck.length, fehler: st.fehler };
+      const r = { stoesse: st.stoss, freiNachStoss: st.frei, gepfiffen: st.gepfiffen || 0, kontakte: M.statistik.kontakte, stolpern: M.statistik.stolpern, schutzAnteil: +(st.schutz / Math.max(1, st.besitzT)).toFixed(3), ueberlapp: st.ueberlapp, ruckP50: Math.round(st.ruck[Math.floor(st.ruck.length / 2)] || 0), ruckN: st.ruck.length, fehler: st.fehler };
       S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return r;
     });
     pruef('Zweikampf: Stocherstoß macht den Ball frei, weicher Ballgewinn', z.stoesse >= 1 && z.freiNachStoss === z.stoesse && z.ruckN >= 10 && z.ruckP50 < 300 && !z.fehler, JSON.stringify(z));
@@ -414,6 +414,34 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     });
     pruef('KI-Taktik: Freilaufen mit freien Passlinien, Doppelpass wird angeboten', k.passe >= 40 && k.quote > 0.55 && k.linieZu < 0.08 && k.doppelAngeboten >= 3 && !k.fehler, JSON.stringify(k));
     pruef('KI-Taktik: Manndeckung deutlich enger als Formation und überwiegend torseitig', k.deckungNah > k.ohneNah + 0.25 && k.deckungTorseitig > 0.6, JSON.stringify({ mitDeckungNah: k.deckungNah, ohneDeckungNah: k.ohneNah, torseitig: k.deckungTorseitig }));
+  });
+
+  // 5k) Regeln: Foul → Freischlag (3 m Abstand, Nehmer spielt), 2-Minuten-Strafe (Unterzahl, Anzeige, Ende durch Zeit und durch Gegentor)
+  await abschnitt('5k) Regeln und Strafen', async () => {
+    const rg = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, V = F.THREE.Vector3, erg = {};
+      S.starteSpiel5(L[0], L[8], null); S.pausiert = true; let i = 0; while (M.phase !== 'spiel' && i < 900) { S.schritt(1 / 120); i++; }
+      const A = M.ents.find(e => e.team === 'A'), B = M.ents.find(e => e.team === 'B');
+      // Foul von B an A → Freischlag A
+      M.foul(B, A, 'stock', new V(2, 0, 1), false); erg.phase = M.phase; erg.team = M.fs && M.fs.team;
+      let minAbst = 99; for (let k = 0; k < 600 && M.phase === 'freischlag'; k++) { S.schritt(1 / 120); if (M.phaseT > 1.25) for (const e of M.ents) if (e.team === 'B') minAbst = Math.min(minAbst, M.welt(e, new V()).distanceTo(new V(M.fs.ort.x, 0, M.fs.ort.z))); }
+      erg.danach = M.phase; erg.besitzer = M.besitzer && M.besitzer.team; erg.minAbstand = +minAbst.toFixed(2);
+      // Freischlag am Torraum: Ort wird 3,5 m herausgeschoben
+      M.foul(B, A, 'stock', new V(15.5, 0, 0.5), false); erg.ortX = M.fs && +M.fs.ort.x.toFixed(2); for (let k = 0; k < 900 && M.phase === 'freischlag'; k++) S.schritt(1 / 120);
+      // Strafe: Unterzahl und Anzeige
+      const vorher = M.ents.filter(e => e.team === 'B').length; M.strafe(B, 'stoss'); M.hudStand(true);
+      erg.unterzahl = [vorher, M.ents.filter(e => e.team === 'B').length]; erg.anzeige = /⏱/.test(document.getElementById('hudInfo') ? document.getElementById('hudInfo').innerHTML : document.body.innerHTML);
+      const dauer = M.strafen[0] && M.strafen[0].dauer;
+      // Strafzeit läuft nur im laufenden Spiel; Unterbrechungen verlängern die Wartezeit (höchstens + 30 s)
+      for (let k = 0; k < (dauer + 30) * 120 && M.strafen.some(x => x.e === B); k++) S.schritt(1 / 120);
+      erg.nachZeit = { strafeVorbei: !M.strafen.some(x => x.e === B), zurueck: M.ents.includes(B), sichtbar: B.s.fig.objekt.visible };
+      // Gegentor beendet sofort eine Strafe des Teams, das das Tor kassiert
+      const C = M.ents.find(e => e.team === 'B'); M.strafen = M.strafen.filter(x => x.team !== 'B'); M.ents = M.ents.filter(e => e.team !== 'B' || M.alle.includes(e)); M.strafe(C, 'stock');
+      const vorTor = M.ents.filter(e => e.team === 'B').length; M.tor('A'); erg.nachTor = { zurueck: M.ents.includes(C), feldVorher: vorTor, feld: M.ents.filter(e => e.team === 'B').length };
+      S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return erg;
+    });
+    pruef('Regeln: Foul führt zum Freischlag, Gegner 3 m entfernt, gefoultes Team spielt', rg.phase === 'freischlag' && rg.team === 'A' && rg.danach === 'spiel' && rg.besitzer === 'A' && rg.minAbstand >= 2.95 && rg.ortX <= 13.15 - 3.5 + 0.01, JSON.stringify(rg));
+    pruef('Regeln: 2-Minuten-Strafe mit Unterzahl, endet nach Zeit und durch Gegentor', rg.unterzahl[0] === 5 && rg.unterzahl[1] === 4 && rg.anzeige && rg.nachZeit.strafeVorbei && rg.nachZeit.zurueck && rg.nachZeit.sichtbar && rg.nachTor.zurueck && rg.nachTor.feld === rg.nachTor.feldVorher + 1, JSON.stringify({ unterzahl: rg.unterzahl, anzeige: rg.anzeige, nachZeit: rg.nachZeit, nachTor: rg.nachTor }));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
