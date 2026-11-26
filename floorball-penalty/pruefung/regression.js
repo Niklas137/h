@@ -203,6 +203,46 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     pruef('Spiel 5 gegen 5: Aufräumen', !weg.sichtbar && !weg.zweiTore && weg.penalty && !/match/.test(weg.koerper), JSON.stringify(weg));
   });
 
+  // 5e) Laufstil: 25 s KI gegen KI, alle Feldspieler, jede Simulationsstufe (Füße, Knie, Rhythmus, Schräglage)
+  await abschnitt('5e) Laufstil', async () => {
+    const g = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, V = F.THREE.Vector3, dt = 1 / 120;
+      S.starteSpiel5(L[0], L[8], null); S.pausiert = true;
+      const gleit = [], st = { n: 0, ik: 0, knie: 0, kreuz: 0, nan: 0, boden: 0, kurve: 0, innen: 0, sprintN: 0, sprintSchritte: 0, bremsP: 0, bremsN: 0, laufP: 0, laufN: 0 }, alt = new Map(), a = new V(), c = new V();
+      for (let i = 0; i < 25 * 120 && S.zustand === 'match'; i++) {
+        S.schritt(dt); if (M.phase !== 'spiel') { alt.clear(); continue; }
+        for (const e of M.ents) {
+          const s = e.s, fig = s.fig, J = fig.j, P = s.anim.letzte, o = alt.get(e) || {}; if (!P) continue;
+          const wy = fig.wurzel.rotation.y, wc = Math.cos(wy), ws = Math.sin(wy), sp = s.speed, w = [];
+          for (const [n, si] of [['L', 0], ['R', 1]]) {
+            const pf = fig.planer.f[si], f = J['fuss' + n].getWorldPosition(new V()), kp = [-0.078, 0.03, 0.13].map(z => J['fuss' + n].localToWorld(new V(0, -0.08, z)));
+            w.push(f); if (!isFinite(f.x + f.y + f.z)) st.nan++; if (f.y < 0.05) st.boden++;
+            if (pf.ziel && f.distanceTo(pf.ziel) > 0.1) st.ik++;
+            if (!pf.schwingt && o['s' + n] === false && o['k' + n] && pf.kt > 0.02) { const d = Math.min(...kp.map((q, j) => Math.hypot(q.x - o['k' + n][j].x, q.z - o['k' + n][j].z))); if (d < 0.2) gleit.push(d / dt); }
+            if (pf.schwingt && o['s' + n] === false && s.zustand === 'lauf' && sp > 4.4) st.sprintSchritte++;
+            o['k' + n] = kp; o['s' + n] = pf.schwingt;
+            const h = J['huefte' + n].getWorldPosition(a), kn = J['knie' + n].getWorldPosition(new V()), m = c.copy(h).add(f).multiplyScalar(0.5);
+            if ((kn.x - m.x) * ws + (kn.z - m.z) * wc < -0.01) st.knie++;
+          }
+          const dx = w[0].x - w[1].x, dz = w[0].z - w[1].z; if (dx * wc - dz * ws < -0.02) st.kreuz++;
+          if (s.zustand === 'lauf') {
+            if (sp > 4.4) st.sprintN++;
+            if (Math.abs(s.neigS || 0) > 3) { st.kurve++; if (P.roll * s.neigS < 0) st.innen++; }
+            if ((s.neigV || 0) < -4 && sp > 1.5) { st.bremsN++; st.bremsP += P.pitch; } else if (Math.abs(s.neigV || 0) < 1 && sp > 3) { st.laufN++; st.laufP += P.pitch; }
+          }
+          alt.set(e, o); st.n++;
+        }
+      }
+      gleit.sort((x, y) => x - y);
+      const r = { proben: st.n, gleitP99: +(gleit[Math.floor(gleit.length * 0.99)] || 0).toFixed(3), ikUeber10cm: st.ik, knieHinten: st.knie, beineGekreuzt: st.kreuz, nan: st.nan, unterBoden: st.boden,
+        sprintSchritteProS: st.sprintN ? +(st.sprintSchritte / (st.sprintN / 120)).toFixed(2) : null, kurveInnen: st.kurve ? +(st.innen / st.kurve).toFixed(3) : null,
+        vorlageBremsen: st.bremsN ? +(st.bremsP / st.bremsN).toFixed(3) : null, vorlageLauf: st.laufN ? +(st.laufP / st.laufN).toFixed(3) : null };
+      S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return r;
+    });
+    pruef('Laufstil: Füße bleiben stehen, Beine sauber', g.proben > 5000 && g.gleitP99 < 0.15 && g.ikUeber10cm === 0 && g.knieHinten === 0 && g.beineGekreuzt <= g.proben * 0.0002 && g.nan === 0 && g.unterBoden === 0, JSON.stringify({ proben: g.proben, gleitP99: g.gleitP99, ik: g.ikUeber10cm, knie: g.knieHinten, kreuz: g.beineGekreuzt, nan: g.nan, boden: g.unterBoden }));
+    pruef('Laufstil: Rhythmus und Haltung', g.sprintSchritteProS > 3.4 && g.sprintSchritteProS < 4.6 && g.kurveInnen > 0.95 && g.vorlageBremsen < g.vorlageLauf - 0.1, JSON.stringify({ sprintSchritteProS: g.sprintSchritteProS, kurveInnen: g.kurveInnen, vorlageBremsen: g.vorlageBremsen, vorlageLauf: g.vorlageLauf }));
+  });
+
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
   await abschnitt('6) Turnier', async () => {
   const tn = await p.evaluate(() => { const F = window.__fps, T = F.Turnier, L = F.TeamDB.liste.map(x => x.id); T.neu(L.slice(0, 8), L[0], true); let n = 0; let s; while ((s = T.naechstesSpiel()) && n < 200) { T.eintragen(s.id, T.simuliere(s.heim, s.gast, s.phase !== 'gruppe')); n++; } F.UI.turnierHub(); return { spiele: n, sieger: T.d.sieger, zustand: F.Spiel.zustand, beste: T.beste() }; });

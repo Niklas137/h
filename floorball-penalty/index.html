@@ -402,6 +402,9 @@ const V3 = THREE.Vector3, Q4 = THREE.Quaternion;
 const klemme = (v, a, b) => v < a ? a : v > b ? b : v;
 const mix = (a, b, f) => a + (b - a) * f;
 const glatt = (x) => { x = klemme(x, 0, 1); return x * x * (3 - 2 * x); };
+/** Kürzeste Winkeldifferenz b − a in (−π, π]; Mischung zweier Winkel über den kurzen Weg. */
+const winkelDiff = (a, b) => { let d = (b - a) % (2 * Math.PI); if (d > Math.PI) d -= 2 * Math.PI; else if (d <= -Math.PI) d += 2 * Math.PI; return d; };
+const winkelMix = (a, b, f) => a + winkelDiff(a, b) * f;
 const daempf = (akt, ziel, rate, dt) => akt + (ziel - akt) * (1 - Math.exp(-rate * dt));
 function gauss() { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
 function zufallRng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
@@ -2198,30 +2201,44 @@ class Figur {
     const w = this.wurzel, J = this.j, ik = Config.animation.ik; this._dt = ctx.dt; this._ball = ctx.ballPos || null;
     w.position.set(ctx.pos.x, 0, ctx.pos.z); w.rotation.set(0, ctx.yaw, 0);
     this.koerper.rotation.set(0, 0, P.roll);
-    J.becken.position.set(P.bx, P.hoehe, P.bz); J.becken.rotation.set(P.pitch, P.twist * 0.25, P.seit * 0.3);
-    J.wirbel.rotation.set(P.beuge * 0.5, P.twist * 0.35, P.seit * 0.35);
+    if (ctx.dt > 0 && P.fW < 0.999) this.planer.update(ctx.dt, ctx.pos, ctx.yaw, ctx.vel || _u.set(0, 0, 0), ctx.schrittCb, ctx.gang);
+    // Laufrhythmus: Becken sinkt in der Standphase und dreht zum vorderen Bein, der Oberkörper dreht dagegen (Schultern bleiben ruhig)
+    const ga = ctx.gang ? (1 - klemme(P.fW, 0, 1)) * (P.gangAmp ?? 1) : 0, hub = this.planer.hub * ga, bd = this.planer.dreh * ga;
+    J.becken.position.set(P.bx, P.hoehe + hub, P.bz); J.becken.rotation.set(P.pitch, P.twist * 0.25 + bd, P.seit * 0.3);
+    J.wirbel.rotation.set(P.beuge * 0.5, P.twist * 0.35 - bd * 0.75, P.seit * 0.35);
     J.brust.rotation.set(P.beuge * 0.5, P.twist * 0.4, P.seit * 0.35);
     J.hals.rotation.set(-P.beuge * 0.35 - P.pitch * 0.4, 0, 0);
     this.objekt.updateMatrixWorld(true);
     // --- Beine ---
-    if (ctx.dt > 0 && P.fW < 0.999) this.planer.update(ctx.dt, ctx.pos, ctx.yaw, ctx.vel || _u.set(0, 0, 0), ctx.schrittCb);
     const qk = this.koerper.getWorldQuaternion(_q);
     for (const [n, s] of [['L', 0], ['R', 1]]) {
       const fx = s === 0 ? P.fL : P.fR, kn = s === 0 ? P.knL : P.knR;
       const ziel = tmpZiel[s];
       if (P.fW > 0.001) { ziel.set(fx[0], fx[1], fx[2]); w.localToWorld(ziel); }
-      if (P.fW < 0.999) { const loc = this.planer.f[s].p; if (P.fW > 0.001) ziel.lerpVectors(loc, ziel, P.fW); else ziel.copy(loc); }
+      const neig = ga > 0 ? this.planer.neigung(this.planer.f[s]) * ga : 0;
+      if (P.fW < 0.999) {
+        const loc = _w.copy(this.planer.f[s].p);
+        // Abrollen: Spitze nach unten → Drehpunkt Ballen (Knöchel steigt und wandert nach vorn), Spitze nach oben → Drehpunkt Ferse
+        if (neig) { const c = Math.cos(neig), sn = Math.sin(neig), dz = neig > 0 ? 0.13 - 0.13 * c + 0.08 * sn : -0.078 + 0.078 * c + 0.08 * sn, dy = neig > 0 ? 0.08 * c + 0.13 * sn - 0.08 : 0.08 * c - 0.078 * sn - 0.08;
+          const fy = (this.planer.f[s].yaw ?? ctx.yaw) + (s === 0 ? 0.08 : -0.08); loc.x += Math.sin(fy) * dz; loc.z += Math.cos(fy) * dz; loc.y += dy; }
+        if (P.fW > 0.001) ziel.lerpVectors(loc, ziel, P.fW); else ziel.copy(loc);
+      }
       else this.planer.f[s].p.copy(ziel).setY(Math.max(0.08, ziel.y));
+      (this.planer.f[s].ziel || (this.planer.f[s].ziel = new V3())).copy(ziel);   // tatsächliches Fußziel (für Prüfungen)
       const hp = J['huefte' + n].getWorldPosition(_b);
       const pole = _c.set(kn[0], kn[1], kn[2]).applyQuaternion(qk).add(hp);
       const gr = this.groesse || 1;
       if (P.fW < 0.5 && hp.distanceTo(ziel) > (MASS.ob + MASS.ub) * gr - 0.015) this.planer.f[s].zwang = true;
+      if (!this.planer.huefte) this.planer.huefte = [new V3(), new V3()];
+      this.planer.huefte[s].copy(hp); this.planer.bein = (MASS.ob + MASS.ub) * gr;
       if (ik) zweiKnochenIK(J['huefte' + n], J['knie' + n], ziel, pole, MASS.ob * gr, MASS.ub * gr);
       else { J['huefte' + n].rotation.set(-0.25 - Math.sin(this.planer.phase + s * Math.PI) * 0.4 * P.fkAmp, 0, 0); J['knie' + n].rotation.set(0.4 + Math.max(0, Math.sin(this.planer.phase + s * Math.PI)) * 0.6 * P.fkAmp, 0, 0); J['huefte' + n].updateMatrixWorld(true); }
       // Fuß ausrichten (beim Abrollen hebt sich die Ferse: Schwungfuß kippt nach vorn)
       const fuss = J['fuss' + n], pf = this.planer.f[s];
-      _q2.setFromAxisAngle(ACHSE_Y, ctx.yaw + (s === 0 ? 0.08 : -0.08));
-      if (P.fW < 0.5 && pf.schwingt) { _q3.setFromAxisAngle(_d.set(1, 0, 0), Math.sin(Math.PI * pf.t) * 0.5 * (1 - pf.t)); _q2.multiply(_q3); }
+      const fyaw = ctx.gang && pf.yaw !== undefined ? pf.yaw : ctx.yaw;
+      _q2.setFromAxisAngle(ACHSE_Y, fyaw + (s === 0 ? 0.08 : -0.08));
+      if (neig) { _q3.setFromAxisAngle(_d.set(1, 0, 0), neig); _q2.multiply(_q3); }
+      else if (P.fW < 0.5 && pf.schwingt) { _q3.setFromAxisAngle(_d.set(1, 0, 0), Math.sin(Math.PI * pf.t) * 0.5 * (1 - pf.t)); _q2.multiply(_q3); }
       if (P.fNeig) { _q3.setFromAxisAngle(_d.set(1, 0, 0), P.fNeig); const qs = J['knie' + n].getWorldQuaternion(_q4).multiply(_q3); _q2.slerp(qs, klemme(P.fW, 0, 1)); }
       setzeWeltQuat(fuss, _q2);
     }
@@ -2323,7 +2340,7 @@ class Figur {
 }
 const tmpZiel = [...Array(8)].map(() => new V3());
 const _m = new THREE.Matrix4(), _q2 = new Q4(), _q3 = new Q4(), _q4 = new Q4(), _qw = new Q4(), _qp = new Q4();
-const _ik = [...Array(8)].map(() => new V3());
+const _w = new V3(); const _ik = [...Array(8)].map(() => new V3());
 function setzeWeltQuat(obj, qWelt) { obj.parent.getWorldQuaternion(_qp); obj.quaternion.copy(_qp.invert().multiply(qWelt)); obj.updateMatrixWorld(true); }
 /** Gelenk so drehen, dass seine lokale +Y-Achse in Weltrichtung yAchse zeigt, lokale +Z möglichst Richtung zHinweis. */
 function setzeWeltRichtung(obj, yAchse, zHinweis) {
@@ -2347,32 +2364,125 @@ function zweiKnochenIK(j1, j2, ziel, pole, l1, l2) {
   setzeWeltRichtung(j2, _a.subVectors(K, E), Pp);
 }
 
-/** Schrittplaner: Standfuß bleibt fixiert (kein Fußgleiten), Schwungfuß landet vorausschauend. */
+/** Schrittplaner: Standfuß bleibt fixiert (kein Fußgleiten), Schwungfuß landet vorausschauend.
+ *  Ohne Gangdaten (Torhüter): Schritte nach Abweichung. Mit Gangdaten (Feldspieler): Laufrhythmus mit
+ *  tempoabhängiger Schrittfrequenz, Kontakt- und Flugphase, Abrollen (Ferse → Ballen) und Beckenhub. */
 class Schrittplaner {
-  constructor() { this.f = [{ p: new V3(), s: new V3(), z: new V3(), t: 0, schwingt: false, seite: 1 }, { p: new V3(), s: new V3(), z: new V3(), t: 0, schwingt: false, seite: -1 }]; this.bereit = false; this.letzter = 1; this.phase = 0; }
-  ideal(out, pos, yaw, seite) { return out.set(seite * 0.115, 0, 0).applyAxisAngle(ACHSE_Y, yaw).add(pos).setY(0.08); }
-  setze(pos, yaw) { for (const f of this.f) { this.ideal(f.p, pos, yaw, f.seite); f.schwingt = false; } this.bereit = true; }
-  update(dt, pos, yaw, vel, cb) {
+  constructor() { this.br = 0; this.f = [{ p: new V3(), s: new V3(), z: new V3(), t: 0, d: 0.3, kt: 0, schwingt: false, seite: 1 }, { p: new V3(), s: new V3(), z: new V3(), t: 0, d: 0.3, kt: 0, schwingt: false, seite: -1 }]; this.bereit = false; this.letzter = 1; this.phase = 0; this.seit = 9; this.kontakt = 0.3; this.lauf = 0; this.hub = 0; this.dreh = 0; }
+  ideal(out, pos, yaw, seite, b = 0.115) { return out.set(seite * b, 0, 0).applyAxisAngle(ACHSE_Y, yaw).add(pos).setY(0.08); }
+  setze(pos, yaw) { for (const f of this.f) { this.ideal(f.p, pos, yaw, f.seite); f.schwingt = false; f.kt = 9; f.yaw = yaw; } this.bereit = true; this.seit = 9; this.hub = 0; this.dreh = 0; }
+  /** Fußneigung (positiv = Spitze nach unten) aus Stand- bzw. Schwungphase; nur im Laufrhythmus. */
+  neigung(f) {
+    const L = this.lauf; if (L < 0.01) return 0;
+    if (f.schwingt) return L * mix(0.55 * (1 - this.br * 0.6), -0.14, glatt(f.t));
+    const u = f.kt / Math.max(0.05, this.kontakt);
+    const th = u < 0.2 ? mix(-0.14, 0, u / 0.2) : u < 0.55 ? 0 : u < 1.25 ? 0.55 * glatt((u - 0.55) / 0.45) : 0.55 * (1 - glatt((u - 1.25) / 0.5));
+    return L * th;
+  }
+  update(dt, pos, yaw, vel, cb, g) {
     if (!this.bereit) this.setze(pos, yaw);
-    const sp = Math.hypot(vel.x, vel.z), dauer = klemme(0.3 - sp * 0.032, 0.14, 0.3);
+    const sp = Math.hypot(vel.x, vel.z);
     this.phase += dt * sp * 2.2;
-    for (const f of this.f) if (f.schwingt) {
-      f.t = Math.min(1, f.t + dt / dauer);
-      const vor = (1 - f.t) * dauer + dauer * 0.5;
-      this.ideal(f.z, _n.copy(pos).addScaledVector(vel, vor), yaw, f.seite);
-      f.p.lerpVectors(f.s, f.z, glatt(f.t));
-      f.p.y = 0.08 + Math.sin(Math.PI * f.t) * (0.05 + Math.min(0.11, sp * 0.022));
-      if (f.t >= 1) { f.schwingt = false; f.p.copy(f.z); if (cb && sp > 2.5) cb(sp); }
+    if (!g) { this.lauf = 0; this.hub = 0; this.dreh = 0; return this.nachAbweichung(dt, pos, yaw, vel, cb, sp, 0.115); }
+    // Laufrhythmus: Schrittfrequenz steigt mit dem Tempo (Trab ~2,9, Sprint ~4 Schritte/s), Bodenkontakt wird kürzer
+    this.lauf = daempf(this.lauf, klemme((sp - 0.9) / 1.2, 0, 1), 6, dt);
+    const br = g.brems || 0;   // Bremsen: kurze, flache Stoppschritte mit langem Bodenkontakt
+    const T = 1 / (klemme(1.9 + 0.45 * sp, 1.9, 4.3) * (g.kadenz || 1) * (1 + br * 0.25));
+    const duty = Math.min(0.7, mix(0.6, 0.36, klemme((sp - 1.5) / 3.3, 0, 1)) + br * 0.2);
+    const dauer = this.lauf > 0.5 ? klemme(2 * T * (1 - duty), 0.2, 0.4) : klemme(0.3 - sp * 0.032, 0.14, 0.3);
+    this.kontakt = Math.max(0.08, 2 * T - dauer);
+    this.seit += dt; this.br = br;
+    const b = g.breite ?? 0.115, reich = g.reich ?? 0.45;
+    for (const f of this.f) {
+      if (!f.schwingt) { f.kt += dt; continue; }
+      f.t = Math.min(1, f.t + dt / f.d);
+      // Landepunkt: Mitte der Standphase unter der Hüfte, beim Bremsen weiter vorn (Ausfallschritt)
+      const vor = (1 - f.t) * f.d + this.kontakt * 0.5;
+      const off = _n.copy(vel).multiplyScalar(vor);
+      if (g.ausfall && sp > 0.3) off.addScaledVector(vel, g.ausfall / sp);
+      const ol = off.length(), lim = reich + (1 - f.t) * f.d * sp; if (ol > lim) off.multiplyScalar(lim / ol);
+      this.ideal(f.z, off.add(pos), yaw, f.seite, b);
+      this.seitlich(f.z, yaw, f, 0.13);
+      this.erreichbar(f, vel, (1 - f.t) * f.d);
+      // Im Lauf zieht der Schwungfuß früh nach (nahezu linearer Start), beim Gehen weich
+      const L = this.lauf, LS = L * (1 - br);
+      f.p.lerpVectors(f.s, f.z, mix(glatt(f.t), f.t * 0.55 + glatt(f.t) * 0.45, L));
+      this.seitlich(f.p, yaw, f, 0.12);
+      // Bogen: im Lauf früher und höher (Ferse schwingt zum Gesäß), beim Gehen flach
+      const hoch = (0.05 + Math.min(0.13, sp * 0.028)) * (1 - br * 0.55) + LS * Math.min(0.08, Math.max(0, sp - 2.5) * 0.04);
+      f.p.y = 0.08 + Math.sin(Math.PI * Math.pow(f.t, mix(1, 0.62, LS))) * hoch;
+      f.yaw = winkelMix(f.yawS, yaw, glatt(f.t));
+      if (f.t >= 1) { f.schwingt = false; f.kt = 0; f.p.copy(f.z); f.yaw = yaw; if (cb && sp > 2.5) cb(sp); }
     }
-    if (!this.f.some(f => f.schwingt && f.t < 0.82)) {
+    if (this.lauf > 0.5) {
+      // Takt: der andere Fuß hebt ab, sobald die Schrittzeit um ist (Flugphase entsteht, wenn beide in der Luft sind)
+      const andere = 1 - this.letzter, fa = this.f[andere], fl = this.f[this.letzter];
+      const e = Math.hypot(fa.p.x - this.ideal(_n, pos, yaw, fa.seite, b).x, fa.p.z - _n.z);
+      const takt = this.seit >= T && (!fl.schwingt || fl.t * fl.d >= T * 0.9);
+      if (!fa.schwingt && fa.kt > 0.05 && ((takt && e > 0.03) || e > 0.35 + sp * 0.08)) this.starte(andere, dauer);
+      for (const [i, f] of this.f.entries()) if (!f.schwingt && f.kt > 0.05 && Math.abs(winkelDiff(yaw, f.yaw)) > 0.75 && !this.f[1 - i].schwingt) { this.starte(i, dauer); break; }
+    } else this.nachAbweichung(dt, pos, yaw, vel, cb, sp, b, dauer, true);
+    // Überstreckter Standfuß: sofort umsetzen, statt ihn über den Boden zu ziehen
+    this.f.forEach((f, i) => { if (f.zwang && !f.schwingt) this.starte(i, dauer, 0.15); f.zwang = false; });
+    this.entkreuzen(pos, yaw, b, dauer);
+    // Beckenhub (tiefster Punkt in der Mitte der Standphase) und Beckendrehung zum vorderen Bein
+    let hub = 0, zl = 0;
+    for (const f of this.f) {
+      if (!f.schwingt) hub -= Math.sin(Math.PI * klemme(f.kt / this.kontakt, 0, 1));
+      const dz = (f.p.x - pos.x) * Math.sin(yaw) + (f.p.z - pos.z) * Math.cos(yaw); zl += f.seite * dz;
+    }
+    this.hub = daempf(this.hub, hub * 0.03 * this.lauf, 30, dt);
+    this.dreh = daempf(this.dreh, klemme(-zl * 0.32, -0.16, 0.16) * this.lauf, 20, dt);
+  }
+  /** Landepunkt bleibt in Reichweite der Hüfte zum Landezeitpunkt (sonst Stolpern: Bein gestreckt, Fuß setzt sofort neu). */
+  erreichbar(f, vel, rest) {
+    const h = this.huefte && this.huefte[this.f.indexOf(f)]; if (!h || !this.bein) return;
+    const hx = h.x + vel.x * rest, hz = h.z + vel.z * rest, dy = h.y - f.z.y, R2 = (this.bein * 0.97) ** 2 - dy * dy;
+    if (R2 <= 0.01) return;
+    const dx = f.z.x - hx, dz = f.z.z - hz, d = Math.hypot(dx, dz), R = Math.sqrt(R2);
+    if (d > R) { f.z.x = hx + dx / d * R; f.z.z = hz + dz / d * R; }
+  }
+  /** Beine kreuzen nicht: Punkt q (Fuß f) bleibt auf seiner Seite des anderen Fußes, mindestens min quer zur Blickrichtung. */
+  seitlich(q, yaw, f, min) {
+    const o = this.f[0] === f ? this.f[1] : this.f[0], cx = Math.cos(yaw), cz = -Math.sin(yaw);   // lokale +X-Achse (links) in Welt
+    const quer = ((q.x - o.p.x) * cx + (q.z - o.p.z) * cz) * f.seite;
+    if (quer < min) { const k = (min - quer) * f.seite; q.x += cx * k; q.z += cz * k; }
+  }
+  /** Gekreuzte Standfüße (nach schneller Drehung): der weiter abweichende Fuß setzt um. */
+  entkreuzen(pos, yaw, b, dauer) {
+    if (this.f[0].schwingt || this.f[1].schwingt) return;
+    const cx = Math.cos(yaw), cz = -Math.sin(yaw), quer = (this.f[0].p.x - this.f[1].p.x) * cx + (this.f[0].p.z - this.f[1].p.z) * cz;
+    if (quer > 0.06) return;
+    const e = this.f.map(f => Math.hypot(f.p.x - this.ideal(_n, pos, yaw, f.seite, b).x, f.p.z - _n.z));
+    this.starte(e[0] > e[1] ? 0 : 1, dauer);
+  }
+  starte(i, dauer, t0 = 0) { const f = this.f[i]; f.s.copy(f.p); f.yawS = f.yaw ?? 0; f.t = t0; f.d = dauer; f.schwingt = true; this.letzter = i; this.seit = 0; }
+  /** Schritte nach Abweichung vom idealen Stand (Stehen, Gehen, Torhüter). */
+  nachAbweichung(dt, pos, yaw, vel, cb, sp, b, dauerG, nurAusloesen) {
+    const dauer = dauerG ?? klemme(0.3 - sp * 0.032, 0.14, 0.3);
+    if (!nurAusloesen) {
+      this.seit += dt;
+      for (const f of this.f) if (f.schwingt) {
+        f.t = Math.min(1, f.t + dt / dauer);
+        const vor = (1 - f.t) * dauer + dauer * 0.5;
+        this.ideal(f.z, _n.copy(pos).addScaledVector(vel, vor), yaw, f.seite, b);
+        if (dauerG === undefined && this.gangAktiv) this.seitlich(f.z, yaw, f, 0.13);
+        f.p.lerpVectors(f.s, f.z, glatt(f.t));
+        f.p.y = 0.08 + Math.sin(Math.PI * f.t) * (0.05 + Math.min(0.11, sp * 0.022));
+        f.yaw = winkelMix(f.yawS ?? yaw, yaw, glatt(f.t));
+        if (f.t >= 1) { f.schwingt = false; f.kt = 0; f.p.copy(f.z); f.yaw = yaw; if (cb && sp > 2.5) cb(sp); }
+      } else f.kt += dt;
+    }
+    // Im Stand und beim Gehen (Feldspieler) immer ein Fuß am Boden; Torhüter dürfen nachsetzen
+    if (!this.f.some(f => f.schwingt && (nurAusloesen ? f.t < 0.97 : f.t < 0.82))) {
       const thr = 0.075 + sp * 0.05;
-      const e = this.f.map(f => Math.hypot(f.p.x - this.ideal(_n, pos, yaw, f.seite).x, f.p.z - _n.z));
+      // Verdrehung des Standfußes gegen den Körper zählt wie Abstand (0,6 rad ≈ eine Schrittschwelle)
+      const e = this.f.map(f => Math.hypot(f.p.x - this.ideal(_n, pos, yaw, f.seite, b).x, f.p.z - _n.z) + Math.abs(winkelDiff(yaw, f.yaw ?? yaw)) * thr / 0.6);
       const andere = 1 - this.letzter;
       let w = -1; if (!this.f[andere].schwingt && e[andere] > thr * 0.65) w = andere; else if (!this.f[this.letzter].schwingt && e[this.letzter] > thr * 1.4) w = this.letzter;
-      if (w >= 0) { const f = this.f[w]; f.s.copy(f.p); f.t = 0; f.schwingt = true; this.letzter = w; }
+      if (w >= 0) this.starte(w, dauer);
     }
-    // Überstreckter Standfuß: sofort umsetzen, statt ihn über den Boden zu ziehen
-    this.f.forEach((f, i) => { if (f.zwang && !f.schwingt) { f.s.copy(f.p); f.t = 0.15; f.schwingt = true; this.letzter = i; } f.zwang = false; });
+    if (!nurAusloesen) { this.f.forEach((f, i) => { if (f.zwang && !f.schwingt) this.starte(i, dauer, 0.15); f.zwang = false; }); }
   }
 }
 
@@ -2422,8 +2532,12 @@ const POSEN_SCHUETZE = {
     kelleAmBall(P, e, e.pushSeite ?? -e.s, 0.35); P.oben = [-e.s * 0.05, 0.84, 0.24]; return P;
   },
   dribbel(e, t) {
-    const P = basisPose(), sp = e.speed, bob = Math.abs(Math.sin(e.planerPhase())) * 0.025 * Math.min(1, sp / 3);
-    P.hoehe = 0.91 - Math.min(0.07, sp * 0.013) - bob; P.pitch = 0.1 + Math.min(0.2, sp * 0.035); P.beuge = 0.36;
+    const P = basisPose(), sp = e.speed, nv = e.neigV || 0, ns = e.neigS || 0, sv = Math.min(1, sp / 4.5);
+    // Haltung aus Tempo und (geglätteter) Beschleunigung: Antritt nach vorn, Bremsen tief und zurück, Kurve nach innen
+    const brems = klemme(-nv / 9, 0, 1) * Math.min(1, sp / 1.5), antritt = klemme(nv / 9, 0, 1);
+    P.hoehe = 0.91 - Math.min(0.07, sp * 0.013) - brems * 0.085 - antritt * 0.02;
+    P.pitch = 0.1 + Math.min(0.24, sp * 0.045) + antritt * 0.12 - brems * 0.26; P.beuge = 0.36 + sv * 0.06 - brems * 0.12 + antritt * 0.04;
+    P.roll = klemme(-Math.atan2(ns, 9.81) * 0.85, -0.3, 0.3);
     P.twist = klemme(e.lokBall.x * 0.9, -0.5, 0.5) + e.s * 0.1; P.seit = -e.lokBall.x * 0.15;
     kelleAmBall(P, e, e.pushSeite, 0.35);
     P.kelle[1] += 0.085 * (1 - Math.min(1, Math.abs(e.pushSeite) * 1.25));   // beim Seitenwechsel über den Ball heben
@@ -2606,6 +2720,12 @@ class Schuetze {
     this.trick = null; this.zorro = false; this.zorroT = 0; this.drehRate = 0; this.ballSperre = 0;
   }
   planerPhase() { return this.fig.planer.phase; }
+  /** Gangdaten für den Schrittplaner: Spur wird im Sprint schmaler, beim Bremsen breiter mit Ausfallschritt. */
+  gang() {
+    const g = this._gang || (this._gang = {}), sp = this.speed, brems = klemme(-(this.neigV || 0) / 9, 0, 1) * Math.min(1, sp / 1.5);
+    g.breite = mix(0.115, 0.08, klemme((sp - 2) / 2.5, 0, 1)) + brems * 0.05; g.ausfall = brems * 0.22; g.brems = brems; g.reich = 0.46 * (this.fig.groesse || 1); g.kadenz = 1;
+    return g;
+  }
   istVorhand() { return this.ballSeite === this.s; }
   /** Der Schuss darf geladen werden, sobald der Schütze losgelaufen ist. */
   imSchussbereich() { return this.schussUeberall || this.pos.x > 0.2; }
@@ -2672,6 +2792,9 @@ class Schuetze {
     const acc = this.zustand === 'lauf' ? (welt.menschPraezise ? 15 : 10) : 7;      // vom Menschen gesteuert reagiert der Spieler direkter
     _c.subVectors(wunsch, this.vel); const l = _c.length(); if (l > acc * dt) _c.multiplyScalar(acc * dt / l);
     this.vel.add(_c); this.vel.y = 0;
+    // Beschleunigung im eigenen System (vorn/links), geglättet: Grundlage für Vor-, Rück- und Kurvenlage
+    if (dt > 0) { const cy = Math.cos(this.yaw), sy = Math.sin(this.yaw), ax = _c.x / dt, az = _c.z / dt;
+      this.neigV = daempf(this.neigV || 0, ax * sy + az * cy, 7, dt); this.neigS = daempf(this.neigS || 0, ax * cy - az * sy, 7, dt); }
     this.pos.addScaledVector(this.vel, dt);
     this.pos.x = klemme(this.pos.x, -19, 18.6); this.pos.z = klemme(this.pos.z, -9.3, 9.3);
     // Keine Durchdringung: Schütze bleibt außerhalb von Tor und Torhüter (nach dem Schuss auch außerhalb des Torraums)
@@ -2701,7 +2824,7 @@ class Schuetze {
     const echt = ball.echt || ball, D = this.dreh;
     const bz = this.zustand === 'laden' || this.zustand === 'schuss' ? _drehB.set(TOR.x, 0.4, this.zielAbsicht.z * 0.7) : this.zustand === 'lauf' && ball.p.isVector3 ? _drehB.set(mix(ball.p.x, TOR.x, 0.55), mix(ball.p.y, 0.9, 0.55), mix(ball.p.z, 0, 0.55)) : ball.p && ball.p.isVector3 ? _drehB.copy(ball.p) : null;
     if (D && bz) bz.set(-bz.x, bz.y, -bz.z);
-    this.fig.anwenden(P, { pos: D ? _drehP.set(-this.pos.x, 0, -this.pos.z) : this.pos, yaw: D ? this.yaw + Math.PI : this.yaw, vel: D ? _drehV.set(-this.vel.x, 0, -this.vel.z) : this.vel, dt, ballPos: echt.p && echt.p.isVector3 ? echt.p : null, blickZiel: bz, schrittCb: welt.schrittCb });
+    this.fig.anwenden(P, { pos: D ? _drehP.set(-this.pos.x, 0, -this.pos.z) : this.pos, yaw: D ? this.yaw + Math.PI : this.yaw, vel: D ? _drehV.set(-this.vel.x, 0, -this.vel.z) : this.vel, dt, ballPos: echt.p && echt.p.isVector3 ? echt.p : null, blickZiel: bz, schrittCb: welt.schrittCb, gang: this.gang() });
   }
   fuehreBall(dt, ball) {
     const sp = this.speed;

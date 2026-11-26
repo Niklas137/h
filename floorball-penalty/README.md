@@ -35,6 +35,7 @@ Alle anderen Inhalte (Geometrie, Texturen, Ton) entstehen prozedural im Browser.
   - Regeln vereinfacht: Bully zu Beginn jedes Drittels und nach Toren, Einschlag für das andere Team, wenn der Ball die Bande verlässt, Feldspieler dürfen nicht in die Torhüterräume, Torhüter fangen Bälle im Torhüterraum und werfen sie zu einem freien Mitspieler ab. Kein Abseits, keine Strafen.
   - Unentschieden nach drei Dritteln: Knopf „Penaltyschießen“ startet ein Shootout mit denselben Teams.
   - Kamera schräg hinter deinem Spieler (C wechselt zur seitlichen Fernsehansicht). KI gegen KI zeigt die Fernsehansicht.
+  - Laufstil: echter Laufrhythmus mit tempoabhängiger Schrittfrequenz (Trab etwa 3, Sprint etwa 4 Schritte pro Sekunde), Flugphase im Sprint, Abrollen von der Ferse über den Ballen, Becken senkt sich in der Standphase und dreht zum vorderen Bein. Vorlage beim Antritt, tiefer Sitz mit flachen Stoppschritten beim Bremsen, Innenlage in Kurven, im Sprint schmalere Spur. Standfüße gleiten nicht und behalten ihre Richtung, Beine kreuzen nicht, Landepunkte bleiben in Beinreichweite.
   - Bewegungen: Pässe sind eine kurze Schlagbewegung von 0,15 s (Blatt zum Ball, dann verlässt der Ball die Kelle), Spieler ohne Ball stochern mit dem Schläger nach einem nahen, flachen Ball, Torhüter holen beim Abwurf sichtbar mit dem Arm aus. Feldspieler sind unterschiedlich groß (93–106 %), Arme und Beine passen sich an.
 - **Parcours** (wie im Vorbild-Video, eine Werbung für ein Floorball-Handyspiel): drei Übungen und ein Schuss, auf Zeit und Punkte.
   1. **Slalom**: im Zickzack an den orangen Hütchen vorbei, die grünen Pfeile zeigen die Seite.
@@ -76,7 +77,7 @@ node pruefung/regression.js
 node pruefung/touch.js
 ```
 
-`regression.js` prüft 30 Punkte (Regeltests, KI-Trefferquote, Kelle am Ball, Maus und Tastatur, Tricks, Torhüter, Parcours mit Testfahrer, freies Training, Spiel 5 gegen 5 bis zum Endstand, Turnier, Editor und Import, Tuning, HUD, Konsole). `touch.js` prüft Joystick, Zielen, Trick-Knöpfe und Parade auf einem emulierten Smartphone.
+`regression.js` prüft 32 Punkte (Regeltests, KI-Trefferquote, Kelle am Ball, Maus und Tastatur, Tricks, Torhüter, Parcours mit Testfahrer, freies Training, Spiel 5 gegen 5 bis zum Endstand, Laufstil (Fußgleiten, Beinreichweite, Knie, Kreuzen, Schrittfrequenz, Kurven- und Rücklage), Turnier, Editor und Import, Tuning, HUD, Konsole). `touch.js` prüft Joystick, Zielen, Trick-Knöpfe und Parade auf einem emulierten Smartphone.
 
 ## Bekannte Grenzen
 - Ohne Internet startet das Spiel nicht, weil Three.js vom CDN kommt. Abhilfe: `three.module.js` neben die Datei legen und die Importmap anpassen.
