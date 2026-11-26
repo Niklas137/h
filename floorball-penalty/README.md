@@ -38,6 +38,7 @@ Alle anderen Inhalte (Geometrie, Texturen, Ton) entstehen prozedural im Browser.
 - **Schnelles Spiel**: Hauptmenü → Schnelles Spiel → Anpfiff (Zufallsgegner ist vorgewählt). Du schießt und hältst abwechselnd. „KI gegen KI“ lässt dich zuschauen.
 - **Turnier**: 4 oder 8 Teams, Gruppenphase optional, danach K.-o. bis zum Finale. KI-Spiele lassen sich ansehen oder sofort simulieren. Mit Tabelle, Statistik und Siegerehrung. Der Stand wird gespeichert.
 - **Training**: Schießen auf Zielscheiben (mit oder ohne Torhüter) oder Halten, ohne Wertung.
+- **Freies Training** (Training → Freies Training): keine Regeln, kein Zeitlimit, keine Torhüterraum-Regel. Überall laufen, tricksen und schießen, so oft man will. Nach jedem Schuss zeigt eine kurze Meldung das Ergebnis, dann liegt der Ball wieder am Schläger. Bleibt der Ball liegen, kommt er nach 1,5 s zurück. Oben links zählen Schüsse, Tore, Paraden, Zielscheiben und der schnellste Schuss. Optional mit oder ohne Torhüter und mit den Parcours-Hütchen als Hindernisse (ohne Wertung).
 - **Teams**: Editor mit Live-3D-Vorschau, Import und Export als JSON. Importierte Daten werden gesäubert (Farben, Wertebereiche, HTML wird maskiert).
 
 ## Grafik und Ton
@@ -66,7 +67,7 @@ node pruefung/regression.js
 node pruefung/touch.js
 ```
 
-`regression.js` prüft 22 Punkte (Regeltests, KI-Trefferquote, Kelle am Ball, Maus und Tastatur, Tricks, Torhüter, Parcours mit Testfahrer, Turnier, Editor und Import, Tuning, HUD, Konsole). `touch.js` prüft Joystick, Zielen, Trick-Knöpfe und Parade auf einem emulierten Smartphone.
+`regression.js` prüft 26 Punkte (Regeltests, KI-Trefferquote, Kelle am Ball, Maus und Tastatur, Tricks, Torhüter, Parcours mit Testfahrer, freies Training, Turnier, Editor und Import, Tuning, HUD, Konsole). `touch.js` prüft Joystick, Zielen, Trick-Knöpfe und Parade auf einem emulierten Smartphone.
 
 ## Bekannte Grenzen
 - Ohne Internet startet das Spiel nicht, weil Three.js vom CDN kommt. Abhilfe: `three.module.js` neben die Datei legen und die Importmap anpassen.

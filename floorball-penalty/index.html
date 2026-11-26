@@ -89,7 +89,10 @@ input,select{ font:inherit; }
   #meldung{ top:calc(max(.6rem,env(safe-area-inset-top)) + 3.9rem); }
 }
 body.parcours #hudInfo, body.parcours #zeitbalken, body.parcours #tempoAnzeige{ display:none !important; }
-body.parcours .querHinweis{ display:none !important; }
+body.parcours .querHinweis, body.frei .querHinweis{ display:none !important; }
+body.frei #hudInfo, body.frei #zeitbalken{ display:none !important; }
+.trainingRaster{ grid-template-columns:repeat(2,minmax(0,1fr)); max-width:40rem; }
+#trainingInfo{ max-width:calc(100vw - 13rem); }
 .grossKnopf.neon{ grid-column:1/-1; background:linear-gradient(135deg,#c4f23a,#7ccf2a); color:#0c1400; min-height:5.4rem; }
 .grossKnopf.neon small{ color:#2c4000; }
 .parcoursErg .neonTitel{ font-family:var(--schmal); font-weight:900; font-stretch:condensed; font-size:clamp(3rem,13vw,5rem); line-height:1; color:var(--neon); }
@@ -287,7 +290,7 @@ const TEXTE = {
     p_tor: 'TOR!', p_kein_tor: 'KEIN TOR', p_zeit: 'Zeit', p_torbonus: 'Tor', p_ziele: 'Ziele', p_fehler: 'Fehler', p_punkte: 'Punkte',
     p_bestwert_neu: 'Neuer Bestwert!', p_bestwert: 'Bestwert: {p} Punkte', p_nochmal: 'Nochmal ▶', p_ohne_schuss: 'Kein Schuss abgegeben',
     m_turnier: 'Turnier', m_turnier_u: '4 oder 8 Teams, Gruppen & K.-o.',
-    m_turnier_weiter: 'Turnier fortsetzen', m_training: 'Training', m_training_u: 'Schießen oder Halten, Zielscheiben',
+    m_turnier_weiter: 'Turnier fortsetzen', m_training: 'Training', m_training_u: 'Frei ohne Regeln, Schießen oder Halten',
     m_teams: 'Teams', m_teams_u: 'Editor, Import & Export', m_tuning: 'Tuning', m_tuning_u: 'Physik, KI, Kamera, Debug',
     m_einst: 'Einstellungen', m_einst_u: 'Steuerung, Grafik, Ton', m_kivski: 'KI gegen KI', 
     zurueck: '← Zurück', anpfiff: 'Anpfiff ▶', weiter: 'Weiter ▶', menue: 'Menü', neustart: 'Neustart', fortsetzen: 'Fortsetzen',
@@ -328,6 +331,10 @@ const TEXTE = {
     // Training
     training: 'Training', t_schiessen: 'Schießen', t_schiessen_u: 'Freies Schießen auf Zielscheiben',
     t_halten: 'Halten', t_halten_u: 'Die KI schießt, du hältst', t_mit_tw: 'Mit Torhüter',
+    t_frei: 'Freies Training', t_frei_u: 'Ohne Regeln und Zeitlimit: laufen, tricksen und schießen, so oft du willst. Der Ball kommt immer zurück.',
+    t_huetchen: 'Hütchen aufstellen', t_schuesse: 'Schüsse', t_tore: 'Tore', t_schnellster: 'Schnellster',
+    f_titel1: 'FREIES', f_titel2: 'TRAINING', f_untertitel: 'Ohne Regeln · ohne Zeit', f_ziel: 'Ziel getroffen!',
+    f_gehalten: 'Gehalten', f_pariert: 'Pariert', f_vorbei: 'Vorbei', f_drueber: 'Drüber', f_pfosten: 'Pfosten!', f_aus: 'Aus', f_linie: 'Auf der Linie', f_nachschuss: 'Nachschuss zählt nicht',
     t_treffer: 'Treffer', t_scheiben: 'Zielscheiben', t_paraden: 'Paraden',
     // Turnier
     turnier: 'Turnier', tn_groesse: 'Teilnehmer', tn_gruppen: 'Gruppenphase', tn_dein_team: 'Dein Team wählen',
@@ -2942,6 +2949,7 @@ const Regelwerk = {
   /** Prüft einen Zeitschritt; liefert {code, tor} sobald entschieden. s: {pos, vel}, b: Ball */
   pruefe(v, dt, s, b) {
     if (v.ergebnis) return v.ergebnis;
+    if (v.ohneRegeln && !v.geschossen) return null;          // freies Training: vor dem Schuss wird nichts entschieden
     const r = BALLD.r, fertig = (code) => (v.ergebnis = { code, tor: code === 'tor' });
     if (v.nachschuss) return fertig('nachschuss');
     // Tor nur, wenn der Ball die Linie vollständig überquert hat
@@ -2949,7 +2957,7 @@ const Regelwerk = {
     if (v.gefangen) return fertig('gehalten');
     if (b.aus) return fertig('aus');
     if (!b.imTor && b.p.x > TOR.x + r) return fertig(v.gkBeruehrt ? 'pariert' : (v.t - v.pfostenT < 0.6 ? 'pfosten' : b.p.y > TOR.h ? 'drueber' : 'vorbei'));
-    if (Config.regeln.torraum && !v.geschossen && s.zustand !== 'schuss' && s.pos.x > TWRAUM.vorne && s.pos.x < TOR.x + 0.3 && Math.abs(s.pos.z) < TWRAUM.hz) return fertig('torraum');
+    if (Config.regeln.torraum && !v.ohneRegeln && !v.geschossen && s.zustand !== 'schuss' && s.pos.x > TWRAUM.vorne && s.pos.x < TOR.x + 0.3 && Math.abs(s.pos.z) < TWRAUM.hz) return fertig('torraum');
     const bs = b.v.length();
     // Ball liegt auf der Linie (Mittelpunkt drüber, aber nicht vollständig)
     if (bs < 0.15 && b.p.x > TOR.x - r && b.p.x - r <= TOR.x + TOR.linie / 2 && Math.abs(b.p.z) < TOR.hb) { v.ruhe += dt; if (v.ruhe > 0.6) return fertig('linie'); }
@@ -3390,7 +3398,7 @@ const Kam = {
     else if (zst === 'wiederholung') { wp.copy(S.replay.kamPos); wz.copy(S.replay.kamZiel); rate = 4; zrate = 6; }
     else if (S.schuetze) {
       const m = this.aufgeloest(), sp = S.schuetze.pos, bp = ball.p, gk = S.torwart.pos;
-      if (S.modus === 'parcours' && m === 'schuetze') {
+      if ((S.modus === 'parcours' || S.modus === 'frei') && m === 'schuetze') {
         // Folgekamera wie im Vorbild: schräg von hinten oben, Blick immer Richtung Tor
         const hoch = innerHeight > innerWidth * 1.05, ab = (hoch ? 6.2 : 5.4) * C.abstand;
         wp.set(sp.x - ab, (hoch ? 5.6 : 4.2) * C.hoehe, sp.z * 0.75); wz.set(sp.x + (hoch ? 4.5 : 5.5), 0, sp.z * 0.85);
@@ -3414,7 +3422,7 @@ const Kam = {
     kamera.position.copy(this.pos);
     const w = this.wackel * C.wackeln * 0.05; if (w > 1e-4) kamera.position.add(_c.set((Math.random() - 0.5) * w, (Math.random() - 0.5) * w, (Math.random() - 0.5) * w));
     kamera.lookAt(this.ziel);
-    const fov = (S.zustand === 'wiederholung' ? 42 : S.modus === 'parcours' && innerHeight > innerWidth * 1.05 ? Math.max(C.fov, 66) : C.fov) - this.fovPlus;
+    const fov = (S.zustand === 'wiederholung' ? 42 : (S.modus === 'parcours' || S.modus === 'frei') && innerHeight > innerWidth * 1.05 ? Math.max(C.fov, 66) : C.fov) - this.fovPlus;
     if (Math.abs(kamera.fov - fov) > 0.01) { kamera.fov = fov; kamera.updateProjectionMatrix(); }
   }
 };
@@ -3467,7 +3475,7 @@ const Spiel = {
     this.parcoursAufraeumen(); Ton.stimmung(0.2);
   },
   parcoursAufraeumen() {
-    Parcours.weg(); document.body.classList.remove('parcours'); halle.setzeBoden(Config.grafik.boden); this.welt.schussGesperrt = false;
+    Parcours.weg(); document.body.classList.remove('parcours', 'frei'); halle.setzeBoden(Config.grafik.boden); this.welt.schussGesperrt = false;
     halle.scheibenListe.forEach(s => { s.mesh.visible = true; });
   },
   /** Parcours-Modus: Slalom, Drehungen, Tore, dann ein Schuss – auf Zeit und Punkte. */
@@ -3484,6 +3492,49 @@ const Spiel = {
     Parcours.start(); this.zustand = 'intro'; this.phaseT = 0; Kam.schnitt = true;
     HUD.banner(`<span class="w">${t('p_titel1')}</span>${t('p_titel2')}<small>${t('p_untertitel')}</small>`, 'neon');
     Ton.init(); Ton.stimmung(0.3); Ton.applaus(0.5, 2);
+  },
+  /** Freies Training: keine Regeln, kein Zeitlimit, beliebig viele Schüsse; der Ball kommt nach jedem Schuss zurück. */
+  starteFrei(mitTW = true, huetchen = false) {
+    this.parcoursAufraeumen(); this.modus = 'frei';
+    this.training = { art: 'frei', mitTW, huetchen, schuesse: 0, tore: 0, paraden: 0, scheiben: 0, maxKmh: 0 };
+    const T = TeamDB.hole(Einst.letztesTeam) || TeamDB.liste[0], O = TeamDB.liste.find(x => x.id !== T.id);
+    this.teamA = T; this.teamB = O; this.mensch = 'A'; this.ausweichB = TeamDB.ausweich(T, O); this.so = null; this.idx = { A: 0, B: 0 }; this.turnierSpiel = null;
+    Kam.override = null; this.pausiert = false; UI.schliesseAlles(); HUD.zeigen(true); halle.zuschauer.faerbe(T, O);
+    if (this.ehrung) this.ehrung.gruppe.visible = false;
+    document.body.classList.add('frei'); halle.scheiben.visible = true; halle.scheibenListe.forEach(s => { s.treffer = 0; s.mesh.material.opacity = 0.88; s.mesh.visible = true; });
+    this.vorbereiten('A');
+    const S = this.schuetze; S.reset(-4, 0); ball.reset(-4, 0); this.freiVersuch();
+    if (huetchen) Parcours.aufstellen();
+    this.zustand = 'aufstellung'; this.phaseT = 0; Kam.schnitt = true; HUD.trainingInfo(true);
+    HUD.banner(`<span class="w">${t('f_titel1')}</span> ${t('f_titel2')}<small>${t('f_untertitel')}</small>`, 'neon');
+    Ton.init(); Ton.stimmung(0.12);
+  },
+  freiVersuch() {
+    const v = this.versuch = new Versuch(); v.frei = true; v.ohneRegeln = true; v.zeitlimit = Infinity;
+    this.freiWarte = -1; this.freiRuhe = 0; this.aufnahme.leeren(); if (this.kiT) this.kiT.reset();
+  },
+  /** Pro Schritt im freien Training: Ergebnis kurz zeigen, danach Ball zurück zum Spieler. */
+  freiSchritt(dt, erg) {
+    const v = this.versuch, S = this.schuetze, tr = this.training;
+    if (Parcours.gruppe.visible) Parcours.huetchenPruefen(dt, false);
+    if (this.freiWarte >= 0) { if (this.simZeit >= this.freiWarte) this.freiNeu(); return; }
+    if (erg) {
+      this.freiWarte = this.simZeit + (erg.tor ? 1.7 : 1.2);
+      if (erg.tor) { tr.tore++; HUD.banner(t('tor_banner'), 'neon'); Ton.jubel(0.5); Ton.horn(); this.jubelZiel.set(0.7, 0.7, 0.4); this.jubelBis = performance.now() + 1800; }
+      else { if (erg.code === 'gehalten' || erg.code === 'pariert') tr.paraden++; HUD.meldung(t('f_' + erg.code) !== 'f_' + erg.code ? t('f_' + erg.code) : t('r_' + erg.code), 'schlecht'); }
+      HUD.trainingInfo(true); return;
+    }
+    // Geschossen, aber der Ball bleibt einfach liegen: nach kurzer Zeit zurückholen
+    if (v.geschossen && !S.kontrolle && ball.v.length() < 0.3) { this.freiRuhe += dt; if (this.freiRuhe > 1.5) this.freiWarte = this.simZeit; } else this.freiRuhe = 0;
+  },
+  freiNeu() {
+    HUD.banner(null); const S = this.schuetze, T = this.torwart;
+    S.setzeZustand('lauf'); S.kontrolle = true; S.zorro = false; S.trick = null; S.schuss = null; S.abgeschossen = false; S.power = 0; S.ballSperre = 0; S.zielSpeed = 0; S.zielAbsicht.aktiv = false;
+    ball.reset(S.pos.x + Math.sin(S.yaw) * 0.55, S.pos.z + Math.cos(S.yaw) * 0.55);
+    if (this.figT.objekt.visible) T.reset(); halle.netz.zuruecksetzen();
+    if (Parcours.gruppe.visible) Parcours.aufstellen();
+    if (halle.scheibenListe.every(s => s.mesh.material.opacity < 0.5)) halle.scheibenListe.forEach(s => { s.mesh.material.opacity = 0.88; });
+    this.freiVersuch();
   },
   parcoursEnde() {
     this.zustand = 'ergebnis'; HUD.zeigen(false); HUD.banner(null);
@@ -3524,7 +3575,7 @@ const Spiel = {
     fig.setzeTeam(T, sd.nummer, sd.name, team === 'B' && this.ausweichB);
     this.figT.setzeTeam(O, td.nummer, td.name, team === 'A' && this.ausweichB);
     ent.daten = sd; this.schuetze = ent; this.torwart.daten = td;
-    const trainingOhneTW = this.modus === 'training' && this.training.art === 'schiessen' && !this.training.mitTW;
+    const trainingOhneTW = (this.modus === 'training' && this.training.art === 'schiessen' && !this.training.mitTW) || (this.modus === 'frei' && !this.training.mitTW);
     this.figT.objekt.visible = !trainingOhneTW; this.figT.kapseln.forEach(k => k.aktiv = !trainingOhneTW);
     this.menschSchiesst = this.mensch === team; this.menschHaelt = !!this.mensch && this.mensch !== team;
     this.kiS = this.menschSchiesst ? null : new KISchuetze(sd);
@@ -3567,7 +3618,7 @@ const Spiel = {
     }
     if (this.zustand === 'aufstellung') {
       S.schritt(dt, { aktiv: false, richtung: _n.set(1, 0, 0), tempo: 0 }, ball, this.welt); T.schritt(dt, { bewegen: null }, ball, this.welt);
-      if (this.phaseT > 1.1) { this.zustand = 'anlauf'; this.phaseT = 0; Ton.pfiff(false); S.setzeZustand('lauf'); S.zielSpeed = this.modus === 'parcours' ? 0 : Config.schuetze.dribbleTempo * 0.55; S.lenkRichtung.set(1, 0, 0); if (this.modus === 'parcours') Parcours.los(); }
+      if (this.phaseT > 1.1) { this.zustand = 'anlauf'; this.phaseT = 0; Ton.pfiff(false); S.setzeZustand('lauf'); if (this.modus === 'frei') HUD.banner(null); S.zielSpeed = this.modus === 'parcours' || this.modus === 'frei' ? 0 : Config.schuetze.dribbleTempo * 0.55; S.lenkRichtung.set(1, 0, 0); if (this.modus === 'parcours') Parcours.los(); }
       return;
     }
     this.simZeit += dt;
@@ -3585,7 +3636,7 @@ const Spiel = {
       if (vorX < TOR.x && ball.p.x >= TOR.x) this.torebeneGekreuzt();
       v.t += dt;
       const erg = Regelwerk.pruefe(v, dt, S, ball);
-      if (erg) this.auswerten(erg);
+      if (this.modus === 'frei') this.freiSchritt(dt, erg); else if (erg) this.auswerten(erg);
     } else if (this.zustand === 'auswertung') {
       S.schritt(dt, { aktiv: false, richtung: _n.set(1, 0, 0), tempo: 0, laden: false }, ball, this.welt); T.schritt(dt, { bewegen: null }, ball, this.welt);
       ball.schritt(dt, this.kollTW);
@@ -3642,7 +3693,7 @@ const Spiel = {
     if (L.quelle !== 'keine' && len > 0.15) {
       richtung = this._richtung.set(0, 0, 0).addScaledVector(r, L.x).addScaledVector(f, L.y); if (richtung.lengthSq() < 1e-6) richtung.set(1, 0, 0); richtung.normalize();
       tempo = L.quelle === 'tasten' ? 1 : klemme(len, 0.25, 1); this.manuellGelaufen = true;
-    } else if (this.modus === 'parcours') { richtung = this._richtung.set(Math.sin(S.yaw), 0, Math.cos(S.yaw)); tempo = 0; }   // im Parcours bleibt der Spieler ohne Eingabe stehen
+    } else if (this.modus === 'parcours' || this.modus === 'frei') { richtung = this._richtung.set(Math.sin(S.yaw), 0, Math.cos(S.yaw)); tempo = 0; }   // im Parcours bleibt der Spieler ohne Eingabe stehen
     else if (this.manuellGelaufen) { richtung = this._richtung.set(1, 0, 0); tempo = 0.22; }      // leichtes Weiterrollen: die Vorwärtsregel bleibt erfüllt
     else { const lane = klemme(this.zielCursor.z * 1.6, -2.4, 2.4), vor = Math.max(2.5, TOR.x - 2 - S.pos.x); richtung = this._richtung.set(vor, 0, (lane - S.pos.z) * 1.2).normalize(); tempo = 0.8; }
     // Vorgemerkter Trick: verfällt nach 0,45 s oder sobald er begonnen hat
@@ -3726,10 +3777,15 @@ const Spiel = {
     if (this.kiT) this.kiT.beiSchuss();
     if (this.menschHaelt && schw().zeitlupe) this.zeitlupeBis = this.simZeit + 0.55;
     if (this.modus === 'parcours') Parcours.beiSchuss();
+    if (this.modus === 'frei') { const tr = this.training; tr.schuesse++; tr.maxKmh = Math.max(tr.maxKmh, Math.round(info.speed * 3.6)); HUD.trainingInfo(true); }
     Kam.fovPlus = 7; HUD.tempo(Math.round(info.speed * 3.6), info.typ);
     Debug.heatmapPunkt(info.ziel.z, info.ziel.y);
   },
   torebeneGekreuzt() {
+    if (this.modus === 'frei') {
+      for (const s of halle.scheibenListe) if (s.mesh.material.opacity > 0.5 && Math.hypot(ball.p.z - s.z, ball.p.y - s.y) < s.r + BALLD.r * 0.5) { s.treffer++; this.training.scheiben++; s.mesh.material.opacity = 0.3; HUD.meldung(t('f_ziel'), 'gut'); Ton.ziel(); HUD.trainingInfo(true); }
+      return;
+    }
     if (this.modus === 'parcours') {
       for (const s of halle.scheibenListe) if (s.mesh.visible && s.mesh.material.opacity > 0.5 && Math.hypot(ball.p.z - s.z, ball.p.y - s.y) < s.r + BALLD.r * 0.5) { s.treffer++; s.mesh.material.opacity = 0.3; Parcours.zielTreffer(); }
       return;
@@ -3813,6 +3869,7 @@ const Spiel = {
   neustart() {
     this.pausiert = false; UI.pauseZu();
     if (this.modus === 'parcours') this.starteParcours();
+    else if (this.modus === 'frei') this.starteFrei(this.training.mitTW, this.training.huetchen);
     else if (this.modus === 'training') this.starteTraining(this.training.art, this.training.mitTW);
     else this.starteMatch(this.teamA, this.teamB, this.mensch, this.turnierSpiel);
   },
@@ -3872,6 +3929,7 @@ const Spiel = {
       this.bahn.geometry.setDrawRange(0, pts.length); this.bahn.computeLineDistances();
     }
     if (this.modus === 'parcours') Parcours.render(dt, alpha);
+    if (this.modus === 'frei') Parcours.ringSetzen(alpha);
     if (this.zustand === 'anlauf' && this.versuch) HUD.zeit(1 - this.versuch.t / this.versuch.zeitlimit);
     if (this.ehrung && this.zustand === 'siegerehrung') this.ehrung.update(dt);
     Kam.update(dt);
@@ -3983,7 +4041,7 @@ const Parcours = {
     });
     this.alleHuete = [...this.slalom, ...this.drehungen, ...this.tore.flatMap(t => t.pfosten)];
     // Leuchtring unter dem Spieler
-    this.spielerRing = flach(new THREE.RingGeometry(0.44, 0.53, 48).rotateX(-Math.PI / 2), NEON, 0.9); this.spielerRing.layers.set(2);
+    this.spielerRing = flach(new THREE.RingGeometry(0.44, 0.53, 48).rotateX(-Math.PI / 2), NEON, 0.9); this.spielerRing.layers.set(2); G.remove(this.spielerRing); szene.add(this.spielerRing); this.spielerRing.visible = false;   // eigenständig, auch im freien Training
   },
   /** Parcours aufbauen und Zustand zurücksetzen. */
   start() {
@@ -3993,7 +4051,7 @@ const Parcours = {
   },
   /** Beim Anpfiff: erste Aufgabe zeigen. */
   los() { this.aufgabeZeigen(); },
-  weg() { if (this.gruppe) this.gruppe.visible = false; HUD.parcours(false); this.z = null; },
+  weg() { if (this.gruppe) { this.gruppe.visible = false; this.spielerRing.visible = false; } HUD.parcours(false); this.z = null; },
   aktiv() { return !!this.z; },
   schussFrei() { return !!this.z && this.z.uebung >= 3; },
   aufgabeZeigen() { const [a, b] = UEBUNG_TEXTE[Math.min(3, this.z.uebung)]; HUD.aufgabe(t(a), t(b)); },
@@ -4009,14 +4067,7 @@ const Parcours = {
     const P = this.z; if (!P) return;
     const S = Spiel.schuetze, p = S.pos;
     if (P.schussT < 0) P.t += dt;
-    for (const h of this.alleHuete) {
-      if (h.um) { if (h.kipp < 1) { h.kipp = Math.min(1, h.kipp + dt * 5); h.g.quaternion.setFromAxisAngle(_u.set(h.dir.z, 0, -h.dir.x), glatt(h.kipp) * 1.4); } continue; }
-      const dS = Math.hypot(p.x - h.x, p.z - h.z), dB = Math.hypot(ball.p.x - h.x, ball.p.z - h.z);
-      if (dS < 0.3 || (dB < 0.15 && ball.p.y < 0.4)) {
-        const q = dB < 0.15 ? ball.p : p; h.um = true; h.kipp = 0; h.dir.set(h.x - q.x, 0, h.z - q.z); if (h.dir.lengthSq() < 1e-6) h.dir.set(1, 0, 0); h.dir.normalize();
-        this.fehler(t('p_huetchen'));
-      }
-    }
+    this.huetchenPruefen(dt, true);
     const vx = P.letztX === null ? p.x : P.letztX; P.letztX = p.x;
     const kreuzt = (x) => vx < x && p.x >= x;
     if (P.uebung === 0) {
@@ -4045,6 +4096,32 @@ const Parcours = {
     }
     Spiel.welt.schussGesperrt = P.uebung < 3;
   },
+  /** Hütchen umstoßen (Spieler oder Ball zu nah) und umfallen lassen; zaehlen = als Fehler werten. */
+  huetchenPruefen(dt, zaehlen) {
+    const p = Spiel.schuetze.pos;
+    for (const h of this.alleHuete) {
+      if (h.um) { if (h.kipp < 1) { h.kipp = Math.min(1, h.kipp + dt * 5); h.g.quaternion.setFromAxisAngle(_u.set(h.dir.z, 0, -h.dir.x), glatt(h.kipp) * 1.4); } continue; }
+      const dS = Math.hypot(p.x - h.x, p.z - h.z), dB = Math.hypot(ball.p.x - h.x, ball.p.z - h.z);
+      if (dS < 0.3 || (dB < 0.15 && ball.p.y < 0.4)) {
+        const q = dB < 0.15 ? ball.p : p; h.um = true; h.kipp = 0; h.dir.set(h.x - q.x, 0, h.z - q.z); if (h.dir.lengthSq() < 1e-6) h.dir.set(1, 0, 0); h.dir.normalize();
+        if (zaehlen) this.fehler(t('p_huetchen')); else Ton.klick(0.2);
+      }
+    }
+  },
+  /** Hütchen ohne Wertung aufstellen (freies Training). */
+  aufstellen() {
+    for (const h of this.alleHuete) { h.um = false; h.kipp = 0; h.g.quaternion.identity(); h.aktiv = false; h.mat.emissiveIntensity = 0; }
+    this.slalom.forEach(h => { h.pfeil.visible = true; });
+    const hell = new THREE.Color('#9fb4d6');
+    this.drehungen.forEach(h => { const c = h.ring.geometry.getAttribute('color'); for (let i = 0; i < c.count; i++) c.setXYZ(i, hell.r, hell.g, hell.b); c.needsUpdate = true; h.ring.material.opacity = 0.7; });
+    this.tore.forEach(g => { g.linie.material.color.set('#ffffff'); g.linie.material.opacity = 0.5; });
+    this.gruppe.visible = true;
+  },
+  /** Leuchtring unter dem Spieler mitführen. */
+  ringSetzen(alpha) {
+    const S = Spiel.schuetze, sichtbar = ['aufstellung', 'anlauf'].includes(Spiel.zustand);
+    this.spielerRing.visible = sichtbar; if (sichtbar) this.spielerRing.position.set(mix(S.ppos.x, S.pos.x, alpha), 0.012, mix(S.ppos.z, S.pos.z, alpha));
+  },
   beiSchuss() { if (this.z && this.z.schussT < 0) this.z.schussT = this.z.t; },
   zielTreffer() { if (!this.z) return; this.z.ziele++; HUD.meldung(t('p_ziel', { p: PARCOURS.zielBonus }), 'gut'); Ton.ziel(); },
   /** Aktive Teile hervorheben, erledigte dämpfen. */
@@ -4070,9 +4147,7 @@ const Parcours = {
     P.puls += dt; const pu = 0.35 + 0.35 * Math.sin(P.puls * 7);
     for (const h of this.alleHuete) h.mat.emissiveIntensity = h.aktiv && !h.um ? pu : 0;
     if (P.uebung === 1) { const h = this.drehungen[P.k]; if (h) this.ringFaerben(h, 1); }
-    const S = Spiel.schuetze, sichtbar = ['aufstellung', 'anlauf'].includes(Spiel.zustand);
-    this.spielerRing.visible = sichtbar;
-    if (sichtbar) this.spielerRing.position.set(mix(S.ppos.x, S.pos.x, alpha), 0.012, mix(S.ppos.z, S.pos.z, alpha));
+    this.ringSetzen(alpha);
     HUD.parcoursStand(P.uebung, P.schussT >= 0 ? P.schussT : P.t);
   },
   /** Wertung am Ende. erg = Entscheidung des Regelwerks. */
@@ -4163,6 +4238,7 @@ const HUD = {
   },
   trainingInfo(an) {
     const el = this.el.training; el.classList.toggle('versteckt', !an); if (!an) return; const tr = Spiel.training;
+    if (tr.art === 'frei') { el.innerHTML = `<b>${t('f_titel1')} ${t('f_titel2')}</b> · ${t('t_schuesse')}: ${tr.schuesse} · ${t('t_tore')}: ${tr.tore} · ${t('t_paraden')}: ${tr.paraden} · ${t('t_scheiben')}: ${tr.scheiben} · ${t('t_schnellster')}: ${tr.maxKmh} km/h`; return; }
     el.innerHTML = tr.art === 'schiessen' ? `<b>${t('training')}</b> · ${t('t_treffer')}: ${tr.treffer}/${tr.versuche} · ${t('t_scheiben')}: ${tr.scheiben || 0}` : `<b>${t('training')}</b> · ${t('t_paraden')}: ${tr.paraden}/${tr.versuche}`;
   },
   /** Trick-Knöpfe (Touch und Maus): Schütze = Täuschung/Zieher/Drehung/Zorro, Torhüter = Raus! */
@@ -4362,17 +4438,19 @@ const UI = {
   },
   /* ---------- Training ---------- */
   trainingMenue() {
-    let mitTW = true;
+    let mitTW = true, huetchen = false;
     const d = this.html(`<div class="kopfzeile">${this.zurueckKnopf()}<h2>${t('training')}</h2></div>
-      <div class="menueRaster" style="grid-template-columns:repeat(2,minmax(0,1fr));max-width:40rem">
+      <div class="menueRaster trainingRaster">
+        <button class="grossKnopf neon" data-art="frei"><span class="ico">⚽</span>${t('t_frei')}<small>${t('t_frei_u')}</small></button>
         <button class="grossKnopf primaer" data-art="schiessen"><span class="ico">🎯</span>${t('t_schiessen')}<small>${t('t_schiessen_u')}</small></button>
         <button class="grossKnopf" data-art="halten"><span class="ico">🧤</span>${t('t_halten')}<small>${t('t_halten_u')}</small></button>
       </div>
-      <div class="leiste" style="max-width:40rem"><div class="chips"><button class="chip an" data-tw>${t('t_mit_tw')}</button></div>${this.schwierigkeitChips()}</div>`);
+      <div class="leiste" style="max-width:40rem"><div class="chips"><button class="chip an" data-tw>${t('t_mit_tw')}</button><button class="chip" data-hut>${t('t_huetchen')}</button></div>${this.schwierigkeitChips()}</div>`);
     this.chipsBinden(d);
     this.klick(d, '[data-zurueck]', () => this.hauptmenue());
     this.klick(d, '[data-tw]', (el) => { mitTW = !mitTW; el.classList.toggle('an', mitTW); });
-    this.klick(d, '[data-art]', (el) => { Spiel.starteTraining(el.dataset.art, mitTW); this.tutorialFallsNoetig(); });
+    this.klick(d, '[data-hut]', (el) => { huetchen = !huetchen; el.classList.toggle('an', huetchen); });
+    this.klick(d, '[data-art]', (el) => { if (el.dataset.art === 'frei') Spiel.starteFrei(mitTW, huetchen); else { Spiel.starteTraining(el.dataset.art, mitTW); this.tutorialFallsNoetig(); } });
   },
   /* ---------- Turnier ---------- */
   turnierSetup() {

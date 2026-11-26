@@ -1,4 +1,4 @@
-// Regressionsprüfung: Laden, Regeltests, KI-Statistik, Kelle am Ball, Maus/Tastatur, Tricks, Torhüter, Parcours, Turnier, Editor, Tuning, HUD
+// Regressionsprüfung: Laden, Regeltests, KI-Statistik, Kelle am Ball, Maus/Tastatur, Tricks, Torhüter, Parcours, freies Training, Turnier, Editor, Tuning, HUD
 // Aufruf: node regression.js [Filter]   (Filter = regulärer Ausdruck auf die Abschnittsnummer, z. B. "^(3|4)")
 const { start } = require('./lib');
 const fs = require('fs');
@@ -137,6 +137,38 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     await p.click('.parcoursErg [data-menue]'); await p.waitForTimeout(200);
     const weg = await p.evaluate(() => ({ boden: window.__fps.halle.bodenArt, koerper: document.body.classList.contains('parcours'), sichtbar: window.__fps.Parcours.gruppe.visible }));
     pruef('Parcours: Aufräumen beim Verlassen', weg.boden === 'parkett' && !weg.koerper && !weg.sichtbar, JSON.stringify(weg));
+  });
+
+  // 5c) Freies Training: kein Zeitlimit, keine Torhüterraum-Regel, beliebig viele Schüsse mit Ballrückgabe, Hütchen optional
+  await abschnitt('5c) Freies Training', async () => {
+    await p.click('[data-m="training"]'); await p.waitForTimeout(200); await p.click('[data-hut]'); await p.click('[data-art="frei"]');
+    const fr = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, E = F.Eingabe, alt = E.lenkung, ziel = new F.V3();
+      S.pausiert = true; let i = 0; while (S.zustand !== 'anlauf' && i < 600) { S.schritt(1 / 120); i++; }
+      const start = { modus: S.modus, huetchen: F.Parcours.gruppe.visible, info: document.getElementById('trainingInfo').textContent };
+      for (let k = 0; k < 120 * 25; k++) S.schritt(1 / 120);                       // 25 s stehen: kein Zeitlimit
+      const nachWarten = { zustand: S.zustand, ergebnis: S.versuch.ergebnis };
+      const geh = (x, z, max = 1800) => { E.lenkung = () => { const sp = S.schuetze.pos; ziel.set(x - sp.x, 0, z - sp.z); if (ziel.length() < 0.3) return { x: 0, y: 0, quelle: 'keine' }; ziel.normalize(); const { r, f } = F.Kam.rechtsVorne(); return { x: ziel.dot(r), y: ziel.dot(f), quelle: 'pad' }; }; for (let k = 0; k < max; k++) S.schritt(1 / 120); E.lenkung = alt; };
+      geh(15.2, 0.4);                                                               // in den Torhüterraum laufen
+      const imRaum = { x: +S.schuetze.pos.x.toFixed(2), ergebnis: S.versuch.ergebnis, zustand: S.zustand };
+      geh(9, 0, 900);
+      const schuesse = [];
+      for (let n = 0; n < 3; n++) {
+        let w = 0; while (!(S.schuetze.kontrolle && S.zustand === 'anlauf' && S.freiWarte < 0) && w < 1200) { S.schritt(1 / 120); w++; }
+        S.zielCursor = { z: n % 2 ? -0.55 : 0.55, y: 0.5 }; E.tasten.add('Enter'); for (let k = 0; k < 60; k++) S.schritt(1 / 120); E.tasten.delete('Enter');
+        let k = 0; while (S.freiWarte < 0 && k < 1500) { S.schritt(1 / 120); k++; }
+        schuesse.push(S.versuch.ergebnis ? S.versuch.ergebnis.code : 'liegt');
+        k = 0; while (S.freiWarte >= 0 && k < 400) { S.schritt(1 / 120); k++; }
+      }
+      const ende = { kontrolle: S.schuetze.kontrolle, zustand: S.zustand, tr: Object.assign({}, S.training), info: document.getElementById('trainingInfo').textContent };
+      S.pausiert = false; return { start, nachWarten, imRaum, schuesse, ende };
+    });
+    pruef('Freies Training: Start mit Hütchen', fr.start.modus === 'frei' && fr.start.huetchen && /Freies Training|FREIES TRAINING/i.test(fr.start.info), JSON.stringify(fr.start));
+    pruef('Freies Training: kein Zeitlimit, kein Torhüterraum-Fehlversuch', fr.nachWarten.zustand === 'anlauf' && !fr.nachWarten.ergebnis && !fr.imRaum.ergebnis && fr.imRaum.zustand === 'anlauf' && fr.imRaum.x > 15, JSON.stringify({ nachWarten: fr.nachWarten, imRaum: fr.imRaum }));
+    pruef('Freies Training: 3 Schüsse, Ball kommt zurück', fr.ende.tr.schuesse === 3 && fr.ende.kontrolle && fr.ende.zustand === 'anlauf', JSON.stringify({ schuesse: fr.schuesse, zaehler: fr.ende.tr, info: fr.ende.info }));
+    await zumMenue();
+    const weg = await p.evaluate(() => ({ koerper: document.body.className, huetchen: window.__fps.Parcours.gruppe.visible, ring: window.__fps.Parcours.spielerRing.visible }));
+    pruef('Freies Training: Aufräumen', !/frei/.test(weg.koerper) && !weg.huetchen && !weg.ring, JSON.stringify(weg));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
