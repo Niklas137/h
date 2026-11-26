@@ -346,10 +346,17 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       erg.maske = { dreiecke: ix.count / 3, uvOk };
       const st = M.ents.map(x => x.s.fig.statur), morph = M.ents.every(x => x.s.fig.koerperMeshes.some(me => me.morphTargetInfluences && me.morphTargetInfluences[0] === x.s.fig.statur));
       erg.statur = { min: +Math.min(...st).toFixed(2), max: +Math.max(...st).toFixed(2), verschieden: new Set(st.map(v => v.toFixed(2))).size, morph };
+      // Kleidung: über 4 Teams (40 Spieler) muss jedes Merkmal vorkommen und das sichtbare Material zum Aussehen passen
+      let stimmt = true; const z = { unterzieher: 0, tights: 0, brille: 0, n: 0 };
+      for (const [a, b] of [[0, 8], [1, 3]]) { if (a) { S.starteSpiel5(L[a], L[b], null); S.schritt(1 / 120); }
+        for (const e of M.ents) { const f = e.s.fig, A = f.aussehen; z.n++; if (A.unterzieher) z.unterzieher++; if (A.tights) z.tights++; if (A.brille) z.brille++;
+          if ((f.armMesh.material === f.mats.unterzieher) !== !!A.unterzieher || (f.beinMesh.material === f.mats.tights) !== !!A.tights || f.brille.visible !== !!A.brille) stimmt = false; } }
+      erg.kleidung = { ...z, stimmt };
       S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return erg;
     });
     pruef('Mimik: Freude, Frust und Anstrengung werden eingeblendet', !mm.neutral.sichtbar && mm.freude.name === 'freude' && mm.freude.deck > 0.9 && mm.frust.name === 'frust' && mm.frust.deck > 0.9 && mm.anstrengung.name === 'anstrengung' && mm.anstrengung.deck > 0.7, JSON.stringify({ neutral: mm.neutral, freude: mm.freude, frust: mm.frust, anstrengung: mm.anstrengung }));
     pruef('Mimik-Maske und Statur', mm.maske.dreiecke > 200 && mm.maske.uvOk && mm.statur.morph && mm.statur.verschieden >= 6 && mm.statur.min >= -0.45 && mm.statur.max <= 1 && mm.statur.max - mm.statur.min > 0.4, JSON.stringify({ maske: mm.maske, statur: mm.statur }));
+    pruef('Kleidung: Unterzieher, Tights und Brille passend zum Aussehen', mm.kleidung.stimmt && mm.kleidung.unterzieher > 0 && mm.kleidung.tights > 0 && mm.kleidung.brille > 0 && mm.kleidung.unterzieher < mm.kleidung.n, JSON.stringify(mm.kleidung));
   });
 
   // 5i) Zweikampf: Stocherstoß statt Teleport, Abschirmen, Körperkontakt (180 s KI gegen KI)

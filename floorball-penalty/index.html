@@ -1646,7 +1646,7 @@ function aussehenVon(name, nummer) {
   const r = zufallRng(h), hi = Math.floor(r() * HAUT_TOENE.length), dunkel = hi >= 3 && hi <= 5;
   const haare = dunkel ? ['#15100c', '#231711', '#0f0f0f'] : ['#231711', '#3e2a1c', '#6b4a2b', '#a47c4a', '#d1b784', '#0f0f0f', '#a5422a'];
   return { haut: HAUT_TOENE[hi], haar: haare[Math.floor(r() * haare.length)], frisur: Math.floor(r() * 4), augen: AUGEN_TOENE[Math.floor(r() * AUGEN_TOENE.length)], bart: r() < 0.3,
-    band: r() < 0.22 ? ['#ffffff', '#111111', '#e63946', '#ffd23f'][Math.floor(r() * 4)] : null, schuh: SCHUH_FARBEN[Math.floor(r() * SCHUH_FARBEN.length)], brauen: 0.8 + r() * 0.5, groesse: 0.93 + r() * 0.13, statur: r() };   // Körpergröße: Faktor 0,93–1,06 (etwa 1,71–1,95 m)
+    band: r() < 0.22 ? ['#ffffff', '#111111', '#e63946', '#ffd23f'][Math.floor(r() * 4)] : null, schuh: SCHUH_FARBEN[Math.floor(r() * SCHUH_FARBEN.length)], brauen: 0.8 + r() * 0.5, groesse: 0.93 + r() * 0.13, statur: r(), unterzieher: r() < 0.3 ? ['#16181c', '#f2f2f0', 'team'][Math.floor(r() * 3)] : null, tights: r() < 0.22, brille: r() < 0.18 };   // Körpergröße: Faktor 0,93–1,06 (etwa 1,71–1,95 m)
 }
 /** Trikot-Rumpf: u läuft um den Körper (0 = vorn Mitte, 0,5 = Rücken), v vom Saum (0) bis zum Kragen (1). */
 function trikotTextur(F, nummer, name, kuerzel) {
@@ -2061,6 +2061,9 @@ class Figur {
     const stoff = gk ? steppNormal() : stoffNormal(), ns = () => new THREE.Vector2(gk ? 0.8 : 0.5, gk ? 0.8 : 0.5);
     if (!gk) stoff.repeat.set(2.5, 1.5); else stoff.repeat.set(7, 5);
     m.haut = hautSchein(std('#e0ac85', 0.6)); m.kopf = hautSchein(std('#ffffff', 0.58));
+    // Arm- und Beinhaut als eigene Gruppen: dort sitzen auf Wunsch Unterzieher (lange Ärmel) bzw. Lauftights
+    m.armhaut = hautSchein(std('#e0ac85', 0.6)); m.beinhaut = hautSchein(std('#e0ac85', 0.6));
+    m.unterzieher = std('#16181c', 0.7, { normalMap: stoff, normalScale: new THREE.Vector2(0.35, 0.35) }); m.tights = std('#111317', 0.62, { normalMap: stoff, normalScale: new THREE.Vector2(0.3, 0.3) });
     m.trikot = std('#ffffff', 0.8, { normalMap: stoff, normalScale: ns() }); m.aermel = std('#ffffff', 0.8, { normalMap: stoff, normalScale: ns() });
     m.hose = std('#ffffff', 0.86, { normalMap: stoff, normalScale: ns() }); m.stutzen = std('#ffffff', 0.92); m.schuh = std('#ffffff', 0.5);
     const M = (geo, mat, p, x = 0, y = 0, z = 0) => { const me = new THREE.Mesh(geo, mat); me.position.set(x, y, z); me.castShadow = true; p.add(me); return me; };
@@ -2120,7 +2123,7 @@ class Figur {
           [[K - 0.04, { [kn]: 1 }], [K + 0.03, { [hu]: 0.5, [kn]: 0.5 }], [K + 0.1, { [hu]: 1 }], [HU - 0.06, { [hu]: 1 }], [HU + 0.01, { [hu]: 0.6, becken: 0.4 }]], cx, 0, 'hose', 18, 1, [[HU - 0.25, 0.1], [HU - 0.15, 0.09], [HU - 0.05, 0.05], [HU + 0.01, 0.02]]);
         // Bein (Haut) und Stutzen mit Wade
         schlauch([[K - 0.07, 0.05, 0.05], [K - 0.03, 0.052, 0.052], [K, 0.054, 0.055, 0, 1.07, 1], [K + 0.03, 0.056, 0.058, 0.002], [K + 0.09, 0.064, 0.066], [K + 0.17, 0.074, 0.076, 0, 1, 1.05], [K + 0.25, 0.082, 0.082, 0, 1, 1.06], [K + 0.33, 0.086, 0.086]],
-          [[K - 0.07, { [kn]: 1 }], [K - 0.02, { [kn]: 0.75, [hu]: 0.25 }], [K, { [kn]: 0.5, [hu]: 0.5 }], [K + 0.04, { [hu]: 0.8, [kn]: 0.2 }], [K + 0.1, { [hu]: 1 }]], cx, 0, 'haut', 18, 1, [[K - 0.07, 0.02], [K, 0.02], [K + 0.09, 0.06], [K + 0.17, 0.1], [K + 0.25, 0.11], [K + 0.33, 0.1]]);
+          [[K - 0.07, { [kn]: 1 }], [K - 0.02, { [kn]: 0.75, [hu]: 0.25 }], [K, { [kn]: 0.5, [hu]: 0.5 }], [K + 0.04, { [hu]: 0.8, [kn]: 0.2 }], [K + 0.1, { [hu]: 1 }]], cx, 0, 'beinhaut', 18, 1, [[K - 0.07, 0.02], [K, 0.02], [K + 0.09, 0.06], [K + 0.17, 0.1], [K + 0.25, 0.11], [K + 0.33, 0.1]]);
         schlauch([[F + 0.015, 0.034, 0.037], [F + 0.06, 0.035, 0.038], [F + 0.13, 0.041, 0.045, -0.003, 1, 1.08], [F + 0.22, 0.052, 0.058, -0.008, 0.96, 1.14], [F + 0.3, 0.057, 0.062, -0.01, 0.96, 1.12], [K - 0.09, 0.055, 0.059, -0.006], [K - 0.05, 0.053, 0.055], [K - 0.03, 0.055, 0.056]],
           [[F + 0.015, { [fu]: 0.45, [kn]: 0.55 }], [F + 0.06, { [kn]: 0.85, [fu]: 0.15 }], [F + 0.12, { [kn]: 1 }], [K - 0.04, { [kn]: 1 }], [K + 0.03, { [kn]: 0.6, [hu]: 0.4 }]], cx, 0, 'stutzen', 18, 1, [[F + 0.015, 0], [F + 0.06, 0.02], [F + 0.13, 0.07], [F + 0.22, 0.13], [F + 0.3, 0.12], [K - 0.09, 0.06], [K - 0.03, 0.02]]);
       }
@@ -2129,7 +2132,7 @@ class Figur {
         : [[S - 0.2, 0.067, 0.065], [S - 0.13, 0.07, 0.068], [S - 0.05, 0.074, 0.071], [S + 0.01, 0.069, 0.066], [S + 0.045, 0.048, 0.048], [S + 0.065, 0.02, 0.02]];
       schlauch(aerm, [[HA + 0.02, { [el]: 0.7, [ha]: 0.3 }], [E - 0.04, { [el]: 1 }], [E, { [el]: 0.5, [sc]: 0.5 }], [E + 0.05, { [sc]: 1 }], [S - 0.03, { [sc]: 1 }], [S + 0.03, { [sc]: 0.6, brust: 0.4 }], [S + 0.065, { [sc]: 0.3, brust: 0.7 }]], sh, schZ, 'aermel', 18, 1, gk ? null : [[S - 0.2, 0.12], [S - 0.13, 0.13], [S - 0.05, 0.14], [S + 0.01, 0.12], [S + 0.045, 0.08], [S + 0.065, 0.03]]);
       if (!gk) schlauch([[HA - 0.005, 0.026, 0.022], [HA + 0.03, 0.028, 0.024], [HA + 0.09, 0.037, 0.033], [E - 0.08, 0.044, 0.041], [E - 0.025, 0.044, 0.042], [E, 0.042, 0.041], [E + 0.03, 0.045, 0.043], [E + 0.09, 0.052, 0.049], [S - 0.16, 0.054, 0.051]],
-        [[HA - 0.005, { [el]: 0.5, [ha]: 0.5 }], [HA + 0.04, { [el]: 0.85, [ha]: 0.15 }], [HA + 0.08, { [el]: 1 }], [E - 0.04, { [el]: 1 }], [E, { [el]: 0.5, [sc]: 0.5 }], [E + 0.04, { [sc]: 1 }]], sh, schZ, 'haut', 16, 1, [[HA - 0.005, 0], [HA + 0.03, 0.02], [HA + 0.09, 0.07], [E - 0.08, 0.11], [E - 0.025, 0.07], [E, 0.03], [E + 0.03, 0.06], [E + 0.09, 0.13], [S - 0.16, 0.13]]);
+        [[HA - 0.005, { [el]: 0.5, [ha]: 0.5 }], [HA + 0.04, { [el]: 0.85, [ha]: 0.15 }], [HA + 0.08, { [el]: 1 }], [E - 0.04, { [el]: 1 }], [E, { [el]: 0.5, [sc]: 0.5 }], [E + 0.04, { [sc]: 1 }]], sh, schZ, 'armhaut', 16, 1, [[HA - 0.005, 0], [HA + 0.03, 0.02], [HA + 0.09, 0.07], [E - 0.08, 0.11], [E - 0.025, 0.07], [E, 0.03], [E + 0.03, 0.06], [E + 0.09, 0.13], [S - 0.16, 0.13]]);
     }
     const geos = new Map();
     for (const [name, P] of puffer) {
@@ -2149,7 +2152,7 @@ class Figur {
     return geos;
     });
     this.koerperMeshes = [];
-    for (const [name, g] of koerperGeos) { const me = new THREE.SkinnedMesh(g, m[name]); me.castShadow = true; me.frustumCulled = false; this.objekt.add(me); me.updateMatrixWorld(true); me.bind(this.skelett); this.koerperMeshes.push(me); }
+    for (const [name, g] of koerperGeos) { const me = new THREE.SkinnedMesh(g, m[name]); me.castShadow = true; me.frustumCulled = false; this.objekt.add(me); me.updateMatrixWorld(true); me.bind(this.skelett); this.koerperMeshes.push(me); if (name === 'armhaut') this.armMesh = me; if (name === 'beinhaut') this.beinMesh = me; }
     // ---------- Kopf mit gemaltem Gesicht, Ohren, Frisuren bzw. Torhütermaske ----------
     const Kf = J.kopf, ohr = (sx) => teilGeo(new THREE.SphereGeometry(0.022, 12, 8), sx * 0.083, -0.004, -0.005, 0, 0, 0, 0.42, 1.05, 0.75);
     M(geoMerken('kopf', () => verbinde([kopfGeometrie(null), ohr(1), ohr(-1)], [null, [0.75, 0.3], [0.75, 0.3]])), m.kopf, Kf, 0, 0.11, 0);
@@ -2160,6 +2163,14 @@ class Figur {
       m.mimik = hautSchein(std('#ffffff', 0.58, { transparent: true, opacity: 0, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
       this.mimikMesh = new THREE.Mesh(geoMerken('mimikMaske', mimikMaskeGeometrie), m.mimik); this.mimikMesh.position.set(0, 0.11, 0); this.mimikMesh.renderOrder = 1; this.mimikMesh.visible = false; Kf.add(this.mimikMesh);
       this.mimikName = null; this.mimikZiel = 0; this.mimikW = 0; this.mimikNaechst = null;
+      // Schutzbrille (Floorball): gebogenes Glas mit Rahmen vor den Augen, Band um den Kopf
+      m.brilleRahmen = std('#1a1c20', 0.45); m.brilleGlas = new THREE.MeshStandardMaterial({ color: '#9fb8c8', roughness: 0.08, metalness: 0.1, transparent: true, opacity: 0.32, depthWrite: false });
+      this.brille = new THREE.Group(); this.brille.position.set(0, 0.11, 0); Kf.add(this.brille); this.brille.visible = false;
+      // Glas: Zylinderausschnitt ±1,15 rad um +z (Gesicht), vor der Nasenspitze (z ≈ 0,121); Rahmen: Torusbögen oben und unten mit gleicher Mitte
+      const glas = geoMerken('brilleGlas', () => { const g = new THREE.CylinderGeometry(0.115, 0.115, 0.036, 28, 1, true, -1.15, 2.3); g.scale(0.76, 1, 1.05); g.translate(0, 0.014, 0.002); return g; });
+      const rahmen = geoMerken('brilleRahmen', () => { const t = (y) => { const g = new THREE.TorusGeometry(0.115, 0.0035, 5, 28, 2.3); g.rotateX(Math.PI / 2); g.rotateY(1.15 - Math.PI / 2); g.scale(0.76, 1, 1.05); g.translate(0, y, 0.002); return g; }; return verbinde([t(0.032), t(-0.004)]); });
+      const band = geoMerken('brilleBand', () => teilGeo(new THREE.TorusGeometry(0.1, 0.0045, 5, 40), 0, 0.016, -0.004, Math.PI / 2, 0, 0, 0.845, 1, 1.03));
+      [[glas, m.brilleGlas], [rahmen, m.brilleRahmen], [band, m.brilleRahmen]].forEach(([g, mat]) => { const me = new THREE.Mesh(g, mat); me.renderOrder = 2; this.brille.add(me); });
       m.schweiss = std('#f2f2f2', 0.9);
       M(geoMerken('schweiss', () => new THREE.CylinderGeometry(0.031, 0.029, 0.045, 12)), m.schweiss, J['hand' + (this.s < 0 ? 'R' : 'L')], 0, 0.014, 0);              // Schweißband an der unteren Hand
     } else {
@@ -2255,7 +2266,12 @@ class Figur {
     m.trikot.map = trikotTextur(F, nummer, name, team.kuerzel); m.aermel.map = aermelTextur(F, this.torwart);
     const hoseFarbe = this.torwart ? '#1c1f25' : (helligkeit(T.primaer) > 0.75 ? T.sekundaer : (T.hose || '#15171c'));
     m.hose.map = hoseTextur(hoseFarbe, this.torwart ? hoseFarbe : T.primaer, this.torwart);
-    m.haut.color.set(A.haut); m.kopf.map = gesichtTextur(A);
+    m.haut.color.set(A.haut); m.kopf.map = gesichtTextur(A); m.armhaut.color.set(A.haut); m.beinhaut.color.set(A.haut);
+    if (!this.torwart) {
+      if (this.armMesh) { this.armMesh.material = A.unterzieher ? m.unterzieher : m.armhaut; if (A.unterzieher) m.unterzieher.color.set(A.unterzieher === 'team' ? (helligkeit(T.primaer) > 0.85 ? T.sekundaer : T.primaer) : A.unterzieher); }
+      if (this.beinMesh) this.beinMesh.material = A.tights ? m.tights : m.beinhaut;
+      if (this.brille) this.brille.visible = !!A.brille;
+    }
     if (m.mimik) { m.mimik.color.copy(m.kopf.color); if (this.mimikName) m.mimik.map = gesichtTextur(A, this.mimikName); }
     // Körpergröße: der ganze Körper skaliert, die Gliedlängen der IK werden mitgeführt (Schläger bleibt gleich lang)
     this.groesse = this.torwart ? 1.02 : A.groesse; this.koerper.scale.setScalar(this.groesse);
