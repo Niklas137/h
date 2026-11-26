@@ -183,12 +183,16 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       E.lenkung = () => ({ x: 1, y: 0, quelle: 'tasten' }); for (let k = 0; k < 90; k++) S.schritt(1 / 120); E.lenkung = alt;
       erg.lauf = +M.steuer.s.pos.distanceTo(p0).toFixed(2);
       // Pass mit Leertaste
-      const ich = M.steuer; M.gibBall(ich); for (let k = 0; k < 20; k++) S.schritt(1 / 120);
-      if (!ich.s.kontrolle) M.gibBall(ich); // Gegner kann den Ball in den 20 Schritten erobert haben
+      // Gegner können in dieser Teilprüfung den Ball nicht erobern (geprüft wird die Pass- und Schussmechanik, nicht der Zufall)
+      const sperre = () => M.ents.forEach(x => { if (x.team === 'B') x.s.ballSperre = 3; });
+      sperre(); const ich = M.steuer; M.gibBall(ich); for (let k = 0; k < 20; k++) S.schritt(1 / 120);
+      erg.vorPass = { steuerIch: M.steuer === ich, kontrolle: ich.s.kontrolle, phase: M.phase, zustand: ich.s.zustand };
+      // In den 20 Schritten kann ein Gegner den Ball erobert oder der Auto-Wechsel die Steuerung verlegt haben
+      M.steuer = ich; if (!ich.s.kontrolle) M.gibBall(ich);
       S.ereignis({ typ: 'finte' }); erg.passBewegung = M.besitzer && M.besitzer.s.zustand; for (let k = 0; k < 40; k++) S.schritt(1 / 120); erg.pass = { besitzerNachPass: M.besitzer ? M.besitzer.team : null, empfaenger: !!M.passEmpfaenger, steuerGewechselt: M.steuer !== ich };
       // Schuss: Ball geben, Enter halten und loslassen
       let geschossen = null; const ob = M.beiSchuss.bind(M); M.beiSchuss = (s, info, team) => { geschossen = { team, kmh: Math.round(info.speed * 3.6) }; ob(s, info, team); };
-      M.gibBall(M.steuer); for (let k = 0; k < 20; k++) S.schritt(1 / 120); E.tasten.add('Enter'); for (let k = 0; k < 70; k++) S.schritt(1 / 120); E.tasten.delete('Enter'); for (let k = 0; k < 60; k++) S.schritt(1 / 120);
+      sperre(); M.gibBall(M.steuer); for (let k = 0; k < 20; k++) S.schritt(1 / 120); E.tasten.add('Enter'); for (let k = 0; k < 70; k++) S.schritt(1 / 120); E.tasten.delete('Enter'); for (let k = 0; k < 60; k++) S.schritt(1 / 120);
       M.beiSchuss = ob; erg.schuss = geschossen;
       // Rest des Spiels im Zeitraffer
       let n = 0, fehler = null; while (S.zustand === 'match' && n < 120 * 300) { try { S.schritt(1 / 120); } catch (e) { fehler = e.message; break; } n++; }
@@ -196,7 +200,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       S.pausiert = false; return erg;
     });
     pruef('Spiel 5 gegen 5: Start', sp.start.zustand === 'match' && sp.start.spieler === 10 && sp.start.torhueter === 2 && sp.start.steuer && sp.start.zweiTore && !sp.start.penaltyFiguren, JSON.stringify(sp.start));
-    pruef('Spiel 5 gegen 5: Laufen, Pass, Schuss', sp.lauf > 0.8 && sp.passBewegung === 'schuss' && (sp.pass.besitzerNachPass === null || sp.pass.besitzerNachPass === 'A') && sp.pass.empfaenger && sp.pass.steuerGewechselt && sp.schuss && sp.schuss.team === 'A', JSON.stringify({ lauf: sp.lauf, schlag: sp.passBewegung, pass: sp.pass, schuss: sp.schuss }));
+    pruef('Spiel 5 gegen 5: Laufen, Pass, Schuss', sp.lauf > 0.8 && sp.passBewegung === 'schuss' && (sp.pass.besitzerNachPass === null || sp.pass.besitzerNachPass === 'A') && sp.pass.empfaenger && sp.pass.steuerGewechselt && sp.schuss && sp.schuss.team === 'A', JSON.stringify({ lauf: sp.lauf, vorPass: sp.vorPass, schlag: sp.passBewegung, pass: sp.pass, schuss: sp.schuss }));
     pruef('Spiel 5 gegen 5: drei Drittel bis zum Endstand', sp.ende.zustand === 'ergebnis' && !sp.ende.fehler && /Endstand/.test(sp.ende.text) && /Revanche/.test(sp.ende.text) && (sp.ende.stand.A !== sp.ende.stand.B || /Penaltyschießen/.test(sp.ende.text)), JSON.stringify({ stand: sp.ende.stand, tore: sp.ende.tore, fehler: sp.ende.fehler }));
     await p.click('.parcoursErg [data-menue]'); await p.waitForTimeout(200);
     const weg = await p.evaluate(() => { const F = window.__fps; return { sichtbar: F.Match.sichtbar, zweiTore: F.ball.zweiTore, penalty: F.Spiel.figL.objekt.visible && F.Spiel.figT.objekt.visible, koerper: document.body.className }; });
@@ -241,6 +245,37 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     });
     pruef('Laufstil: Füße bleiben stehen, Beine sauber', g.proben > 5000 && g.gleitP99 < 0.15 && g.ikUeber10cm === 0 && g.knieHinten === 0 && g.beineGekreuzt <= g.proben * 0.0002 && g.nan === 0 && g.unterBoden === 0, JSON.stringify({ proben: g.proben, gleitP99: g.gleitP99, ik: g.ikUeber10cm, knie: g.knieHinten, kreuz: g.beineGekreuzt, nan: g.nan, boden: g.unterBoden }));
     pruef('Laufstil: Rhythmus und Haltung', g.sprintSchritteProS > 3.4 && g.sprintSchritteProS < 4.6 && g.kurveInnen > 0.95 && g.vorlageBremsen < g.vorlageLauf - 0.1, JSON.stringify({ sprintSchritteProS: g.sprintSchritteProS, kurveInnen: g.kurveInnen, vorlageBremsen: g.vorlageBremsen, vorlageLauf: g.vorlageLauf }));
+  });
+
+  // 5f) Ballannahme: 180 s KI gegen KI – Blatt am Ball, weiches Abfedern, Passquote
+  await abschnitt('5f) Ballannahme', async () => {
+    const a = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, ball = F.ball, dt = 1 / 120;
+      const st = { passe: 0, ziel: 0, annahmen: 0, blatt: [], koerper: 0, ruck: [], fehler: null, erwartet: 0 };
+      const np = new F.THREE.Vector3(), blattAbst = (e) => { const fe = e.s.fig.ferse, kd = e.s.fig.kelleDir, ab = kd.clone().multiplyScalar(0.28), t = Math.max(0, Math.min(1, ball.p.clone().sub(fe).dot(ab) / ab.lengthSq())); return np.copy(fe).addScaledVector(ab, t).distanceTo(ball.p); };
+      const op = M.pass, og = M.gibBall; let beob = null, passZiel = null;
+      M.pass = function (e, m) { st.passe++; passZiel = m; return op.call(this, e, m); };
+      M.gibBall = function (e) {
+        if (!ball.kinematisch && ball.v.length() > 3 && M.phase === 'spiel') {
+          const ausPass = passZiel === e && M.passEmpfaenger === e; passZiel = null;   // nur echte Pässe (keine Abwürfe, Abpraller, Blocks)
+          if (ausPass) { st.ziel++; st.annahmen++; const d = blattAbst(e); st.blatt.push(d); if (d > 0.3) st.koerper++; if (e.s.annahmeW > 0.5) st.erwartet++; }
+          const d = blattAbst(e);
+          beob = d < 0.15 ? { e, n: 0, alt: ball.v.clone(), max: 0 } : null;
+        }
+        return og.call(this, e);
+      };
+      S.starteSpiel5(L[0], L[8], null); S.pausiert = true;
+      for (let i = 0; i < 180 * 120 && S.zustand === 'match'; i++) {
+        try { S.schritt(dt); } catch (e) { st.fehler = e.message; break; }
+        if (beob) { if (M.besitzer !== beob.e || beob.e.s.zustand !== 'lauf') { if (beob.n > 2) st.ruck.push(beob.max); beob = null; } else { beob.max = Math.max(beob.max, ball.v.clone().sub(beob.alt).length() / dt); beob.alt = ball.v.clone(); if (++beob.n >= 36) { st.ruck.push(beob.max); beob = null; } } }
+      }
+      M.pass = op; M.gibBall = og;
+      const q = (x, z) => { const s = x.slice().sort((u, v) => u - v); return s.length ? +s[Math.min(s.length - 1, Math.floor(s.length * z))].toFixed(3) : null; };
+      S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue();
+      return { passe: st.passe, quote: +(st.ziel / Math.max(1, st.passe)).toFixed(3), annahmen: st.annahmen, erwartet: +(st.erwartet / Math.max(1, st.annahmen)).toFixed(3), blattP50: q(st.blatt, 0.5), koerperAnteil: +(st.koerper / Math.max(1, st.annahmen)).toFixed(3), ruckP50: q(st.ruck, 0.5), ruckP90: q(st.ruck, 0.9), ruckN: st.ruck.length, fehler: st.fehler };
+    });
+    pruef('Ballannahme: Blatt geht zum Ball, kaum Annahmen mit dem Körper', a.annahmen >= 50 && a.erwartet > 0.6 && a.blattP50 < 0.1 && a.koerperAnteil < 0.15 && !a.fehler, JSON.stringify({ annahmen: a.annahmen, erwartet: a.erwartet, blattP50: a.blattP50, koerperAnteil: a.koerperAnteil, fehler: a.fehler }));
+    pruef('Ballannahme: Ball wird weich abgefedert, Pässe kommen an', a.ruckN >= 30 && a.ruckP50 < 260 && a.ruckP90 < 700 && a.quote > 0.6, JSON.stringify({ passe: a.passe, quote: a.quote, ruckP50: a.ruckP50, ruckP90: a.ruckP90, ruckN: a.ruckN }));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung

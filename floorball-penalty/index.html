@@ -2526,6 +2526,7 @@ function kelleAmBall(P, e, pushX, pushZ) {
   let bx = -pz, bz = px; if (bz < 0 || (Math.abs(bz) < 0.2 && bx * e.ballSeite < 0)) { bx = -bx; bz = -bz; }
   P.kRicht = [bx, 0, bz];
 }
+const _annP = {};
 const POSEN_SCHUETZE = {
   bereit(e, t) {
     const P = basisPose(); P.hoehe = 0.9 + Math.sin(t * 2) * 0.004; P.pitch = 0.12; P.beuge = 0.34; P.twist = e.s * 0.15;
@@ -2539,9 +2540,23 @@ const POSEN_SCHUETZE = {
     P.pitch = 0.1 + Math.min(0.24, sp * 0.045) + antritt * 0.12 - brems * 0.26; P.beuge = 0.36 + sv * 0.06 - brems * 0.12 + antritt * 0.04;
     P.roll = klemme(-Math.atan2(ns, 9.81) * 0.85, -0.3, 0.3);
     P.twist = klemme(e.lokBall.x * 0.9, -0.5, 0.5) + e.s * 0.1; P.seit = -e.lokBall.x * 0.15;
-    kelleAmBall(P, e, e.pushSeite, 0.35);
-    P.kelle[1] += 0.085 * (1 - Math.min(1, Math.abs(e.pushSeite) * 1.25));   // beim Seitenwechsel über den Ball heben
+    if (e.annahmeAktiv) {
+      // Abfedern: Blatt steht gegen die Ankunftsrichtung hinter dem Ball und gibt mit ihm nach
+      kelleAmBall(P, e, -e.annahmeDir.x, -e.annahmeDir.z); P.hoehe -= 0.03; P.beuge += 0.06;
+    } else {
+      kelleAmBall(P, e, e.pushSeite, 0.35);
+      P.kelle[1] += 0.085 * (1 - Math.min(1, Math.abs(e.pushSeite) * 1.25));   // beim Seitenwechsel über den Ball heben
+    }
     P.oben = [-e.s * 0.04 + e.lokBall.x * 0.32, 0.86, 0.22 + Math.min(0.08, sp * 0.015)];
+    const w = e.annahmeW || 0;
+    if (w > 0.01 && !e.kontrolle) {
+      // Ball kommt: Blatt offen an den Ankunftspunkt, Oberkörper und Knie zum Ball, tiefer Stand
+      const A = e.annahme, Q = _annP; Q.kelle = Q.kelle || [0, 0, 0]; Q.kRicht = Q.kRicht || [0, 0, 1];
+      kelleAmBall(Q, { lokBall: A, ballSeite: e.ballSeite }, -A.dx, -A.dz);
+      for (let i = 0; i < 3; i++) { P.kelle[i] = mix(P.kelle[i], Q.kelle[i], w); P.kRicht[i] = mix(P.kRicht[i], Q.kRicht[i], w); }
+      P.twist += klemme(A.x * 0.7, -0.45, 0.45) * w; P.hoehe -= 0.035 * w; P.beuge += 0.08 * w;
+      P.oben = [mix(P.oben[0], A.x * 0.35 - e.s * 0.04, w), P.oben[1] - 0.03 * w, mix(P.oben[2], 0.26, w)];
+    }
     return P;
   },
   finte(e, t, p) {
@@ -2698,7 +2713,7 @@ const POSEN_TORWART = {
 const SCHUSS_DAUER = { handgelenk: 0.17, schlenzer: 0.22, schlag: 0.2, lupfer: 0.22, zorro: 0.18, pass: 0.15 };
 const SCHUSS_FAKTOR = { handgelenk: 0.8, schlenzer: 0.9, schlag: 1.0, lupfer: 0.5, zorro: 0.62, pass: 0.5 };
 const TRICK_DAUER = { zieher: 0.45, drehung: 0.65, zorro: 0.35 };
-const _drehP = new V3(), _drehV = new V3(), _drehB = new V3();   // Weltkoordinaten für Figuren im gedrehten System (Spiel 5 gegen 5)
+const _annV = new V3(), _annW = new V3(), _drehP = new V3(), _drehV = new V3(), _drehB = new V3();   // Weltkoordinaten für Figuren im gedrehten System (Spiel 5 gegen 5)
 function winkelDaempf(a, b, rate, dt) { let d = b - a; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; return a + d * (1 - Math.exp(-rate * dt)); }
 function zuLokal(out, welt, pos, yaw) { out.subVectors(welt, pos); out.y = welt.y; const c = Math.cos(-yaw), s = Math.sin(-yaw); const x = out.x * c + out.z * s, z = -out.x * s + out.z * c; out.x = x; out.z = z; return out; }
 function zuWelt(out, lok, pos, yaw) { const c = Math.cos(yaw), s = Math.sin(yaw); const x = lok.x * c + lok.z * s, z = -lok.x * s + lok.z * c; out.set(pos.x + x, lok.y, pos.z + z); return out; }
@@ -2718,6 +2733,7 @@ class Schuetze {
     this.finteT = -1; this.finteSeite = 0; this.zielSpeed = 0; this.zielAbsicht.aktiv = false; this.lenkRichtung.set(1, 0, 0); this.dribbelPhase = this.s > 0 ? Math.PI - Math.asin(0.32) : -Math.asin(0.32); this.pushSeite = this.dribbelDir = -this.s;
     this.fig.planer.bereit = false; this.anim.setze('bereit', null, 0); this.anim.letzte = null; this.anim.von = null; this.wiederBall = false; this.tZustand = 0;
     this.trick = null; this.zorro = false; this.zorroT = 0; this.drehRate = 0; this.ballSperre = 0;
+    this.annahme = { x: 0, z: 0.6, dx: 0, dz: -1 }; this.annahmeW = 0; this.annahmeT = -1;
   }
   planerPhase() { return this.fig.planer.phase; }
   /** Gangdaten für den Schrittplaner: Spur wird im Sprint schmaler, beim Bremsen breiter mit Ausfallschritt. */
@@ -2726,6 +2742,7 @@ class Schuetze {
     g.breite = mix(0.115, 0.08, klemme((sp - 2) / 2.5, 0, 1)) + brems * 0.05; g.ausfall = brems * 0.22; g.brems = brems; g.reich = 0.46 * (this.fig.groesse || 1); g.kadenz = 1;
     return g;
   }
+  get annahmeAktiv() { return this.annahmeT >= 0 && this.kontrolle; }
   istVorhand() { return this.ballSeite === this.s; }
   /** Der Schuss darf geladen werden, sobald der Schütze losgelaufen ist. */
   imSchussbereich() { return this.schussUeberall || this.pos.x > 0.2; }
@@ -2733,6 +2750,7 @@ class Schuetze {
   /** Ein Simulationsschritt. A = Absicht (Mensch oder KI). welt = Spiel-Kontext. */
   schritt(dt, A, ball, welt) {
     this.ppos.copy(this.pos); this.pyaw = this.yaw; this.tZustand += dt;
+    if (!this.kontrolle || this.zustand !== 'lauf') { this.annahmeT = -1; this.uebergang = null; }
     const cfg = Config.schuetze, d = this.daten, maxV = cfg.dribbleTempo * (0.88 + d.technik / 100 * 0.24);
     const wunsch = _n.set(0, 0, 0);
     let animName = this.zustand, animParam = null;
@@ -2807,6 +2825,11 @@ class Schuetze {
     let zielYaw = this.yaw;
     if (this.zustand === 'schuss' && this.schuss && this.schuss.typ === 'pass') zielYaw = Math.atan2(this.schuss.passV.x, this.schuss.passV.z) - this.ballSeite * 0.2;
     else if (this.zustand === 'laden' || this.zustand === 'schuss') zielYaw = Math.atan2(TOR.x - this.pos.x, (this.zielAbsicht.z * 0.5) - this.pos.z) - this.ballSeite * 0.25;
+    else if (this.annahmeW > 0.25 && !this.kontrolle && this.annahmeYaw !== undefined) {
+      let z = this.annahmeYaw + this.s * 0.35;   // Ball kommt leicht auf die Schlägerseite
+      if (this.speed > 2.2) { const lr = Math.atan2(this.vel.x, this.vel.z), d = winkelDiff(lr, z); z = lr + klemme(d, -1.1, 1.1); }
+      zielYaw = z;
+    }
     else if (this.speed > 0.4) zielYaw = Math.atan2(this.vel.x, this.vel.z);
     else if (this.zustand !== 'jubel' && this.zustand !== 'enttaeuscht') zielYaw = Math.atan2(TOR.x - this.pos.x, -this.pos.z);
     if (this.trick && this.trick.name === 'drehung') this.yaw += this.drehRate * dt; else this.yaw = winkelDaempf(this.yaw, zielYaw, this.zustand === 'laden' ? 5 : 7, dt);
@@ -2814,7 +2837,9 @@ class Schuetze {
     zuLokal(this.lokBall, ball.p, this.pos, this.yaw);
     if (Math.abs(this.lokBall.x) > 0.06) this.ballSeite = Math.sign(this.lokBall.x);
     if (this.kontrolle) { this.fuehreBall(dt, ball); zuLokal(this.lokBall, ball.p, this.pos, this.yaw); }
-    else if (welt.match && (Math.hypot(this.lokBall.x, this.lokBall.z) > 1.3 || this.lokBall.z < 0.15 || ball.p.y > 0.5)) this.lokBall.set(this.s * 0.24, BALLD.r, 0.62);   // ohne Ball: Schläger tief vor dem Körper; ist der Ball nah, stochert die Kelle danach
+    const erwartet = !this.kontrolle && welt.match && this.erwarteBall(ball, dt);
+    this.annahmeW = daempf(this.annahmeW, erwartet ? 1 : 0, erwartet ? 12 : 8, dt);
+    if (!this.kontrolle && welt.match && (Math.hypot(this.lokBall.x, this.lokBall.z) > 1.3 || this.lokBall.z < 0.15 || ball.p.y > 0.5)) this.lokBall.set(this.s * 0.24, BALLD.r, 0.62);   // ohne Ball: Schläger tief vor dem Körper; ist der Ball nah, stochert die Kelle danach
     this.pushSeite = daempf(this.pushSeite, this.dribbelDir, this.finteT >= 0 ? 40 : 24, dt);
     // Animation
     // „neu“ startet eine Animation genau einmal neu (sonst begänne die Überblendung in jedem Schritt von vorn)
@@ -2847,18 +2872,67 @@ class Schuetze {
       else { lat = s.ballKontakt[0]; vor = s.ballKontakt[2]; }
       hoehe = s.ballKontakt[1];
     } else if (this.zustand === 'bereit') { lat = this.s * 0.12; vor = 0.55; }
-    else {
+    else if (this.annahmeT >= 0) {
+      // Abfedern: Ball und Blatt geben gemeinsam nach (exponentiell, Anfangstempo = Relativtempo des Balls), Ball senkt sich auf den Boden
+      // Rechnung relativ zur Spielerposition ohne Drehung: dreht sich der Spieler zum Ball, schleudert das den Ball nicht mit
+      const A0 = this.annahmeStart, D = this.annahmeWelt;
+      if (this.annahmeT === 0) {
+        // Start dort, wo der Ball jetzt ist, bezogen auf die Position vor diesem Schritt (sonst fehlt einmal die Eigenbewegung)
+        A0.x = ball.p.x - this.ppos.x; A0.z = ball.p.z - this.ppos.z; A0.y = Math.min(ball.p.y, 0.4);
+        // Federweg endet vor dem Körper (mindestens 0,38 m Abstand), sonst drückt die Körperkollision den Ball heraus
+        const bq = A0.x * D.x + A0.z * D.z, cq = A0.x * A0.x + A0.z * A0.z - 0.38 * 0.38, disk = bq * bq - cq;
+        if (cq <= 0) this.annahmeGabe = 0.04; else if (disk > 0) { const g1 = -bq - Math.sqrt(disk); if (g1 > 0) this.annahmeGabe = Math.max(0.04, Math.min(this.annahmeGabe, g1)); }
+      }
+      // Gleichmäßig abbremsen: Weg G in der Zeit T = 2G/v (konstante Verzögerung v²/2G, kein Ruck am Anfang)
+      this.annahmeT += dt; const G = this.annahmeGabe, T = Math.max(0.035, 2 * G / this.annahmeV), u = Math.min(1, this.annahmeT / T), g = G * (1 - (1 - u) * (1 - u));
+      const wx = A0.x + D.x * g, wz = A0.z + D.z * g, lk = zuLokal(_annV, _annW.set(this.pos.x + wx, 0, this.pos.z + wz), this.pos, this.yaw);
+      lat = lk.x; vor = lk.z; hoehe = mix(Math.max(BALLD.r, A0.y), BALLD.r, glatt(this.annahmeT / 0.12));
+      if (u >= 1) { this.annahmeT = -1; this.dribbelPhase = Math.asin(klemme((lat - this.s * 0.05) / 0.22, -1, 1)); this.uebergang = { t: 0, x: wx, z: wz, y: hoehe }; }
+    } else {
       this.dribbelPhase += dt * Math.PI * 2 * (1.0 + sp * 0.2);
       lat = 0.22 * Math.sin(this.dribbelPhase) + this.s * 0.05; vor = 0.5 + Math.min(0.15, sp * 0.03);
       this.dribbelDir = Math.cos(this.dribbelPhase) >= 0 ? 1 : -1;
+      // Nach der Annahme weich in die Dribbelbahn (statt mit Höchsttempo dorthin zu springen)
+      const U = this.uebergang; if (U) { U.t += dt; const f = glatt(U.t / 0.28), lk = zuLokal(_annV, _annW.set(this.pos.x + U.x, 0, this.pos.z + U.z), this.pos, this.yaw); lat = mix(lk.x, lat, f); vor = mix(lk.z, vor, f); hoehe = mix(U.y ?? BALLD.r, BALLD.r, glatt(U.t / 0.12)); if (U.t >= 0.28) this.uebergang = null; }
       if (this.finteT >= 0) { const u = glatt((this.finteT - 0.2) / 0.24); lat = mix(this.finteSeite * 0.24, -this.finteSeite * 0.3, u); this.dribbelDir = -this.finteSeite; this.dribbelPhase = Math.asin(klemme(-this.finteSeite, -1, 1)); }
     }
     const ziel = zuWelt(_b, _c.set(lat, hoehe, vor), this.pos, this.yaw);
     // weich hinführen (kein Teleport beim Wiederaufnehmen)
-    const dv = _d.subVectors(ziel, ball.p); const dl = dv.length(), maxS = 9 * dt;
+    const dv = _d.subVectors(ziel, ball.p); const dl = dv.length(), maxS = (this.annahmeT >= 0 ? 30 : 9) * dt;
     if (dl > maxS) ziel.copy(ball.p).addScaledVector(dv, maxS / dl);
     const vel = _u.subVectors(ziel, ball.p).divideScalar(dt);
     ball.fuehre(ziel, vel, dt);
+  }
+  /** Ballannahme vorbereiten: kommt der Ball auf den Spieler zu, geht das Blatt offen an den Punkt, an dem er ankommt. */
+  erwarteBall(ball, dt) {
+    if (this.zustand !== 'lauf' || this.ballSperre > 0 || ball.kinematisch || ball.p.y > 0.4) return false;
+    const cy = Math.cos(this.yaw), sy = Math.sin(this.yaw), rvx = ball.v.x - this.vel.x, rvz = ball.v.z - this.vel.z;
+    const vx = rvx * cy - rvz * sy, vz = rvx * sy + rvz * cy, v2 = vx * vx + vz * vz;   // Relativgeschwindigkeit lokal (x links, z vorn)
+    if (v2 < 2.5 * 2.5) return false;
+    const lb = zuLokal(_annV, ball.p, this.pos, this.yaw), tau = -(lb.x * vx + lb.z * vz) / v2;
+    if (tau <= 0 || tau > 1.0) return false;
+    const v = Math.sqrt(v2), A = this.annahme, k = 1 - Math.exp(-18 * dt);
+    // Weltrichtung, aus der der Ball kommt (für die Körperdrehung zum Ball)
+    this.annahmeYaw = Math.atan2(-(rvx), -(rvz));
+    // Erster Punkt der Bahn im Reichweitenbereich des Blatts (vor dem Körper, seitlich bis 0,72 m)
+    let ix = null, iz = null;
+    for (let t = 0; t <= tau + 0.25; t += 0.01) { const x = lb.x + vx * t, z = lb.z + vz * t; if (z > 0.28 && z < 0.98 && Math.abs(x) < 0.72 && x * x + z * z < 1.0) { ix = x; iz = z; break; } }
+    if (ix === null) { if (Math.hypot(lb.x + vx * tau, lb.z + vz * tau) > 1.15) return false; ix = klemme(lb.x + vx * tau, -0.6, 0.6); iz = 0.4; this.annahmeOffen = false; } else this.annahmeOffen = true;
+    A.x += (ix - A.x) * k; A.z += (iz - A.z) * k; A.dx += (vx / v - A.dx) * k; A.dz += (vz / v - A.dz) * k;
+    const l = Math.hypot(A.dx, A.dz) || 1; A.dx /= l; A.dz /= l;
+    return true;
+  }
+  /** Ball kommt an: Blatt federt mit dem Ball zurück (Weg je nach Tempo), danach geht er ins Dribbling über. */
+  annehmen(ball) {
+    const cy = Math.cos(this.yaw), sy = Math.sin(this.yaw), rvx = ball.v.x - this.vel.x, rvz = ball.v.z - this.vel.z;
+    const vx = rvx * cy - rvz * sy, vz = rvx * sy + rvz * cy, v = Math.hypot(vx, vz);
+    const lb = zuLokal(_annV, ball.p, this.pos, this.yaw);
+    if (this.zustand === 'nach') this.setzeZustand('lauf');   // nach eigenem Schuss/Pass: die Annahme beendet den Auslauf
+    if (v < 2) { this.annahmeT = -1; return v; }
+    this.annahmeT = 0; this.annahmeV = v; this.annahmeDir = { x: vx / v, z: vz / v }; this.annahmeWelt = { x: rvx / v, z: rvz / v };
+    this.annahmeStart = { x: ball.p.x - this.pos.x, y: Math.min(ball.p.y, 0.4), z: ball.p.z - this.pos.z };   // relativ zur Position, nicht zur Blickrichtung
+    this.annahmeGabe = Math.min(0.38, 0.1 + v * 0.02);
+    return v;
   }
   starteSchuss(A) {
     const typ = this.schussTyp(this.power, A.lupfer);
@@ -4631,10 +4705,27 @@ const Match = {
       const S = e.s; if (S.ballSperre > 0 || ['schuss', 'jubel', 'enttaeuscht'].includes(S.zustand)) continue;
       const fe = S.fig.ferse, kd = S.fig.kelleDir, ende = _m5[0].copy(fe).addScaledVector(kd, 0.28), np = _m5[1];
       naechsterPunkt(ball.p, fe, ende, np); const d1 = np.distanceTo(ball.p), d2 = Math.hypot(e.w.x - ball.p.x, e.w.z - ball.p.z);
-      const d = Math.min(d1 - 0.06, d2 - 0.4); if (d < 0.18 && d < bd) { bd = d; best = e; }
+      // Steht das Blatt bereit, muss der Ball es wirklich erreichen (kein Ansaugen); sonst wie bisher großzügig
+      const bereit = S.annahmeW > 0.6 && S.annahmeOffen, rb = bereit ? 0.1 : 0.24, rk = bereit ? 0.5 : 0.58;
+      const d = Math.min(d1 - rb, d2 - rk); if (d < 0 && d < bd) { bd = d; best = e; }
     }
-    if (best) this.gibBall(best);
+    if (best) {
+      // Annahme: Blatt federt ab; harte Bälle springen je nach Technik auch einmal vom Schläger
+      const wv = this.weltV(best, _m5[2]), rel = Math.hypot(ball.v.x - wv.x, ball.v.z - wv.z);
+      const pFehl = klemme((rel - 12) / 12, 0, 0.4) * klemme(1.2 - best.s.daten.technik / 100, 0.15, 1);
+      if (Math.random() < pFehl) return this.verspringt(best, rel);
+      const B = best.dreh ? this.proxy : ball; if (best.dreh) this.proxy.laden();
+      best.s.annehmen(B); this.gibBall(best);
+    }
   },
+  /** Ball springt vom Schläger: abgelenkt und gebremst, der Spieler kann kurz nicht nachfassen. */
+  verspringt(e, rel) {
+    const wink = (Math.random() - 0.5) * 1.6, c = Math.cos(wink), s = Math.sin(wink), f = 0.35 + Math.random() * 0.2;
+    const vx = ball.v.x, vz = ball.v.z; ball.v.x = (vx * c - vz * s) * f; ball.v.z = (vx * s + vz * c) * f; ball.v.y = Math.min(1.2, rel * 0.06);
+    e.s.ballSperre = 0.35; Ton.klick(0.25); this.verspringer = (this.verspringer || 0) + 1;
+  },
+  /** Geschwindigkeit eines Feldspielers in Weltkoordinaten. */
+  weltV(e, out) { const v = e.s.vel; return e.dreh ? out.set(-v.x, 0, -v.z) : out.set(v.x, 0, v.z); },
   /** Zweikampf: Gegner nah am Ball können ihn erobern (Technik zählt, Leertaste verstärkt). */
   zweikampf(dt) {
     const B = this.besitzer; if (!B || B.s.zustand === 'schuss') return;
