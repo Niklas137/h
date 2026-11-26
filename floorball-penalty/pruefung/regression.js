@@ -1,4 +1,4 @@
-// Regressionsprüfung: Laden, Regeltests, KI-Statistik, Kelle am Ball, Maus/Tastatur, Tricks, Torhüter, Turnier, Editor, Tuning, HUD
+// Regressionsprüfung: Laden, Regeltests, KI-Statistik, Kelle am Ball, Maus/Tastatur, Tricks, Torhüter, Parcours, Turnier, Editor, Tuning, HUD
 // Aufruf: node regression.js [Filter]   (Filter = regulärer Ausdruck auf die Abschnittsnummer, z. B. "^(3|4)")
 const { start } = require('./lib');
 const fs = require('fs');
@@ -106,6 +106,37 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
   const g6 = await p.evaluate(() => { const S = window.__fps.Spiel; return { aktion: S.torwart.aktion && S.torwart.aktion.typ, erg: S.versuch.ergebnis.code, klick: window.__klick }; });
   pruef('Torhüter Parade per Klick', ['hecht', 'fuss', 'butterfly', 'fangen'].includes(g6.aktion), JSON.stringify(g6));
   await zumMenue();
+  });
+
+  // 5b) Parcours: Testfahrer steuert über die normale Eingabe durch alle Übungen, Schuss, Wertung
+  await abschnitt('5b) Parcours', async () => {
+    await p.click('[data-m="parcours"]');
+    const pr = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, E = F.Eingabe, PC = F.PARCOURS, W = [], alt = E.lenkung;
+      S.pausiert = true; let i = 0; while (S.zustand !== 'anlauf' && i < 1200) { S.schritt(1 / 120); i++; }
+      const start = { boden: F.halle.bodenArt, koerper: document.body.classList.contains('parcours'), gesperrt: S.welt.schussGesperrt };
+      // Schuss vor den Übungen ist gesperrt
+      E.tasten.add('Enter'); for (let k = 0; k < 60; k++) S.schritt(1 / 120); const frueh = S.schuetze.zustand; E.tasten.delete('Enter');
+      PC.slalom.forEach((c, k) => { const s = k === 1 ? -c.seite : c.seite; W.push([c.x - 0.9, s * 0.9], [c.x + 0.4, s * 0.9]); });   // Hütchen 2 absichtlich auf der falschen Seite
+      for (const c of PC.drehungen) { W.push([c.x - 1.6, c.z]); for (let k = 1; k <= 15; k++) { const a = Math.PI + k / 12 * Math.PI * 2; W.push([c.x + Math.cos(a) * 1.55, c.z + Math.sin(a) * 1.55]); } }
+      for (const g of PC.tore) W.push([g.x - 1.3, g.z], [g.x + 0.5, g.z]);
+      W.push([12.6, 0]);
+      const ziel = new F.V3(); let wi = 0, halten = 0, geschossen = false, t = 0;
+      E.lenkung = () => { if (wi >= W.length) return { x: 0, y: 0, quelle: 'keine' }; const sp = S.schuetze.pos; ziel.set(W[wi][0] - sp.x, 0, W[wi][1] - sp.z); if (ziel.length() < 0.45) { wi++; return E.lenkung(); } ziel.normalize(); const { r, f } = F.Kam.rechtsVorne(); return { x: ziel.dot(r), y: ziel.dot(f), quelle: 'pad' }; };
+      const meld = []; const om = F.HUD.meldung.bind(F.HUD); F.HUD.meldung = (tx, a) => { if (tx) meld.push(tx); om(tx, a); };
+      while (S.zustand === 'anlauf' && t < 70) { S.schritt(1 / 120); t += 1 / 120; const P = F.Parcours.z;
+        if (P && P.uebung >= 3 && wi >= W.length && !geschossen) { S.zielCursor = { z: 0.6, y: 0.9 }; if (halten === 0) E.tasten.add('Enter'); halten += 1 / 120; if (halten > 0.55) { E.tasten.delete('Enter'); geschossen = true; } } }
+      for (let k = 0; k < 900 && S.zustand !== 'ergebnis'; k++) { S.schritt(1 / 120); if (S.zustand === 'wiederholung') S.replayEnde(); }
+      E.lenkung = alt; F.HUD.meldung = om; S.pausiert = false;
+      const erg = document.querySelector('.parcoursErg');
+      return { start, frueh, wege: wi + '/' + W.length, geschossen, zustand: S.zustand, meld, text: erg ? erg.innerText.replace(/\n+/g, ' | ') : '', best: localStorage.getItem('fps_parcours_v1') };
+    });
+    pruef('Parcours: Start (blauer Boden, Schuss gesperrt)', pr.start.boden === 'kunststoff' && pr.start.koerper && pr.start.gesperrt && pr.frueh === 'lauf', JSON.stringify(pr.start) + ' früher Schuss → ' + pr.frueh);
+    pruef('Parcours: alle Übungen und Schuss', pr.wege.split('/')[0] === pr.wege.split('/')[1] && pr.geschossen && pr.zustand === 'ergebnis' && pr.meld.filter(m => m === 'Drehung!').length === 2 && pr.meld.some(m => m.startsWith('Falsche Seite')), pr.meld.join(' · '));
+    pruef('Parcours: Wertung und Bestwert', /Punkte/.test(pr.text) && /Fehler [1-9]/.test(pr.text) && !!pr.best, pr.text.slice(0, 160) + ' | gespeichert ' + pr.best);
+    await p.click('.parcoursErg [data-menue]'); await p.waitForTimeout(200);
+    const weg = await p.evaluate(() => ({ boden: window.__fps.halle.bodenArt, koerper: document.body.classList.contains('parcours'), sichtbar: window.__fps.Parcours.gruppe.visible }));
+    pruef('Parcours: Aufräumen beim Verlassen', weg.boden === 'parkett' && !weg.koerper && !weg.sichtbar, JSON.stringify(weg));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung

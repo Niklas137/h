@@ -19,7 +19,8 @@
   --bg:#0b1220; --panel:rgba(10,18,34,.94); --panel2:rgba(22,34,58,.96);
   --text:#f4f7fb; --mute:#a9b8cf; --rand:rgba(255,255,255,.16);
   --akzent:#ffd23f; --akzent2:#38c6ff; --gut:#2fd27a; --schlecht:#ff5a5f;
-  --tor:#2fd27a; --fehl:#ff5a5f;
+  --tor:#2fd27a; --fehl:#ff5a5f; --neon:#c4f23a;
+  --schmal:"Avenir Next Condensed","DIN Condensed","Roboto Condensed","Arial Narrow",Impact,system-ui,sans-serif;
 }
 html.farbenblind{ --gut:#0072b2; --schlecht:#e69f00; --tor:#56b4e9; --fehl:#e69f00; --akzent2:#56b4e9; }
 html{ font-size:calc(16px * var(--skala)); }
@@ -63,6 +64,39 @@ input,select{ font:inherit; }
 #banner{ position:absolute; top:38%; left:50%; transform:translate(-50%,-50%); font-size:clamp(2.2rem,7vw,5rem); font-weight:900;
   letter-spacing:.06em; text-shadow:0 .3rem 1.2rem rgba(0,0,0,.6); text-align:center; white-space:nowrap; }
 #banner small{ display:block; font-size:.32em; letter-spacing:.1em; font-weight:700; color:var(--mute); }
+/* Parcours-Stil: schmale Großschrift, weiß und neongrün */
+#banner.neon{ font-family:var(--schmal); font-weight:900; font-stretch:condensed; font-size:clamp(3.2rem,16vw,7.5rem); line-height:.9; letter-spacing:.01em; top:27%; color:var(--neon); white-space:normal; width:96vw;
+  text-shadow:0 .3rem 1.2rem rgba(0,0,0,.55); }
+#banner.neon .w{ color:#fff; }
+#banner.neon small{ display:block; font-family:var(--schmal); font-weight:900; font-stretch:condensed; font-size:.3em; letter-spacing:.03em; color:var(--neon); margin-top:.25em; text-transform:uppercase; }
+#parcoursHud{ position:absolute; top:max(.6rem,env(safe-area-inset-top)); left:max(.7rem,env(safe-area-inset-left)); right:max(.7rem,env(safe-area-inset-right)); height:3.1rem; pointer-events:none; }
+#parcoursHud .drills{ position:absolute; left:0; top:.4rem; display:flex; gap:.4rem; background:rgba(4,8,16,.6); padding:.5rem .65rem; border-radius:2rem; }
+#parcoursHud .drills i{ width:.9rem; height:.9rem; border-radius:50%; border:2px solid rgba(255,255,255,.75); }
+#parcoursHud .drills i.fertig{ background:var(--neon); border-color:var(--neon); }
+#parcoursHud .drills i.an{ border-color:var(--neon); box-shadow:0 0 0 3px rgba(196,242,58,.35); }
+#parcoursHud .uhr{ position:absolute; left:50%; top:0; transform:translateX(-50%); font-family:var(--schmal); font-weight:900; font-size:2.3rem; line-height:1; background:rgba(4,8,16,.6);
+  padding:.35rem .9rem .3rem; border-radius:.7rem; font-variant-numeric:tabular-nums; min-width:5.2rem; text-align:center; }
+#aufgabe{ position:absolute; left:50%; bottom:calc(max(.8rem,env(safe-area-inset-bottom)) + 4.2rem); transform:translateX(-50%); background:rgba(6,10,20,.84); border:2px solid var(--neon);
+  border-radius:.9rem; padding:.45rem 1.3rem .55rem; text-align:center; max-width:92vw; }
+#aufgabe b{ display:block; font-family:var(--schmal); font-weight:900; font-stretch:condensed; font-size:clamp(1.7rem,6.5vw,2.7rem); color:#fff; line-height:1; text-transform:uppercase; }
+#aufgabe span{ color:var(--neon); font-weight:800; font-size:clamp(.9rem,3.4vw,1.15rem); }
+#meldung{ position:absolute; left:50%; top:calc(max(.6rem,env(safe-area-inset-top)) + 3.8rem); transform:translateX(-50%); background:rgba(4,8,16,.82); border-radius:.6rem;
+  padding:.35rem .95rem; font-weight:800; font-size:1.1rem; white-space:nowrap; }
+#meldung.schlecht{ color:#ff5a6a; } #meldung.gut{ color:var(--neon); }
+@media (max-width:620px){
+  #parcoursHud .uhr{ left:auto; right:0; transform:none; top:3.7rem; font-size:2rem; }
+  #aufgabe{ bottom:calc(max(.8rem,env(safe-area-inset-bottom)) + 7.6rem); }
+  #meldung{ top:calc(max(.6rem,env(safe-area-inset-top)) + 3.9rem); }
+}
+body.parcours #hudInfo, body.parcours #zeitbalken, body.parcours #tempoAnzeige{ display:none !important; }
+body.parcours .querHinweis{ display:none !important; }
+.grossKnopf.neon{ grid-column:1/-1; background:linear-gradient(135deg,#c4f23a,#7ccf2a); color:#0c1400; min-height:5.4rem; }
+.grossKnopf.neon small{ color:#2c4000; }
+.parcoursErg .neonTitel{ font-family:var(--schmal); font-weight:900; font-stretch:condensed; font-size:clamp(3rem,13vw,5rem); line-height:1; color:var(--neon); }
+.parcoursErg .neonTitel.aus{ color:#fff; }
+.pZeile{ display:flex; justify-content:space-between; gap:1rem; padding:.35rem .2rem; border-bottom:1px solid var(--rand); font-size:1.05rem; }
+.pZeile b{ color:var(--neon); font-variant-numeric:tabular-nums; } .pZeile.minus b{ color:#ff5a6a; }
+.parcoursErg .bestwert{ font-weight:800; } .parcoursErg .bestwert.neu{ color:var(--neon); }
 /* Kleine Marke (z. B. „Wiederholung“) unten links, damit das Geschehen frei bleibt */
 #banner.klein{ top:auto; bottom:calc(max(1rem,env(safe-area-inset-bottom)) + 3.4rem); left:max(1rem,env(safe-area-inset-left)); transform:none; font-size:1.15rem; letter-spacing:.12em;
   background:rgba(200,16,46,.94); padding:.4rem .9rem; border-radius:.5rem; text-align:left; text-shadow:none; box-shadow:0 .3rem 1rem rgba(0,0,0,.45); }
@@ -207,6 +241,9 @@ table.tab td.z{ text-align:right; font-variant-numeric:tabular-nums; }
   <div id="schiri" class="versteckt"><span class="pfeife">📣</span><span class="text"></span></div>
   <div id="banner" class="versteckt"></div>
   <div id="trainingInfo" class="versteckt"></div>
+  <div id="parcoursHud" class="versteckt"><div class="drills"><i></i><i></i><i></i></div><div class="uhr">0.0</div></div>
+  <div id="aufgabe" class="versteckt"></div>
+  <div id="meldung" class="versteckt"></div>
   <div id="hudKnoepfe">
     <button class="rundKnopf" id="btnKamera" aria-label="Kamera wechseln">🎥</button>
     <button class="rundKnopf" id="btnTuning" aria-label="Tuning">⚙</button>
@@ -242,6 +279,13 @@ const TEXTE = {
   de: {
     titel: 'FLOORBALL PENALTY SHOWDOWN', untertitel: 'Unihockey · Penaltyschießen',
     m_schnell: 'Schnelles Spiel', m_schnell_u: 'Shootout gegen die KI',
+    m_parcours: 'Parcours', m_parcours_u: 'Slalom, Drehungen, Tore – dann der Schuss. Auf Zeit und Punkte.',
+    p_titel1: 'PAR', p_titel2: 'COURS', p_untertitel: '3 Übungen · 1 Schuss',
+    p_slalom: 'Slalom', p_slalom_u: 'Im Zickzack an den Pfeilen vorbei', p_drehung_t: 'Volle Drehungen', p_drehung_u: 'Einmal ganz um die grünen Hütchen',
+    p_tore: 'Durch die Tore', p_tore_u: 'dann auf die Ecken zielen', p_schuss: 'Schuss!', p_schuss_u: 'Triff die Ziele im Tor',
+    p_huetchen: 'Hütchen berührt', p_seite: 'Falsche Seite', p_ausgelassen: 'Ausgelassen', p_tor_verpasst: 'Tor verpasst', p_drehung: 'Drehung!', p_durch: 'Durch!', p_ziel: 'Ziel getroffen +{p}',
+    p_tor: 'TOR!', p_kein_tor: 'KEIN TOR', p_zeit: 'Zeit', p_torbonus: 'Tor', p_ziele: 'Ziele', p_fehler: 'Fehler', p_punkte: 'Punkte',
+    p_bestwert_neu: 'Neuer Bestwert!', p_bestwert: 'Bestwert: {p} Punkte', p_nochmal: 'Nochmal ▶', p_ohne_schuss: 'Kein Schuss abgegeben',
     m_turnier: 'Turnier', m_turnier_u: '4 oder 8 Teams, Gruppen & K.-o.',
     m_turnier_weiter: 'Turnier fortsetzen', m_training: 'Training', m_training_u: 'Schießen oder Halten, Zielscheiben',
     m_teams: 'Teams', m_teams_u: 'Editor, Import & Export', m_tuning: 'Tuning', m_tuning_u: 'Physik, KI, Kamera, Debug',
@@ -558,6 +602,8 @@ class AudioSystem {
     const g = c.createGain(); g.gain.value = 0; g.gain.setValueCurveAtTime(kurve, t0, dauer);
     src.connect(bp); bp.connect(g); g.connect(this.master); src.start(t0, Math.random()); src.stop(t0 + dauer + 0.05);
   }
+  /** Kurzer tiefer Summton bei Fehlern im Parcours. */
+  fehler() { if (!this.ctx) return; this._ton(196, 0.16, 0.1, 'square'); this._ton(147, 0.2, 0.08, 'square', null, 0.07); }
   /** Leiser Klick für Menüknöpfe. */
   tick() { if (!this.ctx) return; this._ton(1150, 0.03, 0.035, 'sine', this.master); }
 }
@@ -993,7 +1039,7 @@ function bodenTextur(W, art) {
   const X = x => (x + 20) * pxm, Z = z => (z + 10) * pxm, rng = zufallRng(11);
   let linie, raumTon;
   if (art === 'kunststoff') {
-    g.fillStyle = '#2a6aa3'; g.fillRect(0, 0, W, H);
+    g.fillStyle = '#1f58a6'; g.fillRect(0, 0, W, H);
     // verlegte Bahnen (2 m breit) mit leichtem Farbunterschied, dazu feine Körnung
     for (let x = 0, i = 0; x < W; x += 2 * pxm, i++) { g.fillStyle = `rgba(${i % 2 ? '255,255,255' : '0,0,0'},${0.018 + rng() * 0.02})`; g.fillRect(x, 0, 2 * pxm, H); g.fillStyle = 'rgba(0,0,0,.10)'; g.fillRect(x, 0, 1, H); }
     for (let i = 0; i < W * 4; i++) { g.fillStyle = `rgba(${rng() < 0.5 ? '255,255,255' : '0,0,0'},${rng() * 0.05})`; g.fillRect(rng() * W, rng() * H, 1 + rng() * 2, 1 + rng() * 2); }
@@ -1518,9 +1564,8 @@ class Halle {
   /** Bodenbelag wechseln: 'parkett' oder 'kunststoff'. */
   setzeBoden(art) {
     if (this.bodenArt === art) return; this.bodenArt = art;
-    const alt = [this.bodenMat.map, this.bodenMat.roughnessMap];
-    this.bodenMat.map = bodenTextur(this.aufl, art); this.bodenMat.roughnessMap = bodenRauheit(art); this.bodenMat.needsUpdate = true;
-    for (const t of alt) if (t) t.dispose();
+    this._boeden ||= {}; const b = this._boeden[art] ||= { map: bodenTextur(this.aufl, art), rauh: bodenRauheit(art) };   // einmal erzeugen, dann wiederverwenden
+    this.bodenMat.map = b.map; this.bodenMat.roughnessMap = b.rauh; this.bodenMat.needsUpdate = true;
   }
   /** LED-Band kurz in einer Farbe pulsieren lassen (z. B. Teamfarbe nach einem Tor). */
   ledBlitz(farbe, dauer = 3) { this.ledFarbe.set(farbe); this.ledPuls = dauer; }
@@ -2545,7 +2590,7 @@ class Schuetze {
         this.ballSperre = Math.max(0, this.ballSperre - dt);
         if (!this.kontrolle && this.ballSperre <= 0 && !ball.kinematisch && ball.v.length() < 5 && ball.p.y < 0.2 && this.fig.ferse.distanceTo(ball.p) < 0.45) { this.kontrolle = true; welt.beiWiederBall && welt.beiWiederBall(this); }
         animName = this.trick ? this.trick.name : this.zorro ? 'zorro' : this.finteT >= 0 ? 'finte' : 'dribbel'; animParam = this.trick ? { seite: this.trick.seite } : { seite: this.finteSeite };
-        if (this.kontrolle && this.imSchussbereich() && A.laden && this.finteT < 0 && !this.trick) { this.setzeZustand('laden'); this.power = 0; this.zielAbsicht.aktiv = true; }
+        if (this.kontrolle && this.imSchussbereich() && A.laden && this.finteT < 0 && !this.trick && !welt.schussGesperrt) { this.setzeZustand('laden'); this.power = 0; this.zielAbsicht.aktiv = true; }
         break;
       }
       case 'laden': {
@@ -2912,7 +2957,7 @@ const Regelwerk = {
       if (b.v.x < -0.4 && b.p.x < TOR.x - 0.35) v.weg += dt; else v.weg = 0;
       if (bs < 0.5 && b.p.x < TOR.x - r) v.ruhe += dt;
       if (v.weg > 0.3 || v.ruhe > 0.5) return fertig('pariert');
-    } else if (v.t > 0.9) {
+    } else if (v.t > 0.9 && !v.frei) {        // im Parcours (frei) gilt die Vorwärtsregel nicht
       // Vorwärtsregel: Spieler oder Ball müssen sich ständig Richtung Tor bewegen
       const streng = Config.regeln.strengeVorwaerts, th = streng ? 0.25 : -0.15, grace = streng ? 0.25 : 0.8;
       const fs = s.vel.x, fb = b.v.x;
@@ -3168,13 +3213,15 @@ function initSzene() {
   Bus.an('config', (pfad) => { if (pfad === '*' || pfad.startsWith('grafik')) grafikAnwenden(); });
 }
 function groesse() { renderer.setSize(innerWidth, innerHeight); kamera.aspect = innerWidth / innerHeight; kamera.updateProjectionMatrix(); Bild.groesse(); Vorschau.groesse(); }
+/** Gewünschter Hallenboden: im Parcours blauer Kunststoff wie im Vorbild, sonst die Einstellung. */
+function bodenSoll() { return document.body.classList.contains('parcours') ? 'kunststoff' : Config.grafik.boden; }
 function grafikAnwenden() {
   const q = QUALI[Config.grafik.qualitaet] || QUALI.mittel;
   Bild.einrichten(q);
   const an = !!Config.grafik.schatten;
   renderer.shadowMap.enabled = an; halle.sonne.castShadow = an;
   if (halle.sonne.shadow.mapSize.x !== q.schatten) { halle.sonne.shadow.mapSize.set(q.schatten, q.schatten); if (halle.sonne.shadow.map) { halle.sonne.shadow.map.dispose(); halle.sonne.shadow.map = null; } }
-  if (halle.bodenArt !== Config.grafik.boden) { halle.setzeBoden(Config.grafik.boden); const alt = szene.environment; szene.environment = umgebungErzeugen(renderer, Config.grafik.boden === 'kunststoff' ? 0x2a6aa3 : 0xb08552); if (alt) alt.dispose(); }
+  if (halle.bodenArt !== bodenSoll()) { halle.setzeBoden(bodenSoll()); const alt = szene.environment; szene.environment = umgebungErzeugen(renderer, Config.grafik.boden === 'kunststoff' ? 0x2a6aa3 : 0xb08552); if (alt) alt.dispose(); }
   halle.bodenMat.roughness = Bild.spiegel ? 0.7 : 0.52;
   // Schatten an/aus ändert die Shader: Materialien nur dann neu übersetzen lassen
   if (grafikAnwenden.schatten !== an) { grafikAnwenden.schatten = an; szene.traverse(o => { if (o.material) { const m = Array.isArray(o.material) ? o.material : [o.material]; m.forEach(x => x.needsUpdate = true); } }); }
@@ -3338,11 +3385,17 @@ const Kam = {
     const zst = S.zustand;
     if (zst === 'menue' || zst === 'ergebnis') { const a = this.t * 0.06; wp.set(4 + Math.cos(a) * 17, 6.5, Math.sin(a) * 12); wz.set(9, 0.6, 0); rate = 1.5; }
     else if (zst === 'siegerehrung') { const a = this.t * 0.25; wp.set(Math.cos(a) * 6.5, 2.6, Math.sin(a) * 6.5); wz.set(0, 1.4, 0); rate = 2; }
+    else if (zst === 'intro' && S.modus === 'parcours') { const u = glatt(S.phaseT / 2.6), sp = S.schuetze.pos; wp.set(mix(-1, sp.x - 5.4, u), mix(15, 4.2, u), mix(13, sp.z * 0.75, u)); wz.set(mix(3, sp.x + 5.5, u), 0, mix(0, sp.z * 0.85, u)); rate = 6; }
     else if (zst === 'intro') { const u = glatt(S.phaseT / 2.6); wp.set(mix(-6, -4.5, u), mix(11, 2.2, u), mix(-15, -1.5, u)); wz.set(mix(0, 6, u), mix(0, 0.8, u), 0); rate = 6; }
     else if (zst === 'wiederholung') { wp.copy(S.replay.kamPos); wz.copy(S.replay.kamZiel); rate = 4; zrate = 6; }
     else if (S.schuetze) {
       const m = this.aufgeloest(), sp = S.schuetze.pos, bp = ball.p, gk = S.torwart.pos;
-      if (m === 'schuetze') {
+      if (S.modus === 'parcours' && m === 'schuetze') {
+        // Folgekamera wie im Vorbild: schräg von hinten oben, Blick immer Richtung Tor
+        const hoch = innerHeight > innerWidth * 1.05, ab = (hoch ? 6.2 : 5.4) * C.abstand;
+        wp.set(sp.x - ab, (hoch ? 5.6 : 4.2) * C.hoehe, sp.z * 0.75); wz.set(sp.x + (hoch ? 4.5 : 5.5), 0, sp.z * 0.85);
+        if (S.versuch && S.versuch.geschossen) wz.lerp(_c.set(TOR.x, 0.5, bp.z * 0.5), 0.4);
+      } else if (m === 'schuetze') {
         const dir = _b.set(TOR.x - sp.x, 0, -sp.z * 0.6); if (dir.lengthSq() < 0.5) dir.set(1, 0, 0); dir.normalize();
         // hinter und leicht über dem Schützen, seitlich versetzt: das Tor bleibt über der Schulter sichtbar
         const seitl = _c.set(-dir.z, 0, dir.x).multiplyScalar(-0.75 * (S.schuetze.s || 1));
@@ -3361,7 +3414,7 @@ const Kam = {
     kamera.position.copy(this.pos);
     const w = this.wackel * C.wackeln * 0.05; if (w > 1e-4) kamera.position.add(_c.set((Math.random() - 0.5) * w, (Math.random() - 0.5) * w, (Math.random() - 0.5) * w));
     kamera.lookAt(this.ziel);
-    const fov = (S.zustand === 'wiederholung' ? 42 : C.fov) - this.fovPlus;
+    const fov = (S.zustand === 'wiederholung' ? 42 : S.modus === 'parcours' && innerHeight > innerWidth * 1.05 ? Math.max(C.fov, 66) : C.fov) - this.fovPlus;
     if (Math.abs(kamera.fov - fov) > 0.01) { kamera.fov = fov; kamera.updateProjectionMatrix(); }
   }
 };
@@ -3403,7 +3456,7 @@ const Spiel = {
     const bg = new THREE.BufferGeometry(); bg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(100 * 3), 3));
     this.bahn = new THREE.Line(bg, new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 0.12, gapSize: 0.08, transparent: true, opacity: 0.75, depthTest: false }));
     this.bahn.frustumCulled = false; this.bahn.renderOrder = 4; this.bahn.visible = false; this.bahn.layers.set(2); szene.add(this.bahn);
-    this.debug = new DebugAnsicht(); this.jubelZiel = new V3(1, 1, 1); this.klatschBis = 0; this._richtung = new V3(1, 0, 0);
+    this.debug = new DebugAnsicht(); Parcours.init(); this.jubelZiel = new V3(1, 1, 1); this.klatschBis = 0; this._richtung = new V3(1, 0, 0);
     this.leerlauf();
   },
   /** Hintergrund für Menüs: Figuren stehen bereit. */
@@ -3411,7 +3464,31 @@ const Spiel = {
     this.zustand = 'menue'; this.schuetze = this.sL; this.figL.objekt.visible = true; this.figR.objekt.visible = false; this.figT.objekt.visible = true;
     this.sL.reset(0, 0); this.torwart.reset(); ball.reset(0, 0); this.versuch = null; this.menschSchiesst = this.menschHaelt = false; halle.scheiben.visible = false;
     if (this.ehrung) this.ehrung.gruppe.visible = false; HUD.zeigen(false); this.jubelBis = 0; halle.zuschauer.uni.uJubel.value.set(0, 0, 0);
-    Ton.stimmung(0.2);
+    this.parcoursAufraeumen(); Ton.stimmung(0.2);
+  },
+  parcoursAufraeumen() {
+    Parcours.weg(); document.body.classList.remove('parcours'); halle.setzeBoden(Config.grafik.boden); this.welt.schussGesperrt = false;
+    halle.scheibenListe.forEach(s => { s.mesh.visible = true; });
+  },
+  /** Parcours-Modus: Slalom, Drehungen, Tore, dann ein Schuss – auf Zeit und Punkte. */
+  starteParcours() {
+    this.parcoursAufraeumen(); this.modus = 'parcours';
+    const T = TeamDB.hole(Einst.letztesTeam) || TeamDB.liste[0], O = TeamDB.liste.find(x => x.id !== T.id);
+    this.teamA = T; this.teamB = O; this.mensch = 'A'; this.ausweichB = TeamDB.ausweich(T, O); this.so = null; this.idx = { A: 0, B: 0 }; this.turnierSpiel = null;
+    Kam.override = null; this.pausiert = false; UI.schliesseAlles(); HUD.zeigen(true); HUD.trainingInfo(false); halle.zuschauer.faerbe(T, O);
+    if (this.ehrung) this.ehrung.gruppe.visible = false;
+    document.body.classList.add('parcours'); halle.setzeBoden('kunststoff');
+    halle.scheiben.visible = true; halle.scheibenListe.forEach(s => { s.treffer = 0; s.mesh.material.opacity = 0.88; s.mesh.visible = s.z !== 0; });
+    this.vorbereiten('A');
+    const x0 = PARCOURS.start, S = this.schuetze; S.reset(x0, 0); ball.reset(x0, 0); this.versuch.frei = true; this.versuch.zeitlimit = PARCOURS.zeitlimit;
+    Parcours.start(); this.zustand = 'intro'; this.phaseT = 0; Kam.schnitt = true;
+    HUD.banner(`<span class="w">${t('p_titel1')}</span>${t('p_titel2')}<small>${t('p_untertitel')}</small>`, 'neon');
+    Ton.init(); Ton.stimmung(0.3); Ton.applaus(0.5, 2);
+  },
+  parcoursEnde() {
+    this.zustand = 'ergebnis'; HUD.zeigen(false); HUD.banner(null);
+    const r = Parcours.ende(this.versuch.ergebnis); if (r.neu) Ton.jubel(0.6);
+    UI.parcoursErgebnis(r);
   },
   simAktiv() { return ['menue', 'intro', 'aufstellung', 'anlauf', 'auswertung', 'ergebnis'].includes(this.zustand); },
   /* ---------- Start der Modi ---------- */
@@ -3420,7 +3497,7 @@ const Spiel = {
     this.teamA = teamA; this.teamB = teamB; this.mensch = mensch; this.ausweichB = TeamDB.ausweich(teamA, teamB);
     const ko = turnierSpiel && turnierSpiel.phase !== 'gruppe';
     this.so = new Shootout(Config.regeln.schuetzen, ko ? true : Config.regeln.suddenDeath); this.idx = { A: 0, B: 0 }; this.versuche = [];
-    Kam.override = null; this.pausiert = false; halle.scheiben.visible = false;
+    this.parcoursAufraeumen(); Kam.override = null; this.pausiert = false; halle.scheiben.visible = false;
     if (this.ehrung) this.ehrung.gruppe.visible = false;
     UI.schliesseAlles(); HUD.zeigen(true); HUD.trainingInfo(false);
     this.zustand = 'intro'; this.phaseT = 0; Kam.schnitt = true; halle.zuschauer.faerbe(teamA, teamB); this.klatschBis = performance.now() + 2600;
@@ -3430,7 +3507,7 @@ const Spiel = {
     this.hudAktualisieren();
   },
   starteTraining(art, mitTW) {
-    this.modus = 'training'; this.training = { art, mitTW, treffer: 0, versuche: 0, paraden: 0 };
+    this.parcoursAufraeumen(); this.modus = 'training'; this.training = { art, mitTW, treffer: 0, versuche: 0, paraden: 0 };
     const T = TeamDB.hole(Einst.letztesTeam) || TeamDB.liste[0], O = TeamDB.liste.find(x => x.id !== T.id);
     this.teamA = T; this.teamB = O; this.mensch = 'A'; this.ausweichB = TeamDB.ausweich(T, O); this.so = null; this.idx = { A: 0, B: 0 }; this.turnierSpiel = null;
     Kam.override = null; this.pausiert = false; UI.schliesseAlles(); HUD.zeigen(true); HUD.trainingInfo(true); halle.zuschauer.faerbe(T, O);
@@ -3454,7 +3531,7 @@ const Spiel = {
     this.kiT = this.menschHaelt || trainingOhneTW ? null : new KITorwart(this.torwart);
     if (this.kiT) this.kiT.istGegnerMensch = this.menschSchiesst;
     this.hilfsTW = this.menschHaelt ? Object.assign(new KITorwart(this.torwart), { nurStellung: true }) : null; this.manuellBis = 0; this.paradePunkt = null;
-    this.welt.menschPraezise = this.menschSchiesst;
+    this.welt.menschPraezise = this.menschSchiesst; this.welt.schussGesperrt = this.modus === 'parcours';
     this.manuellGelaufen = false; this.trickWunsch = null; this.trickWunschBis = 0; this.rausWunsch = false; this.rausZiel = null; Eingabe.joy = null;
     HUD.trickLeiste(this.menschSchiesst ? 'schuetze' : this.menschHaelt ? 'torwart' : null);
     ent.reset(0, 0); this.torwart.reset(); if (trainingOhneTW) this.torwart.pos.set(TOR.x + 3, 0, 4);
@@ -3485,12 +3562,12 @@ const Spiel = {
     }
     if (this.zustand === 'intro') {
       S.schritt(dt, { aktiv: false, richtung: _n.set(1, 0, 0), tempo: 0 }, ball, this.welt); T.schritt(dt, { bewegen: null }, ball, this.welt);
-      if (this.phaseT > 2.6) { HUD.banner(null); this.naechsterVersuch(); }
+      if (this.phaseT > 2.6) { HUD.banner(null); if (this.modus === 'parcours') { this.zustand = 'aufstellung'; this.phaseT = 0; } else this.naechsterVersuch(); }
       return;
     }
     if (this.zustand === 'aufstellung') {
       S.schritt(dt, { aktiv: false, richtung: _n.set(1, 0, 0), tempo: 0 }, ball, this.welt); T.schritt(dt, { bewegen: null }, ball, this.welt);
-      if (this.phaseT > 1.1) { this.zustand = 'anlauf'; this.phaseT = 0; Ton.pfiff(false); S.setzeZustand('lauf'); S.zielSpeed = Config.schuetze.dribbleTempo * 0.55; S.lenkRichtung.set(1, 0, 0); }
+      if (this.phaseT > 1.1) { this.zustand = 'anlauf'; this.phaseT = 0; Ton.pfiff(false); S.setzeZustand('lauf'); S.zielSpeed = this.modus === 'parcours' ? 0 : Config.schuetze.dribbleTempo * 0.55; S.lenkRichtung.set(1, 0, 0); if (this.modus === 'parcours') Parcours.los(); }
       return;
     }
     this.simZeit += dt;
@@ -3498,6 +3575,7 @@ const Spiel = {
       const As = this.kiS ? this.kiS.absicht(dt, S) : this.menschSchuetze(dt);
       const At = this.kiT ? this.kiT.absicht(dt, S, ball, v.geschossen) : this.menschTorwart(dt);
       S.schritt(dt, As, ball, this.welt); T.schritt(dt, At, ball, this.welt);
+      if (this.modus === 'parcours') Parcours.schritt(dt);
       this.stickSperre = Math.max(0, this.stickSperre - dt);
       const stickAktiv = !S.kontrolle && this.stickSperre <= 0 && !ball.kinematisch;
       S.fig.kapseln.forEach(k => k.aktiv = stickAktiv);
@@ -3564,7 +3642,8 @@ const Spiel = {
     if (L.quelle !== 'keine' && len > 0.15) {
       richtung = this._richtung.set(0, 0, 0).addScaledVector(r, L.x).addScaledVector(f, L.y); if (richtung.lengthSq() < 1e-6) richtung.set(1, 0, 0); richtung.normalize();
       tempo = L.quelle === 'tasten' ? 1 : klemme(len, 0.25, 1); this.manuellGelaufen = true;
-    } else if (this.manuellGelaufen) { richtung = this._richtung.set(1, 0, 0); tempo = 0.22; }      // leichtes Weiterrollen: die Vorwärtsregel bleibt erfüllt
+    } else if (this.modus === 'parcours') { richtung = this._richtung.set(Math.sin(S.yaw), 0, Math.cos(S.yaw)); tempo = 0; }   // im Parcours bleibt der Spieler ohne Eingabe stehen
+    else if (this.manuellGelaufen) { richtung = this._richtung.set(1, 0, 0); tempo = 0.22; }      // leichtes Weiterrollen: die Vorwärtsregel bleibt erfüllt
     else { const lane = klemme(this.zielCursor.z * 1.6, -2.4, 2.4), vor = Math.max(2.5, TOR.x - 2 - S.pos.x); richtung = this._richtung.set(vor, 0, (lane - S.pos.z) * 1.2).normalize(); tempo = 0.8; }
     // Vorgemerkter Trick: verfällt nach 0,45 s oder sobald er begonnen hat
     let wunsch = this.trickWunsch;
@@ -3646,10 +3725,15 @@ const Spiel = {
     const v = this.versuch; v.geschossen = true; this.stickSperre = 0.3; this.schussInfo = info;
     if (this.kiT) this.kiT.beiSchuss();
     if (this.menschHaelt && schw().zeitlupe) this.zeitlupeBis = this.simZeit + 0.55;
+    if (this.modus === 'parcours') Parcours.beiSchuss();
     Kam.fovPlus = 7; HUD.tempo(Math.round(info.speed * 3.6), info.typ);
     Debug.heatmapPunkt(info.ziel.z, info.ziel.y);
   },
   torebeneGekreuzt() {
+    if (this.modus === 'parcours') {
+      for (const s of halle.scheibenListe) if (s.mesh.visible && s.mesh.material.opacity > 0.5 && Math.hypot(ball.p.z - s.z, ball.p.y - s.y) < s.r + BALLD.r * 0.5) { s.treffer++; s.mesh.material.opacity = 0.3; Parcours.zielTreffer(); }
+      return;
+    }
     if (this.modus !== 'training' || this.training.art !== 'schiessen') return;
     const z = ball.p.z, y = ball.p.y;
     for (const s of halle.scheibenListe) if (Math.hypot(z - s.z, y - s.y) < s.r + BALLD.r * 0.5) { s.treffer++; this.training.scheiben = (this.training.scheiben || 0) + 1; s.mesh.material.opacity = 0.3; Ton.ziel(); }
@@ -3659,11 +3743,12 @@ const Spiel = {
     HUD.schiri(t('r_' + erg.code)); Ton.pfiff(erg.code !== 'tor');
     const parade = ['gehalten', 'pariert'].includes(erg.code);
     const istA = this.aktTeam === 'A', jetzt = performance.now(), Ts = istA ? this.teamA : this.teamB;
+    const neonArt = this.modus === 'parcours' ? 'neon' : undefined; if (this.modus === 'parcours') HUD.aufgabe(null);
     if (erg.tor) {
-      HUD.banner(t('tor_banner')); Ton.jubel(1); Ton.horn(); S.setzeZustand('jubel'); T.setzeZustand('enttaeuscht', null, 0.3); Kam.wackel = 1; this.torFrameT = this.simZeit;
+      HUD.banner(t('tor_banner'), neonArt); Ton.jubel(1); Ton.horn(); S.setzeZustand('jubel'); T.setzeZustand('enttaeuscht', null, 0.3); Kam.wackel = 1; this.torFrameT = this.simZeit;
       this.jubelZiel.set(istA ? 1 : 0.03, istA ? 0.03 : 1, 0.55); this.jubelBis = jetzt + 3800; if (Ts) halle.ledBlitz(Ts.primaer, 3.2);
     } else {
-      HUD.banner(parade ? t('gehalten_banner') : t('fehl_banner'));
+      HUD.banner(parade ? t('gehalten_banner') : t('fehl_banner'), neonArt);
       if (parade) { Ton.jubel(0.45); Ton.applaus(0.7, 2.4); if (!T.gefangen) T.setzeZustand('jubel', null, 0.35); this.jubelZiel.set(istA ? 0 : 0.8, istA ? 0.8 : 0, 0.2); this.jubelBis = jetzt + 2400; this.klatschBis = jetzt + 3200; this.torFrameT = this.simZeit; }
       else { Ton.raunen(); this.klatschBis = jetzt + 1500; }
       S.setzeZustand('enttaeuscht');
@@ -3672,6 +3757,8 @@ const Spiel = {
     if (this.modus === 'training') {
       this.training.versuche++; if (erg.tor) this.training.treffer++; if (parade) this.training.paraden++;
       HUD.trainingInfo(true);
+    } else if (this.modus === 'parcours') {
+      /* Wertung folgt nach der Auswertung (Parcours.ende) */
     } else {
       const team = this.aktTeam, Tm = team === 'A' ? this.teamA : this.teamB, O = team === 'A' ? this.teamB : this.teamA;
       this.so.eintragen(team, erg.tor);
@@ -3689,6 +3776,7 @@ const Spiel = {
   },
   weiterNachVersuch() {
     HUD.schiri(null);
+    if (this.modus === 'parcours') return this.parcoursEnde();
     if (this.modus === 'training') return this.naechsterVersuch();
     const st = this.so.status();
     if (st.fertig) return this.matchEnde(st);
@@ -3724,7 +3812,8 @@ const Spiel = {
   abbrechen() { this.pausiert = false; UI.pauseZu(); this.leerlauf(); },
   neustart() {
     this.pausiert = false; UI.pauseZu();
-    if (this.modus === 'training') this.starteTraining(this.training.art, this.training.mitTW);
+    if (this.modus === 'parcours') this.starteParcours();
+    else if (this.modus === 'training') this.starteTraining(this.training.art, this.training.mitTW);
     else this.starteMatch(this.teamA, this.teamB, this.mensch, this.turnierSpiel);
   },
   /* ---------- Darstellung pro Frame ---------- */
@@ -3749,7 +3838,7 @@ const Spiel = {
     halle.update(dt);
     this.kontaktSchattenSetzen();
     // Power-Ring und Zielhilfe
-    const zeigeRing = S && this.menschSchiesst && (this.zustand === 'anlauf') && (S.zustand === 'laden' || (S.zustand === 'lauf' && S.imSchussbereich()));
+    const zeigeRing = S && this.menschSchiesst && (this.zustand === 'anlauf') && (S.zustand === 'laden' || (S.zustand === 'lauf' && S.imSchussbereich())) && !this.welt.schussGesperrt;
     this.ring.visible = this.ringHG.visible = !!zeigeRing;
     if (zeigeRing) {
       const p = S.zustand === 'laden' ? S.power : 0, px = mix(S.ppos.x, S.pos.x, alpha), pz = mix(S.ppos.z, S.pos.z, alpha);
@@ -3758,7 +3847,7 @@ const Spiel = {
       this.ring.material.color.setHSL((1 - p) * 0.33, 0.9, 0.5);
       this.ringHG.material.opacity = S.zustand === 'laden' ? 0.22 : 0.12 + Math.sin(performance.now() * 0.008) * 0.08;
     }
-    const zeigeZiel = S && this.menschSchiesst && this.zustand === 'anlauf' && ['lauf', 'laden'].includes(S.zustand);
+    const zeigeZiel = S && this.menschSchiesst && this.zustand === 'anlauf' && ['lauf', 'laden'].includes(S.zustand) && !this.welt.schussGesperrt;
     this.zielKreis.visible = !!zeigeZiel;
     if (zeigeZiel) {
       const lob = S.lupfer || this.wischHochFlag || Eingabe.lupferGehalten();
@@ -3782,6 +3871,7 @@ const Spiel = {
       const a = this.bahn.geometry.attributes.position; pts.forEach((q, i) => a.setXYZ(i, q.x, q.y, q.z)); a.needsUpdate = true;
       this.bahn.geometry.setDrawRange(0, pts.length); this.bahn.computeLineDistances();
     }
+    if (this.modus === 'parcours') Parcours.render(dt, alpha);
     if (this.zustand === 'anlauf' && this.versuch) HUD.zeit(1 - this.versuch.t / this.versuch.zeitlimit);
     if (this.ehrung && this.zustand === 'siegerehrung') this.ehrung.update(dt);
     Kam.update(dt);
@@ -3799,7 +3889,7 @@ const Spiel = {
     }
     im.count = n; im.instanceMatrix.needsUpdate = true;
   },
-  hudAktualisieren() { HUD.anzeige(); halle.tafel(this.teamA ? this.teamA.kuerzel : '', this.teamB ? this.teamB.kuerzel : '', this.so ? this.so.tore('A') : 0, this.so ? this.so.tore('B') : 0, this.so && this.so.istSudden() ? 'SUDDEN DEATH' : this.modus === 'training' ? 'TRAINING' : ''); },
+  hudAktualisieren() { HUD.anzeige(); halle.tafel(this.teamA ? this.teamA.kuerzel : '', this.teamB ? this.teamB.kuerzel : '', this.so ? this.so.tore('A') : 0, this.so ? this.so.tore('B') : 0, this.so && this.so.istSudden() ? 'SUDDEN DEATH' : this.modus === 'training' ? 'TRAINING' : this.modus === 'parcours' ? 'PARCOURS' : ''); },
   /* ---------- Siegerehrung mit Pokal-Animation ---------- */
   siegerehrung(team) {
     this.zustand = 'siegerehrung'; HUD.zeigen(false); this.figL.objekt.visible = this.figR.objekt.visible = this.figT.objekt.visible = false; ballGruppe.visible = false;
@@ -3842,12 +3932,170 @@ class Siegerehrung {
 }
 
 /* =====================================================================
+   MODUL: PARCOURS – Geschicklichkeits-Parcours: Slalom durch Hütchen, volle Drehungen um Hütchen,
+   durch kleine Tore, zum Schluss ein Schuss auf die Ziele im Tor. Wertung: Zeitbonus, Tor, Ziele,
+   Abzug je Fehler. Der Bestwert wird gespeichert. Kein Teil blockiert: Ausgelassenes zählt als Fehler.
+   ===================================================================== */
+const PARCOURS = {
+  start: -13,
+  slalom: [-10, -7.5, -5, -2.5, 0].map((x, i) => ({ x, z: 0, seite: i % 2 ? -1 : 1 })),
+  drehungen: [{ x: 3.6, z: -1.7 }, { x: 7.2, z: 1.7 }],
+  tore: [{ x: 9.6, z: -1.1, b: 0.75 }, { x: 12.0, z: 0.9, b: 0.75 }],
+  ring: 1.3, zeitlimit: 60, abzug: 20, torBonus: 100, zielBonus: 50, zeitBasis: 35
+};
+const UEBUNG_TEXTE = [['p_slalom', 'p_slalom_u'], ['p_drehung_t', 'p_drehung_u'], ['p_tore', 'p_tore_u'], ['p_schuss', 'p_schuss_u']];
+const NEON = '#c4f23a';
+const Parcours = {
+  z: null, gruppe: null,
+  init() {
+    const G = this.gruppe = new THREE.Group(); G.visible = false; szene.add(G);
+    const std = (c, extra) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.5 }, extra || {}));
+    const kegelGeo = new THREE.ConeGeometry(0.11, 0.3, 18), bandGeo = new THREE.CylinderGeometry(0.053, 0.064, 0.05, 18), fussGeo = new THREE.BoxGeometry(0.27, 0.022, 0.27), weiss = std('#f4f4f0');
+    const huetchen = (farbe, x, z, gr = 1) => {
+      const g = new THREE.Group(), mat = std(farbe, { emissive: new THREE.Color(farbe), emissiveIntensity: 0 });
+      const k = new THREE.Mesh(kegelGeo, mat); k.position.y = 0.17; k.castShadow = true; g.add(k);
+      const b = new THREE.Mesh(bandGeo, weiss); b.position.y = 0.17; g.add(b);
+      const f = new THREE.Mesh(fussGeo, mat); f.position.y = 0.011; f.castShadow = true; g.add(f);
+      g.scale.setScalar(gr); g.position.set(x, 0, z); G.add(g);
+      return { g, mat, x, z, um: false, kipp: 0, dir: new V3() };
+    };
+    const flach = (geo, farbe, deckkraft) => { const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: farbe, transparent: true, opacity: deckkraft, depthWrite: false, side: THREE.DoubleSide, toneMapped: false })); m.renderOrder = 1; G.add(m); return m; };
+    // Pfeil auf dem Boden (zeigt in +x, Richtung Tor)
+    const pfeil = (() => { const s = new THREE.Shape(); s.moveTo(-0.24, 0.15); s.lineTo(0.04, 0.15); s.lineTo(0.04, 0.3); s.lineTo(0.32, 0); s.lineTo(0.04, -0.3); s.lineTo(0.04, -0.15); s.lineTo(-0.24, -0.15); s.closePath(); const g = new THREE.ShapeGeometry(s); g.rotateX(-Math.PI / 2); return g; })();
+    // 1) Slalom: orange Hütchen, grüne Pfeile auf der Seite, an der vorbeigelaufen wird
+    this.slalom = PARCOURS.slalom.map(c => { const h = huetchen('#ff7a1a', c.x, c.z); h.pfeil = flach(pfeil, NEON, 0.8); h.pfeil.position.set(c.x, 0.006, c.z + c.seite * 0.8); return h; });
+    // 2) Drehungen: gelbgrüne Hütchen mit gepunktetem Kreis (die Punkte füllen sich mit der Drehung)
+    this.drehungen = PARCOURS.drehungen.map(c => {
+      const h = huetchen(NEON, c.x, c.z), n = 30, pos = [], col = [], R = PARCOURS.ring, r = 0.06;
+      for (let i = 0; i < n; i++) {
+        const a = i / n * Math.PI * 2, px = c.x + Math.cos(a) * R, pz = c.z + Math.sin(a) * R;
+        for (let k = 0; k < 8; k++) { const w0 = k / 8 * Math.PI * 2, w1 = (k + 1) / 8 * Math.PI * 2; pos.push(px, 0.007, pz, px + Math.cos(w0) * r, 0.007, pz + Math.sin(w0) * r, px + Math.cos(w1) * r, 0.007, pz + Math.sin(w1) * r); for (let j = 0; j < 3; j++) col.push(1, 1, 1); }
+      }
+      const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+      const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.85, depthWrite: false, side: THREE.DoubleSide, toneMapped: false })); m.renderOrder = 1; G.add(m);
+      h.ring = m; h.n = n; return h;
+    });
+    // 3) Tore: zwei blaue Hütchen und eine Linie dazwischen
+    this.tore = PARCOURS.tore.map(g => {
+      const a = huetchen('#2f7bff', g.x, g.z - g.b, 0.8), b = huetchen('#2f7bff', g.x, g.z + g.b, 0.8);
+      const linie = flach(new THREE.PlaneGeometry(0.06, g.b * 2).rotateX(-Math.PI / 2), '#ffffff', 0.6); linie.position.set(g.x, 0.006, g.z);
+      return { pfosten: [a, b], linie, x: g.x, z: g.z, b: g.b };
+    });
+    this.alleHuete = [...this.slalom, ...this.drehungen, ...this.tore.flatMap(t => t.pfosten)];
+    // Leuchtring unter dem Spieler
+    this.spielerRing = flach(new THREE.RingGeometry(0.44, 0.53, 48).rotateX(-Math.PI / 2), NEON, 0.9); this.spielerRing.layers.set(2);
+  },
+  /** Parcours aufbauen und Zustand zurücksetzen. */
+  start() {
+    this.z = { uebung: 0, k: 0, t: 0, fehler: 0, ziele: 0, schussT: -1, letztX: null, winkel: 0, aAlt: null, startA: 0, puls: 0 };
+    for (const h of this.alleHuete) { h.um = false; h.kipp = 0; h.g.quaternion.identity(); }
+    this.gruppe.visible = true; HUD.parcours(true); this.hervorheben(); HUD.parcoursStand(0, 0);
+  },
+  /** Beim Anpfiff: erste Aufgabe zeigen. */
+  los() { this.aufgabeZeigen(); },
+  weg() { if (this.gruppe) this.gruppe.visible = false; HUD.parcours(false); this.z = null; },
+  aktiv() { return !!this.z; },
+  schussFrei() { return !!this.z && this.z.uebung >= 3; },
+  aufgabeZeigen() { const [a, b] = UEBUNG_TEXTE[Math.min(3, this.z.uebung)]; HUD.aufgabe(t(a), t(b)); },
+  fehler(text) { const P = this.z; P.fehler++; HUD.meldung(`${text} −${PARCOURS.abzug}`, 'schlecht'); Ton.fehler(); },
+  gut(text) { HUD.meldung(text, 'gut'); Ton.ziel(); },
+  naechste() {
+    const P = this.z; P.uebung++; P.k = 0; P.aAlt = null; P.winkel = 0;
+    this.aufgabeZeigen(); this.hervorheben();
+    if (P.uebung === 3) { HUD.banner(`${t('p_schuss')}<small>${t('p_schuss_u')}</small>`, 'neon'); setTimeout(() => { if (Spiel.zustand === 'anlauf' && Spiel.modus === 'parcours') HUD.banner(null); }, 1300); Ton.pfiff(false); }
+  },
+  /** Ein Simulationsschritt während des Anlaufs: Übungen erkennen, Hütchen-Treffer werten. */
+  schritt(dt) {
+    const P = this.z; if (!P) return;
+    const S = Spiel.schuetze, p = S.pos;
+    if (P.schussT < 0) P.t += dt;
+    for (const h of this.alleHuete) {
+      if (h.um) { if (h.kipp < 1) { h.kipp = Math.min(1, h.kipp + dt * 5); h.g.quaternion.setFromAxisAngle(_u.set(h.dir.z, 0, -h.dir.x), glatt(h.kipp) * 1.4); } continue; }
+      const dS = Math.hypot(p.x - h.x, p.z - h.z), dB = Math.hypot(ball.p.x - h.x, ball.p.z - h.z);
+      if (dS < 0.3 || (dB < 0.15 && ball.p.y < 0.4)) {
+        const q = dB < 0.15 ? ball.p : p; h.um = true; h.kipp = 0; h.dir.set(h.x - q.x, 0, h.z - q.z); if (h.dir.lengthSq() < 1e-6) h.dir.set(1, 0, 0); h.dir.normalize();
+        this.fehler(t('p_huetchen'));
+      }
+    }
+    const vx = P.letztX === null ? p.x : P.letztX; P.letztX = p.x;
+    const kreuzt = (x) => vx < x && p.x >= x;
+    if (P.uebung === 0) {
+      const c = PARCOURS.slalom[P.k];
+      if (kreuzt(c.x)) {
+        const rel = p.z - c.z;
+        if (Math.abs(rel) > 2.4) this.fehler(t('p_ausgelassen')); else if (Math.sign(rel) !== c.seite) this.fehler(t('p_seite')); else Ton.klick(0.15);
+        if (++P.k >= PARCOURS.slalom.length) this.naechste(); else this.hervorheben();
+      }
+    } else if (P.uebung === 1) {
+      const c = PARCOURS.drehungen[P.k], dx = p.x - c.x, dz = p.z - c.z, d = Math.hypot(dx, dz), a = Math.atan2(dz, dx);
+      if (d < 2.4) {
+        if (P.aAlt === null) { P.aAlt = a; P.startA = a; P.winkel = 0; }
+        else { let da = a - P.aAlt; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; P.winkel += da; P.aAlt = a; }
+      } else if (d > 3.4 && Math.abs(P.winkel) < 2) { P.aAlt = null; P.winkel = 0; }
+      let weiter = false;
+      if (Math.abs(P.winkel) >= Math.PI * 2 * 0.96) { this.gut(t('p_drehung')); weiter = true; }
+      else if (p.x > c.x + 3.4) { this.fehler(t('p_ausgelassen')); weiter = true; }
+      if (weiter) { P.k++; P.aAlt = null; P.winkel = 0; if (P.k >= PARCOURS.drehungen.length) this.naechste(); else this.hervorheben(); }
+    } else if (P.uebung === 2) {
+      const g = PARCOURS.tore[P.k];
+      if (kreuzt(g.x)) {
+        if (Math.abs(p.z - g.z) <= g.b) this.gut(t('p_durch')); else this.fehler(t('p_tor_verpasst'));
+        if (++P.k >= PARCOURS.tore.length) this.naechste(); else this.hervorheben();
+      }
+    }
+    Spiel.welt.schussGesperrt = P.uebung < 3;
+  },
+  beiSchuss() { if (this.z && this.z.schussT < 0) this.z.schussT = this.z.t; },
+  zielTreffer() { if (!this.z) return; this.z.ziele++; HUD.meldung(t('p_ziel', { p: PARCOURS.zielBonus }), 'gut'); Ton.ziel(); },
+  /** Aktive Teile hervorheben, erledigte dämpfen. */
+  hervorheben() {
+    const P = this.z;
+    this.slalom.forEach((h, i) => { h.pfeil.visible = P.uebung === 0 && i >= P.k; h.aktiv = P.uebung === 0 && i === P.k; });
+    this.drehungen.forEach((h, i) => { h.aktiv = P.uebung === 1 && i === P.k; h.fertig = P.uebung > 1 || (P.uebung === 1 && i < P.k); this.ringFaerben(h, 0); });
+    this.tore.forEach((g, i) => { const akt = P.uebung === 2 && i === P.k; g.pfosten.forEach(h => { h.aktiv = akt; }); g.linie.material.color.set(akt ? NEON : '#ffffff'); g.linie.material.opacity = akt ? 0.9 : 0.45; });
+  },
+  ringFaerben(h, anteil) {
+    const c = h.ring.geometry.getAttribute('color'), P = this.z, w = Math.abs(P.winkel), richtung = Math.sign(P.winkel) || 1;
+    const neon = new THREE.Color(NEON), hell = new THREE.Color(h.aktiv ? '#ffffff' : h.fertig ? NEON : '#9fb4d6');
+    for (let i = 0; i < h.n; i++) {
+      const a = i / h.n * Math.PI * 2; let d = (a - P.startA) * richtung; d = ((d % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      const f = h.aktiv && anteil > 0 && d <= w ? neon : hell;
+      for (let k = 0; k < 24; k++) c.setXYZ(i * 24 + k, f.r, f.g, f.b);
+    }
+    c.needsUpdate = true; h.ring.material.opacity = h.fertig ? 0.35 : 0.85;
+  },
+  /** Pro Bild: Pulsieren, Leuchtring unter dem Spieler, Uhr und Fortschritt. */
+  render(dt, alpha) {
+    const P = this.z; if (!P) return;
+    P.puls += dt; const pu = 0.35 + 0.35 * Math.sin(P.puls * 7);
+    for (const h of this.alleHuete) h.mat.emissiveIntensity = h.aktiv && !h.um ? pu : 0;
+    if (P.uebung === 1) { const h = this.drehungen[P.k]; if (h) this.ringFaerben(h, 1); }
+    const S = Spiel.schuetze, sichtbar = ['aufstellung', 'anlauf'].includes(Spiel.zustand);
+    this.spielerRing.visible = sichtbar;
+    if (sichtbar) this.spielerRing.position.set(mix(S.ppos.x, S.pos.x, alpha), 0.012, mix(S.ppos.z, S.pos.z, alpha));
+    HUD.parcoursStand(P.uebung, P.schussT >= 0 ? P.schussT : P.t);
+  },
+  /** Wertung am Ende. erg = Entscheidung des Regelwerks. */
+  ende(erg) {
+    const P = this.z, geschossen = P.schussT >= 0, zeit = geschossen ? P.schussT : P.t;
+    const r = { tor: !!(erg && erg.tor), code: erg ? erg.code : 'zeit', zeit, geschossen, zeitBonus: geschossen ? Math.max(0, Math.round((PARCOURS.zeitBasis - zeit) * 10)) : 0,
+      ziele: P.ziele, fehler: P.fehler, uebungen: Math.min(3, P.uebung) };
+    r.torBonus = r.tor ? PARCOURS.torBonus : 0; r.zielBonus = r.ziele * PARCOURS.zielBonus; r.abzug = r.fehler * PARCOURS.abzug;
+    r.punkte = Math.max(0, r.zeitBonus + r.torBonus + r.zielBonus - r.abzug);
+    const best = Speicher.lesen('fps_parcours_v1', null); r.bisher = best && Number.isFinite(best.punkte) ? best : null; r.neu = !r.bisher || r.punkte > r.bisher.punkte;
+    if (r.neu) Speicher.schreiben('fps_parcours_v1', { punkte: r.punkte, zeit: +zeit.toFixed(1) });
+    HUD.aufgabe(null);
+    return r;
+  }
+};
+
+/* =====================================================================
    MODUL: HUD – Spielstand mit Penalty-Punkten, Schütze, Zeitbalken, Schiedsrichter-Hinweis, Banner
    ===================================================================== */
 const HUD = {
   init() {
     const $ = (id) => document.getElementById(id);
-    this.el = { hud: $('hud'), a: $('hudA'), b: $('hudB'), stand: $('hudStand'), info: $('hudInfo'), zeit: $('zeitbalken').firstElementChild, zeitBox: $('zeitbalken'), tempo: $('tempoAnzeige'), schiri: $('schiri'), banner: $('banner'), hinweis: $('steuerHinweis'), training: $('trainingInfo'), joy: $('joystick'), tricks: $('trickLeiste'), anzeige: $('anzeige') };
+    this.el = { hud: $('hud'), a: $('hudA'), b: $('hudB'), stand: $('hudStand'), info: $('hudInfo'), zeit: $('zeitbalken').firstElementChild, zeitBox: $('zeitbalken'), tempo: $('tempoAnzeige'), parcours: $('parcoursHud'), aufgabe: $('aufgabe'), meldung: $('meldung'), schiri: $('schiri'), banner: $('banner'), hinweis: $('steuerHinweis'), training: $('trainingInfo'), joy: $('joystick'), tricks: $('trickLeiste'), anzeige: $('anzeige') };
     $('btnPause').addEventListener('click', () => UI.pauseUmschalten());
     $('btnTuning').addEventListener('click', () => TuningPanel.umschalten());
     $('btnKamera').addEventListener('click', () => Kam.wechseln());
@@ -3877,7 +4125,22 @@ const HUD = {
     }
   },
   zeit(f) { this.el.zeit.style.transform = `scaleX(${klemme(f, 0, 1)})`; },
-  banner(html, klein) { const b = this.el.banner; if (!html) { b.classList.add('versteckt'); return; } b.innerHTML = html; b.classList.toggle('klein', !!klein); b.classList.remove('versteckt'); },
+  /** Großer Schriftzug. art: true = kleine Marke unten links, 'neon' = Parcours-Stil (weiß/neongrün). */
+  banner(html, art) { const b = this.el.banner; if (!html) { b.classList.add('versteckt'); return; } b.innerHTML = html; b.classList.toggle('klein', art === true); b.classList.toggle('neon', art === 'neon'); b.classList.remove('versteckt'); },
+  /** Parcours-Anzeige ein/aus (Fortschrittspunkte und Uhr). */
+  parcours(an) { this.el.parcours.classList.toggle('versteckt', !an); if (!an) { this.aufgabe(null); this.meldung(null); } },
+  parcoursStand(uebung, zeit) {
+    const el = this.el.parcours, s = uebung + '|' + zeit.toFixed(1); if (this._pStand === s) return; this._pStand = s;
+    el.querySelectorAll('.drills i').forEach((d, i) => { d.className = i < uebung ? 'fertig' : i === uebung ? 'an' : ''; });
+    el.querySelector('.uhr').textContent = zeit.toFixed(1);
+  },
+  /** Aufgabenkarte unten: Titel und Hinweis der aktuellen Übung. */
+  aufgabe(titel, text) { const a = this.el.aufgabe; if (!titel) { a.classList.add('versteckt'); return; } a.innerHTML = `<b>${esc(titel)}</b><span>${esc(text || '')}</span>`; a.classList.remove('versteckt'); },
+  /** Kurze Meldung oben (z. B. „Hütchen berührt −20“). art: 'gut' | 'schlecht'. */
+  meldung(text, art) {
+    const m = this.el.meldung; clearTimeout(this._meldT); if (!text) { m.classList.add('versteckt'); return; }
+    m.textContent = text; m.className = art || ''; this._meldT = setTimeout(() => m.classList.add('versteckt'), 1500);
+  },
   schiri(text) { const s = this.el.schiri; if (!text) { s.classList.add('versteckt'); return; } s.querySelector('.text').textContent = text; s.classList.remove('versteckt'); },
   /** Steuerhinweise als Tastenkärtchen – passend zur Rolle (Schütze, Torhüter, Zuschauer) und zum Eingabegerät. */
   steuerHinweis() {
@@ -4057,6 +4320,7 @@ const UI = {
     const d = this.html(`
       <div class="titel"><h1>${t('titel')}</h1><p>${t('untertitel')}</p></div>
       <div class="menueRaster">
+        <button class="grossKnopf neon" data-m="parcours"><span class="ico">🏁</span>${t('m_parcours')}<small>${t('m_parcours_u')}</small></button>
         <button class="grossKnopf primaer" data-m="schnell"><span class="ico">⚡</span>${t('m_schnell')}<small>${t('m_schnell_u')}</small></button>
         <button class="grossKnopf" data-m="turnier"><span class="ico">🏆</span>${weiter ? t('m_turnier_weiter') : t('m_turnier')}<small>${t('m_turnier_u')}</small></button>
         <button class="grossKnopf" data-m="training"><span class="ico">🎯</span>${t('m_training')}<small>${t('m_training_u')}</small></button>
@@ -4067,7 +4331,7 @@ const UI = {
       ${Speicher.ok ? '' : `<p class="hinweisText" style="margin-top:1rem">${t('e_speicher_aus')}</p>`}`);
     this.klick(d, '[data-m]', (el) => {
       const m = el.dataset.m;
-      if (m === 'schnell') this.teamwahl(); else if (m === 'turnier') (weiter ? this.turnierHub() : this.turnierSetup());
+      if (m === 'parcours') Spiel.starteParcours(); else if (m === 'schnell') this.teamwahl(); else if (m === 'turnier') (weiter ? this.turnierHub() : this.turnierSetup());
       else if (m === 'training') this.trainingMenue(); else if (m === 'teams') this.teams(); else if (m === 'tuning') TuningPanel.oeffnen(); else this.einstellungen();
     });
   },
@@ -4191,6 +4455,19 @@ const UI = {
       <button class="knopf" data-menue>${t('menue')}</button></div></div>`, 'dunkel');
     this.klick(d, '[data-weiter]', () => { Spiel.leerlauf(); this.turnierHub(); });
     this.klick(d, '[data-revanche]', () => Spiel.starteMatch(A, B, S.mensch));
+    this.klick(d, '[data-menue]', () => { Spiel.leerlauf(); this.hauptmenue(); });
+  },
+  /* ---------- Parcours-Ergebnis ---------- */
+  parcoursErgebnis(r) {
+    const z = (a, b, kl) => `<div class="pZeile ${kl || ''}"><span>${a}</span><b>${b}</b></div>`;
+    const d = this.html(`<div class="mitte"><div class="karte dialog parcoursErg">
+      <div class="neonTitel ${r.tor ? '' : 'aus'}">${r.tor ? t('p_tor') : t('p_kein_tor')}</div>
+      <p class="hinweisText">${r.geschossen ? esc(t('r_' + r.code)) : t('p_ohne_schuss')}</p>
+      ${z(`${t('p_zeit')} ${r.zeit.toFixed(1)} s`, '+' + r.zeitBonus)}${z(t('p_torbonus'), '+' + r.torBonus)}${z(`${t('p_ziele')} ${r.ziele}`, '+' + r.zielBonus)}${z(`${t('p_fehler')} ${r.fehler}`, '−' + r.abzug, r.fehler ? 'minus' : '')}
+      <div class="ergebnisGross">${r.punkte}</div><div class="hinweisText">${t('p_punkte')}</div>
+      <p class="bestwert ${r.neu ? 'neu' : ''}">${r.neu ? t('p_bestwert_neu') : t('p_bestwert', { p: r.bisher.punkte })}</p>
+      <button class="knopf primaer" data-nochmal>${t('p_nochmal')}</button><button class="knopf" data-menue>${t('menue')}</button></div></div>`);
+    this.klick(d, '[data-nochmal]', () => Spiel.starteParcours());
     this.klick(d, '[data-menue]', () => { Spiel.leerlauf(); this.hauptmenue(); });
   },
   /* ---------- Pause ---------- */
@@ -4436,7 +4713,8 @@ function start() {
   document.getElementById('laden').remove();
   UI.hauptmenue();
   document.addEventListener('visibilitychange', () => { if (document.hidden && ['anlauf', 'aufstellung'].includes(Spiel.zustand) && !Spiel.pausiert) UI.pauseAuf(); });
-  window.__fps = { loeseSchuss, simuliereBisX, V3, THREE, renderer, szene, kamera, halle, Bild, Spiel, Config, Regeltests, Turnier, TeamDB, ball, UI, Eingabe, Kam, HUD, Ton, presetAnwenden, PRESETS, cfgSet, TuningPanel, Einst, Shootout };
+  window.__PARCOURS = PARCOURS; window.__Parcours = Parcours;
+  window.__fps = { Parcours, PARCOURS, loeseSchuss, simuliereBisX, V3, THREE, renderer, szene, kamera, halle, Bild, Spiel, Config, Regeltests, Turnier, TeamDB, ball, UI, Eingabe, Kam, HUD, Ton, presetAnwenden, PRESETS, cfgSet, TuningPanel, Einst, Shootout };
   requestAnimationFrame((t0) => { letzteZeit = t0; frame(t0); });
 }
 try { start(); }
