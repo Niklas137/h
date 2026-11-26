@@ -1,4 +1,4 @@
-// Regressionsprüfung: Laden, Regeltests, KI-Statistik, Kelle am Ball, Maus/Tastatur, Tricks, Torhüter, Parcours, freies Training, Turnier, Editor, Tuning, HUD
+// Regressionsprüfung: Laden, Regeltests, KI-Statistik, Kelle am Ball, Maus/Tastatur, Tricks, Torhüter, Parcours, freies Training, Spiel 5 gegen 5, Turnier, Editor, Tuning, HUD
 // Aufruf: node regression.js [Filter]   (Filter = regulärer Ausdruck auf die Abschnittsnummer, z. B. "^(3|4)")
 const { start } = require('./lib');
 const fs = require('fs');
@@ -169,6 +169,37 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     await zumMenue();
     const weg = await p.evaluate(() => ({ koerper: document.body.className, huetchen: window.__fps.Parcours.gruppe.visible, ring: window.__fps.Parcours.spielerRing.visible }));
     pruef('Freies Training: Aufräumen', !/frei/.test(weg.koerper) && !weg.huetchen && !weg.ring, JSON.stringify(weg));
+  });
+
+  // 5d) Spiel 5 gegen 5: Start über das Menü, Laufen, Pass, Schuss, komplettes Spiel bis zum Endstand, Aufräumen
+  await abschnitt('5d) Spiel 5 gegen 5', async () => {
+    await p.click('[data-m="spiel5"]'); await p.waitForTimeout(250); await p.click('[data-dauer="1"]'); await p.click('[data-los]');
+    const sp = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, E = F.Eingabe, alt = E.lenkung, erg = {};
+      S.pausiert = true; let i = 0; while (M.phase !== 'spiel' && i < 600) { S.schritt(1 / 120); i++; }
+      erg.start = { zustand: S.zustand, spieler: M.ents.length, torhueter: M.gks.length, steuer: !!M.steuer, zweiTore: F.ball.zweiTore, penaltyFiguren: S.figL.objekt.visible || S.figT.objekt.visible };
+      // Laufen: gesteuerter Spieler bewegt sich mit der Eingabe
+      M.steuer = M.ents[3]; M.eingabeT = 0; const p0 = M.steuer.s.pos.clone();
+      E.lenkung = () => ({ x: 1, y: 0, quelle: 'tasten' }); for (let k = 0; k < 90; k++) S.schritt(1 / 120); E.lenkung = alt;
+      erg.lauf = +M.steuer.s.pos.distanceTo(p0).toFixed(2);
+      // Pass mit Leertaste
+      const ich = M.steuer; M.gibBall(ich); for (let k = 0; k < 20; k++) S.schritt(1 / 120);
+      S.ereignis({ typ: 'finte' }); erg.pass = { besitzerNachPass: M.besitzer ? M.besitzer.team : null, empfaenger: !!M.passEmpfaenger, steuerGewechselt: M.steuer !== ich };
+      // Schuss: Ball geben, Enter halten und loslassen
+      let geschossen = null; const ob = M.beiSchuss.bind(M); M.beiSchuss = (s, info, team) => { geschossen = { team, kmh: Math.round(info.speed * 3.6) }; ob(s, info, team); };
+      M.gibBall(M.steuer); for (let k = 0; k < 20; k++) S.schritt(1 / 120); E.tasten.add('Enter'); for (let k = 0; k < 70; k++) S.schritt(1 / 120); E.tasten.delete('Enter'); for (let k = 0; k < 60; k++) S.schritt(1 / 120);
+      M.beiSchuss = ob; erg.schuss = geschossen;
+      // Rest des Spiels im Zeitraffer
+      let n = 0, fehler = null; while (S.zustand === 'match' && n < 120 * 300) { try { S.schritt(1 / 120); } catch (e) { fehler = e.message; break; } n++; }
+      erg.ende = { zustand: S.zustand, stand: M.stand, tore: M.tore.length, fehler, text: (document.querySelector('.parcoursErg') || {}).innerText || '' };
+      S.pausiert = false; return erg;
+    });
+    pruef('Spiel 5 gegen 5: Start', sp.start.zustand === 'match' && sp.start.spieler === 10 && sp.start.torhueter === 2 && sp.start.steuer && sp.start.zweiTore && !sp.start.penaltyFiguren, JSON.stringify(sp.start));
+    pruef('Spiel 5 gegen 5: Laufen, Pass, Schuss', sp.lauf > 0.8 && sp.pass.besitzerNachPass === null && sp.pass.empfaenger && sp.pass.steuerGewechselt && sp.schuss && sp.schuss.team === 'A', JSON.stringify({ lauf: sp.lauf, pass: sp.pass, schuss: sp.schuss }));
+    pruef('Spiel 5 gegen 5: drei Drittel bis zum Endstand', sp.ende.zustand === 'ergebnis' && !sp.ende.fehler && /Endstand/.test(sp.ende.text) && /Revanche/.test(sp.ende.text) && (sp.ende.stand.A !== sp.ende.stand.B || /Penaltyschießen/.test(sp.ende.text)), JSON.stringify({ stand: sp.ende.stand, tore: sp.ende.tore, fehler: sp.ende.fehler }));
+    await p.click('.parcoursErg [data-menue]'); await p.waitForTimeout(200);
+    const weg = await p.evaluate(() => { const F = window.__fps; return { sichtbar: F.Match.sichtbar, zweiTore: F.ball.zweiTore, penalty: F.Spiel.figL.objekt.visible && F.Spiel.figT.objekt.visible, koerper: document.body.className }; });
+    pruef('Spiel 5 gegen 5: Aufräumen', !weg.sichtbar && !weg.zweiTore && weg.penalty && !/match/.test(weg.koerper), JSON.stringify(weg));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung

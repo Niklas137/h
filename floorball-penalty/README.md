@@ -27,6 +27,14 @@ Alle anderen Inhalte (Geometrie, Texturen, Ton) entstehen prozedural im Browser.
 **Allgemein**: **T** oder ⚙ öffnet das Tuning (auch im Spiel), **C** oder 🎥 wechselt die Kamera, **Esc/P** oder ⏸ pausiert. Ein Tipp überspringt Intro und Wiederholung. Alle Tasten lassen sich unter *Einstellungen* frei belegen.
 
 ## Modi
+- **Spiel 5 gegen 5**: echtes Floorballspiel mit fünf Feldspielern und einem Torhüter je Team, drei Drittel (1, 2, 3 oder 5 Minuten je Drittel, in der Teamwahl einstellbar).
+  - Du steuerst einen Spieler von Team A; mit Ball schießt du wie beim Penalty (Maus zielt, halten = Kraft, loslassen = Schuss).
+  - **Leertaste** (Touch: Knopf „Pass“, Gamepad: B): mit Ball passen zum Mitspieler in Lauf- bzw. Blickrichtung, ohne Ball kurz energisch zum Ball gehen (höhere Chance, ihn zu erobern).
+  - **X** (Touch: „Wechsel“): Spieler wechseln. Bei Ballbesitz steuerst du automatisch den Ballführer, nach einem Pass den Empfänger.
+  - **Assistenz**: Ohne Eingabe spielt die KI deinen Spieler nach 1,2 s weiter, bis du wieder lenkst, schießt oder passt.
+  - Regeln vereinfacht: Bully zu Beginn jedes Drittels und nach Toren, Einschlag für das andere Team, wenn der Ball die Bande verlässt, Feldspieler dürfen nicht in die Torhüterräume, Torhüter fangen Bälle im Torhüterraum und werfen sie zu einem freien Mitspieler ab. Kein Abseits, keine Strafen.
+  - Unentschieden nach drei Dritteln: Knopf „Penaltyschießen“ startet ein Shootout mit denselben Teams.
+  - Kamera schräg hinter deinem Spieler (C wechselt zur seitlichen Fernsehansicht). KI gegen KI zeigt die Fernsehansicht.
 - **Parcours** (wie im Vorbild-Video, eine Werbung für ein Floorball-Handyspiel): drei Übungen und ein Schuss, auf Zeit und Punkte.
   1. **Slalom**: im Zickzack an den orangen Hütchen vorbei, die grünen Pfeile zeigen die Seite.
   2. **Volle Drehungen**: einmal ganz um jedes der zwei grünen Hütchen, die Punkte im Kreis füllen sich mit.
@@ -35,7 +43,7 @@ Alle anderen Inhalte (Geometrie, Texturen, Ton) entstehen prozedural im Browser.
   - Wertung: Zeitbonus (35 s minus Zeit bis zum Schuss, mal 10), Tor +100, jedes getroffene Ziel +50, jeder Fehler −20 (Hütchen berührt, falsche Seite, ausgelassen, Tor verpasst). Der Bestwert wird gespeichert.
   - Ohne Eingabe bleibt der Spieler stehen, die Vorwärtsregel gilt hier nicht. Ausgelassene Übungen zählen als Fehler, nichts blockiert. Zeitlimit 60 s.
   - Kamera schräg von hinten oben mit Blick zum Tor, im Hochformat steiler und weiter. Der Boden ist im Parcours immer blau.
-- **Schnelles Spiel**: Hauptmenü → Schnelles Spiel → Anpfiff (Zufallsgegner ist vorgewählt). Du schießt und hältst abwechselnd. „KI gegen KI“ lässt dich zuschauen.
+- **Penaltyschießen**: Hauptmenü → Penaltyschießen → Anpfiff (Zufallsgegner ist vorgewählt). Du schießt und hältst abwechselnd. „KI gegen KI“ lässt dich zuschauen.
 - **Turnier**: 4 oder 8 Teams, Gruppenphase optional, danach K.-o. bis zum Finale. KI-Spiele lassen sich ansehen oder sofort simulieren. Mit Tabelle, Statistik und Siegerehrung. Der Stand wird gespeichert.
 - **Training**: Schießen auf Zielscheiben (mit oder ohne Torhüter) oder Halten, ohne Wertung.
 - **Freies Training** (Training → Freies Training): keine Regeln, kein Zeitlimit, keine Torhüterraum-Regel. Überall laufen, tricksen und schießen, so oft man will. Nach jedem Schuss zeigt eine kurze Meldung das Ergebnis, dann liegt der Ball wieder am Schläger. Bleibt der Ball liegen, kommt er nach 1,5 s zurück. Oben links zählen Schüsse, Tore, Paraden, Zielscheiben und der schnellste Schuss. Optional mit oder ohne Torhüter und mit den Parcours-Hütchen als Hindernisse (ohne Wertung).
@@ -67,14 +75,15 @@ node pruefung/regression.js
 node pruefung/touch.js
 ```
 
-`regression.js` prüft 26 Punkte (Regeltests, KI-Trefferquote, Kelle am Ball, Maus und Tastatur, Tricks, Torhüter, Parcours mit Testfahrer, freies Training, Turnier, Editor und Import, Tuning, HUD, Konsole). `touch.js` prüft Joystick, Zielen, Trick-Knöpfe und Parade auf einem emulierten Smartphone.
+`regression.js` prüft 30 Punkte (Regeltests, KI-Trefferquote, Kelle am Ball, Maus und Tastatur, Tricks, Torhüter, Parcours mit Testfahrer, freies Training, Spiel 5 gegen 5 bis zum Endstand, Turnier, Editor und Import, Tuning, HUD, Konsole). `touch.js` prüft Joystick, Zielen, Trick-Knöpfe und Parade auf einem emulierten Smartphone.
 
 ## Bekannte Grenzen
 - Ohne Internet startet das Spiel nicht, weil Three.js vom CDN kommt. Abhilfe: `three.module.js` neben die Datei legen und die Importmap anpassen.
 - Die Figuren sind prozedural: gehäuteter Körper, modellierter Kopf mit gemaltem Gesicht, Ausrüstung aus erzeugter Geometrie. Es gibt keine Mimik, die Finger sind starr, aus nächster Nähe bleibt der Look stilisiert.
 - Zuschauer sind eine einfache, tausendfach instanzierte Sitzfigur ohne Gesicht. Die Torhüter-Trefferzonen sind Kapseln.
 - Regelannahmen, nicht am IFF-Regelwerk verifiziert: Der Schütze darf in den Torraum (4 × 5 m), aber nicht in den Torhüterraum (1 × 2,5 m), sonst Fehlversuch (im Tuning abschaltbar). Der Torhüter bleibt auf den Torraum beschränkt. Der Zorro-Trick trägt den Ball unterhalb Kniehöhe.
-- Ein Spiel fünf gegen fünf gibt es noch nicht. Geplant ist es als nächste Stufe nach Parcours und Penalty.
+- Das Spiel 5 gegen 5 ist vereinfacht: keine Strafen, kein Abseits (gibt es im Floorball ohnehin nicht), Pässe ohne eigene Schlaganimation, Zweikämpfe als Wahrscheinlichkeit nach Technik-Wert. Ein Turnier mit vollen Spielen gibt es noch nicht.
+- Mit zwölf Figuren steigt die Zahl der Zeichenaufrufe deutlich; auf schwachen Geräten die Grafikstufe „Niedrig“ wählen.
 - Die schmale Großschrift im Parcours nutzt Systemschriften (z. B. Avenir Next Condensed auf Apple-Geräten). Fehlen sie, erscheint eine fette Standardschrift.
 - Geprüft nur in Chromium ohne echte Grafikkarte (Software-Rendering, Desktop und emuliertes Pixel 7). Firefox, Safari, Edge, echte Smartphones und die Bildrate auf realer Hardware sind nicht gemessen.
 - In eingebetteten Vorschauen (z. B. Artefakt-Ansicht) können Datei-Downloads gesperrt sein. Dann wirken die Export-Knöpfe nicht.

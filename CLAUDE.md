@@ -39,5 +39,5 @@ Prüfbefunde in `kader-manager/UMSETZUNG_Pruefbericht_2026-10-08.md`. Lokal star
 
 Eigenständiges 3D-Spiel in einer Datei: `floorball-penalty/index.html` (Three.js per CDN, sonst alles prozedural).
 Anleitung und bekannte Grenzen in `floorball-penalty/README.md`. Regeltests im Tuning-Panel (Taste T) oder per `window.__fps.Regeltests.ausfuehren()`.
-Modi: Parcours (Slalom, Drehungen, Tore, Schuss; Vorbild war ein Werbe-Video), Schnelles Spiel (Penalty), Turnier, Training (auch freies Training ohne Regeln). Volles Spiel 5 gegen 5 ist geplant, nicht gebaut.
-Prüfskripte (Playwright, Chromium) unter `floorball-penalty/pruefung/`: `node floorball-penalty/pruefung/regression.js` (26 Prüfungen) und `touch.js`.
+Modi: Spiel 5 gegen 5 (Modul `Match`, Team B im um 180° gedrehten Koordinatensystem), Parcours (Vorbild war ein Werbe-Video), Penaltyschießen, Turnier, Training (auch freies Training ohne Regeln).
+Prüfskripte (Playwright, Chromium) unter `floorball-penalty/pruefung/`: `node floorball-penalty/pruefung/regression.js` (30 Prüfungen) und `touch.js`.

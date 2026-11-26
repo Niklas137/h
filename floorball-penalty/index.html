@@ -84,6 +84,10 @@ input,select{ font:inherit; }
   padding:.35rem .95rem; font-weight:800; font-size:1.1rem; white-space:nowrap; }
 #meldung.schlecht{ color:#ff5a6a; } #meldung.gut{ color:var(--neon); }
 @media (max-width:620px){
+  #anzeige{ left:max(.6rem,env(safe-area-inset-left)); transform:none; white-space:nowrap; }
+  .hudTeam{ padding:.3rem .45rem; gap:.3rem; } .hudTeam .kz{ font-size:.95rem; } .hudTeam .punkte{ font-size:.85rem; letter-spacing:.06em; }
+  #hudStand{ font-size:1.25rem; padding:.2rem .55rem; white-space:nowrap; }
+  #hudInfo{ left:max(.6rem,env(safe-area-inset-left)); transform:none; top:calc(max(.6rem,env(safe-area-inset-top)) + 2.9rem); font-size:.85rem; }
   #parcoursHud .uhr{ left:auto; right:0; transform:none; top:3.7rem; font-size:2rem; }
   #aufgabe{ bottom:calc(max(.8rem,env(safe-area-inset-bottom)) + 7.6rem); }
   #meldung{ top:calc(max(.6rem,env(safe-area-inset-top)) + 3.9rem); }
@@ -91,10 +95,13 @@ input,select{ font:inherit; }
 body.parcours #hudInfo, body.parcours #zeitbalken, body.parcours #tempoAnzeige{ display:none !important; }
 body.parcours .querHinweis, body.frei .querHinweis{ display:none !important; }
 body.frei #hudInfo, body.frei #zeitbalken{ display:none !important; }
+body.match #zeitbalken{ display:none !important; }
+body.match #hudInfo b{ font-variant-numeric:tabular-nums; }
 .trainingRaster{ grid-template-columns:repeat(2,minmax(0,1fr)); max-width:40rem; }
 #trainingInfo{ max-width:calc(100vw - 13rem); }
 .grossKnopf.neon{ grid-column:1/-1; background:linear-gradient(135deg,#c4f23a,#7ccf2a); color:#0c1400; min-height:5.4rem; }
 .grossKnopf.neon small{ color:#2c4000; }
+.grossKnopf.breit{ grid-column:1/-1; }
 .parcoursErg .neonTitel{ font-family:var(--schmal); font-weight:900; font-stretch:condensed; font-size:clamp(3rem,13vw,5rem); line-height:1; color:var(--neon); }
 .parcoursErg .neonTitel.aus{ color:#fff; }
 .pZeile{ display:flex; justify-content:space-between; gap:1rem; padding:.35rem .2rem; border-bottom:1px solid var(--rand); font-size:1.05rem; }
@@ -280,8 +287,12 @@ window.__fpsGestartet = true;
    ===================================================================== */
 const TEXTE = {
   de: {
-    titel: 'FLOORBALL PENALTY SHOWDOWN', untertitel: 'Unihockey · Penaltyschießen',
-    m_schnell: 'Schnelles Spiel', m_schnell_u: 'Shootout gegen die KI',
+    titel: 'FLOORBALL PENALTY SHOWDOWN', untertitel: 'Unihockey · Spiel · Penalty · Parcours',
+    m_schnell: 'Penaltyschießen', m_schnell_u: 'Shootout gegen die KI',
+    m_spiel5: 'Spiel 5 gegen 5', m_spiel5_u: 'Echtes Floorball: passen, dribbeln, Tore schießen – drei Drittel',
+    s5_untertitel: 'Spiel 5 gegen 5', s5_drittel: 'Drittel', s5_dauer: 'Drittellänge', s5_min: '{n} Min', s5_pause: '{n}. DRITTEL', s5_einschlag: 'Einschlag {t}',
+    s5_gewinnt: 'gewinnt', s5_pass: 'Pass', s5_wechsel: 'Wechsel', s5_penalty: 'Penaltyschießen ▶', s5_tore: 'Tore', s5_keine_tore: 'Keine Tore', s5_endstand: 'Endstand',
+    h_pass: 'Pass / Ball erobern', h_wechsel: 'Spieler wechseln', h_schuss_ball: 'Schuss (mit Ball)', a_wechsel: 'Spieler wechseln', pen_untertitel: 'Penaltyschießen',
     m_parcours: 'Parcours', m_parcours_u: 'Slalom, Drehungen, Tore – dann der Schuss. Auf Zeit und Punkte.',
     p_titel1: 'PAR', p_titel2: 'COURS', p_untertitel: '3 Übungen · 1 Schuss',
     p_slalom: 'Slalom', p_slalom_u: 'Im Zickzack an den Pfeilen vorbei', p_drehung_t: 'Volle Drehungen', p_drehung_u: 'Einmal ganz um die grünen Hütchen',
@@ -498,8 +509,8 @@ function presetAnwenden(p) {
 }
 
 /* Spieler-Einstellungen (nicht im Tuning) */
-const TASTEN_STANDARD = { hoch: 'KeyW', runter: 'KeyS', links: 'KeyA', rechts: 'KeyD', aktion: 'KeyJ', finte: 'Space', lupfer: 'ShiftLeft', zieher: 'KeyQ', drehung: 'KeyE', zorro: 'KeyR', raus: 'KeyF', kamera: 'KeyC', pause: 'Escape', tuning: 'KeyT' };
-const Einst = mischeTief({ schwierigkeit: 'amateur', kamera: 'auto', zielhilfe: true, wiederholung: true, schrift: 1, farbenblind: false, ton: 0.8, tutorial: false,
+const TASTEN_STANDARD = { hoch: 'KeyW', runter: 'KeyS', links: 'KeyA', rechts: 'KeyD', aktion: 'KeyJ', finte: 'Space', lupfer: 'ShiftLeft', zieher: 'KeyQ', drehung: 'KeyE', zorro: 'KeyR', raus: 'KeyF', wechsel: 'KeyX', kamera: 'KeyC', pause: 'Escape', tuning: 'KeyT' };
+const Einst = mischeTief({ drittelMin: 2, schwierigkeit: 'amateur', kamera: 'auto', zielhilfe: true, wiederholung: true, schrift: 1, farbenblind: false, ton: 0.8, tutorial: false,
   letztesTeam: null, tasten: tief(TASTEN_STANDARD) }, Speicher.lesen('fps_einst_v1', {}));
 for (const k in TASTEN_STANDARD) if (!Einst.tasten[k]) Einst.tasten[k] = TASTEN_STANDARD[k];
 function einstSpeichern() { Speicher.schreiben('fps_einst_v1', Einst); }
@@ -696,7 +707,7 @@ class EingabeSystem {
       Ton.init();
       if (!this.tasten.has(e.code)) {
         if (e.code === b.finte) this.ereignisse.push({ typ: 'finte' });
-        for (const n of ['zieher', 'drehung', 'zorro', 'raus']) if (e.code === b[n]) this.ereignisse.push({ typ: 'trick', name: n });
+        for (const n of ['zieher', 'drehung', 'zorro', 'raus', 'wechsel']) if (e.code === b[n]) this.ereignisse.push({ typ: 'trick', name: n });
         if (e.code === b.aktion) this.ereignisse.push({ typ: 'aktionDruck' });
         if (e.code === b.pause || e.code === 'KeyP') this.ereignisse.push({ typ: 'pause' });
         if (e.code === b.tuning) this.ereignisse.push({ typ: 'tuning' });
@@ -815,10 +826,10 @@ class Ball {
   constructor() {
     this.p = new V3(0, BALLD.r, 0); this.v = new V3(); this.w = new V3(); this.q = new Q4();
     this.pp = this.p.clone(); this.pq = this.q.clone();
-    this.imTor = false; this.kinematisch = false; this.aus = false; this.kontaktCooldown = new Map(); this.nurBoden = false;
+    this.imTor = false; this.imTor2 = false; this.zweiTore = false; this._gedreht = false; this.kinematisch = false; this.aus = false; this.kontaktCooldown = new Map(); this.nurBoden = false;
     this.letzterKontakt = null; this.ereignis = null; this.zeit = 0;
   }
-  reset(x = 0, z = 0) { this.p.set(x, BALLD.r, z); this.v.set(0, 0, 0); this.w.set(0, 0, 0); this.pp.copy(this.p); this.pq.copy(this.q); this.imTor = false; this.aus = false; this.kinematisch = false; this.kontaktCooldown.clear(); }
+  reset(x = 0, z = 0) { this.p.set(x, BALLD.r, z); this.v.set(0, 0, 0); this.w.set(0, 0, 0); this.pp.copy(this.p); this.pq.copy(this.q); this.imTor = false; this.imTor2 = false; this.aus = false; this.kinematisch = false; this.kontaktCooldown.clear(); }
   /** Kinematisch führen (Dribbling): Ziel und Geschwindigkeit setzen, Rotation rollt mit. */
   fuehre(ziel, vel, dt) {
     this.kinematisch = true; this.pp.copy(this.p); this.pq.copy(this.q);
@@ -854,7 +865,18 @@ class Ball {
     this._torLinie(prevX, prevY, prevZ);
     for (const c of TORRAHMEN) this._kapsel(c, h, 1, welt);
     this._netz();
+    if (this.zweiTore) this._zweitesTor(prevX, prevY, prevZ, h, welt);
     if (welt && welt.kapseln) for (const c of welt.kapseln) if (c.aktiv) this._kapsel(c, h, frac, welt);
+  }
+  /** Zweites Tor bei −x (Spiel 5 gegen 5): Ball um 180° um die Hochachse gedreht durch dieselbe Tor-Logik schicken. */
+  _zweitesTor(px, py, pz, h, welt) {
+    const p = this.p, v = this.v, w = this.w;
+    const dreh = () => { p.x = -p.x; p.z = -p.z; v.x = -v.x; v.z = -v.z; w.x = -w.x; w.z = -w.z; const t = this.imTor; this.imTor = this.imTor2; this.imTor2 = t; };
+    dreh(); this._gedreht = true;
+    this._torLinie(-px, py, -pz);
+    for (const c of TORRAHMEN) this._kapsel(c, h, 1, welt);
+    this._netz();
+    this._gedreht = false; dreh();
   }
   _boden(h) {
     const P = Config.physik, v = this.v, p = this.p, r = BALLD.r;
@@ -1459,7 +1481,7 @@ class Halle {
     G.add(bandenMesh());
     // ---------- Tore (beide Seiten; gespielt wird auf das rechte) ----------
     const t1 = torMesh(); G.add(t1.gruppe); this.netz = t1.netz;
-    const t2 = torMesh(); t2.gruppe.rotation.y = Math.PI; G.add(t2.gruppe);
+    const t2 = torMesh(); t2.gruppe.rotation.y = Math.PI; G.add(t2.gruppe); this.netz2 = t2.netz;
     // ---------- Tribünen: Betonstufen, Treppen, Blenden, Sitze ----------
     const beton = std(0x525b6c, 0.95), treppe = std(0x646d7e, 0.9), dunkel = std(0x1b212d, 0.9), gelaender = std(0x9aa4b3, 0.45, 0.6);
     const sitze = [], T = A.reiheT, Hh = A.reiheH;
@@ -2552,6 +2574,7 @@ const POSEN_TORWART = {
 const SCHUSS_DAUER = { handgelenk: 0.17, schlenzer: 0.22, schlag: 0.2, lupfer: 0.22, zorro: 0.18 };
 const SCHUSS_FAKTOR = { handgelenk: 0.8, schlenzer: 0.9, schlag: 1.0, lupfer: 0.5, zorro: 0.62 };
 const TRICK_DAUER = { zieher: 0.45, drehung: 0.65, zorro: 0.35 };
+const _drehP = new V3(), _drehV = new V3(), _drehB = new V3();   // Weltkoordinaten für Figuren im gedrehten System (Spiel 5 gegen 5)
 function winkelDaempf(a, b, rate, dt) { let d = b - a; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; return a + d * (1 - Math.exp(-rate * dt)); }
 function zuLokal(out, welt, pos, yaw) { out.subVectors(welt, pos); out.y = welt.y; const c = Math.cos(-yaw), s = Math.sin(-yaw); const x = out.x * c + out.z * s, z = -out.x * s + out.z * c; out.x = x; out.z = z; return out; }
 function zuWelt(out, lok, pos, yaw) { const c = Math.cos(yaw), s = Math.sin(yaw); const x = lok.x * c + lok.z * s, z = -lok.x * s + lok.z * c; out.set(pos.x + x, lok.y, pos.z + z); return out; }
@@ -2560,6 +2583,7 @@ class Schuetze {
   constructor(figur, daten) {
     this.fig = figur; this.s = figur.s; this.daten = daten; this.anim = new AnimMaschine(POSEN_SCHUETZE);
     this.pos = new V3(); this.ppos = new V3(); this.vel = new V3(); this.yaw = Math.PI / 2; this.pyaw = this.yaw;
+    this.dreh = false; this.schussUeberall = false;
     this.lokBall = new V3(); this.ballSeite = this.s; this.dribbelPhase = 0; this.dribbelDir = 0; this.speed = 0;
     this.lenkRichtung = new V3(1, 0, 0); this.zielSpeed = 0; this.pushSeite = 0; this.zielAbsicht = { z: 0, y: 0.3, aktiv: false };
     this.reset(0, 0);
@@ -2574,7 +2598,7 @@ class Schuetze {
   planerPhase() { return this.fig.planer.phase; }
   istVorhand() { return this.ballSeite === this.s; }
   /** Der Schuss darf geladen werden, sobald der Schütze losgelaufen ist. */
-  imSchussbereich() { return this.pos.x > 0.2; }
+  imSchussbereich() { return this.schussUeberall || this.pos.x > 0.2; }
   setzeZustand(z) { this.zustand = z; this.tZustand = 0; }
   /** Ein Simulationsschritt. A = Absicht (Mensch oder KI). welt = Spiel-Kontext. */
   schritt(dt, A, ball, welt) {
@@ -2595,7 +2619,7 @@ class Schuetze {
         if (this.zorro && !this.trick) { this.zorroT += dt; if (this.zorroT > 1.2 + d.technik / 100 * 1.8) this.zorro = false; }
         // Verlorenen Ball wieder aufnehmen (nach Torhüterkontakt gilt das als Nachschuss)
         this.ballSperre = Math.max(0, this.ballSperre - dt);
-        if (!this.kontrolle && this.ballSperre <= 0 && !ball.kinematisch && ball.v.length() < 5 && ball.p.y < 0.2 && this.fig.ferse.distanceTo(ball.p) < 0.45) { this.kontrolle = true; welt.beiWiederBall && welt.beiWiederBall(this); }
+        if (!welt.match && !this.kontrolle && this.ballSperre <= 0 && !ball.kinematisch && ball.v.length() < 5 && ball.p.y < 0.2 && this.fig.ferse.distanceTo(ball.p) < 0.45) { this.kontrolle = true; welt.beiWiederBall && welt.beiWiederBall(this); }
         animName = this.trick ? this.trick.name : this.zorro ? 'zorro' : this.finteT >= 0 ? 'finte' : 'dribbel'; animParam = this.trick ? { seite: this.trick.seite } : { seite: this.finteSeite };
         if (this.kontrolle && this.imSchussbereich() && A.laden && this.finteT < 0 && !this.trick && !welt.schussGesperrt) { this.setzeZustand('laden'); this.power = 0; this.zielAbsicht.aktiv = true; }
         break;
@@ -2627,7 +2651,7 @@ class Schuetze {
         wunsch.copy(this.vel).setLength(Math.max(0.001, ziel));
         if (this.vel.lengthSq() < 0.01) wunsch.set(0, 0, 0);
         // Erneut an den Ball (erlaubt, solange der Torhüter ihn nicht berührt hat)
-        if (!ball.kinematisch && A.laden && ball.v.length() < 6 && this.fig.ferse.distanceTo(ball.p) < 0.42) {
+        if (!welt.match && !ball.kinematisch && A.laden && ball.v.length() < 6 && this.fig.ferse.distanceTo(ball.p) < 0.42) {
           this.kontrolle = true; this.setzeZustand('lauf'); this.zielSpeed = 2; this.lenkRichtung.set(1, 0, 0); this.wiederBall = true; welt.beiWiederBall && welt.beiWiederBall(this);
         }
         animName = 'nachlauf'; break;
@@ -2643,7 +2667,7 @@ class Schuetze {
     // Keine Durchdringung: Schütze bleibt außerhalb von Tor und Torhüter (nach dem Schuss auch außerhalb des Torraums)
     const imAblauf = this.zustand === 'lauf' || this.zustand === 'laden';
     const grenzeX = !imAblauf && Math.abs(this.pos.z) < TORRAUM.hz + 0.3 ? Math.min(this.pos.x, TORRAUM.vorne - 0.3) : (Math.abs(this.pos.z) < TOR.hb + 0.9 ? TOR.x - 0.9 : 99);
-    if (this.pos.x > grenzeX) { this.pos.x = grenzeX; if (this.vel.x > 0) this.vel.x = 0; }
+    if (!welt.match && this.pos.x > grenzeX) { this.pos.x = grenzeX; if (this.vel.x > 0) this.vel.x = 0; }
     if (welt.torwartPos) { const dx = this.pos.x - welt.torwartPos.x, dz = this.pos.z - welt.torwartPos.z, d = Math.hypot(dx, dz); if (d < 0.75 && d > 1e-4) { this.pos.x += dx / d * (0.75 - d); this.pos.z += dz / d * (0.75 - d); } }
     this.speed = Math.hypot(this.vel.x, this.vel.z);
     // Blickrichtung
@@ -2656,12 +2680,17 @@ class Schuetze {
     zuLokal(this.lokBall, ball.p, this.pos, this.yaw);
     if (Math.abs(this.lokBall.x) > 0.06) this.ballSeite = Math.sign(this.lokBall.x);
     if (this.kontrolle) { this.fuehreBall(dt, ball); zuLokal(this.lokBall, ball.p, this.pos, this.yaw); }
+    else if (welt.match) this.lokBall.set(this.s * 0.24, BALLD.r, 0.62);     // ohne Ball: Schläger tief vor dem Körper
     this.pushSeite = daempf(this.pushSeite, this.dribbelDir, this.finteT >= 0 ? 40 : 24, dt);
     // Animation
     // „neu“ startet eine Animation genau einmal neu (sonst begänne die Überblendung in jedem Schritt von vorn)
     if (this.anim.name !== animName || (animParam && animParam.neu)) { this.anim.setze(animName, animParam, animName === 'schuss' ? 0.05 : undefined); if (animParam) animParam.neu = false; }
     const P = this.anim.update(dt, this);
-    this.fig.anwenden(P, { pos: this.pos, yaw: this.yaw, vel: this.vel, dt, ballPos: ball.p && ball.p.isVector3 ? ball.p : null, blickZiel: this.zustand === 'laden' || this.zustand === 'schuss' ? _d.set(TOR.x, 0.4, this.zielAbsicht.z * 0.7) : this.zustand === 'lauf' && ball.p.isVector3 ? _d.set(mix(ball.p.x, TOR.x, 0.55), mix(ball.p.y, 0.9, 0.55), mix(ball.p.z, 0, 0.55)) : ball.p, schrittCb: welt.schrittCb });
+    // Blickziel in eigenen Vektor kopieren (die Figur nutzt die Hilfsvektoren intern); im gedrehten System in Weltkoordinaten umrechnen
+    const echt = ball.echt || ball, D = this.dreh;
+    const bz = this.zustand === 'laden' || this.zustand === 'schuss' ? _drehB.set(TOR.x, 0.4, this.zielAbsicht.z * 0.7) : this.zustand === 'lauf' && ball.p.isVector3 ? _drehB.set(mix(ball.p.x, TOR.x, 0.55), mix(ball.p.y, 0.9, 0.55), mix(ball.p.z, 0, 0.55)) : ball.p && ball.p.isVector3 ? _drehB.copy(ball.p) : null;
+    if (D && bz) bz.set(-bz.x, bz.y, -bz.z);
+    this.fig.anwenden(P, { pos: D ? _drehP.set(-this.pos.x, 0, -this.pos.z) : this.pos, yaw: D ? this.yaw + Math.PI : this.yaw, vel: D ? _drehV.set(-this.vel.x, 0, -this.vel.z) : this.vel, dt, ballPos: echt.p && echt.p.isVector3 ? echt.p : null, blickZiel: bz, schrittCb: welt.schrittCb });
   }
   fuehreBall(dt, ball) {
     const sp = this.speed;
@@ -2764,7 +2793,7 @@ class Torwart {
   constructor(figur, daten) {
     this.fig = figur; this.daten = daten; this.anim = new AnimMaschine(POSEN_TORWART);
     this.pos = new V3(); this.ppos = new V3(); this.vel = new V3(); this.yaw = -Math.PI / 2; this.pyaw = this.yaw;
-    this.lokVel = new V3(); this.zielWelt = new V3(); this.zielLokal = new V3(); this.reset();
+    this.lokVel = new V3(); this.zielWelt = new V3(); this.zielLokal = new V3(); this.dreh = false; this.reset();
   }
   reset() {
     this.pos.set(TOR.x - 0.3, 0, 0); this.ppos.copy(this.pos); this.vel.set(0, 0, 0); this.zustand = 'grund'; this.t = 0; this.aktion = null;
@@ -2820,8 +2849,9 @@ class Torwart {
     zuLokal(this.zielLokal, this.zielWelt, this.pos, this.yaw);
     if (this.gefangen && this.zustand !== 'liegtVorn') { this.zielLokal.set(0, 0.72, 0.32); }
     const P = this.anim.update(dt, this);
-    this.fig.anwenden(P, { pos: this.pos, yaw: this.yaw, vel: this.vel, dt, ballPos: ball.p && ball.p.isVector3 ? ball.p : null, blickZiel: ball.p });
-    if (this.gefangen) { const hl = this.fig.j.handL.getWorldPosition(_a), hr = this.fig.j.handR.getWorldPosition(_b); const m = _c.lerpVectors(hl, hr, 0.5).add(_d.set(-0.06, -0.02, 0)); if (m.y < BALLD.r) m.y = BALLD.r; ball.fuehre(m, _u.set(0, 0, 0), dt); }
+    const echt = ball.echt || ball, D = this.dreh;
+    this.fig.anwenden(P, { pos: D ? _drehP.set(-this.pos.x, 0, -this.pos.z) : this.pos, yaw: D ? this.yaw + Math.PI : this.yaw, vel: D ? _drehV.set(-this.vel.x, 0, -this.vel.z) : this.vel, dt, ballPos: echt.p && echt.p.isVector3 ? echt.p : null, blickZiel: echt.p && echt.p.isVector3 ? _drehB.copy(echt.p) : null });
+    if (this.gefangen) { const hl = this.fig.j.handL.getWorldPosition(_a), hr = this.fig.j.handR.getWorldPosition(_b); const m = _c.lerpVectors(hl, hr, 0.5); m.y -= 0.02; if (m.y < BALLD.r) m.y = BALLD.r; echt.fuehre(m, _u.set(0, 0, 0), dt); }
   }
 }
 
@@ -3214,7 +3244,7 @@ function initSzene() {
   const blob = new THREE.MeshBasicMaterial({ map: verlaufsTextur(), transparent: true, depthWrite: false, toneMapped: false });
   ballSchatten = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.12), blob); ballSchatten.rotation.x = -Math.PI / 2; ballSchatten.layers.set(2); szene.add(ballSchatten);
   const kg = new THREE.PlaneGeometry(1, 1); kg.rotateX(-Math.PI / 2);
-  kontaktSchatten = new THREE.InstancedMesh(kg, new THREE.MeshBasicMaterial({ map: verlaufsTextur('rgba(0,0,0,0.5)'), transparent: true, depthWrite: false, toneMapped: false }), 16);
+  kontaktSchatten = new THREE.InstancedMesh(kg, new THREE.MeshBasicMaterial({ map: verlaufsTextur('rgba(0,0,0,0.5)'), transparent: true, depthWrite: false, toneMapped: false }), 40);
   kontaktSchatten.frustumCulled = false; kontaktSchatten.layers.set(2); kontaktSchatten.count = 0; kontaktSchatten.renderOrder = 1; szene.add(kontaktSchatten);
   Bild.init(); grafikAnwenden();
   addEventListener('resize', groesse); groesse();
@@ -3379,6 +3409,7 @@ const Kam = {
   modi: ['broadcast', 'schuetze', 'torwart'],
   aufgeloest() {
     if (this.override) return this.override;
+    if (Spiel.zustand === 'match') return Einst.kamera !== 'auto' ? Einst.kamera : Match.steuer ? 'schuetze' : 'broadcast';
     if (Einst.kamera !== 'auto') return Einst.kamera;
     return Spiel.menschSchiesst ? 'schuetze' : Spiel.menschHaelt ? 'torwart' : 'broadcast';
   },
@@ -3393,6 +3424,7 @@ const Kam = {
     const zst = S.zustand;
     if (zst === 'menue' || zst === 'ergebnis') { const a = this.t * 0.06; wp.set(4 + Math.cos(a) * 17, 6.5, Math.sin(a) * 12); wz.set(9, 0.6, 0); rate = 1.5; }
     else if (zst === 'siegerehrung') { const a = this.t * 0.25; wp.set(Math.cos(a) * 6.5, 2.6, Math.sin(a) * 6.5); wz.set(0, 1.4, 0); rate = 2; }
+    else if (zst === 'match') { Match.kamera(wp, wz); rate = 3; zrate = 4; }
     else if (zst === 'intro' && S.modus === 'parcours') { const u = glatt(S.phaseT / 2.6), sp = S.schuetze.pos; wp.set(mix(-1, sp.x - 5.4, u), mix(15, 4.2, u), mix(13, sp.z * 0.75, u)); wz.set(mix(3, sp.x + 5.5, u), 0, mix(0, sp.z * 0.85, u)); rate = 6; }
     else if (zst === 'intro') { const u = glatt(S.phaseT / 2.6); wp.set(mix(-6, -4.5, u), mix(11, 2.2, u), mix(-15, -1.5, u)); wz.set(mix(0, 6, u), mix(0, 0.8, u), 0); rate = 6; }
     else if (zst === 'wiederholung') { wp.copy(S.replay.kamPos); wz.copy(S.replay.kamZiel); rate = 4; zrate = 6; }
@@ -3422,7 +3454,7 @@ const Kam = {
     kamera.position.copy(this.pos);
     const w = this.wackel * C.wackeln * 0.05; if (w > 1e-4) kamera.position.add(_c.set((Math.random() - 0.5) * w, (Math.random() - 0.5) * w, (Math.random() - 0.5) * w));
     kamera.lookAt(this.ziel);
-    const fov = (S.zustand === 'wiederholung' ? 42 : (S.modus === 'parcours' || S.modus === 'frei') && innerHeight > innerWidth * 1.05 ? Math.max(C.fov, 66) : C.fov) - this.fovPlus;
+    const fov = (S.zustand === 'wiederholung' ? 42 : (S.modus === 'parcours' || S.modus === 'frei' || S.zustand === 'match') && innerHeight > innerWidth * 1.05 ? Math.max(C.fov, 66) : C.fov) - this.fovPlus;
     if (Math.abs(kamera.fov - fov) > 0.01) { kamera.fov = fov; kamera.updateProjectionMatrix(); }
   }
 };
@@ -3475,7 +3507,7 @@ const Spiel = {
     this.parcoursAufraeumen(); Ton.stimmung(0.2);
   },
   parcoursAufraeumen() {
-    Parcours.weg(); document.body.classList.remove('parcours', 'frei'); halle.setzeBoden(Config.grafik.boden); this.welt.schussGesperrt = false;
+    Parcours.weg(); Match.weg(); document.body.classList.remove('parcours', 'frei', 'match'); halle.setzeBoden(Config.grafik.boden); this.welt.schussGesperrt = false;
     halle.scheibenListe.forEach(s => { s.mesh.visible = true; });
   },
   /** Parcours-Modus: Slalom, Drehungen, Tore, dann ein Schuss – auf Zeit und Punkte. */
@@ -3536,12 +3568,29 @@ const Spiel = {
     if (halle.scheibenListe.every(s => s.mesh.material.opacity < 0.5)) halle.scheibenListe.forEach(s => { s.mesh.material.opacity = 0.88; });
     this.freiVersuch();
   },
+  /** Spiel 5 gegen 5. mensch = 'A' (du steuerst Team A) oder null (KI gegen KI). */
+  starteSpiel5(teamA, teamB, mensch) {
+    this.parcoursAufraeumen(); this.modus = 'spiel5'; this.teamA = teamA; this.teamB = teamB; this.mensch = mensch; this.so = null; this.turnierSpiel = null;
+    this.menschSchiesst = this.menschHaelt = false; this.versuch = null; this.welt.schussGesperrt = false;
+    Kam.override = null; Kam.schnitt = true; this.pausiert = false; UI.schliesseAlles(); HUD.zeigen(true); HUD.trainingInfo(false); HUD.schiri(null); HUD.tempo(0);
+    if (this.ehrung) this.ehrung.gruppe.visible = false; halle.scheiben.visible = false;
+    this.figL.objekt.visible = this.figR.objekt.visible = this.figT.objekt.visible = false;
+    halle.zuschauer.faerbe(teamA, teamB); document.body.classList.add('match');
+    this.zustand = 'match'; Match.start(teamA, teamB, mensch);
+    Ton.init(); Ton.stimmung(0.5); Ton.pfiff(true); Ton.applaus(0.6, 2.4);
+  },
+  spiel5Ende() {
+    this.zustand = 'ergebnis'; HUD.zeigen(false); HUD.banner(null);
+    const r = { A: Match.teams.A, B: Match.teams.B, stand: { ...Match.stand }, tore: Match.tore.slice(), mensch: Match.mensch };
+    if (r.stand.A !== r.stand.B) Ton.jubel(0.8);
+    UI.spielErgebnis(r);
+  },
   parcoursEnde() {
     this.zustand = 'ergebnis'; HUD.zeigen(false); HUD.banner(null);
     const r = Parcours.ende(this.versuch.ergebnis); if (r.neu) Ton.jubel(0.6);
     UI.parcoursErgebnis(r);
   },
-  simAktiv() { return ['menue', 'intro', 'aufstellung', 'anlauf', 'auswertung', 'ergebnis'].includes(this.zustand); },
+  simAktiv() { return ['menue', 'intro', 'aufstellung', 'anlauf', 'auswertung', 'ergebnis', 'match'].includes(this.zustand); },
   /* ---------- Start der Modi ---------- */
   starteMatch(teamA, teamB, mensch, turnierSpiel) {
     this.modus = turnierSpiel ? 'turnier' : 'schnell'; this.turnierSpiel = turnierSpiel || null;
@@ -3553,7 +3602,7 @@ const Spiel = {
     UI.schliesseAlles(); HUD.zeigen(true); HUD.trainingInfo(false);
     this.zustand = 'intro'; this.phaseT = 0; Kam.schnitt = true; halle.zuschauer.faerbe(teamA, teamB); this.klatschBis = performance.now() + 2600;
     this.vorbereiten('A');
-    HUD.banner(`${esc(teamA.name)} <small>gegen</small> ${esc(teamB.name)}`);
+    HUD.banner(`<span class="w">${esc(teamA.kuerzel)}</span> : ${esc(teamB.kuerzel)}<small>${t('pen_untertitel')}</small>`, 'neon');
     Ton.init(); Ton.stimmung(0.45); Ton.pfiff(true); Ton.applaus(0.6, 2.6);
     this.hudAktualisieren();
   },
@@ -3607,6 +3656,8 @@ const Spiel = {
   /* ---------- Simulationsschritt (120 Hz) ---------- */
   schritt(dt) {
     this.phaseT += dt;
+    if (this.zustand === 'match') { this.simZeit += dt; Match.schritt(dt); return; }
+    if (this.zustand === 'ergebnis' && this.modus === 'spiel5') return;          // Endstand: Figuren bleiben stehen
     const S = this.schuetze, T = this.torwart, v = this.versuch;
     if (this.zustand === 'menue' || this.zustand === 'ergebnis') {
       S.schritt(dt, { aktiv: false, richtung: _n.set(1, 0, 0), tempo: 0 }, ball, this.welt); T.schritt(dt, { bewegen: null }, ball, this.welt); return;
@@ -3729,6 +3780,7 @@ const Spiel = {
   ereignis(e) {
     const z = this.zustand;
     if (e.typ === 'kamera' && this.schuetze && z !== 'menue') { Kam.wechseln(); return; }
+    if (z === 'match') return Match.ereignis(e);
     if (z === 'intro' && (e.typ === 'tipp' || e.typ === 'aktionDruck' || e.typ === 'finte')) { this.phaseT = 99; return; }
     if (z === 'wiederholung' && (e.typ === 'tipp' || e.typ === 'aktionDruck' || e.typ === 'finte' || e.typ === 'druck')) { this.replayEnde(); return; }
     if (z !== 'anlauf' && z !== 'aufstellung') return;
@@ -3799,7 +3851,7 @@ const Spiel = {
     HUD.schiri(t('r_' + erg.code)); Ton.pfiff(erg.code !== 'tor');
     const parade = ['gehalten', 'pariert'].includes(erg.code);
     const istA = this.aktTeam === 'A', jetzt = performance.now(), Ts = istA ? this.teamA : this.teamB;
-    const neonArt = this.modus === 'parcours' ? 'neon' : undefined; if (this.modus === 'parcours') HUD.aufgabe(null);
+    const neonArt = 'neon'; if (this.modus === 'parcours') HUD.aufgabe(null);
     if (erg.tor) {
       HUD.banner(t('tor_banner'), neonArt); Ton.jubel(1); Ton.horn(); S.setzeZustand('jubel'); T.setzeZustand('enttaeuscht', null, 0.3); Kam.wackel = 1; this.torFrameT = this.simZeit;
       this.jubelZiel.set(istA ? 1 : 0.03, istA ? 0.03 : 1, 0.55); this.jubelBis = jetzt + 3800; if (Ts) halle.ledBlitz(Ts.primaer, 3.2);
@@ -3869,6 +3921,7 @@ const Spiel = {
   neustart() {
     this.pausiert = false; UI.pauseZu();
     if (this.modus === 'parcours') this.starteParcours();
+    else if (this.modus === 'spiel5') this.starteSpiel5(this.teamA, this.teamB, this.mensch);
     else if (this.modus === 'frei') this.starteFrei(this.training.mitTW, this.training.huetchen);
     else if (this.modus === 'training') this.starteTraining(this.training.art, this.training.mitTW);
     else this.starteMatch(this.teamA, this.teamB, this.mensch, this.turnierSpiel);
@@ -3883,7 +3936,7 @@ const Spiel = {
       for (const e of [S, T]) if (e) e.fig.objekt.position.set(mix(e.ppos.x, e.pos.x, alpha) - e.pos.x, 0, mix(e.ppos.z, e.pos.z, alpha) - e.pos.z);
     }
     ballSchatten.position.set(ballGruppe.position.x, 0.004, ballGruppe.position.z); const hs = 1 + ballGruppe.position.y * 2; ballSchatten.scale.set(hs, hs, hs); ballSchatten.material.opacity = 1 / hs;
-    halle.netz.update(Math.min(dt, 0.05) * (this.zustand === 'wiederholung' ? Math.max(0.2, Config.animation.zeitlupe * 1.2) : 1));
+    halle.netz.update(Math.min(dt, 0.05) * (this.zustand === 'wiederholung' ? Math.max(0.2, Config.animation.zeitlupe * 1.2) : 1)); halle.netz2.update(Math.min(dt, 0.05));
     // Zuschauer
     // Zuschauer: Jubel je Fanlager, Spannung beim Anlauf, Applaus
     const u = halle.zuschauer.uni, jub = this.jubelBis && performance.now() < this.jubelBis, jz = this.jubelZiel;
@@ -3932,14 +3985,15 @@ const Spiel = {
     if (this.modus === 'frei') Parcours.ringSetzen(alpha);
     if (this.zustand === 'anlauf' && this.versuch) HUD.zeit(1 - this.versuch.t / this.versuch.zeitlimit);
     if (this.ehrung && this.zustand === 'siegerehrung') this.ehrung.update(dt);
+    if (Match.sichtbar) Match.render(dt, alpha);
     Kam.update(dt);
     this.debug.update();
   },
   /** Weiche Schattenflecken unter Becken und Füßen der sichtbaren Figuren (erdet die Figuren optisch). */
   kontaktSchattenSetzen() {
     const im = kontaktSchatten; let n = 0;
-    const fleck = (x, z, gx, gz, hoehe) => { if (n >= 16) return; const f = klemme(1 - hoehe * 0.9, 0.25, 1); _m.makeScale(gx * (2 - f), 1, gz * (2 - f)); _m.setPosition(x, 0.006 + n * 0.0004, z); im.setMatrixAt(n++, _m); };
-    const figs = this.zustand === 'siegerehrung' && this.ehrung ? this.ehrung.figuren.map(e => e.fig) : [this.figL, this.figR, this.figT];
+    const fleck = (x, z, gx, gz, hoehe) => { if (n >= 40) return; const f = klemme(1 - hoehe * 0.9, 0.25, 1); _m.makeScale(gx * (2 - f), 1, gz * (2 - f)); _m.setPosition(x, 0.006 + n * 0.0004, z); im.setMatrixAt(n++, _m); };
+    const figs = this.zustand === 'siegerehrung' && this.ehrung ? this.ehrung.figuren.map(e => e.fig) : Match.sichtbar ? Match.figuren() : [this.figL, this.figR, this.figT];
     for (const f of figs) {
       if (!f.objekt.visible) continue;
       const b = f.j.becken.getWorldPosition(_a); fleck(b.x, b.z, 0.95, 0.95, b.y - 0.5);
@@ -4165,6 +4219,440 @@ const Parcours = {
 };
 
 /* =====================================================================
+   MODUL: SPIEL 5 GEGEN 5 – volles Floorballspiel mit fünf Feldspielern und einem Torhüter je Team.
+   Kniff: Team B spielt in einem um 180° gedrehten Koordinatensystem. So greift jedes Team aus seiner
+   Sicht nach +x an, und Dribbling, Schuss, Tricks und Torhüter-KI funktionieren für beide Tore.
+   Ablauf: Bully → Spiel (Ballbesitz, Pass, Zweikampf, Schuss) → Tor/Einschlag → … drei Drittel.
+   Unentschieden: Penaltyschießen über den bestehenden Penalty-Modus.
+   ===================================================================== */
+const SPIEL5 = {
+  angriff: [[-8.5, -3.6], [-8.5, 3.6], [-2.5, 0], [4.5, -5.6], [4.5, 5.6]],
+  abwehr: [[-14.2, -2.5], [-14.2, 2.5], [-10.5, 0], [-7, -4.8], [-7, 4.8]],
+  bully: [[-1.05, 0], [-4.5, -3], [-4.5, 3], [-9.5, -2.6], [-9.5, 2.6]],
+  drittel: 3
+};
+const _gb1 = new V3(), _gb2 = new V3(), _m5 = [...Array(10)].map(() => new V3());
+/** Sicht auf den echten Ball im gedrehten System (Team B, Torhüter von Team A). Schreibt Änderungen gedreht zurück. */
+class GedrehterBall {
+  constructor(echt) { this.echt = echt; this.p = new V3(); this.v = new V3(); this.w = new V3(); this.kinematisch = false; this._dt = null; this._zp = new V3(); this._zv = new V3(); }
+  laden() { const e = this.echt; this.p.set(-e.p.x, e.p.y, -e.p.z); this.v.set(-e.v.x, e.v.y, -e.v.z); this.w.set(-e.w.x, e.w.y, -e.w.z); this.kinematisch = e.kinematisch; this.aus = e.aus; this._dt = null; }
+  fuehre(ziel, vel, dt) { this._zp.copy(ziel); this._zv.copy(vel); this._dt = dt; this.kinematisch = true; this.p.copy(ziel); this.v.copy(vel); }
+  speichern() {
+    const e = this.echt;
+    if (this._dt !== null) e.fuehre(_gb1.set(-this._zp.x, this._zp.y, -this._zp.z), _gb2.set(-this._zv.x, this._zv.y, -this._zv.z), this._dt);
+    else { e.v.set(-this.v.x, this.v.y, -this.v.z); e.w.set(-this.w.x, this.w.y, -this.w.z); }
+    e.kinematisch = this.kinematisch; this._dt = null;
+  }
+}
+const Match = {
+  poolL: [], poolR: [], ents: [], gks: [], sichtbar: false, phase: 'aus', steuer: null, besitzer: null,
+  init() {
+    if (this.fertigInit) return; this.fertigInit = true;
+    this.proxy = new GedrehterBall(ball);
+    this.gks = ['B', 'A'].map(team => { const f = new Figur({ torwart: true }); f.objekt.visible = false; szene.add(f.objekt); const g = { team, fig: f }; f.kapseln.forEach(k => { k.ent = g; }); return g; });
+    const ring = (r0, r1, farbe, opa) => { const m = new THREE.Mesh(new THREE.RingGeometry(r0, r1, 40).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: farbe, transparent: true, opacity: opa, depthWrite: false, toneMapped: false })); m.layers.set(2); m.renderOrder = 1; m.visible = false; szene.add(m); return m; };
+    this.marken = [...Array(10)].map(() => ring(0.3, 0.37, '#ffffff', 0.55));
+    this.steuerRing = ring(0.46, 0.56, NEON, 0.95);
+    this.dummy = { zielAbsicht: { aktiv: false, z: 0, y: 0.3 }, daten: { technik: 50 }, kontrolle: false, speed: 0, vel: new V3(), trick: null, finteSeiteWelt: 1 };
+    this.koll = { kapseln: [...this.gks[0].fig.kapseln, ...this.gks[1].fig.kapseln] };
+  },
+  figuren() { return [...this.ents.map(e => e.s.fig), ...this.gks.map(g => g.fig)]; },
+  /** Neues Spiel. mensch = 'A' (du spielst Team A) oder null (KI gegen KI). */
+  start(teamA, teamB, mensch) {
+    this.init();
+    this.teams = { A: teamA, B: teamB }; this.alt = TeamDB.ausweich(teamA, teamB); this.mensch = mensch;
+    this.stand = { A: 0, B: 0 }; this.tore = []; this.drittel = 1; this.dauer = (Einst.drittelMin || 2) * 60; this.uhr = this.dauer;
+    this.letzteMannschaft = 'A'; this.letzterSchuetze = null; this.letzterBesitz = { A: '', B: '' }; this.trickWunsch = null; this.eingabeT = 0; this._hud = '';
+    for (const f of [...this.poolL, ...this.poolR]) f.objekt.visible = false;
+    let iL = 0, iR = 0; this.ents = [];
+    for (const team of ['A', 'B']) {
+      const T = this.teams[team];
+      T.schuetzen.forEach((d, i) => {
+        const hand = d.hand === 'R' ? 'R' : 'L', pool = hand === 'R' ? this.poolR : this.poolL, k = hand === 'R' ? iR++ : iL++;
+        let fig = pool[k]; if (!fig) { fig = new Figur({ hand }); szene.add(fig.objekt); pool.push(fig); }
+        fig.objekt.visible = true; fig.setzeTeam(T, d.nummer, d.name, team === 'B' && this.alt);
+        const s = new Schuetze(fig, d); s.dreh = team === 'B'; s.schussUeberall = true;
+        const marke = this.marken[this.ents.length]; marke.material.color.set(team === 'B' && this.alt ? T.sekundaer : T.primaer);
+        this.ents.push({ s, team, i, dreh: team === 'B', passCD: 0, lunge: 0, plan: null, jit: [(Math.random() - 0.5) * 1.4, (Math.random() - 0.5) * 1.4], A: { aktiv: true, richtung: new V3(1, 0, 0), tempo: 0, laden: false, finte: false, trick: null, lupfer: false, zielZ: 0, zielY: 0.3 }, w: new V3(), marke });
+      });
+    }
+    for (const g of this.gks) {
+      const T = this.teams[g.team], td = T.torwart;
+      g.fig.objekt.visible = true; g.fig.setzeTeam(T, td.nummer, td.name, g.team === 'B' && this.alt);
+      g.T = new Torwart(g.fig, td); g.T.dreh = g.team === 'A'; g.ki = new KITorwart(g.T); g.ki.istGegnerMensch = !!mensch && g.team === 'B';
+      g.bedroht = false; g.halteT = 0; g.wurfSperre = 0; g.fig.kapseln.forEach(k => { k.aktiv = true; });
+    }
+    const gkB = this.gks[0], gkA = this.gks[1];
+    this.weltA = { match: true, torwartPos: gkB.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'A') };
+    this.weltB = { match: true, torwartPos: gkA.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'B') };
+    ball.zweiTore = true; ball.ereignisHandler = (typ, st, info) => this.ballEreignis(typ, st, info);
+    this.steuer = mensch ? this.ents[2] : null; this.sichtbar = true;
+    HUD.trickLeiste(mensch ? 'match' : null); HUD.steuerHinweis(); this.bullyStart(`<span class="w">${esc(teamA.kuerzel)}</span> : ${esc(teamB.kuerzel)}<small>${t('s5_untertitel')}</small>`);
+  },
+  weg() {
+    if (!this.sichtbar) return; this.sichtbar = false; this.phase = 'aus';
+    for (const f of this.figuren()) f.objekt.visible = false;
+    for (const m of [...this.marken, this.steuerRing]) m.visible = false;
+    ball.zweiTore = false; ball.ereignisHandler = (typ, st, info) => Spiel.ballEreignis(typ, st, info); this.steuer = null; this.besitzer = null;
+  },
+  setze(e, x, z) {
+    const S = e.s; S.reset(x, z); S.pos.set(x, 0, z); S.ppos.copy(S.pos); S.vel.set(0, 0, 0); S.kontrolle = false; S.setzeZustand('lauf'); S.zielSpeed = 0;
+    S.yaw = S.pyaw = Math.PI / 2; S.ballSperre = 0; S.zorro = false; S.trick = null; S.power = 0; e.plan = null; e.passCD = 0.6;
+  },
+  bullyStart(banner) {
+    this.phase = 'bully'; this.phaseT = 0; this.besitzer = null; this.passEmpfaenger = null;
+    ball.reset(0, 0); halle.netz.zuruecksetzen(); halle.netz2.zuruecksetzen();
+    for (const e of this.ents) { const [x, z] = SPIEL5.bully[e.i]; this.setze(e, x, z); }
+    for (const g of this.gks) { g.T.reset(); g.T.gefangen = false; g.ki.reset(); g.bedroht = false; g.halteT = 0; g.wurfSperre = 0; }
+    HUD.banner(banner || null, banner ? 'neon' : undefined); this.hudStand(true);
+  },
+  /* ---------- Hilfen: Koordinaten ---------- */
+  welt(e, out) { const p = e.s.pos; return e.dreh ? out.set(-p.x, 0, -p.z) : out.set(p.x, 0, p.z); },
+  inSicht(e, w, out) { return e.dreh ? out.set(-w.x, w.y, -w.z) : out.copy(w); },          // Weltpunkt → System von e
+  ballSicht(e, out) { return this.inSicht(e, ball.p, out); },
+  gegnerTw(e) { return e.team === 'A' ? this.gks[0] : this.gks[1]; },
+  /* ---------- Simulationsschritt ---------- */
+  schritt(dt) {
+    this.phaseT += dt;
+    if (this.phase === 'bully') { if (this.phaseT > 1.4) { this.phase = 'spiel'; Ton.pfiff(false); HUD.banner(null); ball.v.set(0, 0, (Math.random() - 0.5) * 0.8); } }
+    else if (this.phase === 'spiel') { this.uhr -= dt; if (this.uhr <= 0) { this.uhr = 0; this.drittelEnde(); } }
+    else if (this.phase === 'tor' || this.phase === 'pause') { if (this.phaseT > (this.phase === 'tor' ? 2.8 : 2.6)) this.bullyStart(); }
+    if (this.phase === 'ende') return;
+    const aktiv = this.phase === 'spiel';
+    // nächste Spieler zum Ball je Team (für die KI)
+    this.naechst = { A: null, B: null }; const nd = { A: 99, B: 99 };
+    for (const e of this.ents) { const d = this.welt(e, e.w).distanceTo(_m5[0].set(ball.p.x, 0, ball.p.z)); e.dBall = d; if (d < nd[e.team] && e.s.ballSperre <= 0) { nd[e.team] = d; this.naechst[e.team] = e; } }
+    if (this.passEmpfaenger && !this.besitzer) this.naechst[this.passEmpfaenger.team] = this.passEmpfaenger;
+    if (this.steuer && aktiv) this.autoWechsel(dt);
+    for (const e of this.ents) {
+      const S = e.s, B = e.dreh ? this.proxy : ball, W = e.dreh ? this.weltB : this.weltA;
+      e.passCD -= dt; e.lunge -= dt; if (e.dreh) this.proxy.laden();
+      const A = !aktiv ? this.stehen(e) : e === this.steuer && !this.assistent(dt) ? this.menschAbsicht(e, dt) : this.kiAbsicht(e, dt);
+      W.menschPraezise = e === this.steuer; const hatte = S.kontrolle;
+      S.schritt(dt, A, B, W);
+      if (e.dreh && (hatte || S.kontrolle)) this.proxy.speichern();
+      if (S.zustand === 'nach' && S.tZustand > 0.45) S.setzeZustand('lauf');
+      if (hatte && !S.kontrolle && this.besitzer === e) this.besitzer = null;
+    }
+    this.trennen();
+    for (const g of this.gks) {
+      const B = g.T.dreh ? this.proxy : ball; if (g.T.dreh) this.proxy.laden();
+      const ang = this.besitzer && this.besitzer.team !== g.team ? this.besitzer.s : this.dummy;
+      const At = aktiv ? g.ki.absicht(dt, ang, B, g.bedroht) : { bewegen: null, parade: null };
+      g.T.schritt(dt, At, B, {});
+    }
+    if (aktiv) { this.abfangen(); this.ballAufnehmen(); this.zweikampf(dt); }
+    const gefangen = this.gks.some(g => g.T.gefangen);
+    if (!this.besitzer && !gefangen && ball.kinematisch) ball.kinematisch = false;
+    ball.schritt(dt, this.koll);
+    if (aktiv) { this.torPruefen(); this.ausPruefen(); this.torwartBall(dt); }
+  },
+  stehen(e) { const A = e.A, S = e.s; A.richtung.set(Math.sin(S.yaw), 0, Math.cos(S.yaw)); A.tempo = this.phase === 'tor' ? 0.15 : 0; A.laden = false; A.trick = null; A.finte = false; return A; },
+  laufZu(A, p, zx, zz, tmax) {
+    const dx = zx - p.x, dz = zz - p.z, d = Math.hypot(dx, dz);
+    if (d < 0.35) { A.tempo = 0; return; }
+    A.richtung.set(dx / d, 0, dz / d); A.tempo = klemme(d / 2.2, 0, tmax);
+  },
+  /* ---------- Steuerung durch den Menschen ---------- */
+  menschAbsicht(e, dt) {
+    const S = e.s, A = e.A, L = Eingabe.lenkung(), { r, f } = Kam.rechtsVorne(), Sp = Spiel;
+    const sp = Eingabe.zielBildschirm();
+    if (sp && sp.stick) { Sp.zielCursor.z = klemme(sp.x * 1.2 * (r.z >= 0 ? 1 : -1), -1.4, 1.4); Sp.zielCursor.y = klemme(0.1 + (sp.y + 1) / 2 * 1.05, 0.06, 1.3); }
+    else if (sp) { const key = Math.round(sp.x) + ',' + Math.round(sp.y); if (key !== Sp._letzterZeiger) { Sp._letzterZeiger = key; const p = Sp.torPunkt(sp.x, sp.y); if (p) { Sp.zielCursor.z = p.z; Sp.zielCursor.y = p.y; } } }
+    const len = Math.hypot(L.x, L.y);
+    A.laden = false; A.trick = null; A.finte = false; A.lupfer = Eingabe.lupferGehalten(); A.zielZ = Sp.zielCursor.z; A.zielY = Sp.zielCursor.y;
+    if (L.quelle !== 'keine' && len > 0.15) {
+      A.richtung.set(0, 0, 0).addScaledVector(r, L.x).addScaledVector(f, L.y); if (A.richtung.lengthSq() < 1e-6) A.richtung.set(1, 0, 0); A.richtung.normalize();
+      A.tempo = L.quelle === 'tasten' ? 1 : klemme(len, 0.25, 1);
+    } else {
+      A.richtung.set(Math.sin(S.yaw), 0, Math.cos(S.yaw)); A.tempo = 0;
+      // Zugespielter Ball: ohne Eingabe läuft der Empfänger selbst entgegen
+      if (!this.besitzer && this.passEmpfaenger === e) { const b = this.ballSicht(e, _m5[1]); this.laufZu(A, S.pos, b.x + ball.v.x * 0.15, b.z + ball.v.z * (e.dreh ? -0.15 : 0.15), 1); }
+    }
+    if (S.kontrolle) { A.laden = Eingabe.aktionGehalten(); if (this.trickWunsch) { A.trick = this.trickWunsch; this.trickWunsch = null; } }
+    return A;
+  },
+  /** Assistenz: ohne Eingabe übernimmt nach 1,2 s die KI den gesteuerten Spieler, bis wieder gelenkt, geschossen oder gepasst wird. */
+  assistent(dt) {
+    const L = Eingabe.lenkung();
+    if ((L.quelle !== 'keine' && Math.hypot(L.x, L.y) > 0.15) || Eingabe.aktionGehalten()) { this.eingabeT = 0; return false; }
+    this.eingabeT += dt; return this.eingabeT > 1.2;
+  },
+  ereignis(ev) {
+    const e = this.steuer; if (!e || this.phase !== 'spiel') return;
+    const S = e.s;
+    if (ev.typ === 'finte' || ev.typ === 'doppeltipp' || (ev.typ === 'trick' && ev.name === 'pass')) {
+      this.eingabeT = 0; if (S.kontrolle) { const m = this.passZielMensch(e); if (m) this.pass(e, m); } else { e.lunge = 0.45; Ton.quietschen(); }
+    } else if (ev.typ === 'trick' && ev.name === 'wechsel') this.wechseln(true);
+    else if (ev.typ === 'trick' && ['zieher', 'drehung', 'zorro'].includes(ev.name)) this.trickWunsch = ev.name;
+  },
+  /** Gesteuerten Spieler wechseln: zum Mitspieler, der dem Ball am nächsten ist. */
+  wechseln(manuell) {
+    let best = null, bd = 99;
+    for (const e of this.ents) if (e.team === 'A' && e !== this.steuer && e.dBall < bd) { bd = e.dBall; best = e; }
+    if (best) { this.steuer = best; this.eingabeT = 0; if (manuell) Ton.tick(); }
+  },
+  autoWechsel(dt) {
+    if (this.besitzer && this.besitzer.team === 'A') { if (this.steuer !== this.besitzer) this.steuer = this.besitzer; return; }
+    if (this.eingabeT < 0.5) return;
+    const n = this.naechst.A; if (n && n !== this.steuer && n.dBall + 2.5 < this.steuer.dBall) this.steuer = n;
+  },
+  /* ---------- KI der Feldspieler (im eigenen System, Angriff nach +x) ---------- */
+  kiAbsicht(e, dt) {
+    const S = e.s, A = e.A, p = S.pos; A.laden = false; A.trick = null; A.finte = false; A.lupfer = false;
+    if (S.kontrolle) return this.kiBallfuehrer(e, A, dt);
+    const owner = this.besitzer, gef = this.gks.find(g => g.T.gefangen), b = this.ballSicht(e, _m5[1]);
+    const unserBall = (owner && owner.team === e.team) || (gef && gef.team === e.team);
+    if (!owner && !gef && this.naechst[e.team] === e) { const vk = e.dreh ? -1 : 1; this.laufZu(A, p, b.x + ball.v.x * vk * 0.2, b.z + ball.v.z * vk * 0.2, 1); return A; }
+    if (owner && owner.team !== e.team && this.naechst[e.team] === e) { this.laufZu(A, p, b.x, b.z, 1); return A; }
+    const angriff = unserBall || (!owner && !gef && this.letzteMannschaft === e.team);
+    const [sx, sz] = (angriff ? SPIEL5.angriff : SPIEL5.abwehr)[e.i];
+    const shift = angriff ? klemme(b.x * 0.7 + 2, -6, 8.5) : klemme((b.x + 8) * 0.45, -1, 9);
+    let zx = sx + shift + e.jit[0], zz = sz + (angriff ? 0 : b.z * 0.25) + e.jit[1];
+    zx = klemme(zx, -15.2, 13); zz = klemme(zz, -8.4, 8.4);
+    this.laufZu(A, p, zx, zz, angriff ? 0.85 : 0.9); return A;
+  },
+  kiBallfuehrer(e, A, dt) {
+    const S = e.s, p = S.pos, tw = this.gegnerTw(e).T;
+    if (!e.plan) e.plan = { schussDist: 6.5 + Math.random() * 5, power: 0.4 + Math.random() * 0.5, zielZ: (0.48 + Math.random() * 0.22), zielY: 0.15 + Math.random() * 0.75, passIn: 1.0 + Math.random() * 2.6, trickT: Math.random() < 0.3 ? 0.6 + Math.random() * 1.8 : -1 };
+    const P = e.plan; P.passIn -= dt;
+    const seite = tw.pos.z > 0.05 ? -1 : tw.pos.z < -0.05 ? 1 : (P.zielZ > 0.6 ? 1 : -1);
+    A.zielZ = seite * P.zielZ; A.zielY = P.zielY;
+    if (S.zustand === 'laden') { A.laden = S.power < P.power; A.richtung.set(1, 0, 0); A.tempo = 0.6; return A; }
+    // nächster Gegner im eigenen System
+    let dG = 99; const g = _m5[2];
+    for (const o of this.ents) if (o.team !== e.team) { const q = this.inSicht(e, this.welt(o, _m5[3]), _m5[4]); const d = Math.hypot(q.x - p.x, q.z - p.z); if (d < dG) { dG = d; g.copy(q); } }
+    const distTor = Math.hypot(TOR.x - p.x, p.z);
+    if (distTor < P.schussDist && Math.abs(p.z) < 6.5 && p.x < TOR.x - 1.2 && e.passCD < 0.5) { A.laden = true; A.richtung.set(1, 0, 0); A.tempo = 0.7; return A; }
+    if (e.passCD <= 0 && ((dG < 2.2 && P.passIn < 1.6) || P.passIn <= 0)) { const m = this.passZiel(e); if (m) { this.pass(e, m); return this.stehen(e); } P.passIn = 1.2; }
+    if (P.trickT > 0) { P.trickT -= dt; if (P.trickT <= 0 && dG < 3.2) A.trick = ['zieher', 'drehung', 'zorro'][Math.floor(Math.random() * 3)]; }
+    // Dribbeln Richtung Tor, Gegnern ausweichen, Torhüterraum meiden
+    const zx = TOR.x - 3.2, zz = klemme(p.z * 0.55, -3, 3); let dx = zx - p.x, dz = zz - p.z; const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l;
+    if (dG < 3.2) { const ax = p.x - g.x, az = p.z - g.z, d2 = Math.max(0.3, ax * ax + az * az); dx += ax / d2 * 1.6; dz += az / d2 * 2.4; }
+    if (Math.abs(p.z) > 8.4) dz -= Math.sign(p.z) * 0.8;
+    A.richtung.set(dx, 0, dz).normalize(); A.tempo = 0.9; return A;
+  },
+  /** Bester Mitspieler für einen Pass (offen, nach vorn, freie Passlinie). */
+  passZiel(e) {
+    const p = e.s.pos; let best = null, bs = -1;
+    for (const m of this.ents) {
+      if (m.team !== e.team || m === e) continue;
+      const q = this.inSicht(e, this.welt(m, _m5[5]), _m5[6]), dx = q.x - p.x, dz = q.z - p.z, d = Math.hypot(dx, dz);
+      if (d < 3 || d > 18) continue;
+      let offen = 4, linie = 0;
+      for (const o of this.ents) if (o.team !== e.team) {
+        const oq = this.inSicht(e, this.welt(o, _m5[7]), _m5[8]); offen = Math.min(offen, Math.hypot(oq.x - q.x, oq.z - q.z));
+        const tt = klemme(((oq.x - p.x) * dx + (oq.z - p.z) * dz) / (d * d), 0, 1), lx = p.x + dx * tt - oq.x, lz = p.z + dz * tt - oq.z;
+        if (Math.hypot(lx, lz) < 0.9 && tt > 0.1 && tt < 0.95) linie -= 3;
+      }
+      const s = dx * 0.25 + offen * 0.8 - Math.abs(d - 8) * 0.15 + linie;
+      if (s > bs) { bs = s; best = m; }
+    }
+    return bs > -1 ? best : null;
+  },
+  passZielMensch(e) {
+    const S = e.s, L = Eingabe.lenkung(), { r, f } = Kam.rechtsVorne(), dir = _m5[5];
+    if (L.quelle !== 'keine' && Math.hypot(L.x, L.y) > 0.15) dir.set(0, 0, 0).addScaledVector(r, L.x).addScaledVector(f, L.y).normalize(); else dir.set(Math.sin(S.yaw), 0, Math.cos(S.yaw));
+    let best = null, bs = -99; const p = this.welt(e, _m5[6]);
+    for (const m of this.ents) {
+      if (m.team !== e.team || m === e) continue;
+      const q = this.welt(m, _m5[7]), dx = q.x - p.x, dz = q.z - p.z, d = Math.hypot(dx, dz) || 1;
+      const s = (dx * dir.x + dz * dir.z) / d * 3 - d * 0.06; if (s > bs) { bs = s; best = m; }
+    }
+    return best;
+  },
+  /** Pass: Ball flach zum Mitspieler (mit Vorhalt), Empfänger läuft entgegen. */
+  pass(e, m) {
+    const ziel = this.welt(m, _m5[5]), mv = m.s.vel, vk = m.dreh ? -1 : 1;
+    ziel.x += mv.x * vk * 0.45; ziel.z += mv.z * vk * 0.45;
+    const dx = ziel.x - ball.p.x, dz = ziel.z - ball.p.z, d = Math.hypot(dx, dz) || 1, v = klemme(d * 1.25 + 5, 8, 18);
+    e.s.kontrolle = false; e.s.ballSperre = 0.45; e.s.zorro = false; e.passCD = 1.2; e.plan = null; this.besitzer = null;
+    ball.kinematisch = false; ball.v.set(dx / d * v, 0.25, dz / d * v); ball.w.set(0, 0, 0);
+    this.passEmpfaenger = m; this.letzteMannschaft = e.team; Ton.klick(0.32);
+    if (this.mensch && e.team === 'A' && this.steuer === e) this.steuer = m;
+  },
+  gibBall(e) {
+    for (const x of this.ents) if (x !== e && x.s.kontrolle) x.s.kontrolle = false;
+    e.s.kontrolle = true; e.plan = null; this.besitzer = e; this.passEmpfaenger = null; this.letzteMannschaft = e.team; this.letzterBesitz[e.team] = e.s.daten.name;
+    for (const g of this.gks) if (g.bedroht) { g.bedroht = false; g.ki.reset(); }
+    Ton.klick(0.12);
+  },
+  /** Freien Ball annehmen: Kellenblatt oder Körper nah genug am flachen, nicht zu schnellen Ball. */
+  ballAufnehmen() {
+    if (this.besitzer || this.gks.some(g => g.T.gefangen)) return;
+    if (ball.p.y > 0.4 || ball.v.length() > 12) return;
+    let best = null, bd = 9;
+    for (const e of this.ents) {
+      const S = e.s; if (S.ballSperre > 0 || ['schuss', 'jubel', 'enttaeuscht'].includes(S.zustand)) continue;
+      const fe = S.fig.ferse, kd = S.fig.kelleDir, ende = _m5[0].copy(fe).addScaledVector(kd, 0.28), np = _m5[1];
+      naechsterPunkt(ball.p, fe, ende, np); const d1 = np.distanceTo(ball.p), d2 = Math.hypot(e.w.x - ball.p.x, e.w.z - ball.p.z);
+      const d = Math.min(d1 - 0.06, d2 - 0.4); if (d < 0.18 && d < bd) { bd = d; best = e; }
+    }
+    if (best) this.gibBall(best);
+  },
+  /** Zweikampf: Gegner nah am Ball können ihn erobern (Technik zählt, Leertaste verstärkt). */
+  zweikampf(dt) {
+    const B = this.besitzer; if (!B || B.s.zustand === 'schuss') return;
+    for (const e of this.ents) {
+      if (e.team === B.team || e.s.ballSperre > 0) continue;
+      const d = Math.hypot(e.w.x - ball.p.x, e.w.z - ball.p.z); if (d > 0.95) continue;
+      const rate = 0.85 * (e.s.daten.technik + 25) / (B.s.daten.technik + 25) * (e.lunge > 0 ? 3.2 : 1);
+      if (Math.random() < rate * dt) {
+        const S = B.s; S.kontrolle = false; S.ballSperre = 0.75; S.zorro = false; S.trick = null; if (S.zustand === 'laden') S.setzeZustand('lauf');
+        this.besitzer = null; this.gibBall(e); Ton.koerper(0.3); break;
+      }
+    }
+  },
+  /** Torhüter erreicht den Ball am Schläger des Angreifers. */
+  abfangen() {
+    const B = this.besitzer; if (!B || !ball.kinematisch) return;
+    const g = this.gegnerTw(B); if (g.wurfSperre > 0) return;
+    for (const c of g.fig.kapseln) {
+      naechsterPunkt(ball.p, c.a, c.b, _m5[0]); if (ball.p.distanceTo(_m5[0]) >= BALLD.r + c.r + 0.015) continue;
+      B.s.kontrolle = false; B.s.zorro = false; B.s.trick = null; B.s.ballSperre = 0.8; if (B.s.zustand === 'laden') B.s.setzeZustand('lauf'); this.besitzer = null;
+      ball.kinematisch = false; this.letzteMannschaft = g.team;
+      if (['hand', 'unterarm', 'oberarm', 'rumpf'].includes(c.teil) || ['raus', 'liegtVorn'].includes(g.T.zustand)) this.fangen(g);
+      else { const weg = _m5[1].subVectors(ball.p, _m5[0]).setY(0); if (weg.lengthSq() < 1e-6) weg.set(g.T.dreh ? 1 : -1, 0, 0); weg.normalize(); ball.v.copy(weg).multiplyScalar(2.5 + Math.random()); ball.v.y = 0.3; }
+      Ton.koerper(0.6); return;
+    }
+  },
+  fangen(g) {
+    const T = g.T; T.gefangen = true; ball.v.set(0, 0, 0); this.letzteMannschaft = g.team; g.bedroht = false;
+    if (this.besitzer) { this.besitzer.s.kontrolle = false; this.besitzer = null; }
+    if (T.zustand === 'grund' || T.zustand === 'butterfly' || T.zustand === 'stehen') T.setzeZustand('fangen', { gefangen: true }, 0.12); else T.anim.param.gefangen = true;
+  },
+  /** Torhüter: Ball im Torraum aufnehmen, gehaltenen Ball abwerfen, Bedrohung zurücksetzen. */
+  torwartBall(dt) {
+    for (const g of this.gks) {
+      const T = g.T, k = T.dreh ? -1 : 1, lx = ball.p.x * k, lz = ball.p.z * k, lvx = ball.v.x * k; g.wurfSperre -= dt;
+      if (g.bedroht && (this.besitzer || lvx < -0.5 || ball.v.length() < 1.5)) { g.bedroht = false; g.ki.reset(); }
+      if (!T.gefangen && !this.besitzer && g.wurfSperre <= 0 && ball.v.length() < 2.2 && ball.p.y < 0.35 && lx > TWRAUM.vorne && lx < TOR.x + 0.8 && Math.abs(lz) < TWRAUM.hz) {
+        T.zielWelt.set(lx, 0.3, lz); this.fangen(g);
+      }
+      if (T.gefangen) { g.halteT += dt; if (g.halteT > 1.3) this.abwurf(g); } else g.halteT = 0;
+    }
+  },
+  abwurf(g) {
+    const T = g.T, p = _m5[5].set(ball.p.x, 0, ball.p.z); let best = null, bs = -99;
+    for (const m of this.ents) {
+      if (m.team !== g.team) continue;
+      const q = this.welt(m, _m5[6]), d = q.distanceTo(p); if (d < 3 || d > 22) continue;
+      let offen = 4; for (const o of this.ents) if (o.team !== g.team) offen = Math.min(offen, this.welt(o, _m5[7]).distanceTo(q));
+      const s = offen - Math.abs(d - 9) * 0.12; if (s > bs) { bs = s; best = m; }
+    }
+    T.gefangen = false; T.setzeZustand('grund', null, 0.3); g.wurfSperre = 0.8; g.halteT = 0; g.ki.reset(); this.letzteMannschaft = g.team;
+    ball.kinematisch = false; ball.w.set(0, 0, 0);
+    if (best) { const q = this.welt(best, _m5[6]), dx = q.x - ball.p.x, dz = q.z - ball.p.z, d = Math.hypot(dx, dz) || 1, v = klemme(d * 1.1 + 4, 7, 16); ball.v.set(dx / d * v, 1.0 + d * 0.05, dz / d * v); this.passEmpfaenger = best; }
+    else ball.v.set(T.dreh ? 6 : -6, 1, 0);
+    Ton.klick(0.3);
+  },
+  beiSchuss(s, info, team) {
+    const g = team === 'A' ? this.gks[0] : this.gks[1]; g.bedroht = true; g.ki.beiSchuss();
+    this.besitzer = null; this.passEmpfaenger = null; this.letzteMannschaft = team; this.letzterSchuetze = { team, name: s.daten.name };
+    if (team === 'A' && this.mensch) HUD.tempo(Math.round(info.speed * 3.6), info.typ);
+  },
+  ballEreignis(typ, st, info) {
+    if (typ === 'boden' && st > 0.9) Ton.boden(Math.min(1, st / 5));
+    else if (typ === 'bande') Ton.bande(Math.min(1, st / 10));
+    else if (typ === 'pfosten') { Ton.pfosten(Math.min(1, st / 15)); Kam.wackel = Math.min(1, st / 12); }
+    else if (typ === 'netz') {
+      Ton.netz(Math.min(1, st / 12)); const d = ball.v.lengthSq() > 0.01 ? _m5[9].copy(ball.v).normalize() : _m5[9].set(1, 0, 0); if (info.nx) d.x = Math.max(d.x, 0.6); d.normalize();
+      (ball._gedreht ? halle.netz2 : halle.netz).stoss(ball.p, d, Math.min(4, st * 0.35));
+    } else if (typ === 'kapsel' && info.kapsel && info.kapsel.besitzer === 'torwart') {
+      const g = info.kapsel.ent; if (!g || g.wurfSperre > 0 || g.T.gefangen) return;
+      this.letzteMannschaft = g.team; if (st > 0.5) Ton.koerper(Math.min(1, st / 10));
+      const fang = ['hand', 'unterarm', 'rumpf', 'oberarm'].includes(info.kapsel.teil), grenz = 9 + g.T.daten.reflexe * 0.09;
+      if (fang && info.relSpeed < grenz && Math.random() < (info.kapsel.teil === 'hand' ? 0.85 : 0.55)) this.fangen(g);
+    }
+  },
+  torPruefen() {
+    const r = BALLD.r, drin = (x) => x - r > TOR.x + TOR.linie / 2 && Math.abs(ball.p.z) < TOR.hb && ball.p.y < TOR.h;
+    if (ball.imTor && drin(ball.p.x)) this.tor('A'); else if (ball.imTor2 && drin(-ball.p.x)) this.tor('B');
+  },
+  tor(team) {
+    this.stand[team]++; this.phase = 'tor'; this.phaseT = 0; this.besitzer = null; this.passEmpfaenger = null;
+    const ls = this.letzterSchuetze, name = ls && ls.team === team ? ls.name : (this.letzterBesitz[team] || '');
+    const min = Math.floor((this.drittel - 1) * this.dauer + (this.dauer - this.uhr)), zeit = `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`;
+    this.tore.push({ team, name, zeit, drittel: this.drittel });
+    for (const e of this.ents) { e.s.kontrolle = false; if (e.team === team && e.s.daten.name === name) e.s.setzeZustand('jubel'); }
+    const T = this.teams[team];
+    HUD.banner(`${t('tor_banner')}<small>${esc(name)} · ${esc(T.kuerzel)}</small>`, 'neon'); Ton.jubel(1); Ton.horn(); Kam.wackel = 1;
+    Spiel.jubelZiel.set(team === 'A' ? 1 : 0.05, team === 'B' ? 1 : 0.05, 0.5); Spiel.jubelBis = performance.now() + 3200; halle.ledBlitz(team === 'B' && this.alt ? T.sekundaer : T.primaer, 2.8);
+    this.hudStand(true);
+  },
+  ausPruefen() {
+    if (!ball.aus) return;
+    const x = klemme(ball.p.x, -18.4, 18.4), z = klemme(ball.p.z, -8.6, 8.6), gegen = this.letzteMannschaft, wer = gegen === 'A' ? 'B' : 'A';
+    ball.reset(x, z); this.besitzer = null; this.passEmpfaenger = null;
+    for (const e of this.ents) { e.s.kontrolle = false; if (e.team === gegen) e.s.ballSperre = 1.6; }
+    this.letzteMannschaft = wer; HUD.meldung(t('s5_einschlag', { t: this.teams[wer].kuerzel }), 'gut'); Ton.pfiff(false);
+  },
+  /** Spieler auseinanderhalten, aus Torhüterräumen und Toren heraushalten (in Weltkoordinaten). */
+  trennen() {
+    const E = this.ents;
+    for (const e of E) this.welt(e, e.w);
+    for (let i = 0; i < E.length; i++) for (let j = i + 1; j < E.length; j++) {
+      const a = E[i].w, b = E[j].w, dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz);
+      if (d < 0.6 && d > 1e-4) { const k = (0.6 - d) / 2 / d; a.x -= dx * k; a.z -= dz * k; b.x += dx * k; b.z += dz * k; }
+    }
+    for (const e of E) {
+      const w = e.w;
+      for (const s of [1, -1]) {
+        const x = w.x * s, z = w.z * s, x0 = TOR.x - 1.0, x1 = TOR.x + 0.85, zb = TWRAUM.hz + 0.05;
+        if (x > x0 && x < x1 && Math.abs(z) < zb) {
+          const vorn = x - x0, hinten = x1 - x, seite = zb - Math.abs(z), m = Math.min(vorn, hinten, seite);
+          let nx = x, nz = z; if (m === vorn) nx = x0; else if (m === hinten) nx = x1; else nz = Math.sign(z || 1) * zb;
+          w.x = nx * s; w.z = nz * s;
+        }
+      }
+      for (const g of this.gks) { const gx = g.T.dreh ? -g.T.pos.x : g.T.pos.x, gz = g.T.dreh ? -g.T.pos.z : g.T.pos.z, dx = w.x - gx, dz = w.z - gz, d = Math.hypot(dx, dz); if (d < 0.7 && d > 1e-4) { w.x = gx + dx / d * 0.7; w.z = gz + dz / d * 0.7; } }
+      w.x = klemme(w.x, -19.2, 19.2); w.z = klemme(w.z, -9.4, 9.4);
+      const P = e.s.pos; if (e.dreh) P.set(-w.x, 0, -w.z); else P.set(w.x, 0, w.z);
+    }
+  },
+  drittelEnde() {
+    for (const e of this.ents) e.s.kontrolle = false; this.besitzer = null; Ton.pfiff(true);
+    if (this.drittel < SPIEL5.drittel) { this.drittel++; this.uhr = this.dauer; this.phase = 'pause'; this.phaseT = 0; HUD.banner(`${t('s5_pause', { n: this.drittel })}<small>${this.stand.A} : ${this.stand.B}</small>`, 'neon'); }
+    else { this.phase = 'ende'; Spiel.spiel5Ende(); }
+  },
+  /* ---------- Darstellung ---------- */
+  render(dt, alpha) {
+    for (const e of this.ents) { const S = e.s, k = e.dreh ? -1 : 1; S.fig.objekt.position.set(k * (mix(S.ppos.x, S.pos.x, alpha) - S.pos.x), 0, k * (mix(S.ppos.z, S.pos.z, alpha) - S.pos.z)); }
+    for (const g of this.gks) { const T = g.T, k = T.dreh ? -1 : 1; T.fig.objekt.position.set(k * (mix(T.ppos.x, T.pos.x, alpha) - T.pos.x), 0, k * (mix(T.ppos.z, T.pos.z, alpha) - T.pos.z)); }
+    const sicht = this.phase !== 'ende' && Spiel.zustand === 'match';
+    this.ents.forEach(e => { const S = e.s, k = e.dreh ? -1 : 1, x = k * mix(S.ppos.x, S.pos.x, alpha), z = k * mix(S.ppos.z, S.pos.z, alpha); e.marke.visible = sicht; e.marke.position.set(x, 0.01, z); if (e === this.steuer) this.steuerRing.position.set(x, 0.013, z); });
+    this.steuerRing.visible = sicht && !!this.steuer;
+    // Fadenkreuz und Kraft für den eigenen Ballführer
+    const e = this.steuer, Sp = Spiel, ich = sicht && e && e.s.kontrolle && ['lauf', 'laden'].includes(e.s.zustand) && this.phase === 'spiel';
+    Sp.zielKreis.visible = !!ich;
+    if (ich) { Sp.zielKreis.position.set(TOR.x - 0.02, Sp.zielCursor.y, Sp.zielCursor.z); Sp.zielKreis.material.color.set(Eingabe.lupferGehalten() ? 0x38c6ff : 0xffd23f); Sp.zielKreis.scale.setScalar(e.s.zustand === 'laden' ? 1 + 0.15 * Math.sin(performance.now() * 0.02) : 0.85); }
+    const laedt = ich && e.s.zustand === 'laden';
+    Sp.zielKraft.visible = Sp.zielStreu.visible = Sp.ring.visible = Sp.ringHG.visible = !!laedt;
+    if (laedt) {
+      const p = e.s.power; for (const o of [Sp.zielKraft, Sp.zielStreu]) o.position.copy(Sp.zielKreis.position);
+      Sp.zielKraft.geometry.setDrawRange(0, Math.max(1, Math.floor(p * 48)) * 6); Sp.zielKraft.material.color.setHSL((1 - p) * 0.33, 0.9, 0.5);
+      Sp.zielStreu.scale.setScalar(0.15 + 2 * e.s.streuung(p, e.s.ballSeite !== e.s.s, e.s.schussTyp(p, e.s.lupfer), this.weltA));
+      Sp.ring.position.set(this.steuerRing.position.x, 0.015, this.steuerRing.position.z); Sp.ringHG.position.copy(Sp.ring.position); Sp.ring.geometry.setDrawRange(0, Math.floor(p * 64) * 6); Sp.ring.material.color.setHSL((1 - p) * 0.33, 0.9, 0.5);
+    }
+    this.hudStand();
+  },
+  hudStand(zwingen) {
+    const u = Math.max(0, Math.ceil(this.uhr)), s = `${this.stand.A}|${this.stand.B}|${this.drittel}|${u}`; if (!zwingen && s === this._hud) return; this._hud = s;
+    const uhr = `${Math.floor(u / 60)}:${String(u % 60).padStart(2, '0')}`;
+    HUD.matchStand(this.teams.A, this.teams.B, this.alt, this.stand, this.drittel, uhr);
+    halle.tafel(this.teams.A.kuerzel, this.teams.B.kuerzel, this.stand.A, this.stand.B, `${this.drittel}. ${t('s5_drittel').toUpperCase()} · ${uhr}`);
+  },
+  /** Kamera: dem gesteuerten Spieler von schräg hinten folgen, sonst seitliche Fernsehansicht. */
+  kamera(wp, wz) {
+    const C = Config.kamera, m = Kam.override || (Einst.kamera !== 'auto' ? Einst.kamera : this.steuer ? 'schuetze' : 'broadcast'), hoch = innerHeight > innerWidth * 1.05;
+    if (m === 'schuetze' && this.steuer) {
+      const s = this.welt(this.steuer, _m5[0]), fx = mix(s.x, ball.p.x, 0.3), fz = mix(s.z, ball.p.z, 0.3);
+      wp.set(fx - (hoch ? 9.4 : 7.6) * C.abstand, (hoch ? 7.3 : 6.3) * C.hoehe, fz * 0.55);   // unter dem Anzeigewürfel (8,3 m) bleiben wz.set(fx + (hoch ? 5 : 6.5), 0, fz * 0.75);
+    } else { const bx = klemme(ball.p.x, -14, 14); wp.set(bx * 0.8, (hoch ? 11 : 7.8) * C.hoehe, (hoch ? 15 : 13.2) * C.abstand); wz.set(bx * 0.9, 0, -1.2 + ball.p.z * 0.35); }
+  }
+};
+
+/* =====================================================================
    MODUL: HUD – Spielstand mit Penalty-Punkten, Schütze, Zeitbalken, Schiedsrichter-Hinweis, Banner
    ===================================================================== */
 const HUD = {
@@ -4218,10 +4706,19 @@ const HUD = {
   },
   schiri(text) { const s = this.el.schiri; if (!text) { s.classList.add('versteckt'); return; } s.querySelector('.text').textContent = text; s.classList.remove('versteckt'); },
   /** Steuerhinweise als Tastenkärtchen – passend zur Rolle (Schütze, Torhüter, Zuschauer) und zum Eingabegerät. */
+  /** Spielstand im Spiel 5 gegen 5: Kürzel, Tore, Drittel und Uhr. */
+  matchStand(A, B, alt, stand, drittel, uhr) {
+    const e = this.el; e.anzeige.classList.remove('versteckt');
+    const kz = (el, T, a) => { const k = el.querySelector('.kz'); k.textContent = T.kuerzel; const p = a ? T.sekundaer : T.primaer; k.style.background = p; k.style.color = textFarbe(p); k.style.outline = '2px solid ' + (a ? T.primaer : T.sekundaer); el.querySelector('.punkte').innerHTML = ''; };
+    kz(e.a, A, false); kz(e.b, B, alt); e.stand.textContent = `${stand.A} : ${stand.B}`;
+    e.info.innerHTML = `${drittel}. ${t('s5_drittel')} · <b>${uhr}</b>`;
+  },
   steuerHinweis() {
     const S = Spiel, N = (k) => Eingabe.tastenName(Einst.tasten[k]), touch = Eingabe.geraet === 'touch', lauf = `${N('hoch')} ${N('links')} ${N('runter')} ${N('rechts')}`;
     let z;
-    if (S.menschSchiesst) z = touch ? [[t('g_links'), t('h_laufen')], [t('g_rechts'), t('h_zielen')], [t('g_finger_halten'), t('h_kraft')], [t('g_loslassen'), t('h_schuss')], [t('g_hochwischen'), t('h_lupfer')], [t('g_doppeltipp'), t('trick_finte')], [t('g_knoepfe'), t('h_tricks')]]
+    if (S.zustand === 'match' || S.modus === 'spiel5') z = !Match.mensch ? [[N('kamera'), t('a_kamera')], [N('pause'), t('pause')], ['', t('h_zuschauen')]] : touch ? [[t('g_links'), t('h_laufen')], [t('g_rechts'), t('h_zielen')], [t('g_finger_halten'), t('h_schuss_ball')], [t('g_knoepfe'), `${t('s5_pass')}, ${t('s5_wechsel')}, ${t('h_tricks')}`]]
+      : [[lauf, t('h_laufen')], [t('g_maus'), t('h_zielen')], [t('g_halten'), t('h_schuss_ball')], [N('finte'), t('h_pass')], [N('wechsel'), t('h_wechsel')], [`${N('zieher')} ${N('drehung')} ${N('zorro')}`, t('h_tricks')]];
+    else if (S.menschSchiesst) z = touch ? [[t('g_links'), t('h_laufen')], [t('g_rechts'), t('h_zielen')], [t('g_finger_halten'), t('h_kraft')], [t('g_loslassen'), t('h_schuss')], [t('g_hochwischen'), t('h_lupfer')], [t('g_doppeltipp'), t('trick_finte')], [t('g_knoepfe'), t('h_tricks')]]
       : [[lauf, t('h_laufen')], [t('g_maus'), t('h_zielen')], [t('g_halten'), t('h_kraft')], [t('g_loslassen'), t('h_schuss')], [t('g_rechtsklick'), t('h_lupfer')], [N('finte'), t('trick_finte')], [N('zieher'), t('trick_zieher')], [N('drehung'), t('trick_drehung')], [N('zorro'), t('trick_zorro')]];
     else if (S.menschHaelt) z = touch ? [[t('g_links'), t('h_torraum')], [t('g_tipp_tor'), t('h_parade')], [t('g_tipp_ball'), t('trick_raus')]]
       : [[lauf, t('h_torraum')], [t('g_klick_tor'), t('h_parade')], [`${N('raus')} / ${t('g_klick_ball')}`, t('trick_raus')]];
@@ -4245,7 +4742,7 @@ const HUD = {
   trickLeiste(rolle) {
     const el = this.el.tricks; el.innerHTML = '';
     const touch = istTouch || Eingabe.geraet === 'touch';
-    const liste = !touch ? [] : rolle === 'schuetze' ? [['finte', 'trick_finte'], ['zieher', 'trick_zieher'], ['drehung', 'trick_drehung'], ['zorro', 'trick_zorro']] : rolle === 'torwart' ? [['raus', 'trick_raus']] : [];
+    const liste = !touch ? [] : rolle === 'match' ? [['pass', 's5_pass'], ['wechsel', 's5_wechsel'], ['zieher', 'trick_zieher'], ['drehung', 'trick_drehung']] : rolle === 'schuetze' ? [['finte', 'trick_finte'], ['zieher', 'trick_zieher'], ['drehung', 'trick_drehung'], ['zorro', 'trick_zorro']] : rolle === 'torwart' ? [['raus', 'trick_raus']] : [];
     el.classList.toggle('versteckt', !liste.length);
     for (const [name, key] of liste) {
       const b = document.createElement('button'); b.className = 'trickKnopf' + (name === 'raus' ? ' raus' : ''); b.textContent = t(key);
@@ -4397,7 +4894,8 @@ const UI = {
       <div class="titel"><h1>${t('titel')}</h1><p>${t('untertitel')}</p></div>
       <div class="menueRaster">
         <button class="grossKnopf neon" data-m="parcours"><span class="ico">🏁</span>${t('m_parcours')}<small>${t('m_parcours_u')}</small></button>
-        <button class="grossKnopf primaer" data-m="schnell"><span class="ico">⚡</span>${t('m_schnell')}<small>${t('m_schnell_u')}</small></button>
+        <button class="grossKnopf primaer breit" data-m="spiel5"><span class="ico">🏑</span>${t('m_spiel5')}<small>${t('m_spiel5_u')}</small></button>
+        <button class="grossKnopf" data-m="schnell"><span class="ico">⚡</span>${t('m_schnell')}<small>${t('m_schnell_u')}</small></button>
         <button class="grossKnopf" data-m="turnier"><span class="ico">🏆</span>${weiter ? t('m_turnier_weiter') : t('m_turnier')}<small>${t('m_turnier_u')}</small></button>
         <button class="grossKnopf" data-m="training"><span class="ico">🎯</span>${t('m_training')}<small>${t('m_training_u')}</small></button>
         <button class="grossKnopf" data-m="teams"><span class="ico">👕</span>${t('m_teams')}<small>${t('m_teams_u')}</small></button>
@@ -4407,7 +4905,7 @@ const UI = {
       ${Speicher.ok ? '' : `<p class="hinweisText" style="margin-top:1rem">${t('e_speicher_aus')}</p>`}`);
     this.klick(d, '[data-m]', (el) => {
       const m = el.dataset.m;
-      if (m === 'parcours') Spiel.starteParcours(); else if (m === 'schnell') this.teamwahl(); else if (m === 'turnier') (weiter ? this.turnierHub() : this.turnierSetup());
+      if (m === 'parcours') Spiel.starteParcours(); else if (m === 'spiel5') this.teamwahl('spiel5'); else if (m === 'schnell') this.teamwahl(); else if (m === 'turnier') (weiter ? this.turnierHub() : this.turnierSetup());
       else if (m === 'training') this.trainingMenue(); else if (m === 'teams') this.teams(); else if (m === 'tuning') TuningPanel.oeffnen(); else this.einstellungen();
     });
   },
@@ -4422,11 +4920,13 @@ const UI = {
   schwierigkeitChips() { return `<div class="chips" data-gruppe="schw">${['einsteiger', 'amateur', 'profi', 'weltmeister'].map(s => `<button class="chip ${Einst.schwierigkeit === s ? 'an' : ''}" data-schw="${s}">${t('s_' + s)}</button>`).join('')}</div>`; },
   chipsBinden(d) { this.klick(d, '[data-schw]', (el) => { Einst.schwierigkeit = el.dataset.schw; einstSpeichern(); d.querySelectorAll('[data-schw]').forEach(x => x.classList.toggle('an', x === el)); }); },
   /* ---------- Teamwahl (Schnelles Spiel) ---------- */
-  teamwahl() {
+  teamwahl(ziel = 'penalty') {
+    const s5 = ziel === 'spiel5';
     const L = TeamDB.liste; let du = TeamDB.hole(Einst.letztesTeam).id, gegner = null, schritt = 0, zuschauen = false;
     const andere = L.filter(x => x.id !== du); gegner = andere[Math.floor(Math.random() * andere.length)].id;
-    const d = this.html(`<div class="kopfzeile">${this.zurueckKnopf()}<h2>${t('teamwahl')}</h2></div>
+    const d = this.html(`<div class="kopfzeile">${this.zurueckKnopf()}<h2>${s5 ? t('m_spiel5') : t('teamwahl')}</h2></div>
       <div class="leiste"><span class="hinweisText">${t('waehle_hinweis')}</span>${this.schwierigkeitChips()}</div>
+      ${s5 ? `<div class="leiste"><div class="chips"><span class="hinweisText" style="align-self:center">${t('s5_dauer')}:</span>${[1, 2, 3, 5].map(n => `<button class="chip ${Einst.drittelMin === n ? 'an' : ''}" data-dauer="${n}">${t('s5_min', { n })}</button>`).join('')}</div></div>` : ''}
       <div class="teamRaster">${L.map(T => this.teamKarte(T)).join('')}</div>
       <div class="stickyFuss"><div class="chips"><button class="chip" data-zusch>👀 ${t('m_kivski')}</button></div><button class="grossKnopf primaer" data-los style="min-height:3.6rem;min-width:12rem">${t('anpfiff')}</button></div>`);
     const mark = () => d.querySelectorAll('.teamKarte').forEach(el => { const id = el.dataset.team; el.classList.toggle('du', id === du); el.classList.toggle('gegner', id === gegner); el.querySelector('.marke').textContent = id === du ? (zuschauen ? 'A' : t('dein_team')) : id === gegner ? (zuschauen ? 'B' : t('gegner')) : ''; });
@@ -4434,7 +4934,8 @@ const UI = {
     this.klick(d, '[data-zurueck]', () => this.hauptmenue());
     this.klick(d, '[data-zusch]', (el) => { zuschauen = !zuschauen; el.classList.toggle('an', zuschauen); mark(); });
     this.klick(d, '.teamKarte', (el) => { const id = el.dataset.team; if (schritt % 2 === 0) { if (id === gegner) gegner = du; du = id; } else { if (id === du) return; gegner = id; } schritt++; mark(); });
-    this.klick(d, '[data-los]', () => { Einst.letztesTeam = du; einstSpeichern(); Spiel.starteMatch(TeamDB.hole(du), TeamDB.hole(gegner), zuschauen ? null : 'A'); this.tutorialFallsNoetig(); });
+    this.klick(d, '[data-dauer]', (el) => { Einst.drittelMin = +el.dataset.dauer; einstSpeichern(); d.querySelectorAll('[data-dauer]').forEach(x => x.classList.toggle('an', x === el)); });
+    this.klick(d, '[data-los]', () => { Einst.letztesTeam = du; einstSpeichern(); if (s5) Spiel.starteSpiel5(TeamDB.hole(du), TeamDB.hole(gegner), zuschauen ? null : 'A'); else { Spiel.starteMatch(TeamDB.hole(du), TeamDB.hole(gegner), zuschauen ? null : 'A'); this.tutorialFallsNoetig(); } });
   },
   /* ---------- Training ---------- */
   trainingMenue() {
@@ -4535,6 +5036,22 @@ const UI = {
     this.klick(d, '[data-revanche]', () => Spiel.starteMatch(A, B, S.mensch));
     this.klick(d, '[data-menue]', () => { Spiel.leerlauf(); this.hauptmenue(); });
   },
+  /* ---------- Ergebnis Spiel 5 gegen 5 ---------- */
+  spielErgebnis(r) {
+    const { A, B, stand } = r, sieger = stand.A > stand.B ? A : stand.B > stand.A ? B : null, duGew = r.mensch && sieger === A;
+    const tore = r.tore.length ? r.tore.map(x => `<div class="pZeile"><span>${x.zeit} · ${esc((x.team === 'A' ? A : B).kuerzel)}</span><b>${esc(x.name || '–')}</b></div>`).join('') : `<p class="hinweisText">${t('s5_keine_tore')}</p>`;
+    const d = this.html(`<div class="mitte"><div class="karte dialog parcoursErg">
+      <div class="hinweisText">${t('s5_endstand')}</div>
+      <div class="ergebnisGross">${stand.A} : ${stand.B}</div>
+      <h2 style="margin:.2rem 0 .6rem">${sieger ? `${esc(sieger.name)} ${t('s5_gewinnt')}` : t('remis')}</h2>
+      ${r.mensch && sieger ? `<p style="font-size:1.2rem;font-weight:800;color:${duGew ? 'var(--gut)' : 'var(--schlecht)'}">${duGew ? t('du_gewinnst') : t('du_verlierst')}</p>` : ''}
+      <div class="hinweisText" style="text-align:left;margin-top:.4rem">${t('s5_tore')}</div>${tore}
+      ${sieger ? '' : `<button class="knopf primaer" data-penalty>${t('s5_penalty')}</button>`}
+      <button class="knopf ${sieger ? 'primaer' : ''}" data-revanche>${t('revanche')}</button><button class="knopf" data-menue>${t('menue')}</button></div></div>`, 'dunkel');
+    this.klick(d, '[data-penalty]', () => Spiel.starteMatch(A, B, r.mensch));
+    this.klick(d, '[data-revanche]', () => Spiel.starteSpiel5(A, B, r.mensch));
+    this.klick(d, '[data-menue]', () => { Spiel.leerlauf(); this.hauptmenue(); });
+  },
   /* ---------- Parcours-Ergebnis ---------- */
   parcoursErgebnis(r) {
     const z = (a, b, kl) => `<div class="pZeile ${kl || ''}"><span>${a}</span><b>${b}</b></div>`;
@@ -4549,7 +5066,7 @@ const UI = {
     this.klick(d, '[data-menue]', () => { Spiel.leerlauf(); this.hauptmenue(); });
   },
   /* ---------- Pause ---------- */
-  pauseUmschalten() { if (!['intro', 'aufstellung', 'anlauf', 'auswertung', 'wiederholung'].includes(Spiel.zustand)) return; if (Spiel.pausiert) this.pauseZu(); else this.pauseAuf(); },
+  pauseUmschalten() { if (!['intro', 'aufstellung', 'anlauf', 'auswertung', 'wiederholung', 'match'].includes(Spiel.zustand)) return; if (Spiel.pausiert) this.pauseZu(); else this.pauseAuf(); },
   pauseAuf() {
     Spiel.pausiert = true; this.pauseZu(true); Spiel.pausiert = true;
     const d = document.createElement('div'); d.className = 'bildschirm dunkel'; d.style.zIndex = 40;
@@ -4629,7 +5146,7 @@ const UI = {
   einstellungen(ausPause) {
     const zeile = (label, inhalt) => `<div class="einstZeile"><span>${label}</span>${inhalt}</div>`;
     const chips = (name, werte, akt, lab) => `<div class="chips">${werte.map(w => `<button class="chip ${akt === w ? 'an' : ''}" data-${name}="${w}">${lab(w)}</button>`).join('')}</div>`;
-    const aktionen = ['hoch', 'runter', 'links', 'rechts', 'aktion', 'finte', 'lupfer', 'zieher', 'drehung', 'zorro', 'raus', 'kamera', 'pause', 'tuning'];
+    const aktionen = ['hoch', 'runter', 'links', 'rechts', 'aktion', 'finte', 'lupfer', 'zieher', 'drehung', 'zorro', 'raus', 'wechsel', 'kamera', 'pause', 'tuning'];
     const d = this.html(`<div class="kopfzeile">${ausPause ? `<button class="knopf" data-zurueck>${t('fortsetzen')}</button>` : this.zurueckKnopf()}<h2>${t('einstellungen')}</h2></div>
       <div class="karte" style="width:min(46rem,100%)">
         ${zeile(t('schwierigkeit'), this.schwierigkeitChips())}
@@ -4767,10 +5284,10 @@ function frame(jetzt) {
   requestAnimationFrame(frame);
   const dt = Math.min(0.1, Math.max(0, (jetzt - letzteZeit) / 1000)); letzteZeit = jetzt;
   Eingabe.pollen();
-  Eingabe.joyZone = (Spiel.menschSchiesst || Spiel.menschHaelt) && ['aufstellung', 'anlauf'].includes(Spiel.zustand) && !Spiel.pausiert;
+  Eingabe.joyZone = ((Spiel.menschSchiesst || Spiel.menschHaelt) && ['aufstellung', 'anlauf'].includes(Spiel.zustand) || (Spiel.zustand === 'match' && !!Match.mensch)) && !Spiel.pausiert;
   for (const e of Eingabe.holeEreignisse()) {
     if (e.typ === 'tuning') { TuningPanel.umschalten(); continue; }
-    if (e.typ === 'pause') { if (TuningPanel.offen && !['anlauf', 'aufstellung', 'auswertung', 'intro', 'wiederholung'].includes(Spiel.zustand)) TuningPanel.schliessen(); else UI.pauseUmschalten(); continue; }
+    if (e.typ === 'pause') { if (TuningPanel.offen && !['anlauf', 'aufstellung', 'auswertung', 'intro', 'wiederholung', 'match'].includes(Spiel.zustand)) TuningPanel.schliessen(); else UI.pauseUmschalten(); continue; }
     if (!Spiel.pausiert) Spiel.ereignis(e);
   }
   if (!Spiel.pausiert && Spiel.simAktiv()) {
@@ -4790,9 +5307,9 @@ function start() {
   HUD.init(); UI.init(); initSzene(); Vorschau.init(); Spiel.init(); Eingabe.init(renderer.domElement); TuningPanel.init();
   document.getElementById('laden').remove();
   UI.hauptmenue();
-  document.addEventListener('visibilitychange', () => { if (document.hidden && ['anlauf', 'aufstellung'].includes(Spiel.zustand) && !Spiel.pausiert) UI.pauseAuf(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && ['anlauf', 'aufstellung', 'match'].includes(Spiel.zustand) && !Spiel.pausiert) UI.pauseAuf(); });
   window.__PARCOURS = PARCOURS; window.__Parcours = Parcours;
-  window.__fps = { Parcours, PARCOURS, loeseSchuss, simuliereBisX, V3, THREE, renderer, szene, kamera, halle, Bild, Spiel, Config, Regeltests, Turnier, TeamDB, ball, UI, Eingabe, Kam, HUD, Ton, presetAnwenden, PRESETS, cfgSet, TuningPanel, Einst, Shootout };
+  window.__fps = { Match, Parcours, PARCOURS, loeseSchuss, simuliereBisX, V3, THREE, renderer, szene, kamera, halle, Bild, Spiel, Config, Regeltests, Turnier, TeamDB, ball, UI, Eingabe, Kam, HUD, Ton, presetAnwenden, PRESETS, cfgSet, TuningPanel, Einst, Shootout };
   requestAnimationFrame((t0) => { letzteZeit = t0; frame(t0); });
 }
 try { start(); }
