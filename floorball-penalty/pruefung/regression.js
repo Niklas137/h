@@ -278,6 +278,57 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     pruef('Ballannahme: Ball wird weich abgefedert, Pässe kommen an', a.ruckN >= 30 && a.ruckP50 < 260 && a.ruckP90 < 700 && a.quote > 0.6, JSON.stringify({ passe: a.passe, quote: a.quote, ruckP50: a.ruckP50, ruckP90: a.ruckP90, ruckN: a.ruckN }));
   });
 
+  // 5g) Schusstäuschung und Direktschuss als Mensch (Penalty-Training und Spiel 5 gegen 5)
+  await abschnitt('5g) Schusstäuschung und Direktschuss', async () => {
+    await p.click('[data-m="training"]'); await p.waitForTimeout(200); await p.click('[data-art="schiessen"]');
+    await wf(() => window.__fps.Spiel.zustand === 'anlauf' && window.__fps.Spiel.menschSchiesst);
+    const pen = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, E = F.Eingabe, alt = E.lenkung, sch = () => S.schuetze, erg = { ablauf: [] };
+      const merke = () => { const z = sch().zustand; if (erg.ablauf[erg.ablauf.length - 1] !== z) erg.ablauf.push(z); };
+      S.pausiert = true; E.lenkung = () => ({ x: 0, y: 1, quelle: 'tasten' });
+      for (let k = 0; k < 90; k++) S.schritt(1 / 120);
+      E.lenkung = alt; E.tasten.add('Enter');
+      for (let k = 0; k < 200 && !(sch().zustand === 'laden' && sch().power > 0.35); k++) { S.schritt(1 / 120); merke(); }
+      erg.kraftVorher = +sch().power.toFixed(2); S.ereignis({ typ: 'finte' });
+      for (let k = 0; k < 30; k++) { S.schritt(1 / 120); merke(); }
+      erg.inTaeuschung = sch().zustand; erg.ballDabei = sch().kontrolle;
+      for (let k = 0; k < 40; k++) { S.schritt(1 / 120); merke(); }
+      erg.nachTaeuschung = sch().zustand; erg.kraftNach = +sch().power.toFixed(2);
+      E.tasten.delete('Enter');
+      for (let k = 0; k < 120 && !S.schussInfo; k++) { S.schritt(1 / 120); merke(); }
+      erg.schuss = !!S.schussInfo; S.pausiert = false; return erg;
+    });
+    pruef('Schusstäuschung (Penalty): Ausholen, Täuschung, weiter halten, Schuss', pen.inTaeuschung === 'taeuschung' && pen.ballDabei && pen.nachTaeuschung === 'laden' && pen.kraftNach > 0 && pen.kraftNach < pen.kraftVorher + 0.3 && pen.schuss, JSON.stringify(pen));
+    await p.evaluate(() => { const F = window.__fps; F.Spiel.leerlauf(); F.UI.hauptmenue(); });
+    const m = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, E = F.Eingabe, L = F.TeamDB.liste, erg = {};
+      S.starteSpiel5(L[0], L[8], 'A'); S.pausiert = true; let i = 0; while (M.phase !== 'spiel' && i < 900) { S.schritt(1 / 120); i++; }
+      const R = M.steuer, P = M.ents.find(e => e.team === 'A' && e !== R), TX = F.Spiel.welt ? 0 : 0;
+      const stelle = () => { M.ents.forEach(e => { if (e.team === 'B') { e.s.ballSperre = 5; e.s.pos.set(12, 0, e.i % 2 ? 8 : -8); e.s.vel.set(0, 0, 0); e.s.fig.planer.bereit = false; } }); };
+      // Direktschuss: Mitspieler passt, Mensch hält den Schuss gedrückt
+      stelle(); const tx = 18.5 - 7.5;
+      R.s.pos.set(tx, 0, 1.6); R.s.vel.set(0, 0, 0); R.s.yaw = Math.PI / 2; R.s.fig.planer.bereit = false; R.s.setzeZustand('lauf');
+      P.s.pos.set(tx - 2.5, 0, -4.2); P.s.vel.set(0, 0, 0); P.s.yaw = 0.3; P.s.fig.planer.bereit = false; P.s.setzeZustand('lauf');
+      M.gibBall(P); for (let k = 0; k < 6; k++) S.schritt(1 / 120);
+      let geschossen = null; const ob = M.beiSchuss.bind(M); M.beiSchuss = (s, info, team) => { if (!geschossen) geschossen = { team, direkt: !!(s.schuss && s.schuss.direkt), kmh: Math.round(info.speed * 3.6), wer: s === R.s }; ob(s, info, team); };
+      M.pass(P, R); E.tasten.add('Enter'); const ablauf = [];
+      for (let k = 0; k < 150 && !geschossen; k++) { S.schritt(1 / 120); const z = R.s.zustand + (R.s.direkt ? '*' : ''); if (ablauf[ablauf.length - 1] !== z) ablauf.push(z); }
+      E.tasten.delete('Enter'); erg.direkt = { ablauf, geschossen };
+      // Schusstäuschung im Spiel: Ball am Schläger, ausholen, Leertaste, weiter halten, abziehen
+      for (let k = 0; k < 40; k++) S.schritt(1 / 120);
+      stelle(); M.steuer = R; R.s.pos.set(tx, 0, 0.8); R.s.vel.set(0, 0, 0); R.s.setzeZustand('lauf'); R.s.fig.planer.bereit = false; M.gibBall(R); geschossen = null;
+      for (let k = 0; k < 10; k++) S.schritt(1 / 120);
+      E.tasten.add('Enter'); const ab2 = [];
+      for (let k = 0; k < 150 && !(R.s.zustand === 'laden' && R.s.power > 0.35); k++) S.schritt(1 / 120);
+      S.ereignis({ typ: 'finte' });
+      for (let k = 0; k < 140 && !geschossen; k++) { S.schritt(1 / 120); if (ab2[ab2.length - 1] !== R.s.zustand) ab2.push(R.s.zustand); if (k === 70) E.tasten.delete('Enter'); }
+      E.tasten.delete('Enter'); M.beiSchuss = ob; erg.taeuschung = { ablauf: ab2, geschossen, taeuschungen: M.statistik.taeuschungen };
+      S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return erg;
+    });
+    pruef('Direktschuss (Spiel 5 gegen 5): Ausholen ohne Ball, Schlag trifft den Pass', m.direkt.ablauf.includes('laden*') && m.direkt.ablauf.includes('schuss*') && m.direkt.geschossen && m.direkt.geschossen.direkt && m.direkt.geschossen.wer, JSON.stringify(m.direkt));
+    pruef('Schusstäuschung (Spiel 5 gegen 5): Leertaste beim Ausholen, danach Schuss', m.taeuschung.ablauf.includes('taeuschung') && m.taeuschung.geschossen && m.taeuschung.geschossen.wer && m.taeuschung.taeuschungen >= 1, JSON.stringify(m.taeuschung));
+  });
+
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
   await abschnitt('6) Turnier', async () => {
   const tn = await p.evaluate(() => { const F = window.__fps, T = F.Turnier, L = F.TeamDB.liste.map(x => x.id); T.neu(L.slice(0, 8), L[0], true); let n = 0; let s; while ((s = T.naechstesSpiel()) && n < 200) { T.eintragen(s.id, T.simuliere(s.heim, s.gast, s.phase !== 'gruppe')); n++; } F.UI.turnierHub(); return { spiele: n, sieger: T.d.sieger, zustand: F.Spiel.zustand, beste: T.beste() }; });

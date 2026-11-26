@@ -292,7 +292,7 @@ const TEXTE = {
     m_spiel5: 'Spiel 5 gegen 5', m_spiel5_u: 'Echtes Floorball: passen, dribbeln, Tore schießen – drei Drittel',
     s5_untertitel: 'Spiel 5 gegen 5', s5_drittel: 'Drittel', s5_dauer: 'Drittellänge', s5_min: '{n} Min', s5_pause: '{n}. DRITTEL', s5_einschlag: 'Einschlag {t}',
     s5_gewinnt: 'gewinnt', s5_pass: 'Pass', s5_wechsel: 'Wechsel', s5_penalty: 'Penaltyschießen ▶', s5_tore: 'Tore', s5_keine_tore: 'Keine Tore', s5_endstand: 'Endstand',
-    h_pass: 'Pass / Ball erobern', h_wechsel: 'Spieler wechseln', h_schuss_ball: 'Schuss (mit Ball)', a_wechsel: 'Spieler wechseln', pen_untertitel: 'Penaltyschießen',
+    h_pass: 'Pass / Ball erobern / beim Ausholen Schusstäuschung', h_wechsel: 'Spieler wechseln', h_schuss_ball: 'Schuss (mit Ball oder direkt aus dem Pass)', a_wechsel: 'Spieler wechseln', pen_untertitel: 'Penaltyschießen',
     m_parcours: 'Parcours', m_parcours_u: 'Slalom, Drehungen, Tore – dann der Schuss. Auf Zeit und Punkte.',
     p_titel1: 'PAR', p_titel2: 'COURS', p_untertitel: '3 Übungen · 1 Schuss',
     p_slalom: 'Slalom', p_slalom_u: 'Im Zickzack an den Pfeilen vorbei', p_drehung_t: 'Volle Drehungen', p_drehung_u: 'Einmal ganz um die grünen Hütchen',
@@ -375,7 +375,7 @@ const TEXTE = {
     r_abgefangen: 'Torhüter hat den Ball abgefangen – kein Tor.', r_ballweg: 'Ball verloren.',
     // Tutorial
     tut_titel: 'So spielst du', tut_1: 'Laufen mit W/A/S/D, Pfeiltasten oder dem Joystick links (ohne Eingabe läuft der Spieler selbst zum Tor). Maus oder Finger zeigt auf die Stelle im Tor, wo der Ball hin soll.',
-    tut_2: 'Maustaste oder Finger gedrückt halten: der Ring am Fadenkreuz füllt sich, eine Linie zeigt die Flugbahn. Je mehr Kraft, desto größer die Streuung. Loslassen = Schuss. Tricks beim Anlauf: Leertaste = Täuschung, Q = Zieher, E = Drehung, R = Zorro (Ball auf der Kelle) – oder die Knöpfe unten rechts.',
+    tut_2: 'Maustaste oder Finger gedrückt halten: der Ring am Fadenkreuz füllt sich, eine Linie zeigt die Flugbahn. Je mehr Kraft, desto größer die Streuung. Loslassen = Schuss. Leertaste während des Ausholens = Schusstäuschung (weiter halten = gleich abziehen). Tricks beim Anlauf: Leertaste = Täuschung, Q = Zieher, E = Drehung, R = Zorro (Ball auf der Kelle) – oder die Knöpfe unten rechts.',
     tut_3: 'Im Tor bewegst du dich mit W/A/S/D oder Joystick im ganzen Torraum. Tippe oder klicke dorthin, wo der Ball ins Tor fliegt. Kommt der Schütze zu nah: F, „Raus!“ oder ein Tipp vor das Tor – dein Torhüter springt ihm entgegen.',
     tut_weiter: 'Weiter', tut_los: 'Los geht’s', tut_skip: 'Überspringen',
     // Tuning
@@ -2613,6 +2613,16 @@ const POSEN_SCHUETZE = {
     P.oben = [mix(-sd * 0.05, -sd * 0.18 - e.s * 0.05, glatt(u)), mix(typ === 'schlag' ? 1.1 : 0.88, 0.95, u), mix(0.15, 0.4, glatt(u))];
     return P;
   },
+  /** Schusstäuschung: Schlag aus dem Ausholen beginnt, das Blatt stoppt knapp hinter dem Ball, dann zurück in die Ballführung. */
+  taeuschung(e, t) {
+    const u = klemme(t / 0.42, 0, 1), sd = e.ballSeite, H = POSEN_SCHUETZE.ausholen(e, t), D = POSEN_SCHUETZE.dribbel(e, t);
+    const S = kopiePose(D);
+    S.kelle = [e.lokBall.x + sd * 0.05, 0.07, e.lokBall.z - 0.13]; S.kRicht = [sd * 0.2, 0, 1]; S.kNeig = 0;
+    S.twist = sd * 0.3; S.beuge = 0.46; S.hoehe = D.hoehe - 0.05; S.oben = [-sd * 0.06, 0.9, 0.22];
+    const a = glatt(u / 0.38), b = glatt((u - 0.55) / 0.45);
+    const P = mischePose(H, S, a, kopiePose(H));
+    return b > 0 ? mischePose(P, D, b, P) : P;
+  },
   nachlauf(e, t) {
     const P = POSEN_SCHUETZE.dribbel(e, t); P.blick = 1; P.beuge = 0.3; P.pitch = 0.08;
     P.kelle = [e.s * 0.3, 0.035, 0.6]; P.kRicht = [e.s * 0.3, 0, 1]; P.oben = [-e.s * 0.05, 0.88, 0.2]; return P;
@@ -2733,7 +2743,7 @@ class Schuetze {
     this.finteT = -1; this.finteSeite = 0; this.zielSpeed = 0; this.zielAbsicht.aktiv = false; this.lenkRichtung.set(1, 0, 0); this.dribbelPhase = this.s > 0 ? Math.PI - Math.asin(0.32) : -Math.asin(0.32); this.pushSeite = this.dribbelDir = -this.s;
     this.fig.planer.bereit = false; this.anim.setze('bereit', null, 0); this.anim.letzte = null; this.anim.von = null; this.wiederBall = false; this.tZustand = 0;
     this.trick = null; this.zorro = false; this.zorroT = 0; this.drehRate = 0; this.ballSperre = 0;
-    this.annahme = { x: 0, z: 0.6, dx: 0, dz: -1 }; this.annahmeW = 0; this.annahmeT = -1;
+    this.annahme = { x: 0, z: 0.6, dx: 0, dz: -1 }; this.annahmeW = 0; this.annahmeT = -1; this.direkt = false; this.taeuschCD = 0; this.ballGeaendert = false;
   }
   planerPhase() { return this.fig.planer.phase; }
   /** Gangdaten für den Schrittplaner: Spur wird im Sprint schmaler, beim Bremsen breiter mit Ausfallschritt. */
@@ -2750,7 +2760,9 @@ class Schuetze {
   /** Ein Simulationsschritt. A = Absicht (Mensch oder KI). welt = Spiel-Kontext. */
   schritt(dt, A, ball, welt) {
     this.ppos.copy(this.pos); this.pyaw = this.yaw; this.tZustand += dt;
-    if (!this.kontrolle || this.zustand !== 'lauf') { this.annahmeT = -1; this.uebergang = null; }
+    if (!this.kontrolle || this.zustand !== 'lauf') { this.annahmeT = -1; if (this.zustand !== 'taeuschung') this.uebergang = null; }
+    if (this.direkt && !['laden', 'schuss'].includes(this.zustand)) this.direkt = false;
+    this.taeuschCD = Math.max(0, this.taeuschCD - dt);
     const cfg = Config.schuetze, d = this.daten, maxV = cfg.dribbleTempo * (0.88 + d.technik / 100 * 0.24);
     const wunsch = _n.set(0, 0, 0);
     let animName = this.zustand, animParam = null;
@@ -2770,9 +2782,26 @@ class Schuetze {
         if (!welt.match && !this.kontrolle && this.ballSperre <= 0 && !ball.kinematisch && ball.v.length() < 5 && ball.p.y < 0.2 && this.fig.ferse.distanceTo(ball.p) < 0.45) { this.kontrolle = true; welt.beiWiederBall && welt.beiWiederBall(this); }
         animName = this.trick ? this.trick.name : this.zorro ? 'zorro' : this.finteT >= 0 ? 'finte' : 'dribbel'; animParam = this.trick ? { seite: this.trick.seite } : { seite: this.finteSeite };
         if (this.kontrolle && this.imSchussbereich() && A.laden && this.finteT < 0 && !this.trick && !welt.schussGesperrt) { this.setzeZustand('laden'); this.power = 0; this.zielAbsicht.aktiv = true; }
+        // Direktschuss: Pass kommt, Schuss gehalten → ohne Ball ausholen, der Schlag trifft den ankommenden Ball
+        else if (!this.kontrolle && welt.match && A.laden && this.annahmeW > 0.5 && this.annahmeOffen && this.ballSperre <= 0 && this.imSchussbereich() && !welt.schussGesperrt) { this.setzeZustand('laden'); this.power = 0; this.direkt = true; this.zielAbsicht.aktiv = true; }
         break;
       }
       case 'laden': {
+        if (this.direkt && this.kontrolle) this.direkt = false;   // Ball doch angenommen: normaler Schuss aus dem Ausholen
+        if (this.direkt) {
+          this.power = Math.min(1, this.power + dt / 0.8);
+          this.zielAbsicht.z = A.zielZ; this.zielAbsicht.y = A.zielY; this.zielAbsicht.aktiv = true; this.lupfer = false;
+          wunsch.copy(this.vel).multiplyScalar(0.92);
+          const typ = this.schussTyp(Math.max(0.3, this.power), false), vorlauf = SCHUSS_DAUER[typ] * 0.55 / Config.animation.tempo;
+          if (this.annahmeW < 0.15 || (!A.laden && this.power < 0.06)) { this.direkt = false; this.setzeZustand('lauf'); this.zielAbsicht.aktiv = false; }
+          else if (this.annahmeTau !== undefined && this.annahmeTau <= vorlauf + dt) this.starteDirekt(A);
+          animName = 'ausholen'; break;
+        }
+        // Schusstäuschung: aus dem Ausholen heraus abbrechen, Blatt stoppt über dem Ball
+        if (A.finte && this.kontrolle && this.power > 0.12 && this.taeuschCD <= 0 && !this.zorro) {
+          this.setzeZustand('taeuschung'); this.taeuschPower = this.power; welt.beiTrick && welt.beiTrick(this, 'taeuschung'); Ton.quietschen();
+          animName = 'taeuschung'; break;
+        }
         this.power = Math.min(1, this.power + dt / 1.0);
         this.zielAbsicht.z = A.zielZ; this.zielAbsicht.y = A.zielY; this.zielAbsicht.aktiv = true;
         this.lupfer = !!A.lupfer && !this.zorro;
@@ -2787,10 +2816,41 @@ class Schuetze {
         }
         animName = 'ausholen'; break;
       }
+      case 'taeuschung': {
+        // Schusstäuschung: Schlagbewegung bricht vor dem Ball ab, danach weiter mit Ball
+        wunsch.copy(this.lenkRichtung).multiplyScalar(Math.max(1.2, this.zielSpeed * 0.75));
+        if (this.tZustand >= 0.42 / Config.animation.tempo && A.laden && this.kontrolle) {
+          // Schuss weiter gehalten: sofort wieder ausholen, mit einem Teil der Kraft (Täuschen und Abziehen in einem Zug)
+          this.setzeZustand('laden'); this.power = (this.taeuschPower || 0.4) * 0.6; this.zielAbsicht.aktiv = true; this.taeuschCD = 0.35;
+          animName = 'ausholen'; break;
+        }
+        if (this.tZustand >= 0.42 / Config.animation.tempo) {
+          this.setzeZustand('lauf'); this.zielAbsicht.aktiv = false; this.power = 0; this.taeuschCD = 0.35;
+          const lb = this.lokBall, wv = zuWelt(_annW, lb, _annV.set(0, 0, 0), this.yaw); this.uebergang = { t: 0, x: wv.x, z: wv.z, y: BALLD.r };
+          this.dribbelPhase = Math.asin(klemme((lb.x - this.s * 0.05) / 0.22, -1, 1));
+        }
+        animName = 'taeuschung'; break;
+      }
       case 'schuss': {
         this.schussU += dt / SCHUSS_DAUER[this.schuss.typ] * Config.animation.tempo;
         wunsch.copy(this.vel).multiplyScalar(0.96);
-        if (this.schussU >= 0.55 && !this.abgeschossen) this.abschuss(ball, welt);
+        if (this.schuss.direkt && !this.abgeschossen && this.schussU < 0.52) {
+          // Schlag nachführen: Treffpunkt laufend auf die vorausberechnete Ballposition im Kontaktmoment setzen
+          const rest = (0.55 - this.schussU) * SCHUSS_DAUER[this.schuss.typ] / Config.animation.tempo, cy = Math.cos(this.yaw), sy = Math.sin(this.yaw);
+          const rvx = ball.v.x - this.vel.x, rvz = ball.v.z - this.vel.z, lb = zuLokal(_annV, ball.p, this.pos, this.yaw);
+          const px = klemme(lb.x + (rvx * cy - rvz * sy) * rest, -0.8, 0.8), pz = klemme(lb.z + (rvx * sy + rvz * cy) * rest, 0.2, 1.0);
+          const zl = zuLokal(_annW, _b.set(TOR.x, 0, this.schuss.zielZ), this.pos, this.yaw), zn = Math.hypot(zl.x, zl.z) || 1, d = BALLD.r + 0.013, K = this.schuss.animParam.kontakt, k = 1 - Math.exp(-30 * dt);
+          K[0] += (px - zl.x / zn * d - K[0]) * k; K[2] += (pz - zl.z / zn * d - K[2]) * k;
+        }
+        if (this.schuss.direkt) {
+          // Direktschuss: Kontakt nur, wenn der Ball im Schlagfenster wirklich am Blatt ist – sonst geht der Schlag ins Leere
+          if (!this.abgeschossen && !this.schuss.verpasst && this.schussU >= 0.42) {
+            const fe = this.fig.ferse, en = _annW.copy(fe).addScaledVector(this.fig.kelleDir, 0.28); const bw = (ball.echt || ball).p;   // Blatt liegt in Weltkoordinaten, der Ball im gedrehten System nicht
+            naechsterPunkt(bw, fe, en, _annV);
+            if (bw.y < 0.45 && _annV.distanceTo(bw) < 0.17) { this.kontrolle = true; this.abschuss(ball, welt); this.ballGeaendert = true; }
+            else if (this.schussU > 0.78) { this.schuss.verpasst = true; welt.beiDirektVerpasst && welt.beiDirektVerpasst(this); }
+          }
+        } else if (this.schussU >= 0.55 && !this.abgeschossen) this.abschuss(ball, welt);
         if (this.schussU >= 1) this.setzeZustand('nach');
         animName = 'schuss'; animParam = this.schuss.animParam; break;
       }
@@ -2824,7 +2884,7 @@ class Schuetze {
     // Blickrichtung
     let zielYaw = this.yaw;
     if (this.zustand === 'schuss' && this.schuss && this.schuss.typ === 'pass') zielYaw = Math.atan2(this.schuss.passV.x, this.schuss.passV.z) - this.ballSeite * 0.2;
-    else if (this.zustand === 'laden' || this.zustand === 'schuss') zielYaw = Math.atan2(TOR.x - this.pos.x, (this.zielAbsicht.z * 0.5) - this.pos.z) - this.ballSeite * 0.25;
+    else if (this.zustand === 'laden' || this.zustand === 'schuss' || this.zustand === 'taeuschung') zielYaw = Math.atan2(TOR.x - this.pos.x, (this.zielAbsicht.z * 0.5) - this.pos.z) - this.ballSeite * 0.25;
     else if (this.annahmeW > 0.25 && !this.kontrolle && this.annahmeYaw !== undefined) {
       let z = this.annahmeYaw + this.s * 0.35;   // Ball kommt leicht auf die Schlägerseite
       if (this.speed > 2.2) { const lr = Math.atan2(this.vel.x, this.vel.z), d = winkelDiff(lr, z); z = lr + klemme(d, -1.1, 1.1); }
@@ -2832,14 +2892,15 @@ class Schuetze {
     }
     else if (this.speed > 0.4) zielYaw = Math.atan2(this.vel.x, this.vel.z);
     else if (this.zustand !== 'jubel' && this.zustand !== 'enttaeuscht') zielYaw = Math.atan2(TOR.x - this.pos.x, -this.pos.z);
-    if (this.trick && this.trick.name === 'drehung') this.yaw += this.drehRate * dt; else this.yaw = winkelDaempf(this.yaw, zielYaw, this.zustand === 'laden' ? 5 : 7, dt);
+    if (this.trick && this.trick.name === 'drehung') this.yaw += this.drehRate * dt; else this.yaw = winkelDaempf(this.yaw, zielYaw, this.zustand === 'laden' || this.zustand === 'taeuschung' ? 5 : 7, dt);
     // Ballführung
     zuLokal(this.lokBall, ball.p, this.pos, this.yaw);
     if (Math.abs(this.lokBall.x) > 0.06) this.ballSeite = Math.sign(this.lokBall.x);
     if (this.kontrolle) { this.fuehreBall(dt, ball); zuLokal(this.lokBall, ball.p, this.pos, this.yaw); }
     const erwartet = !this.kontrolle && welt.match && this.erwarteBall(ball, dt);
     this.annahmeW = daempf(this.annahmeW, erwartet ? 1 : 0, erwartet ? 12 : 8, dt);
-    if (!this.kontrolle && welt.match && (Math.hypot(this.lokBall.x, this.lokBall.z) > 1.3 || this.lokBall.z < 0.15 || ball.p.y > 0.5)) this.lokBall.set(this.s * 0.24, BALLD.r, 0.62);   // ohne Ball: Schläger tief vor dem Körper; ist der Ball nah, stochert die Kelle danach
+    if (!this.kontrolle && welt.match && (Math.hypot(this.lokBall.x, this.lokBall.z) > 1.3 || this.lokBall.z < 0.15 || ball.p.y > 0.5)) this.lokBall.set(this.s * 0.24, BALLD.r, 0.62);
+    if (this.direkt && !this.kontrolle && this.zustand === 'laden') this.lokBall.set(this.annahme.x, BALLD.r, this.annahme.z);   // ohne Ball: Schläger tief vor dem Körper; ist der Ball nah, stochert die Kelle danach
     this.pushSeite = daempf(this.pushSeite, this.dribbelDir, this.finteT >= 0 ? 40 : 24, dt);
     // Animation
     // „neu“ startet eine Animation genau einmal neu (sonst begänne die Überblendung in jedem Schritt von vorn)
@@ -2871,6 +2932,8 @@ class Schuetze {
       if (s.mitziehen) { lat = mix(s.ballStart[0], s.ballKontakt[0], f); vor = mix(s.ballStart[2], s.ballKontakt[2], f); }
       else { lat = s.ballKontakt[0]; vor = s.ballKontakt[2]; }
       hoehe = s.ballKontakt[1];
+    } else if (this.zustand === 'taeuschung') {
+      const f = glatt(this.tZustand / 0.25); lat = this.ballSeite * mix(0.3, 0.26, f); vor = mix(0.48, 0.55, f);
     } else if (this.zustand === 'bereit') { lat = this.s * 0.12; vor = 0.55; }
     else if (this.annahmeT >= 0) {
       // Abfedern: Ball und Blatt geben gemeinsam nach (exponentiell, Anfangstempo = Relativtempo des Balls), Ball senkt sich auf den Boden
@@ -2905,7 +2968,7 @@ class Schuetze {
   }
   /** Ballannahme vorbereiten: kommt der Ball auf den Spieler zu, geht das Blatt offen an den Punkt, an dem er ankommt. */
   erwarteBall(ball, dt) {
-    if (this.zustand !== 'lauf' || this.ballSperre > 0 || ball.kinematisch || ball.p.y > 0.4) return false;
+    if (!(this.zustand === 'lauf' || (this.zustand === 'laden' && this.direkt)) || this.ballSperre > 0 || ball.kinematisch || ball.p.y > 0.4) return false;
     const cy = Math.cos(this.yaw), sy = Math.sin(this.yaw), rvx = ball.v.x - this.vel.x, rvz = ball.v.z - this.vel.z;
     const vx = rvx * cy - rvz * sy, vz = rvx * sy + rvz * cy, v2 = vx * vx + vz * vz;   // Relativgeschwindigkeit lokal (x links, z vorn)
     if (v2 < 2.5 * 2.5) return false;
@@ -2916,8 +2979,8 @@ class Schuetze {
     this.annahmeYaw = Math.atan2(-(rvx), -(rvz));
     // Erster Punkt der Bahn im Reichweitenbereich des Blatts (vor dem Körper, seitlich bis 0,72 m)
     let ix = null, iz = null;
-    for (let t = 0; t <= tau + 0.25; t += 0.01) { const x = lb.x + vx * t, z = lb.z + vz * t; if (z > 0.28 && z < 0.98 && Math.abs(x) < 0.72 && x * x + z * z < 1.0) { ix = x; iz = z; break; } }
-    if (ix === null) { if (Math.hypot(lb.x + vx * tau, lb.z + vz * tau) > 1.15) return false; ix = klemme(lb.x + vx * tau, -0.6, 0.6); iz = 0.4; this.annahmeOffen = false; } else this.annahmeOffen = true;
+    for (let t = 0; t <= tau + 0.25; t += 0.01) { const x = lb.x + vx * t, z = lb.z + vz * t; if (z > 0.28 && z < 0.98 && Math.abs(x) < 0.72 && x * x + z * z < 1.0) { ix = x; iz = z; this.annahmeTau = t; break; } }
+    if (ix === null) { if (Math.hypot(lb.x + vx * tau, lb.z + vz * tau) > 1.15) return false; ix = klemme(lb.x + vx * tau, -0.6, 0.6); iz = 0.4; this.annahmeOffen = false; this.annahmeTau = tau; } else this.annahmeOffen = true;
     A.x += (ix - A.x) * k; A.z += (iz - A.z) * k; A.dx += (vx / v - A.dx) * k; A.dz += (vz / v - A.dz) * k;
     const l = Math.hypot(A.dx, A.dz) || 1; A.dx /= l; A.dz /= l;
     return true;
@@ -2933,6 +2996,17 @@ class Schuetze {
     this.annahmeStart = { x: ball.p.x - this.pos.x, y: Math.min(ball.p.y, 0.4), z: ball.p.z - this.pos.z };   // relativ zur Position, nicht zur Blickrichtung
     this.annahmeGabe = Math.min(0.38, 0.1 + v * 0.02);
     return v;
+  }
+  /** Direktschuss: Schlag startet so, dass der Kontakt mit der Ankunft des Balls zusammenfällt. */
+  starteDirekt(A) {
+    const power = Math.max(0.3, this.power), typ = this.schussTyp(power, false) === 'zorro' ? 'schlenzer' : this.schussTyp(power, false);
+    const An = this.annahme, seite = Math.abs(An.x) > 0.06 ? Math.sign(An.x) : this.ballSeite, P = this.anim.letzte || basisPose();
+    const zielLok = zuLokal(_b, _c.set(TOR.x, 0, A.zielZ), this.pos, this.yaw).normalize(), d = BALLD.r + 0.013;
+    const bs = [An.x, BALLD.r, An.z], kontakt = [bs[0] - zielLok.x * d, 0.035, bs[2] - zielLok.z * d];
+    this.power = power; this.ballSeite = seite;
+    this.schuss = { typ, power, zielZ: A.zielZ, zielY: A.zielY, rueckhand: seite !== this.s, mitziehen: false, direkt: true, ballStart: bs, ballKontakt: bs,
+      animParam: { typ, seite, start: P.kelle.slice(), kontakt, neu: true } };
+    this.schussU = 0; this.abgeschossen = false; this.setzeZustand('schuss'); this.zielAbsicht.aktiv = true;
   }
   starteSchuss(A) {
     const typ = this.schussTyp(this.power, A.lupfer);
@@ -2997,9 +3071,9 @@ class Schuetze {
     if (this.schuss.typ === 'pass') { this.abgeschossen = true; this.kontrolle = false; this.zorro = false; ball.kinematisch = false; ball.v.copy(this.schuss.passV); ball.w.set(0, 0, 0); Ton.klick(0.3); return; }
     const s = this.schuss, d = this.daten, cfg = Config.schuetze, P = Config.physik;
     this.abgeschossen = true; this.kontrolle = false; this.zorro = false;
-    const sigma = this.streuung(s.power, s.rueckhand, s.typ, welt);
+    const sigma = this.streuung(s.power, s.rueckhand, s.typ, welt) * (s.direkt ? 1.6 : 1);
     const ziel = new V3(TOR.x, klemme(s.zielY + gauss() * sigma * 0.7, 0.05, 1.6), s.zielZ + gauss() * sigma);
-    const { speed, w } = this.schussParameter(s.power, s.typ, s.rueckhand, ball.p, ziel, welt);
+    const sp0 = this.schussParameter(s.power, s.typ, s.rueckhand, ball.p, ziel, welt), speed = sp0.speed * (s.direkt ? 1.03 : 1), w = sp0.w;
     const v = loeseSchuss(ball.p.clone(), ziel, speed, w, s.typ === 'lupfer');
     ball.kinematisch = false; ball.v.copy(v); ball.w.copy(w);
     Ton.klick(0.3 + s.power * 0.7);
@@ -3019,10 +3093,10 @@ class Torwart {
   }
   setzeZustand(z, param, blend) { this.zustand = z; this.t = 0; this.anim.setze(z, param ? { ...param, neu: true } : { neu: true }, blend); }
   /** Parade starten: typ hecht|fuss|butterfly|fangen, ziel = Weltpunkt */
-  parade(typ, ziel) {
+  parade(typ, ziel, dauer) {
     if (!['grund', 'stehen'].includes(this.zustand)) return false;
     this.zielWelt.copy(ziel); const seite = Math.sign(ziel.z - this.pos.z) || 1;
-    this.aktion = { typ, seite, hoehe: ziel.y, seiteWelt: seite };
+    this.aktion = { typ, seite, hoehe: ziel.y, seiteWelt: seite, dauer };
     this.setzeZustand(typ, { seite, hoehe: ziel.y }, 0.06);
     return true;
   }
@@ -3032,7 +3106,7 @@ class Torwart {
     switch (this.zustand) {
       case 'grund': case 'stehen': {
         if (A.bewegen) wunsch.set(A.bewegen.x * 2.6, 0, A.bewegen.z * (2.4 + d.reflexe / 100 * 0.6));
-        if (A.parade) this.parade(A.parade.typ, A.parade.ziel);
+        if (A.parade) this.parade(A.parade.typ, A.parade.ziel, A.parade.dauer);
         break;
       }
       case 'raus': {
@@ -3051,7 +3125,7 @@ class Torwart {
       }
       case 'liegt': if (this.t > 0.45 && !this.gefangen) this.setzeZustand('grund', null, 0.5); break;
       case 'fuss': { const f = 1 - glatt(this.t / 0.25); this.vel.z = this.aktion.seiteWelt * 1.2 * f; wunsch.z = this.vel.z; if (this.t > 0.7) this.setzeZustand('grund', null, 0.4); break; }
-      case 'butterfly': if (this.t > 0.75) this.setzeZustand('grund', null, 0.3); break;
+      case 'butterfly': if (this.t > ((this.aktion && this.aktion.dauer) || 0.75)) this.setzeZustand('grund', null, 0.3); break;
       case 'abwurf': if (this.t > 0.6) this.setzeZustand('grund', null, 0.35); break;
       case 'fangen': {
         if (this.zielWelt.y > 1.0 && !this.gefangen) { wunsch.x = klemme((this.zielWelt.x - 0.2 - this.pos.x) * 5, -1.2, 1.2); wunsch.z = klemme((this.zielWelt.z - this.pos.z) * 4, -1.2, 1.2); }
@@ -3095,6 +3169,7 @@ class KISchuetze {
     const seite = r() < 0.5 ? -1 : 1;
     const p = { typ, seite, tempo: 0.7 + r() * 0.25, laufZ: (r() - 0.5) * 1.6, lupfer: false, finteBei: -1, trick: null, trickBei: 7.5 + r() * 2.5 };
     if (r() < 0.12 + d.technik / 100 * 0.4) p.trick = ['zieher', 'drehung', 'zorro'][Math.floor(r() * 3)];
+    p.taeuschung = r() < 0.08 + d.technik / 100 * 0.22;
     if (typ === 'flach') Object.assign(p, { schussDist: 6.2 + r() * 2.6, power: 0.42 + r() * 0.3, zielZ: seite * (0.52 + r() * 0.18), zielY: 0.1 + r() * 0.2, laufZ: -seite * (0.2 + r() * 0.8) });
     if (typ === 'finteRH') Object.assign(p, { schussDist: 5.0 + r() * 1.4, power: 0.35 + r() * 0.2, zielZ: seite * (0.5 + r() * 0.2), zielY: 0.1 + r() * 0.25, finteBei: 7.3 + r() * 1.3, laufZ: -seite * 0.6, nachFinteZ: seite * (0.6 + r() * 0.6) });
     if (typ === 'lupfer') Object.assign(p, { schussDist: 4.4 + r() * 1.0, power: 0.3, zielZ: seite * (0.4 + r() * 0.3), zielY: 1.0 + r() * 0.1, lupfer: true, tempo: 0.62 + r() * 0.2, finteBei: r() < 0.4 ? 8.0 : -1, nachFinteZ: seite * 0.4 });
@@ -3120,6 +3195,10 @@ class KISchuetze {
     if (sch.trick || (sch.zustand === 'lauf' && sch.zorro && sch.zorroT < 0.15)) A.laden = false;
     if (this.plan.trick === 'zorro' && this.trickGemacht && !sch.zorro && !sch.trick && sch.zustand === 'lauf' && dist < p.schussDist + 1.5) A.laden = true;
     if (sch.zustand === 'nach') A.laden = false;
+    // Schusstäuschung (nicht beim Lupfer): im Ausholen abbrechen, danach hoch zielen
+    if (p.taeuschung && !p.lupfer && !this.taeuschGemacht && sch.zustand === 'laden' && sch.power > p.power * 0.6 && !sch.zorro) { A.finte = true; this.taeuschGemacht = true; A.zielY = p.zielY = 0.75 + Math.random() * 0.35; p.power = 0.32 + Math.random() * 0.14; }
+    if (this.taeuschGemacht && p.taeuschung && sch.zustand === 'taeuschung') A.laden = true;   // gleich wieder abziehen
+    if (this.taeuschGemacht && p.taeuschung && sch.zustand === 'lauf' && sch.kontrolle && !this.nachTaeuschung) { A.laden = true; this.nachTaeuschung = true; }
     return A;
   }
 }
@@ -3134,7 +3213,7 @@ function waehleParade(tw, z, y) {
 }
 class KITorwart {
   constructor(tw) { this.tw = tw; this.reset(); }
-  reset() { this.reaktionBei = -1; this.geplant = false; this.gebissen = 0; this.lesen = 0; this.versatz = 0; this.uhr = 0; }
+  reset() { this.reaktionBei = -1; this.geplant = false; this.gebissen = 0; this.lesen = 0; this.versatz = 0; this.uhr = 0; this.faellt = false; }
   beiFinte(sch) {
     const d = this.tw.daten, p = Config.torwart.fintenAnfaellig * (1.25 - d.reflexe / 100 * 0.6) * (1 - schw().anti);
     if (Math.random() < p) { this.gebissen = 0.9; this.versatz = sch.finteSeiteWelt * (0.35 + Math.random() * 0.25); }
@@ -3145,11 +3224,14 @@ class KITorwart {
     if (name === 'zieher' && Math.random() < p * 1.1) { this.gebissen = 0.8; this.versatz = sch.trick.seiteWelt * (0.4 + Math.random() * 0.3); }
     if (name === 'drehung') { this.lesen = 0; if (Math.random() < p) { this.gebissen = 0.7; this.versatz = (Math.random() - 0.5) * 0.6; } }
     if (name === 'zorro') this.zorroStrafe = 0.09 * (1.2 - d.stellung / 100 * 0.6);
+    // Schusstäuschung: wer anbeißt, geht früh in den Butterfly und reagiert danach verzögert
+    if (name === 'taeuschung' && !this.nurStellung && Math.random() < Math.min(0.8, p * 0.85)) { this.gebissen = 0.9; this.faellt = true; this.versatz = (Math.random() - 0.5) * 0.3; }
   }
   beiSchuss() { const d = this.tw.daten; this.reaktionBei = this.uhr + Math.max(0.06, (Config.torwart.reaktionMs + schw().reaktion * (this.istGegnerMensch ? 1 : 0) - (d.reflexe - 60) * 1.5 + (this.gebissen > 0 ? 140 : 0)) / 1000 + (this.zorroStrafe || 0)); this.geplant = false; this.zorroStrafe = 0; }
   absicht(dt, sch, ball, geschossen) {
     this.uhr += dt; this.gebissen = Math.max(0, this.gebissen - dt);
     const tw = this.tw, d = tw.daten, A = { bewegen: new V3(), parade: null };
+    if (this.faellt) { this.faellt = false; if (!geschossen && tw.zustand === 'grund') { A.parade = { typ: 'butterfly', ziel: new V3(tw.pos.x, 0.12, tw.pos.z), dauer: 1.1 }; return A; } }
     if (!geschossen) {
       const dist = Math.max(0.5, TOR.x - ball.p.x);
       const mutF = 0.35 + d.mut / 100 * 0.65;
@@ -3968,7 +4050,7 @@ const Spiel = {
     else { const lane = klemme(this.zielCursor.z * 1.6, -2.4, 2.4), vor = Math.max(2.5, TOR.x - 2 - S.pos.x); richtung = this._richtung.set(vor, 0, (lane - S.pos.z) * 1.2).normalize(); tempo = 0.8; }
     // Vorgemerkter Trick: verfällt nach 0,45 s oder sobald er begonnen hat
     let wunsch = this.trickWunsch;
-    if (wunsch && (this.simZeit > this.trickWunschBis || (wunsch === 'finte' ? S.finteT >= 0 : S.trick && S.trick.name === wunsch))) wunsch = this.trickWunsch = null;
+    if (wunsch && (this.simZeit > this.trickWunschBis || (wunsch === 'finte' ? S.finteT >= 0 || S.zustand === 'taeuschung' : S.trick && S.trick.name === wunsch))) wunsch = this.trickWunsch = null;
     const A = { aktiv: true, richtung, tempo, laden: Eingabe.aktionGehalten(), finte: wunsch === 'finte', trick: wunsch && wunsch !== 'finte' ? wunsch : null, lupfer: Eingabe.lupferGehalten() || this.wischHochFlag, zielZ: this.zielCursor.z, zielY: this.zielCursor.y };
     if (S.zustand === 'lauf' && !S.imSchussbereich()) this.wischHochFlag = false;
     return A;
@@ -4502,8 +4584,9 @@ const Match = {
       g.bedroht = false; g.halteT = 0; g.wurfSperre = 0; g.wurfT = 0; g.fig.kapseln.forEach(k => { k.aktiv = true; });
     }
     const gkB = this.gks[0], gkA = this.gks[1];
-    this.weltA = { match: true, torwartPos: gkB.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'A') };
-    this.weltB = { match: true, torwartPos: gkA.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'B') };
+    this.weltA = { match: true, torwartPos: gkB.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'A'), beiTrick: (s, n) => this.beiTrick(gkB, s, n), beiFinte: (s) => gkB.ki.beiFinte(s), beiDirektVerpasst: () => { this.statistik.direktVerpasst++; } };
+    this.weltB = { match: true, torwartPos: gkA.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'B'), beiTrick: (s, n) => this.beiTrick(gkA, s, n), beiFinte: (s) => gkA.ki.beiFinte(s), beiDirektVerpasst: () => { this.statistik.direktVerpasst++; } };
+    this.statistik = { taeuschungen: 0, gebissen: 0, direkt: 0, direktVerpasst: 0, direktTore: 0 };
     ball.zweiTore = true; ball.ereignisHandler = (typ, st, info) => this.ballEreignis(typ, st, info);
     this.steuer = mensch ? this.ents[2] : null; this.sichtbar = true;
     HUD.trickLeiste(mensch ? 'match' : null); HUD.steuerHinweis(); this.bullyStart(`<span class="w">${esc(teamA.kuerzel)}</span> : ${esc(teamB.kuerzel)}<small>${t('s5_untertitel')}</small>`);
@@ -4549,7 +4632,9 @@ const Match = {
       const A = !aktiv ? this.stehen(e) : e === this.steuer && !this.assistent(dt) ? this.menschAbsicht(e, dt) : this.kiAbsicht(e, dt);
       W.menschPraezise = e === this.steuer; const hatte = S.kontrolle;
       S.schritt(dt, A, B, W);
-      if (e.dreh && (hatte || S.kontrolle)) this.proxy.speichern();
+      if (e.dreh && (hatte || S.kontrolle || S.ballGeaendert)) this.proxy.speichern();
+      if (S.ballGeaendert && S.schuss && S.schuss.direkt) this.statistik.direkt++;
+      S.ballGeaendert = false;
       if (S.zustand === 'nach' && S.tZustand > 0.45) S.setzeZustand('lauf');
       if (hatte && !S.kontrolle && this.besitzer === e) this.besitzer = null;
     }
@@ -4588,7 +4673,8 @@ const Match = {
       // Zugespielter Ball: ohne Eingabe läuft der Empfänger selbst entgegen
       if (!this.besitzer && this.passEmpfaenger === e) { const b = this.ballSicht(e, _m5[1]); this.laufZu(A, S.pos, b.x + ball.v.x * 0.15, b.z + ball.v.z * (e.dreh ? -0.15 : 0.15), 1); }
     }
-    if (S.kontrolle) { A.laden = Eingabe.aktionGehalten(); if (this.trickWunsch) { A.trick = this.trickWunsch; this.trickWunsch = null; } }
+    if (S.kontrolle) { A.laden = Eingabe.aktionGehalten(); if (this.trickWunsch) { A.trick = this.trickWunsch; this.trickWunsch = null; } if (this.taeuschWunsch) { A.finte = true; this.taeuschWunsch = false; } }
+    else if ((this.passEmpfaenger === e && !this.besitzer) || S.direkt) A.laden = Eingabe.aktionGehalten();   // Direktschuss
     return A;
   },
   /** Assistenz: ohne Eingabe übernimmt nach 1,2 s die KI den gesteuerten Spieler, bis wieder gelenkt, geschossen oder gepasst wird. */
@@ -4601,7 +4687,9 @@ const Match = {
     const e = this.steuer; if (!e || this.phase !== 'spiel') return;
     const S = e.s;
     if (ev.typ === 'finte' || ev.typ === 'doppeltipp' || (ev.typ === 'trick' && ev.name === 'pass')) {
-      this.eingabeT = 0; if (S.kontrolle) { const m = this.passZielMensch(e); if (m) this.pass(e, m); } else { e.lunge = 0.45; Ton.quietschen(); }
+      this.eingabeT = 0;
+      if (S.kontrolle && S.zustand === 'laden') this.taeuschWunsch = true;   // beim Ausholen: Schusstäuschung statt Pass
+      else if (S.kontrolle) { const m = this.passZielMensch(e); if (m) this.pass(e, m); } else { e.lunge = 0.45; Ton.quietschen(); }
     } else if (ev.typ === 'trick' && ev.name === 'wechsel') this.wechseln(true);
     else if (ev.typ === 'trick' && ['zieher', 'drehung', 'zorro'].includes(ev.name)) this.trickWunsch = ev.name;
   },
@@ -4622,7 +4710,11 @@ const Match = {
     if (S.kontrolle) return this.kiBallfuehrer(e, A, dt);
     const owner = this.besitzer, gef = this.gks.find(g => g.T.gefangen), b = this.ballSicht(e, _m5[1]);
     const unserBall = (owner && owner.team === e.team) || (gef && gef.team === e.team);
-    if (!owner && !gef && this.naechst[e.team] === e) { const vk = e.dreh ? -1 : 1; this.laufZu(A, p, b.x + ball.v.x * vk * 0.2, b.z + ball.v.z * vk * 0.2, 1); return A; }
+    if (!owner && !gef && this.naechst[e.team] === e) {
+      const vk = e.dreh ? -1 : 1; this.laufZu(A, p, b.x + ball.v.x * vk * 0.2, b.z + ball.v.z * vk * 0.2, 1);
+      if (this.passEmpfaenger === e && e.direktPlan) { A.laden = true; A.zielZ = e.direktPlan.z; A.zielY = e.direktPlan.y; A.lupfer = false; if (S.zustand === 'laden') A.tempo *= 0.5; }
+      return A;
+    }
     if (owner && owner.team !== e.team && this.naechst[e.team] === e) { this.laufZu(A, p, b.x, b.z, 1); return A; }
     const angriff = unserBall || (!owner && !gef && this.letzteMannschaft === e.team);
     const [sx, sz] = (angriff ? SPIEL5.angriff : SPIEL5.abwehr)[e.i];
@@ -4633,11 +4725,18 @@ const Match = {
   },
   kiBallfuehrer(e, A, dt) {
     const S = e.s, p = S.pos, tw = this.gegnerTw(e).T;
-    if (!e.plan) e.plan = { schussDist: 6.5 + Math.random() * 5, power: 0.4 + Math.random() * 0.5, zielZ: (0.48 + Math.random() * 0.22), zielY: 0.15 + Math.random() * 0.75, passIn: 1.0 + Math.random() * 2.6, trickT: Math.random() < 0.3 ? 0.6 + Math.random() * 1.8 : -1 };
+    if (!e.plan) e.plan = { schussDist: 6.5 + Math.random() * 5, power: 0.4 + Math.random() * 0.5, zielZ: (0.48 + Math.random() * 0.22), zielY: 0.15 + Math.random() * 0.75, passIn: 1.0 + Math.random() * 2.6, trickT: Math.random() < 0.3 ? 0.6 + Math.random() * 1.8 : -1, taeuschen: Math.random() < 0.12 + S.daten.technik / 100 * 0.2 };
     const P = e.plan; P.passIn -= dt;
     const seite = tw.pos.z > 0.05 ? -1 : tw.pos.z < -0.05 ? 1 : (P.zielZ > 0.6 ? 1 : -1);
     A.zielZ = seite * P.zielZ; A.zielY = P.zielY;
-    if (S.zustand === 'laden') { A.laden = S.power < P.power; A.richtung.set(1, 0, 0); A.tempo = 0.6; return A; }
+    if (S.zustand === 'laden') {
+      A.laden = S.power < P.power; A.richtung.set(1, 0, 0); A.tempo = 0.6;
+      // Schusstäuschung: mitten im Ausholen abbrechen, danach hoch zielen (der Torhüter geht oft schon runter)
+      if (P.taeuschen && !P.getaeuscht && S.power > P.power * 0.55) { A.finte = true; P.getaeuscht = true; P.zielY = 0.75 + Math.random() * 0.4; P.power = 0.32 + Math.random() * 0.14; }
+      return A;
+    }
+    if (S.zustand === 'taeuschung') { A.richtung.set(1, 0, 0); A.tempo = 0.6; A.laden = true; P.nachgeschossen = true; return A; }
+    if (P.getaeuscht && !P.nachgeschossen && S.zustand === 'lauf') { P.nachgeschossen = true; A.laden = true; A.richtung.set(1, 0, 0); A.tempo = 0.6; return A; }   // direkt nach der Täuschung abziehen
     // nächster Gegner im eigenen System
     let dG = 99; const g = _m5[2];
     for (const o of this.ents) if (o.team !== e.team) { const q = this.inSicht(e, this.welt(o, _m5[3]), _m5[4]); const d = Math.hypot(q.x - p.x, q.z - p.z); if (d < dG) { dG = d; g.copy(q); } }
@@ -4688,6 +4787,9 @@ const Match = {
     // Abspielgeschwindigkeit im System des Passgebers; der Ball geht erst im Kontaktmoment der Schlagbewegung ab
     const k = e.dreh ? -1 : 1; e.s.zorro = false; e.s.passStart(_m5[6].set(dx / d * v * k, 0.25, dz / d * v * k)); e.s.ballSperre = 0.45;
     e.passCD = 1.2; e.plan = null; this.passEmpfaenger = m; this.letzteMannschaft = e.team;
+    // KI-Empfänger in Schussposition: Direktschuss je nach Technik (im eigenen System: Tor bei +x)
+    const q = m.s.pos, dT = Math.hypot(TOR.x - q.x, q.z);
+    m.direktPlan = dT < 11 && TOR.x - q.x > 2.6 && Math.abs(q.z) < 6 && Math.random() < 0.4 + m.s.daten.technik / 100 * 0.3 ? { z: (Math.random() < 0.5 ? -1 : 1) * (0.45 + Math.random() * 0.25), y: 0.15 + Math.random() * 0.6 } : null;
     if (this.mensch && e.team === 'A' && this.steuer === e) this.steuer = m;
   },
   gibBall(e) {
@@ -4706,7 +4808,7 @@ const Match = {
       const fe = S.fig.ferse, kd = S.fig.kelleDir, ende = _m5[0].copy(fe).addScaledVector(kd, 0.28), np = _m5[1];
       naechsterPunkt(ball.p, fe, ende, np); const d1 = np.distanceTo(ball.p), d2 = Math.hypot(e.w.x - ball.p.x, e.w.z - ball.p.z);
       // Steht das Blatt bereit, muss der Ball es wirklich erreichen (kein Ansaugen); sonst wie bisher großzügig
-      const bereit = S.annahmeW > 0.6 && S.annahmeOffen, rb = bereit ? 0.1 : 0.24, rk = bereit ? 0.5 : 0.58;
+      const bereit = S.annahmeW > 0.6 && S.annahmeOffen, rb = bereit ? 0.1 : 0.24, rk = S.direkt ? -9 : bereit ? 0.5 : 0.58;
       const d = Math.min(d1 - rb, d2 - rk); if (d < 0 && d < bd) { bd = d; best = e; }
     }
     if (best) {
@@ -4717,6 +4819,11 @@ const Match = {
       const B = best.dreh ? this.proxy : ball; if (best.dreh) this.proxy.laden();
       best.s.annehmen(B); this.gibBall(best);
     }
+  },
+  /** Trick oder Schusstäuschung des Angreifers: der gegnerische Torhüter kann darauf hereinfallen. */
+  beiTrick(g, s, name) {
+    if (name === 'taeuschung') { this.statistik.taeuschungen++; const vor = g.ki.faellt; g.ki.beiTrick(s, name); if (g.ki.faellt && !vor) this.statistik.gebissen++; }
+    else g.ki.beiTrick(s, name);
   },
   /** Ball springt vom Schläger: abgelenkt und gebremst, der Spieler kann kurz nicht nachfassen. */
   verspringt(e, rel) {
