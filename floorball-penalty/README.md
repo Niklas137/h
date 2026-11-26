@@ -35,6 +35,7 @@ Alle anderen Inhalte (Geometrie, Texturen, Ton) entstehen prozedural im Browser.
   - Regeln vereinfacht: Bully zu Beginn jedes Drittels und nach Toren, Einschlag für das andere Team, wenn der Ball die Bande verlässt, Feldspieler dürfen nicht in die Torhüterräume, Torhüter fangen Bälle im Torhüterraum und werfen sie zu einem freien Mitspieler ab. Kein Abseits, keine Strafen.
   - Unentschieden nach drei Dritteln: Knopf „Penaltyschießen“ startet ein Shootout mit denselben Teams.
   - Kamera schräg hinter deinem Spieler (C wechselt zur seitlichen Fernsehansicht). KI gegen KI zeigt die Fernsehansicht.
+  - Bewegungen: Pässe sind eine kurze Schlagbewegung von 0,15 s (Blatt zum Ball, dann verlässt der Ball die Kelle), Spieler ohne Ball stochern mit dem Schläger nach einem nahen, flachen Ball, Torhüter holen beim Abwurf sichtbar mit dem Arm aus. Feldspieler sind unterschiedlich groß (93–106 %), Arme und Beine passen sich an.
 - **Parcours** (wie im Vorbild-Video, eine Werbung für ein Floorball-Handyspiel): drei Übungen und ein Schuss, auf Zeit und Punkte.
   1. **Slalom**: im Zickzack an den orangen Hütchen vorbei, die grünen Pfeile zeigen die Seite.
   2. **Volle Drehungen**: einmal ganz um jedes der zwei grünen Hütchen, die Punkte im Kreis füllen sich mit.

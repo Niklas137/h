@@ -184,7 +184,8 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       erg.lauf = +M.steuer.s.pos.distanceTo(p0).toFixed(2);
       // Pass mit Leertaste
       const ich = M.steuer; M.gibBall(ich); for (let k = 0; k < 20; k++) S.schritt(1 / 120);
-      S.ereignis({ typ: 'finte' }); erg.pass = { besitzerNachPass: M.besitzer ? M.besitzer.team : null, empfaenger: !!M.passEmpfaenger, steuerGewechselt: M.steuer !== ich };
+      if (!ich.s.kontrolle) M.gibBall(ich); // Gegner kann den Ball in den 20 Schritten erobert haben
+      S.ereignis({ typ: 'finte' }); erg.passBewegung = M.besitzer && M.besitzer.s.zustand; for (let k = 0; k < 40; k++) S.schritt(1 / 120); erg.pass = { besitzerNachPass: M.besitzer ? M.besitzer.team : null, empfaenger: !!M.passEmpfaenger, steuerGewechselt: M.steuer !== ich };
       // Schuss: Ball geben, Enter halten und loslassen
       let geschossen = null; const ob = M.beiSchuss.bind(M); M.beiSchuss = (s, info, team) => { geschossen = { team, kmh: Math.round(info.speed * 3.6) }; ob(s, info, team); };
       M.gibBall(M.steuer); for (let k = 0; k < 20; k++) S.schritt(1 / 120); E.tasten.add('Enter'); for (let k = 0; k < 70; k++) S.schritt(1 / 120); E.tasten.delete('Enter'); for (let k = 0; k < 60; k++) S.schritt(1 / 120);
@@ -195,7 +196,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       S.pausiert = false; return erg;
     });
     pruef('Spiel 5 gegen 5: Start', sp.start.zustand === 'match' && sp.start.spieler === 10 && sp.start.torhueter === 2 && sp.start.steuer && sp.start.zweiTore && !sp.start.penaltyFiguren, JSON.stringify(sp.start));
-    pruef('Spiel 5 gegen 5: Laufen, Pass, Schuss', sp.lauf > 0.8 && sp.pass.besitzerNachPass === null && sp.pass.empfaenger && sp.pass.steuerGewechselt && sp.schuss && sp.schuss.team === 'A', JSON.stringify({ lauf: sp.lauf, pass: sp.pass, schuss: sp.schuss }));
+    pruef('Spiel 5 gegen 5: Laufen, Pass, Schuss', sp.lauf > 0.8 && sp.passBewegung === 'schuss' && (sp.pass.besitzerNachPass === null || sp.pass.besitzerNachPass === 'A') && sp.pass.empfaenger && sp.pass.steuerGewechselt && sp.schuss && sp.schuss.team === 'A', JSON.stringify({ lauf: sp.lauf, schlag: sp.passBewegung, pass: sp.pass, schuss: sp.schuss }));
     pruef('Spiel 5 gegen 5: drei Drittel bis zum Endstand', sp.ende.zustand === 'ergebnis' && !sp.ende.fehler && /Endstand/.test(sp.ende.text) && /Revanche/.test(sp.ende.text) && (sp.ende.stand.A !== sp.ende.stand.B || /Penaltyschießen/.test(sp.ende.text)), JSON.stringify({ stand: sp.ende.stand, tore: sp.ende.tore, fehler: sp.ende.fehler }));
     await p.click('.parcoursErg [data-menue]'); await p.waitForTimeout(200);
     const weg = await p.evaluate(() => { const F = window.__fps; return { sichtbar: F.Match.sichtbar, zweiTore: F.ball.zweiTore, penalty: F.Spiel.figL.objekt.visible && F.Spiel.figT.objekt.visible, koerper: document.body.className }; });
