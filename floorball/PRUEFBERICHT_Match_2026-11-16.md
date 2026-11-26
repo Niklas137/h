@@ -17,7 +17,7 @@ Prüfskripte liegen in `pruefung/` (Anleitung dort).
 | 7 | Freischlag | Statt Einschlag: Ball ruht, Gegner 3 m weg (Kreis), nur schlagen, Uhr steht, nicht direkt am Torraum. |
 | 8 | Zweiter Spieler | Menü „Gegner steuert: 2. Controller“. Gleiche Belegung, roter Ring, KI übernimmt beim Trennen. |
 | 9 | Animationen | Ballannahme, Zweikampf-Kontakt, Gruppenjubel im Kreis, Torhüter-Auswurf mit Ausholen. |
-| 10 | Module mit Vite | Nicht umgesetzt, siehe Empfehlung unten. |
+| 10 | Module mit Vite | Nicht umgesetzt, Entscheidung Niklas 2026-11-26 (siehe unten). |
 
 **Steuerung:** Die bestehende Belegung ist unverändert. Neu belegt wurden nur bisher freie Eingaben: Steuerkreuz ↑ / Taste L für den Linienwechsel und der zweite Controller. **Bitte bestätigen.**
 
@@ -71,4 +71,4 @@ Kopfloses Chromium mit emulierten Controllern (Gamepad-API), Simulation ohne Gra
    - Beide Teams sitzen auf der Bank ihrer Abwehrseite und tauschen mit dem Seitenwechsel.
 4. **Ersatzspieler:** Ohne Feld `reserve` in den Teamdaten werden sie fest aus der Team-Kennung erzeugt. Im Team-Editor sind sie nicht bearbeitbar.
 5. **Zweiter Spieler:** Name und Ausdauer zeigt die Anzeige nur für Spieler 1. Spieler 2 braucht einen Controller, Tastatur geht nicht.
-6. **Vite (Aufgabe 10):** Empfehlung: vorerst nicht aufteilen. Die Datei hat 5 810 Zeilen und 479 KB und läuft ohne Build. Vite brächte npm und einen Build-Schritt dazu. Wird sie zu unhandlich, ist der kleinere Schritt eine Aufteilung in native ES-Module ohne Bundler. Die Entscheidung liegt bei Niklas.
+6. **Vite (Aufgabe 10):** Empfehlung: vorerst nicht aufteilen. Die Datei hat 5 810 Zeilen und 479 KB und läuft ohne Build. Vite brächte npm und einen Build-Schritt dazu. Wird sie zu unhandlich, ist der kleinere Schritt eine Aufteilung in native ES-Module ohne Bundler. **Entschieden (Niklas, 2026-11-26): nicht umsetzen, eine Datei ohne Build bleibt.**
