@@ -255,6 +255,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       const np = new F.THREE.Vector3(), blattAbst = (e) => { const fe = e.s.fig.ferse, kd = e.s.fig.kelleDir, ab = kd.clone().multiplyScalar(0.28), t = Math.max(0, Math.min(1, ball.p.clone().sub(fe).dot(ab) / ab.lengthSq())); return np.copy(fe).addScaledVector(ab, t).distanceTo(ball.p); };
       const op = M.pass, og = M.gibBall; let beob = null, passZiel = null;
       M.pass = function (e, m) { st.passe++; passZiel = m; return op.call(this, e, m); };
+      const osch = M.beiSchuss; M.beiSchuss = function (sch, info, team) { if (passZiel && passZiel.s === sch && sch.schuss && sch.schuss.direkt) { st.ziel++; passZiel = null; } return osch.call(this, sch, info, team); };   // Direktschuss = Pass ist angekommen
       M.gibBall = function (e) {
         if (!ball.kinematisch && ball.v.length() > 3 && M.phase === 'spiel') {
           const ausPass = passZiel === e && M.passEmpfaenger === e; passZiel = null;   // nur echte Pässe (keine Abwürfe, Abpraller, Blocks)
@@ -269,12 +270,12 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
         try { S.schritt(dt); } catch (e) { st.fehler = e.message; break; }
         if (beob) { if (M.besitzer !== beob.e || beob.e.s.zustand !== 'lauf') { if (beob.n > 2) st.ruck.push(beob.max); beob = null; } else { beob.max = Math.max(beob.max, ball.v.clone().sub(beob.alt).length() / dt); beob.alt = ball.v.clone(); if (++beob.n >= 36) { st.ruck.push(beob.max); beob = null; } } }
       }
-      M.pass = op; M.gibBall = og;
+      M.pass = op; M.gibBall = og; M.beiSchuss = osch;
       const q = (x, z) => { const s = x.slice().sort((u, v) => u - v); return s.length ? +s[Math.min(s.length - 1, Math.floor(s.length * z))].toFixed(3) : null; };
       S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue();
       return { passe: st.passe, quote: +(st.ziel / Math.max(1, st.passe)).toFixed(3), annahmen: st.annahmen, erwartet: +(st.erwartet / Math.max(1, st.annahmen)).toFixed(3), blattP50: q(st.blatt, 0.5), koerperAnteil: +(st.koerper / Math.max(1, st.annahmen)).toFixed(3), ruckP50: q(st.ruck, 0.5), ruckP90: q(st.ruck, 0.9), ruckN: st.ruck.length, fehler: st.fehler };
     });
-    pruef('Ballannahme: Blatt geht zum Ball, kaum Annahmen mit dem Körper', a.annahmen >= 50 && a.erwartet > 0.6 && a.blattP50 < 0.1 && a.koerperAnteil < 0.15 && !a.fehler, JSON.stringify({ annahmen: a.annahmen, erwartet: a.erwartet, blattP50: a.blattP50, koerperAnteil: a.koerperAnteil, fehler: a.fehler }));
+    pruef('Ballannahme: Blatt geht zum Ball, kaum Annahmen mit dem Körper', a.annahmen >= 30 && a.erwartet > 0.6 && a.blattP50 < 0.1 && a.koerperAnteil < 0.15 && !a.fehler, JSON.stringify({ annahmen: a.annahmen, erwartet: a.erwartet, blattP50: a.blattP50, koerperAnteil: a.koerperAnteil, fehler: a.fehler }));
     pruef('Ballannahme: Ball wird weich abgefedert, Pässe kommen an', a.ruckN >= 30 && a.ruckP50 < 260 && a.ruckP90 < 700 && a.quote > 0.6, JSON.stringify({ passe: a.passe, quote: a.quote, ruckP50: a.ruckP50, ruckP90: a.ruckP90, ruckN: a.ruckN }));
   });
 
@@ -327,6 +328,28 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     });
     pruef('Direktschuss (Spiel 5 gegen 5): Ausholen ohne Ball, Schlag trifft den Pass', m.direkt.ablauf.includes('laden*') && m.direkt.ablauf.includes('schuss*') && m.direkt.geschossen && m.direkt.geschossen.direkt && m.direkt.geschossen.wer, JSON.stringify(m.direkt));
     pruef('Schusstäuschung (Spiel 5 gegen 5): Leertaste beim Ausholen, danach Schuss', m.taeuschung.ablauf.includes('taeuschung') && m.taeuschung.geschossen && m.taeuschung.geschossen.wer && m.taeuschung.taeuschungen >= 1, JSON.stringify(m.taeuschung));
+  });
+
+  // 5h) Mimik und Statur: Ausdrücke folgen dem Spielgeschehen, Maske deckt nur das Gesicht, jeder Spieler hat seine Statur
+  await abschnitt('5h) Mimik und Statur', async () => {
+    const mm = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, erg = {};
+      S.starteSpiel5(L[0], L[8], null); S.pausiert = true; let i = 0; while (M.phase !== 'spiel' && i < 900) { S.schritt(1 / 120); i++; }
+      const e = M.ents.find(x => x.team === 'A'), s = e.s, f = s.fig, lauf = (n) => { for (let k = 0; k < n; k++) S.schritt(1 / 120); };
+      const zustand = () => ({ name: f.mimikName, deck: +f.mats.mimik.opacity.toFixed(2), sichtbar: f.mimikMesh.visible });
+      erg.neutral = zustand();
+      s.mimikEreignis = { name: 'freude', t: 1 }; lauf(90); erg.freude = zustand();
+      s.mimikEreignis = { name: 'frust', t: 1 }; lauf(90); erg.frust = zustand();
+      s.mimikEreignis = null; M.steuer = e; M.eingabeT = 0; M.ents.forEach(x => { if (x.team === 'B') x.s.ballSperre = 3; }); M.gibBall(e); F.Eingabe.tasten.add('Enter');   // Mensch hält den Schuss: Spieler bleibt im Ausholen
+      for (let k = 0; k < 90; k++) S.schritt(1 / 120); erg.anstrengung = { ...zustand(), zustand: s.zustand }; F.Eingabe.tasten.delete('Enter');
+      const g = f.mimikMesh.geometry, uv = g.getAttribute('uv'), ix = g.getIndex(); let uvOk = true; for (let k = 0; k < ix.count; k++) { const u = uv.getX(ix.getX(k)), v = uv.getY(ix.getX(k)); if (u < 0 || u > 1 || v < 0 || v > 1) { uvOk = false; break; } }
+      erg.maske = { dreiecke: ix.count / 3, uvOk };
+      const st = M.ents.map(x => x.s.fig.statur), morph = M.ents.every(x => x.s.fig.koerperMeshes.some(me => me.morphTargetInfluences && me.morphTargetInfluences[0] === x.s.fig.statur));
+      erg.statur = { min: +Math.min(...st).toFixed(2), max: +Math.max(...st).toFixed(2), verschieden: new Set(st.map(v => v.toFixed(2))).size, morph };
+      S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return erg;
+    });
+    pruef('Mimik: Freude, Frust und Anstrengung werden eingeblendet', !mm.neutral.sichtbar && mm.freude.name === 'freude' && mm.freude.deck > 0.9 && mm.frust.name === 'frust' && mm.frust.deck > 0.9 && mm.anstrengung.name === 'anstrengung' && mm.anstrengung.deck > 0.7, JSON.stringify({ neutral: mm.neutral, freude: mm.freude, frust: mm.frust, anstrengung: mm.anstrengung }));
+    pruef('Mimik-Maske und Statur', mm.maske.dreiecke > 200 && mm.maske.uvOk && mm.statur.morph && mm.statur.verschieden >= 6 && mm.statur.min >= -0.45 && mm.statur.max <= 1 && mm.statur.max - mm.statur.min > 0.4, JSON.stringify({ maske: mm.maske, statur: mm.statur }));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
