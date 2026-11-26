@@ -4683,7 +4683,7 @@ const Match = {
     const gkB = this.gks[0], gkA = this.gks[1];
     this.weltA = { match: true, torwartPos: gkB.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'A'), beiTrick: (s, n) => this.beiTrick(gkB, s, n), beiFinte: (s) => gkB.ki.beiFinte(s), beiDirektVerpasst: () => { this.statistik.direktVerpasst++; } };
     this.weltB = { match: true, torwartPos: gkA.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'B'), beiTrick: (s, n) => this.beiTrick(gkA, s, n), beiFinte: (s) => gkA.ki.beiFinte(s), beiDirektVerpasst: () => { this.statistik.direktVerpasst++; } };
-    this.statistik = { taeuschungen: 0, gebissen: 0, direkt: 0, direktVerpasst: 0, direktTore: 0, stoesse: 0, kontakte: 0, stolpern: 0 };
+    this.statistik = { taeuschungen: 0, gebissen: 0, direkt: 0, direktVerpasst: 0, direktTore: 0, stoesse: 0, kontakte: 0, stolpern: 0, doppelpass: 0 };
     ball.zweiTore = true; ball.ereignisHandler = (typ, st, info) => this.ballEreignis(typ, st, info);
     this.steuer = mensch ? this.ents[2] : null; this.sichtbar = true;
     HUD.trickLeiste(mensch ? 'match' : null); HUD.steuerHinweis(); this.bullyStart(`<span class="w">${esc(teamA.kuerzel)}</span> : ${esc(teamB.kuerzel)}<small>${t('s5_untertitel')}</small>`);
@@ -4699,7 +4699,7 @@ const Match = {
     S.yaw = S.pyaw = Math.PI / 2; S.ballSperre = 0; S.zorro = false; S.trick = null; S.power = 0; e.plan = null; e.passCD = 0.6;
   },
   bullyStart(banner) {
-    this.phase = 'bully'; this.phaseT = 0; this.besitzer = null; this.passEmpfaenger = null;
+    this.phase = 'bully'; this.phaseT = 0; this.besitzer = null; this.passEmpfaenger = null; this._zuteil = null;
     ball.reset(0, 0); halle.netz.zuruecksetzen(); halle.netz2.zuruecksetzen();
     for (const e of this.ents) { const [x, z] = SPIEL5.bully[e.i]; this.setze(e, x, z); }
     for (const g of this.gks) { g.T.reset(); g.T.gefangen = false; g.ki.reset(); g.bedroht = false; g.halteT = 0; g.wurfSperre = 0; g.wurfT = 0; }
@@ -4719,6 +4719,7 @@ const Match = {
     if (this.phase === 'ende') return;
     const aktiv = this.phase === 'spiel';
     // nächste Spieler zum Ball je Team (für die KI)
+    this.bild = (this.bild || 0) + 1;   // Bildzähler (Zwischenspeicher der Deckungszuteilung je Bild)
     this.naechst = { A: null, B: null }; const nd = { A: 99, B: 99 };
     for (const e of this.ents) { const d = this.welt(e, e.w).distanceTo(_m5[0].set(ball.p.x, 0, ball.p.z)); e.dBall = d; if (d < nd[e.team] && e.s.ballSperre <= 0) { nd[e.team] = d; this.naechst[e.team] = e; } }
     if (this.passEmpfaenger && !this.besitzer) this.naechst[this.passEmpfaenger.team] = this.passEmpfaenger;
@@ -4727,6 +4728,7 @@ const Match = {
       const S = e.s, B = e.dreh ? this.proxy : ball, W = e.dreh ? this.weltB : this.weltA;
       e.passCD -= dt; e.lunge -= dt; if (e.dreh) this.proxy.laden();
       const A = !aktiv ? this.stehen(e) : e === this.steuer && !this.assistent(dt) ? this.menschAbsicht(e, dt) : this.kiAbsicht(e, dt);
+      if (aktiv && e !== this.steuer && !S.kontrolle && e !== this.naechst[e.team] && A.tempo > 0) this.ausweichen(e, A);
       W.menschPraezise = e === this.steuer; const hatte = S.kontrolle;
       S.schritt(dt, A, B, W);
       if (e.dreh && (hatte || S.kontrolle || S.ballGeaendert)) this.proxy.speichern();
@@ -4814,15 +4816,102 @@ const Match = {
     }
     if (owner && owner.team !== e.team && this.naechst[e.team] === e) { this.laufZu(A, p, b.x, b.z, 1); return A; }
     const angriff = unserBall || (!owner && !gef && this.letzteMannschaft === e.team);
+    // Doppelpass: wer eben gepasst hat, startet in die Tiefe
+    if (e.doppel && e.doppel.t > 0 && angriff) { e.doppel.t -= dt; this.laufZu(A, p, e.doppel.x, e.doppel.z, 1); return A; }
     const [sx, sz] = (angriff ? SPIEL5.angriff : SPIEL5.abwehr)[e.i];
     const shift = angriff ? klemme(b.x * 0.7 + 2, -6, 8.5) : klemme((b.x + 8) * 0.45, -1, 9);
     let zx = sx + shift + e.jit[0], zz = sz + (angriff ? 0 : b.z * 0.25) + e.jit[1];
     zx = klemme(zx, -15.2, 13); zz = klemme(zz, -8.4, 8.4);
+    if (angriff && owner && owner.team === e.team) {
+      // Freilaufen: um die Formationsposition den Punkt suchen, der frei ist und eine offene Passlinie hat
+      e.taktT = (e.taktT || 0) - dt;
+      if (e.taktT <= 0 || !e.frei) { e.taktT = 0.4 + Math.random() * 0.15; e.frei = this.freiPunkt(e, owner, zx, zz); }
+      zx = e.frei.x; zz = e.frei.z;
+    } else if (!angriff) {
+      // Manndeckung: zugeteilten Angreifer torseitig decken
+      const d = this.deckung(e);
+      if (d) {
+        // mit Vorhalt auf die Bewegung des Angreifers, mindestens so schnell wie er; überlaufen: voll zurück
+        let gx = d.x + d.vx * 0.4, gz = d.z + d.vz * 0.4;
+        // Steht der Angreifer im Weg (Verteidiger hinter ihm), seitlich um ihn herum statt in seinen Rücken laufen
+        const sx = gx - p.x, sz = gz - p.z, sl2 = sx * sx + sz * sz || 1, t = klemme(((d.qx - p.x) * sx + (d.qz - p.z) * sz) / sl2, 0, 1), lx = p.x + sx * t - d.qx, lz = p.z + sz * t - d.qz;
+        if (t > 0.05 && t < 0.95 && Math.hypot(lx, lz) < 0.8) { const nl = Math.hypot(lx, lz) || 1, nx = nl > 0.05 ? lx / nl : -sz / Math.sqrt(sl2), nz = nl > 0.05 ? lz / nl : sx / Math.sqrt(sl2); gx = d.qx + nx * 1.0; gz = d.qz + nz * 1.0; }
+        this.laufZu(A, p, gx, gz, 1);
+        const maxV = Config.schuetze.dribbleTempo * (0.88 + S.daten.technik / 100 * 0.24), va = Math.hypot(d.vx, d.vz);
+        if (A.tempo > 0) A.tempo = p.x > d.qx - 0.3 ? 1 : klemme(Math.max(A.tempo, va / maxV * 1.05), 0, 1);
+        if (Math.hypot(d.qx - p.x, d.qz - p.z) < 1.3) A.tempo = Math.min(A.tempo, (va + 0.6) / maxV);   // am Mann: mitgehen statt hineinrennen
+        return A;
+      }
+    }
     this.laufZu(A, p, zx, zz, angriff ? 0.85 : 0.9); return A;
+  },
+  /** Spieler ohne Ball weichen vorausschauend aus: aus beiden Geschwindigkeiten den Moment der größten Annäherung bestimmen;
+   *  kommen sie sich in den nächsten 0,8 s auf unter 0,9 m nahe, wird seitlich vom vorhergesagten Treffpunkt weggesteuert. */
+  ausweichen(e, A) {
+    const p = this.welt(e, _m5[8]), k = e.dreh ? -1 : 1, rx = A.richtung.x * k, rz = A.richtung.z * k, ve = this.weltV(e, _m5[7]);
+    const S = e.s, maxV = Config.schuetze.dribbleTempo * (0.88 + S.daten.technik / 100 * 0.24), wx = rx * maxV * A.tempo, wz = rz * maxV * A.tempo;   // gewollte Geschwindigkeit
+    let sx = 0, sz = 0;
+    for (const o of this.ents) { if (o === e) continue;
+      const q = this.welt(o, _m5[9]), dx = q.x - p.x, dz = q.z - p.z, d = Math.hypot(dx, dz); if (d > 5 || d < 1e-3) continue;
+      const vo = this.weltV(o, _m5[6]), vx = vo.x - wx, vz = vo.z - wz, v2 = vx * vx + vz * vz;   // Relativbewegung bei gewolltem Kurs
+      const t = v2 < 1e-4 ? 0 : klemme(-(dx * vx + dz * vz) / v2, 0, 0.8), cx = dx + vx * t, cz = dz + vz * t, c = Math.hypot(cx, cz);
+      if (c > 0.9 || (t === 0 && d > 1.2)) continue;
+      const dring = (0.9 - c) / 0.9 * (1 - t / 0.8 * 0.6) * (o.team !== e.team ? 1.3 : 1), cl = c > 1e-3 ? c : 1;
+      // seitlich (senkrecht zum Kurs) weg vom vorhergesagten Treffpunkt
+      const quer = cx * rz - cz * rx, seite = Math.abs(quer) > 1e-3 ? (quer >= 0 ? 1 : -1) : (e.i % 2 ? 1 : -1);
+      sx += -rz * seite * dring * 2.2; sz += rx * seite * dring * 2.2; }
+    if (sx || sz) { const nx = rx + sx, nz = rz + sz, l = Math.hypot(nx, nz) || 1; A.richtung.set(nx / l * k, 0, nz / l * k); }
+  },
+  /** Bester freier Punkt nahe (fx, fz) im System von e: Abstand zu Gegnern, offene Passlinie vom Ballführer, Raumgewinn, Abstand zu Mitspielern. */
+  freiPunkt(e, owner, fx, fz) {
+    const geg = [], mit = []; for (const o of this.ents) { const q = this.inSicht(e, this.welt(o, _m5[8]), new V3()); if (o.team !== e.team) geg.push(q); else if (o !== e && o !== owner) mit.push(q); }
+    const ow = this.inSicht(e, this.welt(owner, _m5[8]), new V3());
+    let best = { x: fx, z: fz }, bs = -1e9;
+    for (const [rr, n] of [[0, 1], [1.6, 8], [3.2, 8]]) for (let k = 0; k < n; k++) {
+      const a = k / n * Math.PI * 2, x = klemme(fx + Math.cos(a) * rr, -15.2, TOR.x - 2.2), z = klemme(fz + Math.sin(a) * rr, -8.4, 8.4);
+      if (x > TOR.x - TWRAUM.vorne - 1.2 && Math.abs(z) < TWRAUM.hz + 1) continue;          // nicht in den Torraum laufen
+      let frei = 3.5, linie = 1; const dx = x - ow.x, dz = z - ow.z, d2 = dx * dx + dz * dz || 1;
+      for (const g of geg) { frei = Math.min(frei, Math.hypot(g.x - x, g.z - z)); const t = klemme(((g.x - ow.x) * dx + (g.z - ow.z) * dz) / d2, 0, 1); if (t > 0.08 && t < 0.95 && Math.hypot(ow.x + dx * t - g.x, ow.z + dz * t - g.z) < 1.0) linie = 0; }
+      let eng = 0; for (const m of mit) { const dm = Math.hypot(m.x - x, m.z - z); if (dm < 2.8) eng += 2.8 - dm; }
+      const dO = Math.sqrt(d2), sc = frei + linie * 1.6 + (x - fx) * 0.1 - rr * 0.32 - eng * 0.8 - (dO < 3 ? 1.5 : 0) - Math.max(0, dO - 16) * 0.3;
+      if (sc > bs) { bs = sc; best = { x, z }; }
+    }
+    return best;
+  },
+  /** Manndeckung mit stabiler Zuteilung: alle 0,6 s neu (gefährlichste Angreifer zuerst, nächster freier Verteidiger), bestehende Paare bleiben,
+   *  solange sie gültig sind. Zielpunkt je Bild: 1,3 m vom Angreifer torseitig (eigenes Tor im System des Verteidigers bei −x). */
+  deckung(e) {
+    const team = e.team, jetzt = this.bild || 0;
+    if (!this._deck || this._deck.t !== jetzt) this._deck = { t: jetzt, A: null, B: null };
+    if (!this._deck[team]) {
+      const Z = this._zuteil || (this._zuteil = { A: { map: new Map(), t: -99 }, B: { map: new Map(), t: -99 } }), zt = Z[team];
+      const presser = this.naechst[team], vert = this.ents.filter(x => x.team === team && x !== presser), ang = this.ents.filter(x => x.team !== team && x !== this.besitzer);
+      const sicht = (v, o) => this.inSicht(v, this.welt(o, _m5[8]), new V3());
+      // ungültige Paare lösen (Verteidiger presst, Angreifer hat den Ball)
+      for (const [v, o] of zt.map) if (!vert.includes(v) || !ang.includes(o)) zt.map.delete(v);
+      const neu = jetzt - zt.t > 72;   // alle 0,6 s (72 Bilder) vollständig neu, sonst nur Lücken füllen
+      if (neu) { zt.map.clear(); zt.t = jetzt; }
+      const besetzt = new Set(zt.map.values()), frei = new Set(vert.filter(v => !zt.map.has(v)));
+      const liste = ang.filter(o => !besetzt.has(o)).map(o => ({ o, q: sicht(vert[0] || e, o) })).sort((a, b) => a.q.x - b.q.x);
+      for (const { o, q } of liste) {
+        let bv = null, bd = 1e9; for (const v of frei) { const w = sicht(v, v); const d = Math.hypot(w.x - q.x, w.z - q.z); if (d < bd) { bd = d; bv = v; } }
+        if (!bv) break; frei.delete(bv); zt.map.set(bv, o);
+      }
+      const zu = new Map();
+      for (const [v, o] of zt.map) {
+        const q = sicht(v, o), tx = -TOR.x - q.x, tz = -q.z, tl = Math.hypot(tx, tz) || 1;
+        const ov = this.weltV(o, _m5[9]), vk = v.dreh ? -1 : 1;   // Tempo des Angreifers im System des Verteidigers
+        zu.set(v, { x: klemme(q.x + tx / tl * 1.3, -TOR.x + TWRAUM.vorne + 0.9, 13), z: klemme(q.z + tz / tl * 1.3, -8.4, 8.4), o, qx: q.x, qz: q.z, vx: ov.x * vk, vz: ov.z * vk });
+      }
+      this._deck[team] = zu;
+    }
+    return this._deck[team].get(e) || null;
   },
   kiBallfuehrer(e, A, dt) {
     const S = e.s, p = S.pos, tw = this.gegnerTw(e).T;
-    if (!e.plan) e.plan = { schussDist: 6.5 + Math.random() * 5, power: 0.4 + Math.random() * 0.5, zielZ: (0.48 + Math.random() * 0.22), zielY: 0.15 + Math.random() * 0.75, passIn: 1.0 + Math.random() * 2.6, trickT: Math.random() < 0.3 ? 0.6 + Math.random() * 1.8 : -1, taeuschen: Math.random() < 0.12 + S.daten.technik / 100 * 0.2 };
+    if (!e.plan && e.rueckVon) { e.planRueck = { e: e.rueckVon }; e.rueckVon = null; }
+    if (!e.plan) { var rueckPlan = e.planRueck || null; e.planRueck = null; }
+    if (!e.plan) e.plan = { rueck: rueckPlan, schussDist: 6.5 + Math.random() * 5, power: 0.4 + Math.random() * 0.5, zielZ: (0.48 + Math.random() * 0.22), zielY: 0.15 + Math.random() * 0.75, passIn: 1.0 + Math.random() * 2.6, trickT: Math.random() < 0.3 ? 0.6 + Math.random() * 1.8 : -1, taeuschen: Math.random() < 0.12 + S.daten.technik / 100 * 0.2 };
     const P = e.plan; P.passIn -= dt;
     const seite = tw.pos.z > 0.05 ? -1 : tw.pos.z < -0.05 ? 1 : (P.zielZ > 0.6 ? 1 : -1);
     A.zielZ = seite * P.zielZ; A.zielY = P.zielY;
@@ -4838,6 +4927,14 @@ const Match = {
     let dG = 99; const g = _m5[2];
     for (const o of this.ents) if (o.team !== e.team) { const q = this.inSicht(e, this.welt(o, _m5[3]), _m5[4]); const d = Math.hypot(q.x - p.x, q.z - p.z); if (d < dG) { dG = d; g.copy(q); } }
     const distTor = Math.hypot(TOR.x - p.x, p.z);
+    // Doppelpass: der eben angespielte Passgeber läuft in die Tiefe – steht er frei und weiter vorn, direkt zurückspielen
+    const R = P.rueck; if (R && R.e.doppel && R.e.doppel.t > 0 && S.zustand === 'lauf') {
+      P.haltT = (P.haltT || 0) + dt;
+      const q = this.inSicht(e, this.welt(R.e, _m5[5]), _m5[6]); let off = 9, zu = false; const dx = q.x - p.x, dz = q.z - p.z, d2 = dx * dx + dz * dz || 1;
+      for (const o of this.ents) if (o.team !== e.team) { const w = this.inSicht(e, this.welt(o, _m5[7]), _m5[8]); off = Math.min(off, Math.hypot(w.x - q.x, w.z - q.z)); const t = klemme(((w.x - p.x) * dx + (w.z - p.z) * dz) / d2, 0, 1); if (t > 0.08 && t < 0.95 && Math.hypot(p.x + dx * t - w.x, p.z + dz * t - w.z) < 0.9) zu = true; }
+      if (P.haltT > 0.15 && !zu && off > 1.5 && q.x > p.x + 0.5 && d2 > 9) { P.rueck = null; R.e.doppel.t = 0; this.statistik.doppelpass++; this.pass(e, R.e); return this.stehen(e); }
+      if (P.haltT > 1.2) P.rueck = null;
+    }
     if (distTor < P.schussDist && Math.abs(p.z) < 6.5 && p.x < TOR.x - 1.2 && e.passCD < 0.5) { A.laden = true; A.richtung.set(1, 0, 0); A.tempo = 0.7; return A; }
     if (e.passCD <= 0 && ((dG < 2.2 && P.passIn < 1.6) || P.passIn <= 0)) { const m = this.passZiel(e); if (m) { this.pass(e, m); return this.stehen(e); } P.passIn = 1.2; }
     if (P.trickT > 0) { P.trickT -= dt; if (P.trickT <= 0 && dG < 3.2) A.trick = ['zieher', 'drehung', 'zorro'][Math.floor(Math.random() * 3)]; }
@@ -4858,9 +4955,9 @@ const Match = {
       for (const o of this.ents) if (o.team !== e.team) {
         const oq = this.inSicht(e, this.welt(o, _m5[7]), _m5[8]); offen = Math.min(offen, Math.hypot(oq.x - q.x, oq.z - q.z));
         const tt = klemme(((oq.x - p.x) * dx + (oq.z - p.z) * dz) / (d * d), 0, 1), lx = p.x + dx * tt - oq.x, lz = p.z + dz * tt - oq.z;
-        if (Math.hypot(lx, lz) < 0.9 && tt > 0.1 && tt < 0.95) linie -= 3;
+        const ld = Math.hypot(lx, lz); if (tt > 0.08 && tt < 0.95) { if (ld < 0.9) linie -= 6; else if (ld < 1.4) linie -= 1.2; }   // knappe Linien meiden
       }
-      const s = dx * 0.25 + offen * 0.8 - Math.abs(d - 8) * 0.15 + linie;
+      const s = dx * 0.25 + Math.min(offen, 3.5) * 1.2 - Math.abs(d - 8) * 0.15 + linie;
       if (s > bs) { bs = s; best = m; }
     }
     return bs > -1 ? best : null;
@@ -4884,6 +4981,13 @@ const Match = {
     // Abspielgeschwindigkeit im System des Passgebers; der Ball geht erst im Kontaktmoment der Schlagbewegung ab
     const k = e.dreh ? -1 : 1; e.s.zorro = false; e.s.passStart(_m5[6].set(dx / d * v * k, 0.25, dz / d * v * k)); e.s.ballSperre = 0.45;
     e.passCD = 1.2; e.plan = null; this.passEmpfaenger = m; this.letzteMannschaft = e.team;
+    // Doppelpass anbieten (KI-Passgeber, Empfänger weiter hinten oder seitlich): nach dem Pass diagonal in die Tiefe starten
+    const pq = e.s.pos;
+    if (e !== this.steuer && pq.x < TOR.x - 6 && Math.random() < 0.55) {
+      const zz = klemme(pq.z + (pq.z > 0 ? -2.2 : 2.2) * (Math.random() < 0.7 ? 1 : -1), -6.5, 6.5);
+      e.doppel = { t: 1.7, x: Math.min(TOR.x - TWRAUM.vorne - 1.6, pq.x + 5.5), z: zz };
+      m.plan = null; m.rueckVon = e;
+    } else e.doppel = null;
     // KI-Empfänger in Schussposition: Direktschuss je nach Technik (im eigenen System: Tor bei +x)
     const q = m.s.pos, dT = Math.hypot(TOR.x - q.x, q.z);
     m.direktPlan = dT < 11 && TOR.x - q.x > 2.6 && Math.abs(q.z) < 6 && Math.random() < 0.4 + m.s.daten.technik / 100 * 0.3 ? { z: (Math.random() < 0.5 ? -1 : 1) * (0.45 + Math.random() * 0.25), y: 0.15 + Math.random() * 0.6 } : null;

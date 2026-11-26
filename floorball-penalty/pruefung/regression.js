@@ -189,7 +189,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       erg.vorPass = { steuerIch: M.steuer === ich, kontrolle: ich.s.kontrolle, phase: M.phase, zustand: ich.s.zustand };
       // In den 20 Schritten kann ein Gegner den Ball erobert oder der Auto-Wechsel die Steuerung verlegt haben
       M.steuer = ich; if (!ich.s.kontrolle) M.gibBall(ich);
-      S.ereignis({ typ: 'finte' }); erg.passBewegung = M.besitzer && M.besitzer.s.zustand; for (let k = 0; k < 40; k++) S.schritt(1 / 120); erg.pass = { besitzerNachPass: M.besitzer ? M.besitzer.team : null, empfaenger: !!M.passEmpfaenger, steuerGewechselt: M.steuer !== ich };
+      S.ereignis({ typ: 'finte' }); erg.passBewegung = M.besitzer && M.besitzer.s.zustand; const passZiel = M.passEmpfaenger; for (let k = 0; k < 40; k++) S.schritt(1 / 120); erg.pass = { besitzerNachPass: M.besitzer ? M.besitzer.team : null, empfaenger: !!passZiel && (M.passEmpfaenger === passZiel || M.besitzer === passZiel), steuerGewechselt: M.steuer !== ich };   // Ball unterwegs oder schon beim Empfänger
       // Schuss: Ball geben, Enter halten und loslassen
       let geschossen = null; const ob = M.beiSchuss.bind(M); M.beiSchuss = (s, info, team) => { geschossen = { team, kmh: Math.round(info.speed * 3.6) }; ob(s, info, team); };
       sperre(); M.gibBall(M.steuer); for (let k = 0; k < 20; k++) S.schritt(1 / 120); E.tasten.add('Enter'); for (let k = 0; k < 70; k++) S.schritt(1 / 120); E.tasten.delete('Enter'); for (let k = 0; k < 60; k++) S.schritt(1 / 120);
@@ -200,7 +200,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       S.pausiert = false; return erg;
     });
     pruef('Spiel 5 gegen 5: Start', sp.start.zustand === 'match' && sp.start.spieler === 10 && sp.start.torhueter === 2 && sp.start.steuer && sp.start.zweiTore && !sp.start.penaltyFiguren, JSON.stringify(sp.start));
-    pruef('Spiel 5 gegen 5: Laufen, Pass, Schuss', sp.lauf > 0.8 && sp.passBewegung === 'schuss' && (sp.pass.besitzerNachPass === null || sp.pass.besitzerNachPass === 'A') && sp.pass.empfaenger && sp.pass.steuerGewechselt && sp.schuss && sp.schuss.team === 'A', JSON.stringify({ lauf: sp.lauf, vorPass: sp.vorPass, schlag: sp.passBewegung, pass: sp.pass, schuss: sp.schuss }));
+    pruef('Spiel 5 gegen 5: Laufen, Pass, Schuss', sp.lauf > 0.8 && sp.passBewegung === 'schuss' && (sp.pass.empfaenger || sp.pass.besitzerNachPass === 'A') && sp.pass.steuerGewechselt && sp.schuss && sp.schuss.team === 'A', JSON.stringify({ lauf: sp.lauf, vorPass: sp.vorPass, schlag: sp.passBewegung, pass: sp.pass, schuss: sp.schuss }));
     pruef('Spiel 5 gegen 5: drei Drittel bis zum Endstand', sp.ende.zustand === 'ergebnis' && !sp.ende.fehler && /Endstand/.test(sp.ende.text) && /Revanche/.test(sp.ende.text) && (sp.ende.stand.A !== sp.ende.stand.B || /Penaltyschießen/.test(sp.ende.text)), JSON.stringify({ stand: sp.ende.stand, tore: sp.ende.tore, fehler: sp.ende.fehler }));
     await p.click('.parcoursErg [data-menue]'); await p.waitForTimeout(200);
     const weg = await p.evaluate(() => { const F = window.__fps; return { sichtbar: F.Match.sichtbar, zweiTore: F.ball.zweiTore, penalty: F.Spiel.figL.objekt.visible && F.Spiel.figT.objekt.visible, koerper: document.body.className }; });
@@ -377,6 +377,36 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     });
     pruef('Zweikampf: Stocherstoß macht den Ball frei, weicher Ballgewinn', z.stoesse >= 1 && z.freiNachStoss === z.stoesse && z.ruckN >= 10 && z.ruckP50 < 300 && !z.fehler, JSON.stringify(z));
     pruef('Zweikampf: Abschirmen, Körperkontakt, Straucheln selten, keine Überlappung', z.schutzAnteil > 0.05 && z.kontakte >= 10 && z.stolpern <= 30 && z.ueberlapp === 0, JSON.stringify({ schutzAnteil: z.schutzAnteil, kontakte: z.kontakte, stolpern: z.stolpern, ueberlapp: z.ueberlapp }));
+  });
+
+  // 5j) KI-Taktik: Freilaufen (freie Passlinien), Doppelpass, torseitige Manndeckung (180 s KI gegen KI)
+  await abschnitt('5j) KI-Taktik', async () => {
+    const k = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, ball = F.ball, V = F.THREE.Vector3, st = { passe: 0, an: 0, zu: 0, angeboten: 0, deckProben: 0, torseitig: 0, nah: 0, fehler: null };
+      // Deckungsprobe: Verteidiger (ohne Presser) – nächster Angreifer unter 3 m, torseitig (eigenes Tor im eigenen System bei −x)
+      const deckProbe = (z) => { const team = M.besitzer.team === 'A' ? 'B' : 'A'; for (const v of M.ents) { if (v.team !== team || v === M.naechst[team]) continue; const w = M.inSicht(v, M.welt(v, new V()), new V()); let best = null, bd = 99;
+        for (const o of M.ents) if (o.team !== team && o !== M.besitzer) { const q = M.inSicht(v, M.welt(o, new V()), new V()), d = Math.hypot(q.x - w.x, q.z - w.z); if (d < bd) { bd = d; best = q; } }
+        z.deckProben++; if (bd < 3) z.nah++; if (best && w.x < best.x + 0.3) z.torseitig++; } };
+      let pz = null; const op = M.pass, og = M.gibBall;
+      M.pass = function (e, m) { st.passe++; pz = m; const q = M.welt(m, new V()), pa = M.welt(e, new V()), d = q.clone().sub(pa);
+        for (const o of M.ents) if (o.team !== e.team) { const w = M.welt(o, new V()), t = Math.max(0, Math.min(1, w.clone().sub(pa).dot(d) / d.lengthSq())); if (t > 0.1 && t < 0.95 && pa.clone().addScaledVector(d, t).distanceTo(w) < 0.9) { st.zu++; break; } }
+        const r = op.call(this, e, m); if (e.doppel) st.angeboten++; return r; };
+      M.gibBall = function (e) { if (pz && !ball.kinematisch) { if (e === pz) st.an++; pz = null; } return og.call(this, e); };
+      S.starteSpiel5(L[2], L[5], null); S.pausiert = true;
+      for (let i = 0; i < 180 * 120 && S.zustand === 'match'; i++) {
+        try { S.schritt(1 / 120); } catch (e) { st.fehler = e.message; break; }
+        if (i % 30 === 0 && M.phase === 'spiel' && M.besitzer) deckProbe(st);
+      }
+      M.pass = op; M.gibBall = og;
+      // Vergleich: gleiche Messung 120 s ohne Manndeckung (Formation)
+      const od = M.deckung, ohne = { deckProben: 0, nah: 0, torseitig: 0 }; M.deckung = () => null; S.starteSpiel5(L[0], L[8], null); S.pausiert = true;
+      for (let i = 0; i < 120 * 120 && S.zustand === 'match'; i++) { S.schritt(1 / 120); if (i % 30 === 0 && M.phase === 'spiel' && M.besitzer) deckProbe(ohne); }
+      M.deckung = od;
+      const r = { ohneNah: +(ohne.nah / Math.max(1, ohne.deckProben)).toFixed(3), passe: st.passe, quote: +(st.an / Math.max(1, st.passe)).toFixed(3), linieZu: +(st.zu / Math.max(1, st.passe)).toFixed(3), doppelAngeboten: st.angeboten, doppelGespielt: M.statistik.doppelpass, deckungNah: +(st.nah / Math.max(1, st.deckProben)).toFixed(3), deckungTorseitig: +(st.torseitig / Math.max(1, st.deckProben)).toFixed(3), fehler: st.fehler };
+      S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return r;
+    });
+    pruef('KI-Taktik: Freilaufen mit freien Passlinien, Doppelpass wird angeboten', k.passe >= 40 && k.quote > 0.55 && k.linieZu < 0.08 && k.doppelAngeboten >= 3 && !k.fehler, JSON.stringify(k));
+    pruef('KI-Taktik: Manndeckung deutlich enger als Formation und überwiegend torseitig', k.deckungNah > k.ohneNah + 0.25 && k.deckungTorseitig > 0.6, JSON.stringify({ mitDeckungNah: k.deckungNah, ohneDeckungNah: k.ohneNah, torseitig: k.deckungTorseitig }));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
