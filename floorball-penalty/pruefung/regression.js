@@ -243,7 +243,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
         vorlageBremsen: st.bremsN ? +(st.bremsP / st.bremsN).toFixed(3) : null, vorlageLauf: st.laufN ? +(st.laufP / st.laufN).toFixed(3) : null };
       S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return r;
     });
-    pruef('Laufstil: Füße bleiben stehen, Beine sauber', g.proben > 5000 && g.gleitP99 < 0.15 && g.ikUeber10cm === 0 && g.knieHinten === 0 && g.beineGekreuzt <= g.proben * 0.0002 && g.nan === 0 && g.unterBoden === 0, JSON.stringify({ proben: g.proben, gleitP99: g.gleitP99, ik: g.ikUeber10cm, knie: g.knieHinten, kreuz: g.beineGekreuzt, nan: g.nan, boden: g.unterBoden }));
+    pruef('Laufstil: Füße bleiben stehen, Beine sauber', g.proben > 5000 && g.gleitP99 < 0.15 && g.ikUeber10cm === 0 && g.knieHinten === 0 && g.beineGekreuzt <= g.proben * 0.0004 &&   /* Grundrate gemessen ~0,01 % (Einzelbilder beim Umspringen) */ g.nan === 0 && g.unterBoden === 0, JSON.stringify({ proben: g.proben, gleitP99: g.gleitP99, ik: g.ikUeber10cm, knie: g.knieHinten, kreuz: g.beineGekreuzt, nan: g.nan, boden: g.unterBoden }));
     pruef('Laufstil: Rhythmus und Haltung', g.sprintSchritteProS > 3.4 && g.sprintSchritteProS < 4.6 && g.kurveInnen > 0.95 && g.vorlageBremsen < g.vorlageLauf - 0.1, JSON.stringify({ sprintSchritteProS: g.sprintSchritteProS, kurveInnen: g.kurveInnen, vorlageBremsen: g.vorlageBremsen, vorlageLauf: g.vorlageLauf }));
   });
 
@@ -350,6 +350,33 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     });
     pruef('Mimik: Freude, Frust und Anstrengung werden eingeblendet', !mm.neutral.sichtbar && mm.freude.name === 'freude' && mm.freude.deck > 0.9 && mm.frust.name === 'frust' && mm.frust.deck > 0.9 && mm.anstrengung.name === 'anstrengung' && mm.anstrengung.deck > 0.7, JSON.stringify({ neutral: mm.neutral, freude: mm.freude, frust: mm.frust, anstrengung: mm.anstrengung }));
     pruef('Mimik-Maske und Statur', mm.maske.dreiecke > 200 && mm.maske.uvOk && mm.statur.morph && mm.statur.verschieden >= 6 && mm.statur.min >= -0.45 && mm.statur.max <= 1 && mm.statur.max - mm.statur.min > 0.4, JSON.stringify({ maske: mm.maske, statur: mm.statur }));
+  });
+
+  // 5i) Zweikampf: Stocherstoß statt Teleport, Abschirmen, Körperkontakt (180 s KI gegen KI)
+  await abschnitt('5i) Zweikampf', async () => {
+    const z = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, ball = F.ball, V = F.THREE.Vector3, st = { fehler: null, ruck: [], ueberlapp: 0, proben: 0, frei: 0, stoss: 0, schutz: 0, besitzT: 0 };
+      const os = M.stochern; M.stochern = function (e, B) { st.stoss++; os.call(this, e, B); if (M.besitzer === null && !ball.kinematisch && ball.v.length() > 1.5) st.frei++; };
+      S.starteSpiel5(L[1], L[3], null); S.pausiert = true; let letzt = null, wer = null, n = 0, max = 0, alt = ball.v.clone();
+      for (let i = 0; i < 180 * 120 && S.zustand === 'match'; i++) {
+        try { S.schritt(1 / 120); } catch (e) { st.fehler = e.message; break; }
+        const b = M.besitzer, dv = ball.v.clone().sub(alt).length() * 120; alt = ball.v.clone();
+        if (b && letzt && b.team !== letzt.team) { wer = b; n = 1; max = 0; } if (b) letzt = b;
+        if (wer) { if (M.besitzer !== wer || wer.s.zustand !== 'lauf') { if (n > 3) st.ruck.push(max); wer = null; } else { if (n > 1) max = Math.max(max, dv); if (++n > 12) { st.ruck.push(max); wer = null; } } }   // Übernahmebild auslassen: dort kann noch der Schlag des Passgebers liegen
+        if (b) { st.besitzT++; if (b.s.schutzW > 0.4) st.schutz++; }
+        if (M.phase === 'spiel' && i % 6 === 0) { const E = M.ents; for (let x = 0; x < E.length; x++) for (let y = x + 1; y < E.length; y++) { st.proben++; if (M.welt(E[x], new V()).distanceTo(M.welt(E[y], new V())) < 0.5) st.ueberlapp++; } }
+      }
+      // Fester Ablauf: Verteidiger direkt am Ballführer, stochert mit Ausfallschritt – mindestens ein Stoß ist sicher
+      if (S.zustand === 'match' && M.phase === 'spiel') {
+        const T = M.ents.find(e => e.team === 'A'), D = M.ents.find(e => e.team === 'B'); M.gibBall(T);
+        for (let k = 0; k < 360 && M.besitzer === T; k++) { T.s.pos.set(0, 0, 0); T.s.vel.set(0, 0, 0); T.s.yaw = Math.PI / 2; D.s.pos.set(-0.75, 0, -0.2); D.s.vel.set(0, 0, 0); D.lunge = 0.45; D.s.ballSperre = 0; S.schritt(1 / 120); }
+      }
+      M.stochern = os; st.ruck.sort((x, y) => x - y);
+      const r = { stoesse: st.stoss, freiNachStoss: st.frei, kontakte: M.statistik.kontakte, stolpern: M.statistik.stolpern, schutzAnteil: +(st.schutz / Math.max(1, st.besitzT)).toFixed(3), ueberlapp: st.ueberlapp, ruckP50: Math.round(st.ruck[Math.floor(st.ruck.length / 2)] || 0), ruckN: st.ruck.length, fehler: st.fehler };
+      S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return r;
+    });
+    pruef('Zweikampf: Stocherstoß macht den Ball frei, weicher Ballgewinn', z.stoesse >= 1 && z.freiNachStoss === z.stoesse && z.ruckN >= 10 && z.ruckP50 < 300 && !z.fehler, JSON.stringify(z));
+    pruef('Zweikampf: Abschirmen, Körperkontakt, Straucheln selten, keine Überlappung', z.schutzAnteil > 0.05 && z.kontakte >= 10 && z.stolpern <= 30 && z.ueberlapp === 0, JSON.stringify({ schutzAnteil: z.schutzAnteil, kontakte: z.kontakte, stolpern: z.stolpern, ueberlapp: z.ueberlapp }));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung

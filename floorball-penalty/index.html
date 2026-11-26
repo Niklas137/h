@@ -2619,6 +2619,10 @@ const POSEN_SCHUETZE = {
     P.hoehe = 0.91 - Math.min(0.07, sp * 0.013) - brems * 0.085 - antritt * 0.02;
     P.pitch = 0.1 + Math.min(0.24, sp * 0.045) + antritt * 0.12 - brems * 0.26; P.beuge = 0.36 + sv * 0.06 - brems * 0.12 + antritt * 0.04;
     P.roll = klemme(-Math.atan2(ns, 9.81) * 0.85, -0.3, 0.3);
+    // Zweikampf: abschirmen (Schulter zum Gegner), anlehnen (Schulter an Schulter), straucheln (wackeln, einknicken), Stocherstoß (tief, Blatt durch den Ball)
+    if (e.schutzW > 0.02 && e.kontrolle) { P.twist += e.schutzSeite * 0.28 * e.schutzW; P.roll -= e.schutzSeite * 0.06 * e.schutzW; P.hoehe -= 0.03 * e.schutzW; P.beuge += 0.06 * e.schutzW; }
+    if (e.anlehnen) P.roll -= e.anlehnen.seite * 0.13 * e.anlehnen.w;
+    if (e.stolperT > 0) { const k = e.stolperT / 0.45; P.roll += Math.sin(e.stolperT * 26) * 0.1 * k; P.pitch += 0.12 * k; P.hoehe -= 0.05 * k; }
     P.twist = klemme(e.lokBall.x * 0.9, -0.5, 0.5) + e.s * 0.1; P.seit = -e.lokBall.x * 0.15;
     if (e.annahmeAktiv) {
       // Abfedern: Blatt steht gegen die Ankunftsrichtung hinter dem Ball und gibt mit ihm nach
@@ -2628,6 +2632,7 @@ const POSEN_SCHUETZE = {
       P.kelle[1] += 0.085 * (1 - Math.min(1, Math.abs(e.pushSeite) * 1.25));   // beim Seitenwechsel über den Ball heben
     }
     P.oben = [-e.s * 0.04 + e.lokBall.x * 0.32, 0.86, 0.22 + Math.min(0.08, sp * 0.015)];
+    if (e.stossT > 0 && !e.kontrolle) { const k = Math.sin(Math.PI * klemme(1 - e.stossT / 0.28, 0, 1)); P.kelle[2] += 0.18 * k; P.kelle[0] += e.lokBall.x * 0.15 * k; P.hoehe -= 0.06 * k; P.beuge += 0.12 * k; P.oben[2] += 0.1 * k; }
     const w = e.annahmeW || 0;
     if (w > 0.01 && !e.kontrolle) {
       // Ball kommt: Blatt offen an den Ankunftspunkt, Oberkörper und Knie zum Ball, tiefer Stand
@@ -2843,6 +2848,8 @@ class Schuetze {
     if (!this.kontrolle || this.zustand !== 'lauf') { this.annahmeT = -1; if (this.zustand !== 'taeuschung') this.uebergang = null; }
     if (this.direkt && !['laden', 'schuss'].includes(this.zustand)) this.direkt = false;
     this.taeuschCD = Math.max(0, this.taeuschCD - dt);
+    if (this.stolperT > 0) this.stolperT -= dt; if (this.stossT > 0) this.stossT -= dt;
+    if (this.anlehnen) { this.anlehnen.t -= dt; if (this.anlehnen.t <= 0) this.anlehnen.w = daempf(this.anlehnen.w, 0, 10, dt); if (this.anlehnen.w < 0.01) this.anlehnen = null; }
     const cfg = Config.schuetze, d = this.daten, maxV = cfg.dribbleTempo * (0.88 + d.technik / 100 * 0.24);
     const wunsch = _n.set(0, 0, 0);
     let animName = this.zustand, animParam = null;
@@ -2946,6 +2953,7 @@ class Schuetze {
       }
       case 'jubel': case 'enttaeuscht': wunsch.set(0, 0, 0); animName = this.zustand; break;
     }
+    if (this.stolperT > 0) wunsch.multiplyScalar(0.5);   // Straucheln: kurz kaum Vortrieb
     // Bewegung (begrenzte Beschleunigung)
     const acc = this.zustand === 'lauf' ? (welt.menschPraezise ? 15 : 10) : 7;      // vom Menschen gesteuert reagiert der Spieler direkter
     _c.subVectors(wunsch, this.vel); const l = _c.length(); if (l > acc * dt) _c.multiplyScalar(acc * dt / l);
@@ -3042,6 +3050,7 @@ class Schuetze {
     } else {
       this.dribbelPhase += dt * Math.PI * 2 * (1.0 + sp * 0.2);
       lat = 0.22 * Math.sin(this.dribbelPhase) + this.s * 0.05; vor = 0.5 + Math.min(0.15, sp * 0.03);
+      if (this.schutzW > 0.02) { lat = mix(lat, -this.schutzSeite * 0.32, this.schutzW * 0.8); vor = mix(vor, 0.42, this.schutzW * 0.5); }   // Ball weg vom Gegner
       this.dribbelDir = Math.cos(this.dribbelPhase) >= 0 ? 1 : -1;
       // Nach der Annahme weich in die Dribbelbahn (statt mit Höchsttempo dorthin zu springen)
       const U = this.uebergang; if (U) { U.t += dt; const f = glatt(U.t / 0.28), lk = zuLokal(_annV, _annW.set(this.pos.x + U.x, 0, this.pos.z + U.z), this.pos, this.yaw); lat = mix(lk.x, lat, f); vor = mix(lk.z, vor, f); hoehe = mix(U.y ?? BALLD.r, BALLD.r, glatt(U.t / 0.12)); if (U.t >= 0.28) this.uebergang = null; }
@@ -3079,7 +3088,7 @@ class Schuetze {
     const vx = rvx * cy - rvz * sy, vz = rvx * sy + rvz * cy, v = Math.hypot(vx, vz);
     const lb = zuLokal(_annV, ball.p, this.pos, this.yaw);
     if (this.zustand === 'nach') this.setzeZustand('lauf');   // nach eigenem Schuss/Pass: die Annahme beendet den Auslauf
-    if (v < 2) { this.annahmeT = -1; return v; }
+    if (v < 2) { this.annahmeT = -1; this.uebergang = { t: 0, x: ball.p.x - this.ppos.x, z: ball.p.z - this.ppos.z, y: Math.min(ball.p.y, 0.4) }; return v; }   // langsamer Ball: weich in die Ballführung
     this.annahmeT = 0; this.annahmeV = v; this.annahmeDir = { x: vx / v, z: vz / v }; this.annahmeWelt = { x: rvx / v, z: rvz / v };
     this.annahmeStart = { x: ball.p.x - this.pos.x, y: Math.min(ball.p.y, 0.4), z: ball.p.z - this.pos.z };   // relativ zur Position, nicht zur Blickrichtung
     this.annahmeGabe = Math.min(0.38, 0.1 + v * 0.02);
@@ -4674,7 +4683,7 @@ const Match = {
     const gkB = this.gks[0], gkA = this.gks[1];
     this.weltA = { match: true, torwartPos: gkB.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'A'), beiTrick: (s, n) => this.beiTrick(gkB, s, n), beiFinte: (s) => gkB.ki.beiFinte(s), beiDirektVerpasst: () => { this.statistik.direktVerpasst++; } };
     this.weltB = { match: true, torwartPos: gkA.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'B'), beiTrick: (s, n) => this.beiTrick(gkA, s, n), beiFinte: (s) => gkA.ki.beiFinte(s), beiDirektVerpasst: () => { this.statistik.direktVerpasst++; } };
-    this.statistik = { taeuschungen: 0, gebissen: 0, direkt: 0, direktVerpasst: 0, direktTore: 0 };
+    this.statistik = { taeuschungen: 0, gebissen: 0, direkt: 0, direktVerpasst: 0, direktTore: 0, stoesse: 0, kontakte: 0, stolpern: 0 };
     ball.zweiTore = true; ball.ereignisHandler = (typ, st, info) => this.ballEreignis(typ, st, info);
     this.steuer = mensch ? this.ents[2] : null; this.sichtbar = true;
     HUD.trickLeiste(mensch ? 'match' : null); HUD.steuerHinweis(); this.bullyStart(`<span class="w">${esc(teamA.kuerzel)}</span> : ${esc(teamB.kuerzel)}<small>${t('s5_untertitel')}</small>`);
@@ -4733,7 +4742,7 @@ const Match = {
       const At = aktiv ? g.ki.absicht(dt, ang, B, g.bedroht) : { bewegen: null, parade: null };
       g.T.schritt(dt, At, B, {});
     }
-    if (aktiv) { this.abfangen(); this.ballAufnehmen(); this.zweikampf(dt); }
+    if (aktiv) { this.abschirmen(dt); this.abfangen(); this.ballAufnehmen(); this.zweikampf(dt); }
     const gefangen = this.gks.some(g => g.T.gefangen);
     if (!this.besitzer && !gefangen && ball.kinematisch) ball.kinematisch = false;
     ball.schritt(dt, this.koll);
@@ -4926,13 +4935,33 @@ const Match = {
     const B = this.besitzer; if (!B || B.s.zustand === 'schuss') return;
     for (const e of this.ents) {
       if (e.team === B.team || e.s.ballSperre > 0) continue;
-      const d = Math.hypot(e.w.x - ball.p.x, e.w.z - ball.p.z); if (d > 0.95) continue;
-      const rate = 0.85 * (e.s.daten.technik + 25) / (B.s.daten.technik + 25) * (e.lunge > 0 ? 3.2 : 1);
-      if (Math.random() < rate * dt) {
-        const S = B.s; S.kontrolle = false; S.ballSperre = 0.75; S.zorro = false; S.trick = null; if (S.zustand === 'laden') S.setzeZustand('lauf');
-        this.besitzer = null; this.gibBall(e); Ton.koerper(0.3); break;
-      }
+      // Reichweite: Blatt des Verteidigers am Ball oder Körper nah am Ball
+      const fe = e.s.fig.ferse, en = _m5[0].copy(fe).addScaledVector(e.s.fig.kelleDir, 0.28); naechsterPunkt(ball.p, fe, en, _m5[1]);
+      const dBlatt = _m5[1].distanceTo(ball.p), dK = Math.hypot(e.w.x - ball.p.x, e.w.z - ball.p.z);
+      if (dBlatt > 0.35 && dK > 0.95) continue;
+      const nah = klemme(Math.max(1 - dBlatt / 0.35, 1 - (dK - 0.4) / 0.55), 0, 1);
+      const rate = 1.1 * (e.s.daten.technik + 25) / (B.s.daten.technik + 25) * (e.lunge > 0 ? 3 : 1) * (0.35 + 0.65 * nah) * (B.s.schutzW > 0.4 ? 0.6 : 1);
+      if (Math.random() < rate * dt) { this.stochern(e, B); break; }
     }
+  },
+  /** Ballführer schirmt ab: Ball auf die vom nächsten Gegner abgewandte Seite, Schulter zum Gegner. */
+  abschirmen(dt) {
+    for (const e of this.ents) { if (e !== this.besitzer) { e.s.schutzW = daempf(e.s.schutzW || 0, 0, 8, dt); } }
+    const B = this.besitzer; if (!B) return;
+    let best = null, bd = 2.5; for (const o of this.ents) if (o.team !== B.team) { const d = Math.hypot(o.w.x - B.w.x, o.w.z - B.w.z); if (d < bd) { bd = d; best = o; } }
+    const S = B.s;
+    if (!best) { S.schutzW = daempf(S.schutzW || 0, 0, 8, dt); return; }
+    const q = this.inSicht(B, best.w, _m5[3]), lk = zuLokal(_m5[4], q, S.pos, S.yaw);
+    S.schutzSeite = lk.x >= 0 ? 1 : -1; S.schutzW = daempf(S.schutzW || 0, klemme((2.5 - bd) / 1.5, 0, 1) * (lk.z > -0.6 ? 1 : 0.4), 8, dt);
+  },
+  /** Stocherstoß: das Blatt des Verteidigers stößt den Ball vom Schläger, der Ball ist frei (kein Besitzwechsel ohne Ballweg). */
+  stochern(e, B) {
+    const S = B.s; S.kontrolle = false; S.ballSperre = 0.45; S.zorro = false; S.trick = null; if (S.zustand === 'laden') S.setzeZustand('lauf');
+    this.besitzer = null; this.passEmpfaenger = null; ball.kinematisch = false;
+    const dx = ball.p.x - e.w.x, dz = ball.p.z - e.w.z, l = Math.hypot(dx, dz) || 1, a = (Math.random() - 0.5) * 1.2, c = Math.cos(a), sn = Math.sin(a), v = 2.4 + Math.random() * 1.8, ev = this.weltV(e, _m5[2]);
+    ball.v.set((dx * c - dz * sn) / l * v + ev.x * 0.35, 0.12, (dx * sn + dz * c) / l * v + ev.z * 0.35); ball.w.set(0, 0, 0);
+    e.s.ballSperre = 0.1; e.s.stossT = 0.28; e.lunge = 0; this.statistik.stoesse++;
+    Ton.klick(0.35); Ton.koerper(0.2);
   },
   /** Torhüter erreicht den Ball am Schläger des Angreifers. */
   abfangen() {
@@ -5025,7 +5054,8 @@ const Match = {
     for (const e of E) this.welt(e, e.w);
     for (let i = 0; i < E.length; i++) for (let j = i + 1; j < E.length; j++) {
       const a = E[i].w, b = E[j].w, dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz);
-      if (d < 0.6 && d > 1e-4) { const k = (0.6 - d) / 2 / d; a.x -= dx * k; a.z -= dz * k; b.x += dx * k; b.z += dz * k; }
+      if (d < 0.6 && d > 1e-4) { const k = (0.6 - d) / 2 / d; a.x -= dx * k; a.z -= dz * k; b.x += dx * k; b.z += dz * k; this.kontakt(E[i], E[j], dx / d, dz / d); }
+      else if (d < 0.9 && E[i].team !== E[j].team) this.schulter(E[i], E[j], dx / d, dz / d, d);
     }
     for (const e of E) {
       const w = e.w;
@@ -5040,6 +5070,29 @@ const Match = {
       for (const g of this.gks) { const gx = g.T.dreh ? -g.T.pos.x : g.T.pos.x, gz = g.T.dreh ? -g.T.pos.z : g.T.pos.z, dx = w.x - gx, dz = w.z - gz, d = Math.hypot(dx, dz); if (d < 0.7 && d > 1e-4) { w.x = gx + dx / d * 0.7; w.z = gz + dz / d * 0.7; } }
       w.x = klemme(w.x, -19.2, 19.2); w.z = klemme(w.z, -9.4, 9.4);
       const P = e.s.pos; if (e.dreh) P.set(-w.x, 0, -w.z); else P.set(w.x, 0, w.z);
+    }
+  },
+  /** Körperkontakt (Normale n von a nach b): unelastischer Stoß nach Masse; wer hart getroffen wird, strauchelt kurz. */
+  kontakt(A, B, nx, nz) {
+    const va = this.weltV(A, _m5[5]), vb = this.weltV(B, _m5[6]), vr = (vb.x - va.x) * nx + (vb.z - va.z) * nz;
+    if (vr >= -0.05) return;                                        // entfernen sich schon
+    const masse = (e) => Math.pow(e.s.fig.groesse || 1, 3) * (1 + 0.2 * (e.s.fig.statur || 0)), ma = masse(A), mb = masse(B), gegner = A.team !== B.team;
+    const j = -(1 + 0.15) * vr / (1 / ma + 1 / mb) * (gegner ? 1 : 0.5);
+    const dA = j / ma, dB = j / mb;
+    A.s.vel.x -= (A.dreh ? -nx : nx) * dA; A.s.vel.z -= (A.dreh ? -nz : nz) * dA; B.s.vel.x += (B.dreh ? -nx : nx) * dB; B.s.vel.z += (B.dreh ? -nz : nz) * dB;
+    if (!gegner) return;
+    if (vr > -1.2) return;                                          // nur echte Zusammenstöße zählen (kein Dauerkontakt beim Pressing)
+    this.statistik.kontakte++; Ton.koerper(Math.min(1, Math.abs(j) / 5));
+    for (const [e, dv, s] of [[A, dA, -1], [B, dB, 1]]) if (Math.abs(dv) > 3.0 && !(e.s.stolperT > 0)) { e.s.stolperT = 0.45; e.s.stolperDir = { x: nx * s, z: nz * s }; this.statistik.stolpern++; }
+  },
+  /** Seite an Seite (Gegner, beide in Bewegung, gleiche Richtung): Schulter an Schulter, beide lehnen sich hinein. */
+  schulter(A, B, nx, nz, d) {
+    const va = this.weltV(A, _m5[5]), vb = this.weltV(B, _m5[6]), sa = Math.hypot(va.x, va.z), sb = Math.hypot(vb.x, vb.z);
+    if (sa < 1.8 || sb < 1.8 || (va.x * vb.x + va.z * vb.z) / (sa * sb) < 0.6) return;
+    const w = klemme((0.9 - d) / 0.3, 0, 1);
+    for (const [e, sx, sz] of [[A, nx, nz], [B, -nx, -nz]]) {
+      const q = e.dreh ? _m5[7].set(-sx, 0, -sz) : _m5[7].set(sx, 0, sz), cy = Math.cos(e.s.yaw), sy = Math.sin(e.s.yaw), lx = q.x * cy - q.z * sy;
+      e.s.anlehnen = { seite: lx >= 0 ? 1 : -1, w: Math.max(w, (e.s.anlehnen && e.s.anlehnen.w) || 0), t: 0.15 };
     }
   },
   drittelEnde() {
