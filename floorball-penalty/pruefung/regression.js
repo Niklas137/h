@@ -363,7 +363,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
   await abschnitt('5i) Zweikampf', async () => {
     const z = await p.evaluate(() => {
       const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, ball = F.ball, V = F.THREE.Vector3, st = { fehler: null, ruck: [], ueberlapp: 0, proben: 0, frei: 0, stoss: 0, schutz: 0, besitzT: 0 };
-      const os = M.stochern; M.stochern = function (e, B) { os.call(this, e, B); if (M.phase === 'freischlag') { st.gepfiffen = (st.gepfiffen || 0) + 1; return; } st.stoss++; if (M.besitzer === null && !ball.kinematisch && ball.v.length() > 1.5) st.frei++; };   // gepfiffener Stockschlag zählt nicht als Stoß
+      const os = M.stochern; M.stochern = function (e, B) { const f0 = M.fouls.A + M.fouls.B; os.call(this, e, B); if (M.fouls.A + M.fouls.B > f0) { st.gepfiffen = (st.gepfiffen || 0) + 1; return; } st.stoss++; if (M.besitzer === null && !ball.kinematisch && ball.v.length() > 1.5) st.frei++; };   // gepfiffener Stockschlag (Freischlag, Vorteil oder Penalty) zählt nicht als Stoß
       S.starteSpiel5(L[1], L[3], null); S.pausiert = true; let letzt = null, wer = null, n = 0, max = 0, alt = ball.v.clone();
       for (let i = 0; i < 180 * 120 && S.zustand === 'match'; i++) {
         try { S.schritt(1 / 120); } catch (e) { st.fehler = e.message; break; }
@@ -489,6 +489,43 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     });
     pruef('Saison: Spielplan jeder gegen jeden mit Rückrunde', sa.plan.spiele === 20 && sa.plan.runden === 10 && sa.plan.jedesPaarZweimal && sa.plan.heimGetauscht && sa.plan.keinDoppelProRunde, JSON.stringify(sa.plan));
     pruef('Saison: Wertung, eigenes Spiel, Speichern und Laden, Meister', sa.wertung.sieger === 3 && sa.wertung.verlierer === 0 && sa.wertung.soSieger === 2 && sa.wertung.soVerlierer === 1 && sa.wertung.torjaeger === 2 && sa.eigenes.eingetragen && sa.eigenes.ergebnis.th === 2 && sa.eigenes.ergebnis.tg === 1 && sa.eigenes.weiterKnopf && sa.geladen && sa.ende.meister && sa.ende.punkte && sa.ende.spiele, JSON.stringify({ wertung: sa.wertung, eigenes: sa.eigenes, geladen: sa.geladen, ende: sa.ende }));
+  });
+
+  // 5n) Vorteil, verzögerte Strafe, Penalty bei Torchance, Penaltyschießen nach unentschiedenem Saisonspiel
+  await abschnitt('5n) Vorteil und Penalty', async () => {
+    const vp = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, V = F.THREE.Vector3, erg = {};
+      S.starteSpiel5(L[0], L[8], null); S.pausiert = true; let i = 0; while (M.phase !== 'spiel' && i < 900) { S.schritt(1 / 120); i++; }
+      const A = M.ents.find(e => e.team === 'A'), B = M.ents.find(e => e.team === 'B'), sperre = () => M.ents.forEach(e => { if (e.team === 'B') e.s.ballSperre = 3; });
+      // 1) Vorteil gespielt, schwere Strafe wird verzögert und bei der nächsten Unterbrechung ausgesprochen
+      M.setze(A, -6, 0); M.gibBall(A); sperre(); M.foul(B, A, 'stoss', new V(-6, 0, 0), true);
+      erg.vorteil = { aktiv: !!M.vorteil, phase: M.phase };
+      for (let k = 0; k < 330; k++) { sperre(); if (M.besitzer !== A) { M.gibBall(A); } S.schritt(1 / 120); }
+      erg.verzoegert = { liste: M.verzoegert.length, anzeige: /⚑/.test(document.getElementById('hudInfo').innerHTML), feldB: M.ents.filter(e => e.team === 'B').length };
+      M.freischlag('A', new V(-6, 0, 0)); erg.nachUnterbrechung = { strafen: M.strafen.filter(x => x.e === B).length, feldB: M.ents.filter(e => e.team === 'B').length };
+      for (let k = 0; k < 900 && M.phase === 'freischlag'; k++) S.schritt(1 / 120);
+      // 2) Vorteil verloren: Gegner bekommt den Ball → Freischlag für das gefoulte Team
+      const A2 = M.ents.find(e => e.team === 'A'), B2 = M.ents.find(e => e.team === 'B'); M.setze(A2, -4, 2); M.gibBall(A2); M.foul(B2, A2, 'stoss', new V(-4, 0, 2), false);
+      const hatteVorteil = !!M.vorteil; M.gibBall(B2); S.schritt(1 / 120); erg.verloren = { hatteVorteil, phase: M.phase, team: M.fs && M.fs.team };
+      for (let k = 0; k < 900 && M.phase === 'freischlag'; k++) S.schritt(1 / 120);
+      // 3) Penalty bei klarer Torchance: Ballführer nah am Tor, keine weiteren Verteidiger dazwischen
+      const A3 = M.ents.find(e => e.team === 'A'), B3 = M.ents.find(e => e.team === 'B'); M.ents.forEach(e => { if (e.team === 'B' && e !== B3) M.setze(e, 8, 0); });
+      M.setze(A3, 9.5, 0.5); M.gibBall(A3); M.foul(B3, A3, 'stock', new V(9.5, 0, 0.5), false);
+      erg.penalty = { phase: M.phase, schuetze: M.pen && M.pen.e === A3, andereAnBande: M.ents.filter(e => e !== A3).every(e => Math.abs(M.welt(e, new V()).z) > 8) };
+      let pT = 0; while (M.phase === 'penalty' && pT < 15) { S.schritt(1 / 120); pT += 1 / 120; }
+      erg.penaltyEnde = { phase: M.phase, dauer: +pT.toFixed(1), eintrag: M.penalties.length };
+      S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf();
+      // 4) Saison: Unentschieden → Penaltyschießen spielen (KI gegen KI), erst dann eingetragen
+      const Sa = F.Saison, ids = L.slice(0, 4).map(x => x.id); Sa.neu(ids, ids[0], false); const sp = Sa.naechstesSpiel();
+      S.starteSpiel5(F.TeamDB.hole(sp.heim), F.TeamDB.hole(sp.gast), null, sp); M.stand = { A: 2, B: 2 }; M.tore = []; M.phase = 'ende'; S.spiel5Ende();
+      erg.saisonOffen = { offen: !!Sa.d.offen, nichtEingetragen: !Sa.d.spiele.find(x => x.id === sp.id).erg, knopf: !!document.querySelector('[data-so-spielen]') };
+      document.querySelector('[data-so-spielen]').click(); S.pausiert = true; let n = 0; while (S.zustand !== 'ergebnis' && n < 120 * 400) { S.schritt(1 / 120); n++; } S.pausiert = false;
+      const e2 = Sa.d.spiele.find(x => x.id === sp.id).erg; erg.saisonSO = { zustand: S.zustand, erg: e2, offen: !!Sa.d.offen, weiter: !!document.querySelector('[data-weiter]'), punkte: Sa.tabelle().reduce((a, z) => a + z.pkt, 0) };
+      Sa.verwerfen(); S.leerlauf(); F.UI.hauptmenue(); return erg;
+    });
+    pruef('Vorteil: weiterspielen, verzögerte Strafe bei der Unterbrechung, sonst Freischlag', vp.vorteil.aktiv && vp.vorteil.phase === 'spiel' && vp.verzoegert.liste === 1 && vp.verzoegert.anzeige && vp.verzoegert.feldB === 5 && vp.nachUnterbrechung.strafen === 1 && vp.nachUnterbrechung.feldB === 4 && vp.verloren.hatteVorteil && vp.verloren.phase === 'freischlag' && vp.verloren.team === 'A', JSON.stringify({ vorteil: vp.vorteil, verzoegert: vp.verzoegert, nachUnterbrechung: vp.nachUnterbrechung, verloren: vp.verloren }));
+    pruef('Penalty bei Torchance: Schütze allein, andere an der Bande, endet sauber', vp.penalty.phase === 'penalty' && vp.penalty.schuetze && vp.penalty.andereAnBande && ['tor', 'bully', 'spiel'].includes(vp.penaltyEnde.phase) && vp.penaltyEnde.dauer < 13 && vp.penaltyEnde.eintrag === 1, JSON.stringify({ penalty: vp.penalty, ende: vp.penaltyEnde }));
+    pruef('Saison: Unentschieden → Penaltyschießen spielbar, danach eingetragen', vp.saisonOffen.offen && vp.saisonOffen.nichtEingetragen && vp.saisonOffen.knopf && vp.saisonSO.zustand === 'ergebnis' && vp.saisonSO.erg && vp.saisonSO.erg.th === 2 && vp.saisonSO.erg.tg === 2 && !!vp.saisonSO.erg.so && !vp.saisonSO.offen && vp.saisonSO.weiter && vp.saisonSO.punkte === 3, JSON.stringify({ offen: vp.saisonOffen, so: vp.saisonSO }));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
