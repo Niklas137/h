@@ -444,6 +444,25 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     pruef('Regeln: 2-Minuten-Strafe mit Unterzahl, endet nach Zeit und durch Gegentor', rg.unterzahl[0] === 5 && rg.unterzahl[1] === 4 && rg.anzeige && rg.nachZeit.strafeVorbei && rg.nachZeit.zurueck && rg.nachZeit.sichtbar && rg.nachTor.zurueck && rg.nachTor.feld === rg.nachTor.feldVorher + 1, JSON.stringify({ unterzahl: rg.unterzahl, anzeige: rg.anzeige, nachZeit: rg.nachZeit, nachTor: rg.nachTor }));
   });
 
+  // 5l) Linien und Ermüdung: 180 s KI gegen KI – Wechsel beider Teams, Spielerzahl, Plätze, Bank hinter der Bande, Eiszeit beider Reihen
+  await abschnitt('5l) Linien und Ermüdung', async () => {
+    const li = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, g = { fehler: null, zahlFalsch: 0, doppelt: 0, bankImFeld: 0, unsichtbar: 0, proben: 0, eMin: 1, eMax: 0 };
+      S.starteSpiel5(L[4], L[6], null); S.pausiert = true;
+      for (let i = 0; i < 180 * 120 && S.zustand === 'match'; i++) {
+        try { S.schritt(1 / 120); } catch (e) { g.fehler = e.message; break; }
+        if (i % 30 === 0) { g.proben++;
+          for (const t of ['A', 'B']) { const ist = M.ents.filter(e => e.team === t); if (ist.length !== 5 - M.strafen.filter(x => x.team === t).length) g.zahlFalsch++; if (new Set(ist.map(e => e.i)).size !== ist.length) g.doppelt++; }
+          for (const e of M.alle) { if (!e.s.fig.objekt.visible) g.unsichtbar++; if (!M.ents.includes(e) && Math.abs(e.s.fig.wurzel.position.z) < 10.2) g.bankImFeld++; g.eMin = Math.min(g.eMin, e.s.energie); g.eMax = Math.max(g.eMax, e.s.energie); } }
+      }
+      const eis = (r) => M.alle.filter(e => e.reihe === r).reduce((s, e) => s + e.eis, 0);
+      const r = { ...g, wechselA: M.linie.A.anzahl, wechselB: M.linie.B.anzahl, eisReihe1: Math.round(eis(1)), eisReihe2: Math.round(eis(2)), eMin: +g.eMin.toFixed(2), eMax: +g.eMax.toFixed(2) };
+      S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return r;
+    });
+    pruef('Linien: beide Teams wechseln, beide Reihen spielen', li.wechselA >= 2 && li.wechselB >= 2 && li.eisReihe2 > li.eisReihe1 * 0.4 && !li.fehler, JSON.stringify({ wechselA: li.wechselA, wechselB: li.wechselB, eisReihe1: li.eisReihe1, eisReihe2: li.eisReihe2, fehler: li.fehler }));
+    pruef('Linien: Spielerzahl, Plätze, Bank hinter der Bande, Energie im Rahmen', li.zahlFalsch === 0 && li.doppelt === 0 && li.bankImFeld === 0 && li.unsichtbar === 0 && li.eMin >= 0.15 && li.eMax <= 1, JSON.stringify({ zahlFalsch: li.zahlFalsch, doppelt: li.doppelt, bankImFeld: li.bankImFeld, unsichtbar: li.unsichtbar, eMin: li.eMin, eMax: li.eMax, proben: li.proben }));
+  });
+
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
   await abschnitt('6) Turnier', async () => {
   const tn = await p.evaluate(() => { const F = window.__fps, T = F.Turnier, L = F.TeamDB.liste.map(x => x.id); T.neu(L.slice(0, 8), L[0], true); let n = 0; let s; while ((s = T.naechstesSpiel()) && n < 200) { T.eintragen(s.id, T.simuliere(s.heim, s.gast, s.phase !== 'gruppe')); n++; } F.UI.turnierHub(); return { spiele: n, sieger: T.d.sieger, zustand: F.Spiel.zustand, beste: T.beste() }; });

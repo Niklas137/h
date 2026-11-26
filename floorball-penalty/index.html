@@ -290,7 +290,7 @@ const TEXTE = {
     titel: 'FLOORBALL PENALTY SHOWDOWN', untertitel: 'Unihockey · Spiel · Penalty · Parcours',
     m_schnell: 'Penaltyschießen', m_schnell_u: 'Shootout gegen die KI',
     m_spiel5: 'Spiel 5 gegen 5', m_spiel5_u: 'Echtes Floorball: passen, dribbeln, Tore schießen – drei Drittel',
-    s5_untertitel: 'Spiel 5 gegen 5', s5_foul_stock: 'Stockschlag – {n}', s5_foul_stoss: 'Stoßen – {n}', s5_freischlag: 'Freischlag {t}', s5_strafe: '2 Minuten: {n} ({t})', s5_strafen: 'Strafen', s5_art_stoss: 'Stoßen', s5_art_stock: 'Stockschlag', s5_drittel: 'Drittel', s5_dauer: 'Drittellänge', s5_min: '{n} Min', s5_pause: '{n}. DRITTEL', s5_einschlag: 'Einschlag {t}',
+    s5_untertitel: 'Spiel 5 gegen 5', s5_foul_stock: 'Stockschlag – {n}', s5_foul_stoss: 'Stoßen – {n}', s5_freischlag: 'Freischlag {t}', s5_strafe: '2 Minuten: {n} ({t})', s5_strafen: 'Strafen', s5_linie: 'Linienwechsel – Reihe {n}', s5_art_stoss: 'Stoßen', s5_art_stock: 'Stockschlag', s5_drittel: 'Drittel', s5_dauer: 'Drittellänge', s5_min: '{n} Min', s5_pause: '{n}. DRITTEL', s5_einschlag: 'Einschlag {t}',
     s5_gewinnt: 'gewinnt', s5_pass: 'Pass', s5_wechsel: 'Wechsel', s5_penalty: 'Penaltyschießen ▶', s5_tore: 'Tore', s5_keine_tore: 'Keine Tore', s5_endstand: 'Endstand',
     h_pass: 'Pass / Ball erobern / beim Ausholen Schusstäuschung', h_wechsel: 'Spieler wechseln', h_schuss_ball: 'Schuss (mit Ball oder direkt aus dem Pass)', a_wechsel: 'Spieler wechseln', pen_untertitel: 'Penaltyschießen',
     m_parcours: 'Parcours', m_parcours_u: 'Slalom, Drehungen, Tore – dann der Schuss. Auf Zeit und Punkte.',
@@ -2866,7 +2866,7 @@ class Schuetze {
     this.taeuschCD = Math.max(0, this.taeuschCD - dt);
     if (this.stolperT > 0) this.stolperT -= dt; if (this.stossT > 0) this.stossT -= dt;
     if (this.anlehnen) { this.anlehnen.t -= dt; if (this.anlehnen.t <= 0) this.anlehnen.w = daempf(this.anlehnen.w, 0, 10, dt); if (this.anlehnen.w < 0.01) this.anlehnen = null; }
-    const cfg = Config.schuetze, d = this.daten, maxV = cfg.dribbleTempo * (0.88 + d.technik / 100 * 0.24);
+    const cfg = Config.schuetze, d = this.daten, maxV = cfg.dribbleTempo * (0.88 + d.technik / 100 * 0.24) * (0.8 + 0.2 * (this.energie ?? 1));   // müde = langsamer
     const wunsch = _n.set(0, 0, 0);
     let animName = this.zustand, animParam = null;
     switch (this.zustand) {
@@ -3533,6 +3533,19 @@ function teamSaeubern(t, i = 0) {
     torwart: { name: str(t.torwart && t.torwart.name, 30, 'Torhüter'), nummer: klemme(Math.round(Number(t.torwart && t.torwart.nummer)) || 1, 0, 99), hand: 'L',
       reflexe: zahl(t.torwart && t.torwart.reflexe, 60), stellung: zahl(t.torwart && t.torwart.stellung, 60), mut: zahl(t.torwart && t.torwart.mut, 60) }
   };
+}
+/** Zweite Reihe eines Teams (für Linienwechsel): fest aus der Team-Kennung erzeugt, etwas schwächer als Reihe 1, keine doppelten Namen oder Nummern. */
+const _reihe2Cache = new Map();
+function zweiteReihe(team) {
+  const key = team.id + '|' + team.schuetzen.map(s => s.name + s.nummer + s.schuss + s.technik).join(',');
+  if (_reihe2Cache.has(key)) return _reihe2Cache.get(key);
+  let h = 2166136261; for (const c of String(team.id) + '#reihe2') { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  const rng = zufallRng(h), r = (a, b) => Math.round(a + rng() * (b - a)), mittel = (k) => team.schuetzen.reduce((s, p) => s + p[k], 0) / team.schuetzen.length;
+  const namen = new Set([...team.schuetzen.map(s => s.name), team.torwart && team.torwart.name]), nummern = new Set([...team.schuetzen.map(s => s.nummer), team.torwart && team.torwart.nummer]);
+  const nm = () => { let n, k = 0; do n = VORNAMEN[Math.floor(rng() * VORNAMEN.length)] + ' ' + NACHNAMEN[Math.floor(rng() * NACHNAMEN.length)]; while (namen.has(n) && ++k < 50); namen.add(n); return n; };
+  const nr = () => { let n, k = 0; do n = r(2, 99); while (nummern.has(n) && ++k < 200); nummern.add(n); return n; };
+  const reihe = [...Array(5)].map(() => ({ name: nm(), nummer: nr(), hand: rng() < 0.62 ? 'L' : 'R', schuss: klemme(r(mittel('schuss') - 12, mittel('schuss') + 2), 30, 99), technik: klemme(r(mittel('technik') - 12, mittel('technik') + 2), 30, 99), nerven: klemme(r(mittel('nerven') - 12, mittel('nerven') + 4), 30, 99), reihe: 2 }));
+  _reihe2Cache.set(key, reihe); return reihe;
 }
 const TeamDB = {
   liste: [],
@@ -4665,7 +4678,7 @@ const Match = {
     this.proxy = new GedrehterBall(ball);
     this.gks = ['B', 'A'].map(team => { const f = new Figur({ torwart: true }); f.objekt.visible = false; szene.add(f.objekt); const g = { team, fig: f }; f.kapseln.forEach(k => { k.ent = g; }); return g; });
     const ring = (r0, r1, farbe, opa) => { const m = new THREE.Mesh(new THREE.RingGeometry(r0, r1, 40).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: farbe, transparent: true, opacity: opa, depthWrite: false, toneMapped: false })); m.layers.set(2); m.renderOrder = 1; m.visible = false; szene.add(m); return m; };
-    this.marken = [...Array(10)].map(() => ring(0.3, 0.37, '#ffffff', 0.55));
+    this.marken = [...Array(20)].map(() => ring(0.3, 0.37, '#ffffff', 0.55));
     this.steuerRing = ring(0.46, 0.56, NEON, 0.95);
     this.dummy = { zielAbsicht: { aktiv: false, z: 0, y: 0.3 }, daten: { technik: 50 }, kontrolle: false, speed: 0, vel: new V3(), trick: null, finteSeiteWelt: 1 };
     this.koll = { kapseln: [...this.gks[0].fig.kapseln, ...this.gks[1].fig.kapseln] };
@@ -4681,13 +4694,14 @@ const Match = {
     let iL = 0, iR = 0; this.ents = [];
     for (const team of ['A', 'B']) {
       const T = this.teams[team];
-      T.schuetzen.forEach((d, i) => {
+      [...T.schuetzen.map(d => ({ ...d, reihe: 1 })), ...zweiteReihe(T)].forEach((d, nr) => { const i = nr % 5;
         const hand = d.hand === 'R' ? 'R' : 'L', pool = hand === 'R' ? this.poolR : this.poolL, k = hand === 'R' ? iR++ : iL++;
         let fig = pool[k]; if (!fig) { fig = new Figur({ hand }); szene.add(fig.objekt); pool.push(fig); }
         fig.objekt.visible = true; fig.setzeTeam(T, d.nummer, d.name, team === 'B' && this.alt);
         const s = new Schuetze(fig, d); s.dreh = team === 'B'; s.schussUeberall = true;
         const marke = this.marken[this.ents.length]; marke.material.color.set(team === 'B' && this.alt ? T.sekundaer : T.primaer);
-        this.ents.push({ s, team, i, dreh: team === 'B', passCD: 0, lunge: 0, plan: null, jit: [(Math.random() - 0.5) * 1.4, (Math.random() - 0.5) * 1.4], A: { aktiv: true, richtung: new V3(1, 0, 0), tempo: 0, laden: false, finte: false, trick: null, lupfer: false, zielZ: 0, zielY: 0.3 }, w: new V3(), marke });
+        s.energie = 1; if (d.reihe === 2) { fig.objekt.visible = false; marke.visible = false; }
+        this.ents.push({ s, team, i, reihe: d.reihe, eis: 0, dreh: team === 'B', passCD: 0, lunge: 0, plan: null, jit: [(Math.random() - 0.5) * 1.4, (Math.random() - 0.5) * 1.4], A: { aktiv: true, richtung: new V3(1, 0, 0), tempo: 0, laden: false, finte: false, trick: null, lupfer: false, zielZ: 0, zielY: 0.3 }, w: new V3(), marke });
       });
     }
     for (const g of this.gks) {
@@ -4701,7 +4715,9 @@ const Match = {
     this.weltB = { match: true, torwartPos: gkA.T.pos, druck: 0.3, beiSchuss: (s, info) => this.beiSchuss(s, info, 'B'), beiTrick: (s, n) => this.beiTrick(gkA, s, n), beiFinte: (s) => gkA.ki.beiFinte(s), beiDirektVerpasst: () => { this.statistik.direktVerpasst++; } };
     this.statistik = { taeuschungen: 0, gebissen: 0, direkt: 0, direktVerpasst: 0, direktTore: 0, stoesse: 0, kontakte: 0, stolpern: 0, doppelpass: 0 };
     ball.zweiTore = true; ball.ereignisHandler = (typ, st, info) => this.ballEreignis(typ, st, info);
-    this.alle = this.ents.slice(); this.strafen = []; this.fouls = { A: 0, B: 0 }; this.strafenListe = [];
+    this.alle = this.ents.slice(); this.ents = this.alle.filter(e => e.reihe === 1); this.strafen = []; this.fouls = { A: 0, B: 0 }; this.strafenListe = [];
+    this.linie = { A: { nr: 1, t: 0, wechsel: false, anzahl: 0 }, B: { nr: 1, t: 0, wechsel: false, anzahl: 0 } };
+    for (const e of this.alle) if (e.reihe === 2) this.aufBank(e, false);
     this.steuer = mensch ? this.ents[2] : null; this.sichtbar = true;
     HUD.trickLeiste(mensch ? 'match' : null); HUD.steuerHinweis(); this.bullyStart(`<span class="w">${esc(teamA.kuerzel)}</span> : ${esc(teamB.kuerzel)}<small>${t('s5_untertitel')}</small>`);
   },
@@ -4720,6 +4736,7 @@ const Match = {
     ball.reset(0, 0); halle.netz.zuruecksetzen(); halle.netz2.zuruecksetzen();
     for (const e of this.ents) { const [x, z] = SPIEL5.bully[e.i]; this.setze(e, x, z); }
     HUD.schiri(null); this.fs = null;
+    if (this.linie) { this.linieBeiUnterbrechung(); for (const e of this.ents) { const [x, z] = SPIEL5.bully[e.i]; this.setze(e, x, z); } }
     for (const g of this.gks) { g.T.reset(); g.T.gefangen = false; g.ki.reset(); g.bedroht = false; g.halteT = 0; g.wurfSperre = 0; g.wurfT = 0; }
     HUD.banner(banner || null, banner ? 'neon' : undefined); this.hudStand(true);
   },
@@ -4747,7 +4764,8 @@ const Match = {
       const S = e.s, B = e.dreh ? this.proxy : ball, W = e.dreh ? this.weltB : this.weltA;
       e.passCD -= dt; e.lunge -= dt; if (e.dreh) this.proxy.laden();
       const fsGang = this.phase === 'freischlag' && this.fs && this.fs.nehmer === e;   // zum Freischlag geht auch der gesteuerte Spieler selbst
-      const A = !aktiv ? this.stehen(e) : e === this.steuer && !fsGang && !this.assistent(dt) ? this.menschAbsicht(e, dt) : this.kiAbsicht(e, dt);
+      const bankGang = e.zurBank && !S.kontrolle;
+      const A = !aktiv ? this.stehen(e) : e === this.steuer && !fsGang && !bankGang && !this.assistent(dt) ? this.menschAbsicht(e, dt) : this.kiAbsicht(e, dt);
       if (aktiv && e !== this.steuer && !S.kontrolle && e !== this.naechst[e.team] && A.tempo > 0) this.ausweichen(e, A);
       W.menschPraezise = e === this.steuer; const hatte = S.kontrolle;
       S.schritt(dt, A, B, W);
@@ -4764,6 +4782,7 @@ const Match = {
       const At = aktiv ? g.ki.absicht(dt, ang, B, g.bedroht) : { bewegen: null, parade: null };
       g.T.schritt(dt, At, B, {});
     }
+    this.energie(dt); if (this.phase === 'spiel') this.linienSchritt(dt);
     if (this.phase === 'spiel') { this.abschirmen(dt); this.abfangen(); this.ballAufnehmen(); this.zweikampf(dt); }
     if (this.phase === 'freischlag') { ball.v.set(0, 0, 0); ball.p.copy(this.fs.ort).setY(BALLD.r); }
     const gefangen = this.gks.some(g => g.T.gefangen);
@@ -4827,6 +4846,7 @@ const Match = {
   /* ---------- KI der Feldspieler (im eigenen System, Angriff nach +x) ---------- */
   kiAbsicht(e, dt) {
     const S = e.s, A = e.A, p = S.pos; A.laden = false; A.trick = null; A.finte = false; A.lupfer = false;
+    if (e.zurBank && !S.kontrolle && this.phase === 'spiel') { this.laufZu(A, p, this.bankX(e), -8.7, 1); return A; }
     if (this.phase === 'freischlag' && this.fs && this.fs.nehmer === e) { const q = this.inSicht(e, this.fs.ort, _m5[1]); this.laufZu(A, p, q.x - 0.45, q.z - (this.ballSeiteHilfe(e) * 0.2), 1); if (Math.hypot(q.x - p.x, q.z - p.z) < 0.9) A.tempo = 0; return A; }
     if (S.kontrolle) return this.kiBallfuehrer(e, A, dt);
     const owner = this.besitzer, gef = this.gks.find(g => g.T.gefangen), b = this.ballSicht(e, _m5[1]);
@@ -5223,6 +5243,71 @@ const Match = {
       if (this.phase === 'spiel') { const ta = va.x * nx + va.z * nz, tb = -(vb.x * nx + vb.z * nz), taeter = ta > tb ? A : B, opfer = taeter === A ? B : A;
         if (opfer === e && Math.random() < (opfer === this.besitzer ? 0.7 : 0.35)) { this.foul(taeter, opfer, 'stoss', _m5[4].set((A.w.x + B.w.x) / 2, 0, (A.w.z + B.w.z) / 2)); break; } } }
   },
+  /* ---------- Linien und Ermüdung ---------- */
+  /** Energie: sinkt mit dem Tempo (Sprint ≈ 2,5 %/s), erholt sich langsam beim Traben, auf der Bank schnell. */
+  energie(dt) {
+    if (this.phase === 'ende') return;
+    for (const e of this.alle) {
+      const S = e.s, auf = this.ents.includes(e);
+      if (auf) { e.eis += dt; const v = S.speed || 0; S.energie = klemme(S.energie - dt * (0.004 + Math.pow(Math.max(0, v - 2), 1.6) * 0.0042) + (v < 1.5 ? dt * 0.008 : 0), 0.15, 1); }
+      else if (!this.strafen.some(x => x.e === e)) S.energie = Math.min(1, S.energie + dt * 0.035);
+    }
+  },
+  /** Wechsel nötig? Linie müde (Mittel < 0,45) oder lange auf dem Feld (an die Drittellänge angepasst). */
+  wechselNoetig(team) {
+    const L = this.linie[team], auf = this.ents.filter(e => e.team === team); if (!auf.length) return false;
+    const mittel = auf.reduce((s, e) => s + e.s.energie, 0) / auf.length, maxT = klemme(this.dauer * 0.35, 25, 60);
+    return mittel < 0.45 || L.t > maxT;
+  },
+  /** Fliegender Wechsel: bei Ballbesitz (oder Ball in der gegnerischen Hälfte) laufen die Spieler einzeln zur Wechselzone und tauschen dort. */
+  linienSchritt(dt) {
+    for (const team of ['A', 'B']) {
+      const L = this.linie[team]; L.t += dt;
+      if (!L.wechsel && this.wechselNoetig(team)) {
+        const k = team === 'B' ? -1 : 1, ballVorn = ball.p.x * k > 0, besitz = this.besitzer && this.besitzer.team === team;
+        if (besitz || (ballVorn && !this.besitzer)) { L.wechsel = true; L.wechselT = 0; for (const e of this.ents) if (e.team === team) e.zurBank = true; }
+      }
+      if (L.wechsel) {
+        L.wechselT += dt;
+        const offen = this.ents.filter(e => e.team === team && e.zurBank);
+        for (const e of offen) { if (e === this.besitzer && L.wechselT < 6) continue; const w = this.inSicht(e, this.welt(e, _m5[9]), _m5[8]); const da = Math.hypot(w.x - this.bankX(e), w.z + 8.7) < 1.1; if (da || L.wechselT > 8) { this.statistik[da ? 'wechselBank' : 'wechselErzwungen'] = (this.statistik[da ? 'wechselBank' : 'wechselErzwungen'] || 0) + 1; this.tauschen(e, true); } }
+        if (!this.ents.some(e => e.team === team && e.zurBank)) { L.wechsel = false; L.t = 0; L.nr = L.nr === 1 ? 2 : 1; L.anzahl++; if (this.mensch && team === 'A') HUD.meldung(t('s5_linie', { n: L.nr }), 'gut'); }
+      }
+    }
+  },
+  /** Wechselzone an der Bande (eigenes System: Tor bei −x; Bank auf der Seite z = −9): je Spieler ein Platz zwischen x = −5 und −1. */
+  bankX(e) { return -5 + e.i * 0.9; },
+  /** Spieler e geht vom Feld, sein Gegenstück der anderen Reihe kommt an derselben Stelle (fliegend) bzw. an seiner Position (Unterbrechung). */
+  tauschen(e, fliegend) {
+    const neu = this.alle.find(x => x.team === e.team && x.i === e.i && x !== e); e.zurBank = false; if (!neu || this.ents.includes(neu)) return;
+    const k = e.s.pos;
+    this.ents = this.ents.map(x => x === e ? neu : x);
+    e.s.kontrolle = false; e.marke.visible = false; if (this.besitzer === e) this.besitzer = null; if (this.passEmpfaenger === e) this.passEmpfaenger = null;
+    const kx = k.x, kz = k.z; this.aufBank(e, false);
+    this.setze(neu, kx, kz); neu.s.yaw = neu.s.pyaw = fliegend ? 0 : e.s.yaw; neu.s.fig.objekt.visible = true; neu.marke.material.color.copy(e.marke.material.color);
+    if (fliegend) { neu.s.vel.set(0, 0, 0); neu.passCD = 0.4; }
+    if (this.steuer === e) this.steuer = neu;
+  },
+  /** Ersatz- bzw. bestrafter Spieler steht hinter der Bande (Wechselbank bzw. Strafbank an der Mittellinie), zum Feld gewandt. */
+  aufBank(e, strafbank) {
+    const f = e.s.fig, k = e.dreh ? -1 : 1, xo = strafbank ? -0.7 - (this.strafen.filter(x => x.team === e.team).length - 1) * 0.7 : this.bankX(e) - 0.3, zo = -10.65;
+    const pos = _m5[9].set(k * xo, 0, k * zo), yaw = e.dreh ? Math.PI : 0;
+    e.s.kontrolle = false; e.marke.visible = false; f.objekt.visible = true; f.objekt.position.set(0, 0, 0); f.planer.bereit = false;
+    const P = POSEN_SCHUETZE.bereit(e.s, 0); P.blick = 0; P.kelle = [e.s.s * 0.28, 0.04, 0.22]; P.kRicht = [0, 0, 1]; P.oben = [-e.s.s * 0.04, 0.9, 0.16];   // Blatt nah an den Füßen (nicht durch die Bande)
+    for (let n = 0; n < 3; n++) f.anwenden(P, { pos, yaw, vel: _m5[8].set(0, 0, 0), dt: 1 / 120, ballPos: null, blickZiel: null });
+  },
+  /** Bei Unterbrechungen (Bully, Freischlag) wechselt die ganze Linie sofort, wenn es nötig oder bald fällig ist. */
+  linieBeiUnterbrechung() {
+    for (const team of ['A', 'B']) {
+      const L = this.linie[team]; if (!L) continue;
+      const auf = this.ents.filter(e => e.team === team); if (!auf.length) continue;
+      const mittel = auf.reduce((s, e) => s + e.s.energie, 0) / auf.length;
+      if (L.wechsel || mittel < 0.6 || L.t > klemme(this.dauer * 0.35, 25, 60) * 0.6) {
+        for (const e of auf) this.tauschen(e, false);
+        L.wechsel = false; L.t = 0; L.nr = L.nr === 1 ? 2 : 1; L.anzahl++;
+      }
+    }
+  },
   /** Regelverstoß: Freischlag für das gefoulte Team am Tatort, bei schweren Fouls zusätzlich 2 Minuten für den Täter. */
   foul(taeter, opfer, art, ort, schwerVorgabe) {
     if (this.phase !== 'spiel') return;
@@ -5240,6 +5325,7 @@ const Match = {
     const grenze = TORRAUM.vorne - 3.5; if (Math.abs(x) > grenze && Math.abs(z) < TORRAUM.hz + 3.5) x = Math.sign(x) * grenze;
     z = klemme(z, -8.4, 8.4);
     this.phase = 'freischlag'; this.phaseT = 0; this.besitzer = null; this.passEmpfaenger = null;
+    this.linieBeiUnterbrechung();
     for (const e of this.ents) { e.s.kontrolle = false; e.s.annahmeT = -1; if (e.s.zustand !== 'lauf') e.s.setzeZustand('lauf'); }
     let nehmer = null, nd = 99; for (const e of this.ents) if (e.team === team) { const d = Math.hypot(this.welt(e, _m5[5]).x - x, _m5[5].z - z); if (d < nd) { nd = d; nehmer = e; } }
     this.fs = { team, ort: new V3(x, BALLD.r, z), nehmer };
@@ -5263,7 +5349,7 @@ const Match = {
   strafe(e, art) {
     const dauer = Math.max(20, 120 * this.dauer / 1200);
     this.strafen.push({ team: e.team, e, rest: dauer, dauer }); this.strafenListe.push({ team: e.team, name: e.s.daten.name, art, drittel: this.drittel });
-    this.ents = this.ents.filter(x => x !== e); e.s.kontrolle = false; e.s.fig.objekt.visible = false; e.marke.visible = false;
+    this.ents = this.ents.filter(x => x !== e); e.s.kontrolle = false; e.marke.visible = false; this.aufBank(e, true);
     if (this.besitzer === e) this.besitzer = null; if (this.passEmpfaenger === e) this.passEmpfaenger = null;
     if (this.steuer === e) { this.steuer = this.ents.find(x => x.team === 'A') || null; }
     this.statistik.strafen = (this.statistik.strafen || 0) + 1;
@@ -5276,6 +5362,8 @@ const Match = {
   strafeEnde(st) {
     this.strafen = this.strafen.filter(x => x !== st); const e = st.e;
     if (this.ents.includes(e)) return;
+    const partner = this.alle.find(x => x.team === e.team && x.i === e.i && x !== e);
+    if (partner && this.ents.includes(partner)) { e.s.energie = Math.max(e.s.energie, 0.7); this.aufBank(e, false); this.hudStand(true); return; }   // Sicherung: Platz schon besetzt – dann bleibt er auf der Bank (die Unterzahl ist trotzdem vorbei)
     // zurück an der Bande der eigenen Hälfte (eigenes System: Tor bei −x)
     this.setze(e, -3, -8.6); e.s.yaw = e.s.pyaw = 0; e.s.fig.objekt.visible = true; this.ents.push(e); this.hudStand(true);
   },
