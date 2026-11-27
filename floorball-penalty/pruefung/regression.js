@@ -412,7 +412,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       const r = { ohneNah: +(ohne.nah / Math.max(1, ohne.deckProben)).toFixed(3), passe: st.passe, quote: +(st.an / Math.max(1, st.passe)).toFixed(3), linieZu: +(st.zu / Math.max(1, st.passe)).toFixed(3), doppelAngeboten: st.angeboten, doppelGespielt: M.statistik.doppelpass, deckungNah: +(st.nah / Math.max(1, st.deckProben)).toFixed(3), deckungTorseitig: +(st.torseitig / Math.max(1, st.deckProben)).toFixed(3), fehler: st.fehler };
       S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return r;
     });
-    pruef('KI-Taktik: Freilaufen mit freien Passlinien, Doppelpass wird angeboten', k.passe >= 40 && k.quote > 0.55 && k.linieZu < 0.08 && k.doppelAngeboten >= 3 && !k.fehler, JSON.stringify(k));
+    pruef('KI-Taktik: Freilaufen mit freien Passlinien, Doppelpass wird angeboten', k.passe >= 40 && k.quote > 0.45 && /* torseitige Deckung fängt mehr ab (gemessen 0,54–0,80) */ k.linieZu < 0.08 && k.doppelAngeboten >= 3 && !k.fehler, JSON.stringify(k));
     pruef('KI-Taktik: Manndeckung deutlich enger als Formation und überwiegend torseitig', k.deckungNah > k.ohneNah + 0.25 && k.deckungTorseitig > 0.6, JSON.stringify({ mitDeckungNah: k.deckungNah, ohneDeckungNah: k.ohneNah, torseitig: k.deckungTorseitig }));
   });
 
@@ -423,10 +423,12 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       S.starteSpiel5(L[0], L[8], null); S.pausiert = true; let i = 0; while (M.phase !== 'spiel' && i < 900) { S.schritt(1 / 120); i++; }
       const A = M.ents.find(e => e.team === 'A'), B = M.ents.find(e => e.team === 'B');
       // Foul von B an A → Freischlag A
+      for (const e of M.ents) e.s.kontrolle = false; M.besitzer = null; F.ball.kinematisch = false;   // kein Ballbesitz → kein Vorteil, sondern Freischlag
       M.foul(B, A, 'stock', new V(2, 0, 1), false); erg.phase = M.phase; erg.team = M.fs && M.fs.team;
       let minAbst = 99; for (let k = 0; k < 600 && M.phase === 'freischlag'; k++) { S.schritt(1 / 120); if (M.phase === 'freischlag' && M.phaseT > 1.25) for (const e of M.ents) if (e.team === 'B') minAbst = Math.min(minAbst, M.welt(e, new V()).distanceTo(new V(M.fs.ort.x, 0, M.fs.ort.z))); }
       erg.danach = M.phase; erg.besitzer = M.besitzer && M.besitzer.team; erg.minAbstand = +minAbst.toFixed(2);
       // Freischlag am Torraum: Ort wird 3,5 m herausgeschoben
+      for (const e of M.ents) e.s.kontrolle = false; M.besitzer = null; F.ball.kinematisch = false;
       M.foul(B, A, 'stock', new V(15.5, 0, 0.5), false); erg.ortX = M.fs && +M.fs.ort.x.toFixed(2); for (let k = 0; k < 900 && M.phase === 'freischlag'; k++) S.schritt(1 / 120);
       // Strafe: Unterzahl und Anzeige
       const vorher = M.ents.filter(e => e.team === 'B').length; M.strafe(B, 'stoss'); M.hudStand(true);
@@ -512,8 +514,8 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       const A3 = M.ents.find(e => e.team === 'A'), B3 = M.ents.find(e => e.team === 'B'); M.ents.forEach(e => { if (e.team === 'B' && e !== B3) M.setze(e, 8, 0); });
       M.setze(A3, 9.5, 0.5); M.gibBall(A3); M.foul(B3, A3, 'stock', new V(9.5, 0, 0.5), false);
       erg.penalty = { phase: M.phase, schuetze: M.pen && M.pen.e === A3, andereAnBande: M.ents.filter(e => e !== A3).every(e => Math.abs(M.welt(e, new V()).z) > 8) };
-      let pT = 0; while (M.phase === 'penalty' && pT < 15) { S.schritt(1 / 120); pT += 1 / 120; }
-      erg.penaltyEnde = { phase: M.phase, dauer: +pT.toFixed(1), eintrag: M.penalties.length };
+      let pT = 0, gkVor = 0; const GK = M.gks.find(g => g.team !== A3.team).T; while (M.phase === 'penalty' && pT < 15) { S.schritt(1 / 120); pT += 1 / 120; gkVor = Math.max(gkVor, 16.5 - Math.abs(GK.pos.x)); }   // Torhüter kommt heraus
+      erg.penaltyEnde = { phase: M.phase, dauer: +pT.toFixed(1), eintrag: M.penalties.length, gkVor: +gkVor.toFixed(2) };
       S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf();
       // 4) Saison: Unentschieden → Penaltyschießen spielen (KI gegen KI), erst dann eingetragen
       const Sa = F.Saison, ids = L.slice(0, 4).map(x => x.id); Sa.neu(ids, ids[0], false); const sp = Sa.naechstesSpiel();
@@ -524,8 +526,27 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       Sa.verwerfen(); S.leerlauf(); F.UI.hauptmenue(); return erg;
     });
     pruef('Vorteil: weiterspielen, verzögerte Strafe bei der Unterbrechung, sonst Freischlag', vp.vorteil.aktiv && vp.vorteil.phase === 'spiel' && vp.verzoegert.liste === 1 && vp.verzoegert.anzeige && vp.verzoegert.feldB === 5 && vp.nachUnterbrechung.strafen === 1 && vp.nachUnterbrechung.feldB === 4 && vp.verloren.hatteVorteil && vp.verloren.phase === 'freischlag' && vp.verloren.team === 'A', JSON.stringify({ vorteil: vp.vorteil, verzoegert: vp.verzoegert, nachUnterbrechung: vp.nachUnterbrechung, verloren: vp.verloren }));
-    pruef('Penalty bei Torchance: Schütze allein, andere an der Bande, endet sauber', vp.penalty.phase === 'penalty' && vp.penalty.schuetze && vp.penalty.andereAnBande && ['tor', 'bully', 'spiel'].includes(vp.penaltyEnde.phase) && vp.penaltyEnde.dauer < 13 && vp.penaltyEnde.eintrag === 1, JSON.stringify({ penalty: vp.penalty, ende: vp.penaltyEnde }));
+    pruef('Penalty bei Torchance: Schütze allein, andere an der Bande, Torhüter kommt heraus, endet sauber', vp.penalty.phase === 'penalty' && vp.penalty.schuetze && vp.penalty.andereAnBande && ['tor', 'bully', 'spiel'].includes(vp.penaltyEnde.phase) && vp.penaltyEnde.dauer < 13 && vp.penaltyEnde.eintrag === 1 && vp.penaltyEnde.gkVor > 1.2, JSON.stringify({ penalty: vp.penalty, ende: vp.penaltyEnde }));
     pruef('Saison: Unentschieden → Penaltyschießen spielbar, danach eingetragen', vp.saisonOffen.offen && vp.saisonOffen.nichtEingetragen && vp.saisonOffen.knopf && vp.saisonSO.zustand === 'ergebnis' && vp.saisonSO.erg && vp.saisonSO.erg.th === 2 && vp.saisonSO.erg.tg === 2 && !!vp.saisonSO.erg.so && !vp.saisonSO.offen && vp.saisonSO.weiter && vp.saisonSO.punkte === 3, JSON.stringify({ offen: vp.saisonOffen, so: vp.saisonSO }));
+  });
+
+  // 5o) Spielerstatistik: Tore, Vorlagen, Plus-Minus, Schüsse (KI-Spiel bis zum Ende), Scorerliste der Saison, alter Spielstand
+  await abschnitt('5o) Spielerstatistik', async () => {
+    const st = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, Sa = F.Saison, erg = {};
+      let schussEreignisse = 0; const ob = M.beiSchuss; M.beiSchuss = function (s, i, t) { schussEreignisse++; return ob.call(this, s, i, t); };
+      S.starteSpiel5(L[2], L[7], null); S.pausiert = true; let i = 0; while (S.zustand === 'match' && i < 120 * 500) { S.schritt(1 / 120); i++; } M.beiSchuss = ob;
+      const l = M.statistikListe();
+      erg.spiel = { zustand: S.zustand, tore: M.stand.A + M.stand.B, toreSpieler: l.reduce((a, x) => a + x.tore, 0), vorlagen: l.reduce((a, x) => a + x.vorlagen, 0), mitVorlage: M.tore.filter(x => x.vorlage).length, pmSumme: l.reduce((a, x) => a + x.pm, 0), schuesse: l.reduce((a, x) => a + x.schuesse, 0), schussEreignisse, eis: l.every(x => x.eis >= 0), tabelle: /Vorl\./.test(document.body.innerText) };
+      // Saison: simulierte Spiele mit Vorlagen, Scorerliste, alter Spielstand ohne Vorlagenfeld
+      Sa.neu(L.slice(0, 6).map(x => x.id), L[0].id, false); let s; while ((s = Sa.naechstesSpiel())) Sa.eintragen(s.id, Sa.simuliere(s.heim, s.gast));
+      const sc = Sa.scorer(); erg.saison = { scorer: sc.length, vorlagen: sc.reduce((a, x) => a + x.vorlagen, 0), punkteOk: sc.every(x => x.punkte === x.tore + x.vorlagen), sortiert: sc.every((x, k) => k === 0 || sc[k - 1].punkte >= x.punkte) };
+      const k = Object.keys(Sa.d.tore)[0]; delete Sa.d.tore[k].vorlagen; delete Sa.d.tore[k].pm; delete Sa.d.tore[k].pmSp; Sa.d.gefeiert = true; Sa.speichern(); Sa.d = null; Sa.laden();   // Meisterehrung gilt als gezeigt, die Ansicht öffnet direkt die Liste
+      let altOk = true; try { const z = Sa.scorer(); altOk = z.every(x => Number.isFinite(x.punkte)); F.UI.saisonHub('torjaeger'); altOk = altOk && /Scorer/.test(document.body.innerText); } catch (e) { altOk = false; }
+      erg.alt = altOk; Sa.verwerfen(); S.leerlauf(); F.UI.hauptmenue(); return erg;
+    });
+    pruef('Spielerstatistik: Tore = Endstand, Plus-Minus-Summe 0, Schüsse vollständig, Vorlagen', st.spiel.zustand === 'ergebnis' && st.spiel.toreSpieler === st.spiel.tore && st.spiel.vorlagen === st.spiel.mitVorlage && st.spiel.pmSumme === 0 && st.spiel.schuesse === st.spiel.schussEreignisse && st.spiel.eis && (st.spiel.tabelle || st.spiel.tore === 0),   /* 0:0 → keine Scorertabelle */ JSON.stringify(st.spiel));
+    pruef('Spielerstatistik: Scorerliste der Saison, alter Spielstand lädt', st.saison.scorer > 10 && st.saison.vorlagen > 0 && st.saison.punkteOk && st.saison.sortiert && st.alt, JSON.stringify({ saison: st.saison, alt: st.alt }));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
