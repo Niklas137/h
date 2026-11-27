@@ -1,6 +1,6 @@
 // Touch-Prüfung auf emuliertem Smartphone (Pixel 7 quer): Joystick links, Zielen/Schießen rechts, Tricks per Knopf, Parade per Tipp
 const { devices } = require('playwright');
-const { start } = require('./lib');
+const { start, DATEI } = require('./lib');
 (async () => {
   const { b, p, logs } = await start({ ctx: { ...devices['Pixel 7 landscape'] }, einst: { tutorial: true, wiederholung: false } });
   const cdp = await p.context().newCDPSession(p);
@@ -35,6 +35,16 @@ const { start } = require('./lib');
   await p.waitForTimeout(150);
   await p.waitForFunction(() => window.__fps.Spiel.versuch.ergebnis, null, { timeout: 20000 });
   console.log('Touch-Parade', await p.evaluate(() => { const S = window.__fps.Spiel; return (S.torwart.aktion ? S.torwart.aktion.typ : '-') + ' → ' + S.versuch.ergebnis.code + ', Raus-Knopf: ' + document.querySelectorAll('.trickKnopf.raus').length; }));
+  // Hochformat: Hinweis „Querformat“ darf feste Fußknöpfe nicht verdecken (Turnier starten per Tippen)
+  { const ctx2 = await b.newContext({ ...devices['Pixel 7'] }); const q = await ctx2.newPage(); q.setDefaultTimeout(90000);
+    await q.addInitScript(() => { try { localStorage.setItem('fps_config_v1', JSON.stringify({ grafik: { qualitaet: 'niedrig', zuschauer: 0 } })); localStorage.setItem('fps_einst_v1', JSON.stringify({ tutorial: true })); } catch (e) {} });
+    await q.goto(DATEI); await q.waitForFunction(() => window.__fps, null, { timeout: 200000 }); await q.tap('[data-m="turnier"]'); await q.waitForSelector('[data-start]');
+    const hinweis = await q.evaluate(() => getComputedStyle(document.getElementById('querHinweis')).display);
+    let ok = true; try { await q.tap('[data-start]', { timeout: 20000 }); } catch (e) { ok = false; }
+    const kopf = await q.evaluate(() => (document.querySelector('.kopfzeile h2') || {}).innerText || '');
+    console.log('Hochformat', JSON.stringify({ hinweis, tippbar: ok, hub: /Gruppe|Halbfinale|Viertelfinale/.test(kopf) }));
+    if (!ok || hinweis !== 'block') { console.log('ABBRUCH Hochformat-Fußknopf nicht antippbar'); process.exit(2); }
+    await ctx2.close(); }
   console.log(logs.slice(0, 6).join('\n') || 'keine Konsolenmeldungen');
   await b.close();
 })().catch(e => { console.log('ABBRUCH', e.message.split('\n')[0]); process.exit(2); });
