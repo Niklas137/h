@@ -163,6 +163,7 @@ body.match #hudInfo b{ font-variant-numeric:tabular-nums; }
 .chips{ display:flex; flex-wrap:wrap; gap:.4rem; }
 .chip{ border-radius:2rem; border:1px solid var(--rand); background:rgba(255,255,255,.06); padding:.5rem .95rem; font-weight:700; min-height:2.6rem; }
 .chip.an{ background:var(--akzent2); color:#06121f; border-color:var(--akzent2); }
+.chip[disabled]{ opacity:.38; cursor:not-allowed; }
 .leiste{ width:min(72rem,100%); display:flex; flex-wrap:wrap; gap:.8rem; align-items:center; justify-content:space-between; margin:.6rem 0; }
 .karte{ background:var(--panel); border:1px solid var(--rand); border-radius:1rem; padding:1rem; }
 .teamRaster{ display:grid; grid-template-columns:repeat(auto-fill,minmax(13.5rem,1fr)); gap:.9rem; width:min(72rem,100%); }
@@ -290,7 +291,10 @@ const TEXTE = {
     titel: 'FLOORBALL PENALTY SHOWDOWN', untertitel: 'Unihockey · Spiel · Penalty · Parcours',
     m_schnell: 'Penaltyschießen', m_schnell_u: 'Shootout gegen die KI',
     m_spiel5: 'Spiel 5 gegen 5', m_spiel5_u: 'Echtes Floorball: passen, dribbeln, Tore schießen – drei Drittel',
-    s5_untertitel: 'Spiel 5 gegen 5', s5_foul_stock: 'Stockschlag – {n}', s5_foul_stoss: 'Stoßen – {n}', s5_freischlag: 'Freischlag {t}', s5_strafe: '2 Minuten: {n} ({t})', s5_strafen: 'Strafen', s5_linie: 'Linienwechsel – Reihe {n}', s5_pp: 'Überzahl', s5_scorer: 'Scorer', s5_vl: 'Vorl.', s5_schuesse: 'Schüsse', sa_scorer: 'Scorer', sa_pm_hinweis: 'Punkte = Tore + Vorlagen. Plus-Minus nur aus selbst gespielten Spielen (Tore in Überzahl zählen nicht).', s5_vorteil: 'Vorteil', s5_penalty_pfiff: 'Penalty!', s5_penalty_titel: 'PENALTY', s5_penalty_vorbei: 'Penalty vergeben', m_saison: 'Saison', m_saison_weiter: 'Saison fortsetzen', m_saison_u: 'Liga, Tabelle, Torjäger',
+    s5_untertitel: 'Spiel 5 gegen 5', s5_foul_stock: 'Stockschlag – {n}', s5_foul_stoss: 'Stoßen – {n}', s5_freischlag: 'Freischlag {t}', s5_strafe: '2 Minuten: {n} ({t})', s5_strafen: 'Strafen', s5_linie: 'Linienwechsel – Reihe {n}', s5_pp: 'Überzahl', s5_scorer: 'Scorer', s5_vl: 'Vorl.', s5_schuesse: 'Schüsse', sa_scorer: 'Scorer', ka_titel: 'Karriere', ka_ki_wechsel: 'Wechsel der Konkurrenz vor dieser Saison', ka_saison: 'Saison {n}', ka_erste: 'erste Saison', ka_beenden: 'Karriere beenden', ka_starten: 'Karriere starten', ka_erklaerung: 'Karriere: mehrere Saisons mit deinem Team, Preisgeld nach Platz, Spielerentwicklung und Transferfenster zwischen den Saisons.',
+    ka_preisgeld: 'Preisgeld: {n} T€', ka_transferfenster: 'Transferfenster', ka_kader: 'Dein Kader', ka_staerke: 'Stärke', ka_wert: 'Wert', ka_kosten: 'Kosten', ka_abgeben: 'Abgeben', ka_holen: 'Holen', ka_markt: 'Transfermarkt', ka_alle: 'Alle',
+    ka_hinweis: 'Ein Transfer ist ein Tausch: Du wählst einen Spieler zum Abgeben und holst dafür einen anderen. Kosten = Wert des Neuen − 60 % des Abgegebenen (mindestens 10 T€). In Klammern die Wertentwicklung der letzten Saison.',
+    ka_waehlen: 'Wähle links einen Spieler zum Abgeben.', ka_tausch_fuer: 'Tausch für {n} – wähle rechts den neuen Spieler.', ka_naechste: 'Saison {n} starten ▶', sa_pm_hinweis: 'Punkte = Tore + Vorlagen. Plus-Minus nur aus selbst gespielten Spielen (Tore in Überzahl zählen nicht).', s5_vorteil: 'Vorteil', s5_penalty_pfiff: 'Penalty!', s5_penalty_titel: 'PENALTY', s5_penalty_vorbei: 'Penalty vergeben', m_saison: 'Saison', m_saison_weiter: 'Saison fortsetzen', m_saison_u: 'Liga, Tabelle, Torjäger',
     sa_neu: 'Neue Saison', sa_titel: 'Saison', sa_dein_team: 'Dein Team', sa_modus: 'Spielplan', sa_einfach: 'Einfach ({n} Spiele)', sa_doppelt: 'Hin- und Rückrunde ({n} Spiele)', sa_starten: 'Saison starten',
     sa_np: 'n. P.', sa_sn: 'S n. P.', sa_nn: 'N n. P.', sa_tore: 'Tore', sa_wertung: 'Sieg 3 Punkte, Sieg im Penaltyschießen 2, Niederlage im Penaltyschießen 1.', sa_runde: '{n}. Runde',
     sa_torjaeger: 'Torjäger', sa_bis_meins: 'Bis zu meinem Spiel', sa_verwerfen: 'Saison beenden', sa_meister: 'Meister', sa_dein_platz: 'Dein Team: Platz {n}', sa_so_sieger: 'Penaltyschießen: {t} gewinnt', sa_weiter: 'Weiter zur Saison', sa_so_offen: 'Unentschieden – das Penaltyschießen entscheidet', sa_so_spielen: 'Penaltyschießen spielen', sa_so_sim: 'Penaltyschießen simulieren', s5_art_stoss: 'Stoßen', s5_art_stock: 'Stockschlag', s5_drittel: 'Drittel', s5_dauer: 'Drittellänge', s5_min: '{n} Min', s5_pause: '{n}. DRITTEL', s5_einschlag: 'Einschlag {t}',
@@ -3629,8 +3633,7 @@ const Turnier = {
     return false;
   },
   /** Sofortsimulation eines KI-Spiels (Wahrscheinlichkeit aus Teamwerten, echte Shootout-Regeln). */
-  simuliere(heimId, gastId, ko) {
-    const H = TeamDB.hole(heimId), G = TeamDB.hole(gastId);
+  simuliere(heimId, gastId, ko, H = TeamDB.hole(heimId), G = TeamDB.hole(gastId)) {
     const so = new Shootout(Config.regeln.schuetzen, ko ? true : Config.regeln.suddenDeath), versuche = [];
     let iA = 0, iB = 0;
     while (!so.status().fertig) {
@@ -3658,12 +3661,14 @@ const Turnier = {
    ===================================================================== */
 const Saison = {
   d: null,
-  laden() { this.d = Speicher.lesen('fps_saison_v1', null); if (this.d && (!Array.isArray(this.d.spiele) || !Array.isArray(this.d.teams) || this.d.teams.some(id => !TeamDB.hole(id)))) this.d = null; return this.d; },
+  laden() { this.d = Speicher.lesen('fps_saison_v1', null); if (this.d && (!Array.isArray(this.d.spiele) || !Array.isArray(this.d.teams) || this.d.teams.some(id => !this.team(id)))) this.d = null; return this.d; },
+  /** Team einer Saison: in der Karriere aus dem eigenen Kader (Transfers), sonst aus der Teamliste. */
+  team(id) { return (this.d && this.d.kader && this.d.kader[id]) || TeamDB.hole(id); },
   speichern() { if (this.d) Speicher.schreiben('fps_saison_v1', this.d); },
   verwerfen() { this.d = null; Speicher.loeschen('fps_saison_v1'); },
   laeuft() { return !!this.d && !this.d.meister; },
   /** Neue Saison: Spielplan nach der Kreismethode (jede Runde jedes Team einmal), Rückrunde mit getauschtem Heimrecht. */
-  neu(teamIds, spielerTeam, rueckrunde) {
+  neu(teamIds, spielerTeam, rueckrunde, karriere) {
     const ids = teamIds.slice(); if (ids.length % 2) ids.push(null);   // spielfrei
     const n = ids.length, runden = [];
     for (let r = 0; r < n - 1; r++) {
@@ -3675,6 +3680,7 @@ const Saison = {
     let id = 0; const spiele = [];
     alle.forEach((rd, ri) => rd.forEach(([heim, gast]) => spiele.push({ id: id++, runde: ri + 1, heim, gast, erg: null })));
     this.d = { teams: teamIds.slice(), spieler: spielerTeam, rueckrunde: !!rueckrunde, runden: alle.length, spiele, tore: {}, meister: null };
+    if (karriere) { this.d.karriere = karriere.info; this.d.kader = karriere.kader; }
     this.speichern(); return this.d;
   },
   naechstesSpiel() { return this.d && this.d.spiele.find(s => !s.erg) || null; },
@@ -3682,7 +3688,7 @@ const Saison = {
   aktuelleRunde() { const s = this.naechstesSpiel(); return s ? s.runde : this.d.runden; },
   /** Spiel 5 gegen 5 simulieren: Torerwartung aus Angriff gegen Torhüter (Poisson), Unentschieden per Penaltyschießen. */
   simuliere(heimId, gastId) {
-    const H = TeamDB.hole(heimId), G = TeamDB.hole(gastId), sH = TeamDB.staerke(H), sG = TeamDB.staerke(G);
+    const H = this.team(heimId), G = this.team(gastId), sH = TeamDB.staerke(H), sG = TeamDB.staerke(G);
     const lam = (a, t, heim) => klemme(2.6 * Math.pow(a / t, 2.2) * (heim ? 1.08 : 1) * (Einst.drittelMin || 2) / 2, 0.4, 9);
     const poisson = (l) => { let k = 0, p = Math.exp(-l), s = p; const u = Math.random(); while (u > s && k < 25) { k++; p *= l / k; s += p; } return k; };
     const th = poisson(lam(sH.angriff, sG.torwart, true)), tg = poisson(lam(sG.angriff, sH.torwart, false));
@@ -3691,7 +3697,7 @@ const Saison = {
     const vorlage = (T, tor) => { if (Math.random() > 0.75) return null; const alle = [...T.schuetzen, ...zweiteReihe(T)].filter(x => x.name !== tor), ges = alle.reduce((s, x) => s + x.technik, 0); let z = Math.random() * ges; for (const x of alle) { z -= x.technik; if (z <= 0) return x.name; } return null; };
     const tor = (T, id) => { const n = schuetze(T); return { team: id, name: n, vorlage: vorlage(T, n) }; };
     const torschuetzen = [...[...Array(th)].map(() => tor(H, heimId)), ...[...Array(tg)].map(() => tor(G, gastId))];
-    let so = null; if (th === tg) { const e = Turnier.simuliere(heimId, gastId, true); so = e.sieger === 'G' ? 'gast' : 'heim'; }
+    let so = null; if (th === tg) so = this.soSimulieren(heimId, gastId);
     return { th, tg, so, torschuetzen };
   },
   /** Ergebnis eintragen: {th, tg, so: 'heim'|'gast'|null, torschuetzen:[{team, name}]} */
@@ -3714,12 +3720,72 @@ const Saison = {
     }
     return Object.values(z).sort((x, y) => y.pkt - x.pkt || (y.tp - y.tg) - (x.tp - x.tg) || y.tp - x.tp || x.id.localeCompare(y.id));
   },
+  soSimulieren(heimId, gastId) { return Turnier.simuliere(heimId, gastId, true, this.team(heimId), this.team(gastId)).sieger === 'G' ? 'gast' : 'heim'; },
   /** Unentschiedenes eigenes Spiel: erst nach dem Penaltyschießen eintragen. */
   offenSetzen(spiel, erg, mensch) { this.d.offen = { id: spiel.id, th: erg.th, tg: erg.tg, torschuetzen: erg.torschuetzen, plusminus: erg.plusminus, mensch }; this.speichern(); },
   offenAbschliessen(so) { const o = this.d.offen; if (!o) return; this.d.offen = null; this.eintragen(o.id, { th: o.th, tg: o.tg, so, torschuetzen: o.torschuetzen, plusminus: o.plusminus }); },
   /** Scorerliste: Punkte = Tore + Vorlagen. */
   scorer() { return Object.values(this.d.tore).map(x => ({ ...x, vorlagen: x.vorlagen || 0, punkte: x.tore + (x.vorlagen || 0) })).sort((a, b) => b.punkte - a.punkte || b.tore - a.tore || a.name.localeCompare(b.name)); },
   torjaeger() { return Object.values(this.d.tore).sort((a, b) => b.tore - a.tore || a.name.localeCompare(b.name)); }
+};
+
+/* =====================================================================
+   MODUL: KARRIERE – mehrere Saisons mit einem Team: Preisgeld, Spielerentwicklung, Transferfenster
+   (Tausch mit Ausgleichszahlung), KI-Transfers, Verlauf. Arbeitet auf Kopien der Teams (Kader).
+   ===================================================================== */
+const Karriere = {
+  /** Marktwert in T€ aus den Spielerwerten (quadratisch: Spitzenspieler sind deutlich teurer). */
+  wert(sp) { const a = (sp.schuss + sp.technik + sp.nerven) / 3; return Math.round(Math.max(0, a - 45) ** 2 / 6 + 20); },
+  start(spielerTeam, rueckrunde) {
+    const kader = {}; for (const T of TeamDB.liste) kader[T.id] = JSON.parse(JSON.stringify(T));
+    Saison.neu(TeamDB.liste.map(x => x.id), spielerTeam, rueckrunde, { info: { nr: 1, budget: 400, historie: [], transfers: [] }, kader });
+  },
+  /** Preisgeld nach Platz (Meister mit Bonus). */
+  preisgeld(platz, anzahl) { return (anzahl - platz + 1) * 40 + (platz === 1 ? 200 : 0); },
+  /** Saisonabschluss: Verlauf, Preisgeld, Entwicklung (Mittelwert-Rückkehr, Torschützen mit Schwung). Einmalig je Saison. */
+  abschliessen() {
+    const S = Saison.d, K = S.karriere; if (!K || K.abgeschlossen === K.nr) return;
+    const tb = Saison.tabelle(), platz = tb.findIndex(z => z.id === S.spieler) + 1, geld = this.preisgeld(platz, tb.length);
+    K.historie.push({ nr: K.nr, platz, meister: S.meister, punkte: tb[platz - 1].pkt, geld });
+    K.budget += geld; K.abgeschlossen = K.nr; K.entwicklung = [];
+    const rng = Math.random, g = () => (rng() + rng() + rng() - 1.5) * 2;
+    const tore = {}; for (const x of Object.values(S.tore)) tore[x.team + '|' + x.name] = x.tore + (x.vorlagen || 0);
+    for (const T of Object.values(S.kader)) for (const sp of T.schuetzen) {
+      const vor = this.wert(sp), schwung = Math.min(3, (tore[T.id + '|' + sp.name] || 0) * 0.25);
+      for (const k of ['schuss', 'technik', 'nerven']) sp[k] = klemme(Math.round(sp[k] + g() * 2.2 + (68 - sp[k]) * 0.04 + schwung), 30, 99);
+      if (T.id === S.spieler) K.entwicklung.push({ name: sp.name, vorher: vor, nachher: this.wert(sp) });
+    }
+    Saison.speichern();
+  },
+  /** Transfer: Spieler `rein` (aus Team `von`) kommt, eigener Spieler `raus` geht dorthin; Kosten = Wert(rein) − 0,6 × Wert(raus), mindestens 10. */
+  kosten(rein, raus) { return Math.max(10, Math.round(this.wert(rein) - 0.6 * this.wert(raus))); },
+  transfer(vonId, reinName, rausName) {
+    const S = Saison.d, K = S.karriere, eigen = S.kader[S.spieler], fremd = S.kader[vonId];
+    const ri = fremd.schuetzen.findIndex(x => x.name === reinName), oi = eigen.schuetzen.findIndex(x => x.name === rausName); if (ri < 0 || oi < 0) return false;
+    const rein = fremd.schuetzen[ri], raus = eigen.schuetzen[oi], k = this.kosten(rein, raus); if (K.budget < k) return false;
+    eigen.schuetzen[oi] = rein; fremd.schuetzen[ri] = raus; K.budget -= k;
+    this.nummernPruefen(eigen); this.nummernPruefen(fremd);
+    K.transfers.push({ nr: K.nr, rein: rein.name, raus: raus.name, team: vonId, kosten: k }); Saison.speichern(); return true;
+  },
+  nummernPruefen(T) { const vergeben = new Set([T.torwart.nummer]); for (const sp of T.schuetzen) { while (vergeben.has(sp.nummer)) sp.nummer = sp.nummer % 98 + 2; vergeben.add(sp.nummer); } },
+  /** KI-Teams tauschen untereinander (je Fenster einige Wechsel, ohne das eigene Team). */
+  kiTransfers(anzahl = 4) {
+    const S = Saison.d, ids = S.teams.filter(id => id !== S.spieler), log = [];
+    for (let n = 0; n < anzahl; n++) {
+      const a = S.kader[ids[Math.floor(Math.random() * ids.length)]], b = S.kader[ids[Math.floor(Math.random() * ids.length)]]; if (a === b) continue;
+      const i = Math.floor(Math.random() * 5), j = Math.floor(Math.random() * 5), x = a.schuetzen[i], y = b.schuetzen[j];
+      a.schuetzen[i] = y; b.schuetzen[j] = x; this.nummernPruefen(a); this.nummernPruefen(b); log.push({ von: b.id, nach: a.id, name: y.name }, { von: a.id, nach: b.id, name: x.name });
+    }
+    S.karriere.kiLog = log; return log;
+  },
+  /** Nächste Saison mit denselben Kadern, Budget und Verlauf. */
+  naechsteSaison() {
+    const S = Saison.d, K = S.karriere; if (!K) return;
+    const kiLog = this.kiTransfers();
+    const info = { nr: K.nr + 1, budget: K.budget, historie: K.historie, transfers: K.transfers, kiLog };
+    Saison.neu(S.teams.slice(), S.spieler, S.rueckrunde, { info, kader: S.kader });
+  },
+  titel() { const S = Saison.d; return S && S.karriere ? S.karriere.historie.filter(h => h.platz === 1).length : 0; }
 };
 
 /* =====================================================================
@@ -4090,7 +4156,7 @@ const Spiel = {
       const sp = this.saisonSpiel, id = (tm) => tm === 'A' ? sp.heim : sp.gast;
       const erg = { th: r.stand.A, tg: r.stand.B, torschuetzen: r.tore.map(x => ({ team: id(x.team), name: x.name, vorlage: x.vorlage || null })), plusminus: Match.statistikListe().map(x => ({ team: id(x.team), name: x.name, pm: x.pm })) };
       // Unentschieden: Penaltyschießen spielen oder simulieren, erst danach wird eingetragen
-      if (erg.th === erg.tg) { Saison.offenSetzen(sp, erg, Match.mensch); r.saison = { offen: true }; }
+      if (erg.th === erg.tg) { Saison.offenSetzen(sp, erg, Match.mensch); r.saison = { offen: true }; }   // Karriere: Teams kommen aus dem Kader (Saison.team)
       else { Saison.eintragen(sp.id, { ...erg, so: null }); r.saison = { offen: false }; }
       this.saisonSpiel = null;
     }
@@ -5950,12 +6016,13 @@ const UI = {
         <div class="chips" style="margin:.4rem 0 1rem">${L.map(T => `<button class="chip ${T.id === wahl ? 'an' : ''}" data-team="${esc(T.id)}">${esc(T.kuerzel)} · ${esc(T.name)}</button>`).join('')}</div>
         <div class="hinweisText">${t('sa_modus')}</div><div class="chips" style="margin:.4rem 0 1rem"><button class="chip ${rueck ? '' : 'an'}" data-rueck="0">${t('sa_einfach', { n: L.length - 1 })}</button><button class="chip ${rueck ? 'an' : ''}" data-rueck="1">${t('sa_doppelt', { n: (L.length - 1) * 2 })}</button></div>
         <div class="hinweisText">${t('s5_dauer')}</div><div class="chips" style="margin:.4rem 0 1rem">${[1, 2, 3, 5].map(n => `<button class="chip ${n === dauer ? 'an' : ''}" data-dauer="${n}">${t('s5_min', { n })}</button>`).join('')}</div>
-        <button class="grossKnopf primaer" data-los>${t('sa_starten')}</button></div>`);
+        <button class="grossKnopf primaer" data-los>${t('sa_starten')}</button> <button class="grossKnopf" data-karriere>${t('ka_starten')}</button><p class="hinweisText">${t('ka_erklaerung')}</p></div>`);
       this.klick(d, '[data-zurueck]', () => this.hauptmenue());
       this.klick(d, '[data-team]', (el) => { wahl = el.dataset.team; zeichnen(); });
       this.klick(d, '[data-rueck]', (el) => { rueck = el.dataset.rueck === '1'; zeichnen(); });
       this.klick(d, '[data-dauer]', (el) => { dauer = +el.dataset.dauer; zeichnen(); });
       this.klick(d, '[data-los]', () => { Einst.letztesTeam = wahl; Einst.drittelMin = dauer; einstSpeichern(); Saison.neu(L.map(x => x.id), wahl, rueck); this.saisonHub(); });
+      this.klick(d, '[data-karriere]', () => { Einst.letztesTeam = wahl; Einst.drittelMin = dauer; einstSpeichern(); Karriere.start(wahl, rueck); this.saisonHub(); });
     };
     zeichnen();
   },
@@ -5963,7 +6030,7 @@ const UI = {
     if (Spiel.zustand !== 'menue') Spiel.leerlauf();
     const S = Saison.d; if (!S) return this.saisonSetup();
     if (S.meister && !S.gefeiert) { S.gefeiert = true; Saison.speichern(); return this.meisterZeigen(); }
-    const n = Saison.naechstesSpiel(), name = id => TeamDB.hole(id).name, kz = id => TeamDB.hole(id).kuerzel, meins = n && Saison.istMeins(n);
+    const n = Saison.naechstesSpiel(), name = id => Saison.team(id).name, kz = id => Saison.team(id).kuerzel, meins = n && Saison.istMeins(n), KR = S.karriere;
     const erg = (s) => s.erg ? `${s.erg.th} : ${s.erg.tg}${s.erg.so ? ' ' + t('sa_np') : ''}` : '–';
     const tabelle = `<div class="karte"><table class="tab"><tr><th>#</th><th>Team</th><th class="z">${t('tn_sp')}</th><th class="z">${t('tn_s')}</th><th class="z">${t('sa_sn')}</th><th class="z">${t('sa_nn')}</th><th class="z">${t('tn_n')}</th><th class="z">${t('sa_tore')}</th><th class="z">${t('tn_punkte')}</th></tr>
       ${Saison.tabelle().map((z, i) => `<tr style="${z.id === S.spieler ? 'color:var(--akzent);font-weight:800' : ''}"><td>${i + 1}</td><td>${esc(kz(z.id))} ${esc(name(z.id))}</td><td class="z">${z.sp}</td><td class="z">${z.s}</td><td class="z">${z.ss}</td><td class="z">${z.ns}</td><td class="z">${z.n}</td><td class="z">${z.tp}:${z.tg}</td><td class="z"><b>${z.pkt}</b></td></tr>`).join('')}</table>
@@ -5977,32 +6044,62 @@ const UI = {
       : n ? `<div class="karte" style="width:min(72rem,100%);display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between">
         <div><div class="hinweisText">${t('sa_runde', { n: n.runde })} / ${S.runden}</div><div style="font-size:1.4rem;font-weight:900">${esc(name(n.heim))} – ${esc(name(n.gast))}</div></div>
         <div class="chips">${meins ? `<button class="grossKnopf primaer" data-spielen style="min-height:3.4rem">${t('tn_spielen')}</button><button class="knopf" data-sim>⏩ ${t('tn_simulieren')}</button>` : `<button class="knopf" data-ansehen>👀 ${t('tn_ansehen')}</button><button class="knopf primaer" data-sim>⏩ ${t('tn_simulieren')}</button>`}<button class="knopf" data-runde>⏭ ${t('sa_bis_meins')}</button></div></div>` : '';
-    const d = this.html(`<div class="kopfzeile"><button class="knopf" data-menue>${t('menue')}</button><h2>${t('sa_titel')} · ${esc(name(S.spieler))}</h2><button class="knopf gefahr klein" data-ende>${t('sa_verwerfen')}</button></div>
-      ${naechst}
+    const kopf = KR ? `${t('ka_titel')} · ${t('ka_saison', { n: KR.nr })} · ${esc(name(S.spieler))}` : `${t('sa_titel')} · ${esc(name(S.spieler))}`;
+    const kInfo = KR ? `<div class="karte" style="width:min(72rem,100%);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center"><span>💰 <b>${KR.budget} T€</b> · 🏆 ${Karriere.titel()} · ${KR.historie.map(h => `${t('ka_saison', { n: h.nr })}: ${h.platz}.`).join(' · ') || t('ka_erste')}</span>${S.meister ? `<button class="knopf primaer" data-transfer>${t('ka_transferfenster')}</button>` : ''}</div>
+      ${KR.kiLog && KR.kiLog.length && !S.spiele.some(x => x.erg) ? `<div class="karte" style="width:min(72rem,100%)"><div class="hinweisText">${t('ka_ki_wechsel')}</div>${KR.kiLog.filter((_, k) => k % 2 === 0).map(x => `<div class="pZeile"><span>${esc(Saison.team(x.von).kuerzel)} → ${esc(Saison.team(x.nach).kuerzel)}</span><b>${esc(x.name)}</b></div>`).join('')}</div>` : ''}` : '';
+    const d = this.html(`<div class="kopfzeile"><button class="knopf" data-menue>${t('menue')}</button><h2>${kopf}</h2><button class="knopf gefahr klein" data-ende>${KR ? t('ka_beenden') : t('sa_verwerfen')}</button></div>
+      ${kInfo}${naechst}
       <div class="leiste"><div class="chips">${['tabelle', 'plan', 'torjaeger'].map(x => `<button class="chip ${tab === x ? 'an' : ''}" data-tab="${x}">${t(x === 'tabelle' ? 'tn_tabelle' : x === 'plan' ? 'tn_spielplan' : 'sa_scorer')}</button>`).join('')}</div></div>
       <div class="spalten">${tab === 'tabelle' ? tabelle : tab === 'plan' ? plan : torjaeger}</div>`);
     this.klick(d, '[data-menue]', () => this.hauptmenue());
     this.klick(d, '[data-tab]', (el) => this.saisonHub(el.dataset.tab));
     this.klick(d, '[data-ende]', () => { this.bestaetigen(t('sa_verwerfen') + '?').then(ok => { if (ok) { Saison.verwerfen(); this.hauptmenue(); } }); });
-    const starten = (mensch) => { const A = TeamDB.hole(n.heim), B = TeamDB.hole(n.gast); Spiel.starteSpiel5(A, B, mensch ? (n.heim === S.spieler ? 'A' : 'B') : null, n); };
+    const starten = (mensch) => { const A = Saison.team(n.heim), B = Saison.team(n.gast); Spiel.starteSpiel5(A, B, mensch ? (n.heim === S.spieler ? 'A' : 'B') : null, n); };
     this.klick(d, '[data-spielen]', () => starten(true));
     this.klick(d, '[data-ansehen]', () => starten(false));
     this.klick(d, '[data-sim]', () => { Saison.eintragen(n.id, Saison.simuliere(n.heim, n.gast)); this.saisonHub(tab); });
     this.klick(d, '[data-so-spielen]', () => this.saisonSOspielen());
     this.klick(d, '[data-so-sim]', () => { this.saisonSOsimulieren(); this.saisonHub(tab); });
+    this.klick(d, '[data-transfer]', () => { Karriere.abschliessen(); this.transferfenster(); });
     this.klick(d, '[data-runde]', () => { let s; while ((s = Saison.naechstesSpiel()) && !Saison.istMeins(s)) Saison.eintragen(s.id, Saison.simuliere(s.heim, s.gast)); this.saisonHub(tab); });
   },
+  /** Transferfenster der Karriere: eigener Kader mit Entwicklung, Markt der anderen Teams, Tausch mit Ausgleichszahlung. */
+  transferfenster(auswahl = null, filter = '') {
+    if (Spiel.zustand !== 'menue') Spiel.leerlauf();
+    const S = Saison.d, K = S.karriere; if (!K) return this.saisonHub();
+    const eigen = S.kader[S.spieler], wert = (sp) => Karriere.wert(sp), avg = (sp) => Math.round((sp.schuss + sp.technik + sp.nerven) / 3);
+    const ent = Object.fromEntries((K.entwicklung || []).map(x => [x.name, x]));
+    const kaderTab = `<div class="karte"><h3>${t('ka_kader')}</h3><table class="tab"><tr><th>${t('schuetze')}</th><th class="z">${t('ka_staerke')}</th><th class="z">${t('ka_wert')}</th><th></th></tr>${eigen.schuetzen.map(sp => { const e = ent[sp.name], dif = e ? e.nachher - e.vorher : 0;
+      return `<tr style="${auswahl === sp.name ? 'color:var(--akzent);font-weight:800' : ''}"><td>#${sp.nummer} ${esc(sp.name)}</td><td class="z">${avg(sp)}</td><td class="z">${wert(sp)}${dif ? ` <span class="hinweisText">(${dif > 0 ? '+' : ''}${dif})</span>` : ''}</td><td><button class="chip ${auswahl === sp.name ? 'an' : ''}" data-raus="${esc(sp.name)}">${t('ka_abgeben')}</button></td></tr>`; }).join('')}</table><p class="hinweisText">${t('ka_hinweis')}</p></div>`;
+    const raus = auswahl && eigen.schuetzen.find(x => x.name === auswahl);
+    const markt = S.teams.filter(id => id !== S.spieler).flatMap(id => S.kader[id].schuetzen.map(sp => ({ id, sp }))).filter(x => !filter || x.id === filter).sort((a, b) => wert(b.sp) - wert(a.sp)).slice(0, 40);
+    const marktTab = `<div class="karte"><h3>${t('ka_markt')}</h3><div class="chips" style="margin-bottom:.5rem"><button class="chip ${filter ? '' : 'an'}" data-filter="">${t('ka_alle')}</button>${S.teams.filter(id => id !== S.spieler).map(id => `<button class="chip ${filter === id ? 'an' : ''}" data-filter="${esc(id)}">${esc(S.kader[id].kuerzel)}</button>`).join('')}</div>
+      <table class="tab"><tr><th>${t('schuetze')}</th><th>Team</th><th class="z">${t('ka_staerke')}</th><th class="z">${t('ka_wert')}</th><th class="z">${t('ka_kosten')}</th><th></th></tr>${markt.map(({ id, sp }) => { const k = raus ? Karriere.kosten(sp, raus) : null, ok = raus && K.budget >= k;
+        return `<tr><td>${esc(sp.name)}</td><td>${esc(S.kader[id].kuerzel)}</td><td class="z">${avg(sp)}</td><td class="z">${wert(sp)}</td><td class="z">${k === null ? '–' : k}</td><td>${raus ? `<button class="chip ${ok ? '' : 'aus'}" ${ok ? '' : 'disabled'} data-holen="${esc(id)}|${esc(sp.name)}">${t('ka_holen')}</button>` : ''}</td></tr>`; }).join('')}</table></div>`;
+    const letzte = K.transfers.filter(x => x.nr === K.nr).map(x => `<div class="pZeile"><span>${esc(x.raus)} → ${esc(S.kader[x.team].kuerzel)}</span><b>${esc(x.rein)} (${x.kosten} T€)</b></div>`).join('');
+    const d = this.html(`<div class="kopfzeile"><button class="knopf" data-zurueck>${t('zurueck')}</button><h2>${t('ka_transferfenster')} · ${t('ka_saison', { n: K.nr })}</h2><span>💰 <b>${K.budget} T€</b></span></div>
+      <div class="karte" style="width:min(72rem,100%);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center"><span>${raus ? t('ka_tausch_fuer', { n: esc(raus.name) }) : t('ka_waehlen')}</span><button class="grossKnopf primaer" data-weiter style="min-height:3rem">${t('ka_naechste', { n: K.nr + 1 })}</button></div>
+      ${letzte ? `<div class="karte" style="width:min(72rem,100%)">${letzte}</div>` : ''}<div class="spalten">${kaderTab}${marktTab}</div>`);
+    this.klick(d, '[data-zurueck]', () => this.saisonHub());
+    this.klick(d, '[data-raus]', (el) => this.transferfenster(el.dataset.raus === auswahl ? null : el.dataset.raus, filter));
+    this.klick(d, '[data-filter]', (el) => this.transferfenster(auswahl, el.dataset.filter));
+    this.klick(d, '[data-holen]', (el) => { const [id, name] = el.dataset.holen.split('|'); if (Karriere.transfer(id, name, auswahl)) { Ton.tick && Ton.tick(); this.transferfenster(null, filter); } });
+    this.klick(d, '[data-weiter]', () => { Karriere.naechsteSaison(); this.saisonHub(); });
+  },
   /** Offenes Penaltyschießen eines unentschiedenen Saisonspiels selbst spielen bzw. simulieren. */
-  saisonSOspielen() { const o = Saison.d && Saison.d.offen; if (!o) return this.saisonHub(); const sp = Saison.d.spiele.find(x => x.id === o.id); Spiel.starteMatch(TeamDB.hole(sp.heim), TeamDB.hole(sp.gast), o.mensch, null, o); },
-  saisonSOsimulieren() { const o = Saison.d && Saison.d.offen; if (!o) return; const sp = Saison.d.spiele.find(x => x.id === o.id); Saison.offenAbschliessen(Turnier.simuliere(sp.heim, sp.gast, true).sieger === 'G' ? 'gast' : 'heim'); },
+  saisonSOspielen() { const o = Saison.d && Saison.d.offen; if (!o) return this.saisonHub(); const sp = Saison.d.spiele.find(x => x.id === o.id); Spiel.starteMatch(Saison.team(sp.heim), Saison.team(sp.gast), o.mensch, null, o); },
+  saisonSOsimulieren() { const o = Saison.d && Saison.d.offen; if (!o) return; const sp = Saison.d.spiele.find(x => x.id === o.id); Saison.offenAbschliessen(Saison.soSimulieren(sp.heim, sp.gast)); },
   meisterZeigen() {
-    const S = Saison.d, team = TeamDB.hole(S.meister), tj = Saison.torjaeger()[0], platz = Saison.tabelle().findIndex(z => z.id === S.spieler) + 1;
+    const S = Saison.d, team = Saison.team(S.meister), tj = Saison.torjaeger()[0], platz = Saison.tabelle().findIndex(z => z.id === S.spieler) + 1;
+    if (S.karriere) Karriere.abschliessen();
     Spiel.siegerehrung(team);
     const d = this.html(`<div style="margin-top:auto;width:min(40rem,100%)" class="karte"><div class="hinweisText">${t('sa_meister')}</div>
       <div style="font-size:clamp(1.8rem,5vw,3rem);font-weight:900;color:var(--akzent)">🏆 ${esc(team.name)}</div>
       <p class="hinweisText">${t('sa_dein_platz', { n: platz })} · ${t('sa_torjaeger')}: ${tj ? esc(tj.name) + ' (' + tj.tore + ')' : '–'}</p>
-      <button class="knopf primaer" data-tab>${t('tn_tabelle')}</button><button class="knopf" data-menue>${t('menue')}</button></div>`, 'transparent');
+      ${S.karriere ? `<p class="hinweisText">${t('ka_preisgeld', { n: S.karriere.historie[S.karriere.historie.length - 1].geld })}</p><button class="knopf primaer" data-transfer>${t('ka_transferfenster')}</button>` : ''}
+      <button class="knopf ${S.karriere ? '' : 'primaer'}" data-tab>${t('tn_tabelle')}</button><button class="knopf" data-menue>${t('menue')}</button></div>`, 'transparent');
     this.klick(d, '[data-tab]', () => this.saisonHub('tabelle'));
+    this.klick(d, '[data-transfer]', () => { Spiel.leerlauf(); this.transferfenster(); });
     this.klick(d, '[data-menue]', () => { Spiel.leerlauf(); this.hauptmenue(); });
   },
   siegerehrungZeigen() {
@@ -6313,7 +6410,7 @@ function start() {
   UI.hauptmenue();
   document.addEventListener('visibilitychange', () => { if (document.hidden && ['anlauf', 'aufstellung', 'match'].includes(Spiel.zustand) && !Spiel.pausiert) UI.pauseAuf(); });
   window.__PARCOURS = PARCOURS; window.__Parcours = Parcours;
-  window.__fps = { Match, Saison, zweiteReihe, Parcours, PARCOURS, loeseSchuss, simuliereBisX, V3, THREE, renderer, szene, kamera, halle, Bild, Spiel, Config, Regeltests, Turnier, TeamDB, ball, UI, Eingabe, Kam, HUD, Ton, presetAnwenden, PRESETS, cfgSet, TuningPanel, Einst, Shootout };
+  window.__fps = { Match, Saison, Karriere, zweiteReihe, Parcours, PARCOURS, loeseSchuss, simuliereBisX, V3, THREE, renderer, szene, kamera, halle, Bild, Spiel, Config, Regeltests, Turnier, TeamDB, ball, UI, Eingabe, Kam, HUD, Ton, presetAnwenden, PRESETS, cfgSet, TuningPanel, Einst, Shootout };
   requestAnimationFrame((t0) => { letzteZeit = t0; frame(t0); });
 }
 try { start(); }

@@ -549,6 +549,31 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     pruef('Spielerstatistik: Scorerliste der Saison, alter Spielstand lädt', st.saison.scorer > 10 && st.saison.vorlagen > 0 && st.saison.punkteOk && st.saison.sortiert && st.alt, JSON.stringify({ saison: st.saison, alt: st.alt }));
   });
 
+  // 5p) Karriere: Start auf Kader-Kopien, Saisonabschluss (Preisgeld, Entwicklung), Transfer (Tausch, Kosten, Budgetgrenze), nächste Saison, Speichern
+  await abschnitt('5p) Karriere', async () => {
+    const ka = await p.evaluate(() => {
+      const F = window.__fps, Sa = F.Saison, K = F.Karriere, L = F.TeamDB.liste, erg = {}, meins = L[3].id;
+      K.start(meins, false); let s; while ((s = Sa.naechstesSpiel())) Sa.eintragen(s.id, Sa.simuliere(s.heim, s.gast));
+      const vor = Sa.d.karriere.budget; K.abschliessen(); K.abschliessen();   // zweimal: Preisgeld nur einmal
+      const h = Sa.d.karriere.historie; erg.abschluss = { eintraege: h.length, geldOk: Sa.d.karriere.budget === vor + K.preisgeld(h[0].platz, L.length), entwicklung: (Sa.d.karriere.entwicklung || []).length };
+      // Transfer: billigsten eigenen gegen einen bezahlbaren Spieler tauschen
+      const D = Sa.d, eigen = D.kader[meins], raus = eigen.schuetzen.slice().sort((a, b) => K.wert(a) - K.wert(b))[0];
+      const ziel = D.teams.filter(id => id !== meins).flatMap(id => D.kader[id].schuetzen.map(sp => ({ id, sp }))).filter(x => K.kosten(x.sp, raus) <= D.karriere.budget).sort((a, b) => K.wert(b.sp) - K.wert(a.sp))[0];
+      const b0 = D.karriere.budget, kosten = K.kosten(ziel.sp, raus), ok = K.transfer(ziel.id, ziel.sp.name, raus.name);
+      erg.transfer = { ok, budget: D.karriere.budget === b0 - kosten, rein: eigen.schuetzen.some(x => x.name === ziel.sp.name), raus: D.kader[ziel.id].schuetzen.some(x => x.name === raus.name), standardUnveraendert: !F.TeamDB.hole(meins).schuetzen.some(x => x.name === ziel.sp.name), nummern: new Set([...eigen.schuetzen.map(x => x.nummer), eigen.torwart.nummer]).size === 6 };
+      // zu teuer: abgelehnt
+      const teuer = D.teams.filter(id => id !== meins).flatMap(id => D.kader[id].schuetzen.map(sp => ({ id, sp }))).sort((a, b) => K.wert(b.sp) - K.wert(a.sp))[0]; const b1 = D.karriere.budget; D.karriere.budget = 5;
+      erg.zuTeuer = !K.transfer(teuer.id, teuer.sp.name, eigen.schuetzen[0].name) && D.karriere.budget === 5; D.karriere.budget = b1;
+      // nächste Saison: Kader bleibt, Nummer 2, KI-Wechsel, gespeichert und ladbar
+      K.naechsteSaison(); const D2 = Sa.d; erg.saison2 = { nr: D2.karriere.nr, historie: D2.karriere.historie.length, behalten: D2.kader[meins].schuetzen.some(x => x.name === ziel.sp.name), spiele: D2.spiele.length, offen: D2.spiele.every(x => !x.erg), kiLog: (D2.karriere.kiLog || []).length };
+      Sa.d = null; Sa.laden(); erg.geladen = !!Sa.d && Sa.d.karriere.nr === 2 && Sa.team(meins).schuetzen.some(x => x.name === ziel.sp.name);
+      F.UI.saisonHub(); erg.ansicht = /Karriere · Saison 2/.test(document.body.innerText);
+      Sa.verwerfen(); F.Spiel.leerlauf(); F.UI.hauptmenue(); return erg;
+    });
+    pruef('Karriere: Saisonabschluss mit Preisgeld (einmal) und Entwicklung, Transfer als Tausch', ka.abschluss.eintraege === 1 && ka.abschluss.geldOk && ka.abschluss.entwicklung === 5 && ka.transfer.ok && ka.transfer.budget && ka.transfer.rein && ka.transfer.raus && ka.transfer.standardUnveraendert && ka.transfer.nummern && ka.zuTeuer, JSON.stringify({ abschluss: ka.abschluss, transfer: ka.transfer, zuTeuer: ka.zuTeuer }));
+    pruef('Karriere: nächste Saison mit Kader, KI-Wechseln, Speichern und Ansicht', ka.saison2.nr === 2 && ka.saison2.historie === 1 && ka.saison2.behalten && ka.saison2.offen && ka.saison2.kiLog > 0 && ka.geladen && ka.ansicht, JSON.stringify({ saison2: ka.saison2, geladen: ka.geladen, ansicht: ka.ansicht }));
+  });
+
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
   await abschnitt('6) Turnier', async () => {
   const tn = await p.evaluate(() => { const F = window.__fps, T = F.Turnier, L = F.TeamDB.liste.map(x => x.id); T.neu(L.slice(0, 8), L[0], true); let n = 0; let s; while ((s = T.naechstesSpiel()) && n < 200) { T.eintragen(s.id, T.simuliere(s.heim, s.gast, s.phase !== 'gruppe')); n++; } F.UI.turnierHub(); return { spiele: n, sieger: T.d.sieger, zustand: F.Spiel.zustand, beste: T.beste() }; });
