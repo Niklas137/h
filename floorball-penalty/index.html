@@ -362,7 +362,7 @@ const TEXTE = {
     f_gehalten: 'Gehalten', f_pariert: 'Pariert', f_vorbei: 'Vorbei', f_drueber: 'Drüber', f_pfosten: 'Pfosten!', f_aus: 'Aus', f_linie: 'Auf der Linie', f_nachschuss: 'Nachschuss zählt nicht',
     t_treffer: 'Treffer', t_scheiben: 'Zielscheiben', t_paraden: 'Paraden',
     // Turnier
-    turnier: 'Turnier', tn_groesse: 'Teilnehmer', tn_gruppen: 'Gruppenphase', tn_dein_team: 'Dein Team wählen',
+    turnier: 'Turnier', tn_art: 'Spielart', tn_art_penalty: 'Penaltyschießen', tn_art_spiel5: 'Spiel 5 gegen 5', tn_np: 'n. P.', tn_weiter: 'Weiter zum Turnier', tn_bester_scorer: 'Bester Scorer', tn_groesse: 'Teilnehmer', tn_gruppen: 'Gruppenphase', tn_dein_team: 'Dein Team wählen',
     tn_start: 'Turnier starten', tn_spielplan: 'Spielplan', tn_tabelle: 'Tabelle', tn_statistik: 'Statistik',
     tn_naechstes: 'Nächstes Spiel', tn_spielen: 'Spielen ▶', tn_ansehen: 'Ansehen', tn_simulieren: 'Sofort simulieren',
     tn_alle_sim: 'Alle KI-Spiele simulieren', tn_gruppe: 'Gruppe', tn_vf: 'Viertelfinale', tn_hf: 'Halbfinale', tn_f: 'Finale',
@@ -549,7 +549,7 @@ function presetAnwenden(p) {
 /* Spieler-Einstellungen (nicht im Tuning) */
 const TASTEN_STANDARD = { hoch: 'KeyW', runter: 'KeyS', links: 'KeyA', rechts: 'KeyD', aktion: 'KeyJ', finte: 'Space', lupfer: 'ShiftLeft', zieher: 'KeyQ', drehung: 'KeyE', zorro: 'KeyR', raus: 'KeyF', wechsel: 'KeyX', kamera: 'KeyC', pause: 'Escape', tuning: 'KeyT' };
 const Einst = mischeTief({ drittelMin: 2, schwierigkeit: 'amateur', kamera: 'auto', zielhilfe: true, wiederholung: true, schrift: 1, farbenblind: false, ton: 0.8, tutorial: false,
-  letztesTeam: null, tasten: tief(TASTEN_STANDARD) }, Speicher.lesen('fps_einst_v1', {}));
+  letztesTeam: null, turnierArt: 'penalty', tasten: tief(TASTEN_STANDARD) }, Speicher.lesen('fps_einst_v1', {}));
 for (const k in TASTEN_STANDARD) if (!Einst.tasten[k]) Einst.tasten[k] = TASTEN_STANDARD[k];
 function einstSpeichern() { Speicher.schreiben('fps_einst_v1', Einst); }
 const SCHWIERIGKEIT = {
@@ -3606,9 +3606,9 @@ const Turnier = {
   speichern() { if (this.d) Speicher.schreiben('fps_turnier_v1', this.d); },
   verwerfen() { this.d = null; Speicher.loeschen('fps_turnier_v1'); },
   laeuft() { return !!(this.d && !this.d.sieger); },
-  neu(teamIds, spielerTeam, gruppen) {
+  neu(teamIds, spielerTeam, gruppen, art) {
     const ids = teamIds.slice(); for (let i = ids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
-    this.d = { v: 1, teams: ids, spieler: spielerTeam, gruppen, groesse: ids.length, spiele: [], stats: {}, sieger: null, phase: gruppen ? 'gruppe' : (ids.length === 8 ? 'vf' : 'hf'), nr: 0 };
+    this.d = { v: 1, teams: ids, spieler: spielerTeam, gruppen, groesse: ids.length, spiele: [], stats: {}, sieger: null, phase: gruppen ? 'gruppe' : (ids.length === 8 ? 'vf' : 'hf'), nr: 0, art: art === 'spiel5' ? 'spiel5' : 'penalty', offen: null };
     if (gruppen) {
       const gr = ids.length === 8 ? { A: ids.slice(0, 4), B: ids.slice(4) } : { A: ids.slice() };
       this.d.gruppenTeams = gr;
@@ -3630,7 +3630,12 @@ const Turnier = {
   /** Ergebnis eintragen und ggf. die nächste Runde erzeugen. erg: {th, tg, sieger:'H'|'G'|null, versuche:[]} */
   eintragen(spielId, erg) {
     const s = this.d.spiele.find(x => x.id === spielId); if (!s || s.erg) return;
-    s.erg = { th: erg.th, tg: erg.tg, sieger: erg.sieger };
+    s.erg = { th: erg.th, tg: erg.tg, sieger: erg.sieger }; if (erg.so) s.erg.so = erg.so;
+    // Spiel 5 gegen 5: Scorer (Tore, Vorlagen) aus den Torschützen
+    for (const x of erg.torschuetzen || []) {
+      const a = this.d.stats[x.team + '#' + x.name] ||= { name: x.name, team: x.team, typ: 'p', tore: 0, vorlagen: 0 }; a.tore++;
+      if (x.vorlage) { const v = this.d.stats[x.team + '#' + x.vorlage] ||= { name: x.vorlage, team: x.team, typ: 'p', tore: 0, vorlagen: 0 }; v.vorlagen++; }
+    }
     for (const v of erg.versuche || []) {
       const ks = v.schuetzeTeam + '#' + v.schuetze, kt = v.twTeam + '#' + v.tw;
       const a = this.d.stats[ks] ||= { name: v.schuetze, team: v.schuetzeTeam, typ: 's', tore: 0, schuesse: 0 }; a.schuesse++; if (v.tor) a.tore++;
@@ -3674,11 +3679,22 @@ const Turnier = {
     const s = so.status();
     return { th: so.tore('A'), tg: so.tore('B'), sieger: s.sieger === 'A' ? 'H' : s.sieger === 'B' ? 'G' : null, versuche };
   },
+  /** Spiel 5 gegen 5 simulieren (Torerwartung wie in der Saison). K.-o.: Unentschieden entscheidet ein simuliertes Penaltyschießen. */
+  simuliere5(heimId, gastId, ko) {
+    const H = TeamDB.hole(heimId), G = TeamDB.hole(gastId), e = Saison.simuliere(heimId, gastId, H, G, ko);
+    const sieger = e.th > e.tg ? 'H' : e.tg > e.th ? 'G' : ko ? (e.so === 'gast' ? 'G' : 'H') : null;
+    return { th: e.th, tg: e.tg, sieger, so: e.th === e.tg && ko ? e.so : null, torschuetzen: e.torschuetzen };
+  },
+  /** Gespieltes K.-o.-Spiel endet unentschieden: Ergebnis merken, das Penaltyschießen entscheidet. */
+  offenSetzen(spiel, erg, mensch) { this.d.offen = { id: spiel.id, th: erg.th, tg: erg.tg, torschuetzen: erg.torschuetzen, mensch }; this.speichern(); },
+  offenAbschliessen(so) { const o = this.d && this.d.offen; if (!o) return; this.d.offen = null; this.eintragen(o.id, { th: o.th, tg: o.tg, sieger: so === 'gast' ? 'G' : 'H', so, torschuetzen: o.torschuetzen }); },
+  /** Scorerliste (Spiel 5 gegen 5): Punkte = Tore + Vorlagen. */
+  scorer() { return Object.values(this.d ? this.d.stats : {}).filter(x => x.typ === 'p').map(x => ({ ...x, punkte: x.tore + x.vorlagen })).sort((a, b) => b.punkte - a.punkte || b.tore - a.tore || a.name.localeCompare(b.name)); },
   beste() {
     const st = Object.values(this.d ? this.d.stats : {});
     const sch = st.filter(x => x.typ === 's' && x.schuesse > 0).sort((a, b) => b.tore - a.tore || b.tore / b.schuesse - a.tore / a.schuesse)[0] || null;
     const tw = st.filter(x => x.typ === 't' && x.schuesse > 0).sort((a, b) => b.paraden / b.schuesse - a.paraden / a.schuesse || b.paraden - a.paraden)[0] || null;
-    return { sch, tw };
+    return { sch, tw, scorer: this.scorer()[0] || null };
   },
   phaseName(ph) { return { gruppe: t('tn_gruppe'), vf: t('tn_vf'), hf: t('tn_hf'), f: t('tn_f') }[ph] || ph; }
 };
@@ -3715,8 +3731,8 @@ const Saison = {
   istMeins(s) { return !!s && (s.heim === this.d.spieler || s.gast === this.d.spieler); },
   aktuelleRunde() { const s = this.naechstesSpiel(); return s ? s.runde : this.d.runden; },
   /** Spiel 5 gegen 5 simulieren: Torerwartung aus Angriff gegen Torhüter (Poisson), Unentschieden per Penaltyschießen. */
-  simuliere(heimId, gastId) {
-    const H = this.team(heimId), G = this.team(gastId), sH = TeamDB.staerke(H), sG = TeamDB.staerke(G);
+  simuliere(heimId, gastId, H = this.team(heimId), G = this.team(gastId)) {
+    const sH = TeamDB.staerke(H), sG = TeamDB.staerke(G);
     const lam = (a, t, heim) => klemme(2.6 * Math.pow(a / t, 2.2) * (heim ? 1.08 : 1) * (Einst.drittelMin || 2) / 2, 0.4, 9);
     const poisson = (l) => { let k = 0, p = Math.exp(-l), s = p; const u = Math.random(); while (u > s && k < 25) { k++; p *= l / k; s += p; } return k; };
     const th = poisson(lam(sH.angriff, sG.torwart, true)), tg = poisson(lam(sG.angriff, sH.torwart, false));
@@ -3725,7 +3741,7 @@ const Saison = {
     const vorlage = (T, tor) => { if (Math.random() > 0.75) return null; const alle = [...T.schuetzen, ...zweiteReihe(T)].filter(x => x.name !== tor), ges = alle.reduce((s, x) => s + x.technik, 0); let z = Math.random() * ges; for (const x of alle) { z -= x.technik; if (z <= 0) return x.name; } return null; };
     const tor = (T, id) => { const n = schuetze(T); return { team: id, name: n, vorlage: vorlage(T, n) }; };
     const torschuetzen = [...[...Array(th)].map(() => tor(H, heimId)), ...[...Array(tg)].map(() => tor(G, gastId))];
-    let so = null; if (th === tg) so = this.soSimulieren(heimId, gastId);
+    let so = null; if (th === tg) so = Turnier.simuliere(heimId, gastId, true, H, G).sieger === 'G' ? 'gast' : 'heim';
     return { th, tg, so, torschuetzen };
   },
   /** Ergebnis eintragen: {th, tg, so: 'heim'|'gast'|null, torschuetzen:[{team, name}]} */
@@ -4166,8 +4182,10 @@ const Spiel = {
     this.freiVersuch();
   },
   /** Spiel 5 gegen 5. mensch = 'A' (du steuerst Team A) oder null (KI gegen KI). */
-  starteSpiel5(teamA, teamB, mensch, saisonSpiel) {
-    this.parcoursAufraeumen(); this.modus = 'spiel5'; this.teamA = teamA; this.teamB = teamB; this.mensch = mensch; this.so = null; this.turnierSpiel = null; this.saisonSpiel = saisonSpiel || null;
+  starteSpiel5(teamA, teamB, mensch, saisonSpiel, turnierSpiel5) {
+    // Das Spiel 5 gegen 5 steuert der Mensch immer als Team A: als Gast werden die Seiten getauscht (Ergebnis wird zurückübersetzt)
+    this.spiel5Getauscht = mensch === 'B'; if (this.spiel5Getauscht) { [teamA, teamB] = [teamB, teamA]; mensch = 'A'; }
+    this.parcoursAufraeumen(); this.modus = 'spiel5'; this.teamA = teamA; this.teamB = teamB; this.mensch = mensch; this.so = null; this.turnierSpiel = null; this.saisonSpiel = saisonSpiel || null; this.turnierSpiel5 = turnierSpiel5 || null;
     this.menschSchiesst = this.menschHaelt = false; this.versuch = null; this.welt.schussGesperrt = false;
     Kam.override = null; Kam.schnitt = true; this.pausiert = false; UI.schliesseAlles(); HUD.zeigen(true); HUD.trainingInfo(false); HUD.schiri(null); HUD.tempo(0);
     if (this.ehrung) this.ehrung.gruppe.visible = false; halle.scheiben.visible = false;
@@ -4180,13 +4198,22 @@ const Spiel = {
     this.zustand = 'ergebnis'; HUD.zeigen(false); HUD.banner(null);
     const r = { A: Match.teams.A, B: Match.teams.B, stand: { ...Match.stand }, tore: Match.tore.slice(), strafen: (Match.strafenListe || []).slice(), stat: Match.statistikListe(), statistik: Match.statistikDaten(), mensch: Match.mensch };
     // Saisonspiel: Ergebnis eintragen (Team A = Heim), Unentschieden per simuliertem Penaltyschießen
+    const heimTm = this.spiel5Getauscht ? 'B' : 'A', gastTm = heimTm === 'A' ? 'B' : 'A';
     if (this.saisonSpiel && Saison.d) {
-      const sp = this.saisonSpiel, id = (tm) => tm === 'A' ? sp.heim : sp.gast;
-      const erg = { th: r.stand.A, tg: r.stand.B, torschuetzen: r.tore.map(x => ({ team: id(x.team), name: x.name, vorlage: x.vorlage || null })), plusminus: Match.statistikListe().map(x => ({ team: id(x.team), name: x.name, pm: x.pm })) };
+      const sp = this.saisonSpiel, id = (tm) => tm === heimTm ? sp.heim : sp.gast;
+      const erg = { th: r.stand[heimTm], tg: r.stand[gastTm], torschuetzen: r.tore.map(x => ({ team: id(x.team), name: x.name, vorlage: x.vorlage || null })), plusminus: Match.statistikListe().map(x => ({ team: id(x.team), name: x.name, pm: x.pm })) };
       // Unentschieden: Penaltyschießen spielen oder simulieren, erst danach wird eingetragen
-      if (erg.th === erg.tg) { Saison.offenSetzen(sp, erg, Match.mensch); r.saison = { offen: true }; }   // Karriere: Teams kommen aus dem Kader (Saison.team)
+      if (erg.th === erg.tg) { Saison.offenSetzen(sp, erg, Match.mensch ? (this.spiel5Getauscht ? 'B' : 'A') : null); r.saison = { offen: true }; }   // Karriere: Teams kommen aus dem Kader (Saison.team)
       else { Saison.eintragen(sp.id, { ...erg, so: null }); r.saison = { offen: false }; }
       this.saisonSpiel = null;
+    }
+    // Turnierspiel 5 gegen 5: Gruppenspiel darf unentschieden enden, im K.-o. entscheidet das Penaltyschießen
+    if (this.turnierSpiel5 && Turnier.d) {
+      const sp = this.turnierSpiel5, id = (tm) => tm === heimTm ? sp.heim : sp.gast, ko = sp.phase !== 'gruppe';
+      const erg = { th: r.stand[heimTm], tg: r.stand[gastTm], torschuetzen: r.tore.map(x => ({ team: id(x.team), name: x.name, vorlage: x.vorlage || null })) };
+      if (erg.th === erg.tg && ko) { Turnier.offenSetzen(sp, erg, Match.mensch ? (this.spiel5Getauscht ? 'B' : 'A') : null); r.turnier = { offen: true }; }
+      else { Turnier.eintragen(sp.id, { ...erg, sieger: erg.th > erg.tg ? 'H' : erg.tg > erg.th ? 'G' : null }); r.turnier = { offen: false }; }
+      this.turnierSpiel5 = null;
     }
     if (r.stand.A !== r.stand.B) Ton.jubel(0.8);
     UI.spielErgebnis(r);
@@ -4198,10 +4225,10 @@ const Spiel = {
   },
   simAktiv() { return ['menue', 'intro', 'aufstellung', 'anlauf', 'auswertung', 'ergebnis', 'match'].includes(this.zustand); },
   /* ---------- Start der Modi ---------- */
-  starteMatch(teamA, teamB, mensch, turnierSpiel, saisonSO) {
-    this.modus = turnierSpiel ? 'turnier' : saisonSO ? 'saison' : 'schnell'; this.turnierSpiel = turnierSpiel || null; this.saisonSO = saisonSO || null;
+  starteMatch(teamA, teamB, mensch, turnierSpiel, saisonSO, turnierSO) {
+    this.modus = turnierSpiel || turnierSO ? 'turnier' : saisonSO ? 'saison' : 'schnell'; this.turnierSpiel = turnierSpiel || null; this.saisonSO = saisonSO || null; this.turnierSO = turnierSO || null;
     this.teamA = teamA; this.teamB = teamB; this.mensch = mensch; this.ausweichB = TeamDB.ausweich(teamA, teamB);
-    const ko = (turnierSpiel && turnierSpiel.phase !== 'gruppe') || !!saisonSO;   // Saison: Penaltyschießen braucht immer einen Sieger
+    const ko = (turnierSpiel && turnierSpiel.phase !== 'gruppe') || !!saisonSO || !!turnierSO;   // Saison: Penaltyschießen braucht immer einen Sieger
     this.so = new Shootout(Config.regeln.schuetzen, ko ? true : Config.regeln.suddenDeath); this.idx = { A: 0, B: 0 }; this.versuche = [];
     this.parcoursAufraeumen(); Kam.override = null; this.pausiert = false; halle.scheiben.visible = false;
     if (this.ehrung) this.ehrung.gruppe.visible = false;
@@ -4522,13 +4549,14 @@ const Spiel = {
     if (st.sieger) Ton.jubel(0.8);
     if (this.turnierSpiel) Turnier.eintragen(this.turnierSpiel.id, erg);
     if (this.saisonSO && Saison.d && Saison.d.offen) Saison.offenAbschliessen(st.sieger === 'B' ? 'gast' : 'heim');
+    if (this.turnierSO && Turnier.d && Turnier.d.offen) Turnier.offenAbschliessen(st.sieger === 'B' ? 'gast' : 'heim');
     UI.ergebnis(erg);
   },
   abbrechen() { this.pausiert = false; UI.pauseZu(); this.leerlauf(); },
   neustart() {
     this.pausiert = false; UI.pauseZu();
     if (this.modus === 'parcours') this.starteParcours();
-    else if (this.modus === 'spiel5') this.starteSpiel5(this.teamA, this.teamB, this.mensch);
+    else if (this.modus === 'spiel5') { const g = this.spiel5Getauscht; this.starteSpiel5(g ? this.teamB : this.teamA, g ? this.teamA : this.teamB, this.mensch && g ? 'B' : this.mensch, this.saisonSpiel, this.turnierSpiel5); }
     else if (this.modus === 'frei') this.starteFrei(this.training.mitTW, this.training.huetchen);
     else if (this.modus === 'training') this.starteTraining(this.training.art, this.training.mitTW);
     else this.starteMatch(this.teamA, this.teamB, this.mensch, this.turnierSpiel);
@@ -6045,11 +6073,12 @@ const UI = {
   },
   /* ---------- Turnier ---------- */
   turnierSetup() {
-    let groesse = 8, gruppen = true, du = TeamDB.hole(Einst.letztesTeam).id;
+    let groesse = 8, gruppen = true, du = TeamDB.hole(Einst.letztesTeam).id, art = Einst.turnierArt === 'spiel5' ? 'spiel5' : 'penalty';
     const L = TeamDB.liste;
     const d = this.html(`<div class="kopfzeile">${this.zurueckKnopf()}<h2>${t('turnier')}</h2></div>
       <div class="leiste"><div class="chips"><span class="hinweisText" style="align-self:center">${t('tn_groesse')}:</span><button class="chip" data-g="4">4</button><button class="chip an" data-g="8">8</button>
-        <button class="chip an" data-gr>${t('tn_gruppen')}</button></div>${this.schwierigkeitChips()}</div>
+        <button class="chip an" data-gr>${t('tn_gruppen')}</button></div>
+        <div class="chips"><span class="hinweisText" style="align-self:center">${t('tn_art')}:</span><button class="chip ${art === 'penalty' ? 'an' : ''}" data-art="penalty">${t('tn_art_penalty')}</button><button class="chip ${art === 'spiel5' ? 'an' : ''}" data-art="spiel5">${t('tn_art_spiel5')}</button></div>${this.schwierigkeitChips()}</div>
       <p class="hinweisText" style="width:min(72rem,100%)">${t('tn_dein_team')} · ${t('tn_gespeichert')}</p>
       <div class="teamRaster">${L.map(T => this.teamKarte(T)).join('')}</div>
       <div class="stickyFuss"><button class="grossKnopf primaer" data-start style="min-height:3.6rem;min-width:12rem">${t('tn_start')}</button></div>`);
@@ -6058,11 +6087,12 @@ const UI = {
     this.klick(d, '[data-zurueck]', () => this.hauptmenue());
     this.klick(d, '[data-g]', (el) => { groesse = +el.dataset.g; d.querySelectorAll('[data-g]').forEach(x => x.classList.toggle('an', x === el)); });
     this.klick(d, '[data-gr]', (el) => { gruppen = !gruppen; el.classList.toggle('an', gruppen); });
+    this.klick(d, '[data-art]', (el) => { art = el.dataset.art; d.querySelectorAll('[data-art]').forEach(x => x.classList.toggle('an', x === el)); });
     this.klick(d, '.teamKarte', (el) => { du = el.dataset.team; mark(); });
     this.klick(d, '[data-start]', () => {
-      Einst.letztesTeam = du; einstSpeichern();
+      Einst.letztesTeam = du; Einst.turnierArt = art; einstSpeichern();
       const rest = L.filter(x => x.id !== du).map(x => x.id).sort(() => Math.random() - 0.5).slice(0, groesse - 1);
-      Turnier.neu([du, ...rest], du, gruppen); this.turnierHub();
+      Turnier.neu([du, ...rest], du, gruppen, art); this.turnierHub();
     });
   },
   turnierHub(tab = 'plan') {
@@ -6070,21 +6100,23 @@ const UI = {
     const T = Turnier.d; if (!T) return this.turnierSetup();
     if (T.sieger) return this.siegerehrungZeigen();
     const n = Turnier.naechstesSpiel(), name = id => TeamDB.hole(id).name, kz = id => TeamDB.hole(id).kuerzel;
-    const meins = n && Turnier.istMeins(n), aus = Turnier.ausgeschieden();
-    const spielZeile = (s) => `<div class="spiel ${Turnier.istMeins(s) ? 'meins' : ''}"><span class="hinweisText" style="width:6.5rem">${Turnier.phaseName(s.phase)}${s.gruppe ? ' ' + s.gruppe : ''}</span><span class="wer">${esc(name(s.heim))} – ${esc(name(s.gast))}</span><span class="erg">${s.erg ? `${s.erg.th}:${s.erg.tg}` : '–'}</span></div>`;
+    const meins = n && Turnier.istMeins(n), aus = Turnier.ausgeschieden(), s5 = T.art === 'spiel5', offen = T.offen && n && T.offen.id === n.id ? T.offen : null;
+    const simErg = (x) => s5 ? Turnier.simuliere5(x.heim, x.gast, x.phase !== 'gruppe') : Turnier.simuliere(x.heim, x.gast, x.phase !== 'gruppe');
+    const spielZeile = (s) => `<div class="spiel ${Turnier.istMeins(s) ? 'meins' : ''}"><span class="hinweisText" style="width:6.5rem">${Turnier.phaseName(s.phase)}${s.gruppe ? ' ' + s.gruppe : ''}</span><span class="wer">${esc(name(s.heim))} – ${esc(name(s.gast))}</span><span class="erg">${s.erg ? `${s.erg.th}:${s.erg.tg}${s.erg.so ? ' ' + t('tn_np') : ''}` : '–'}</span></div>`;
     const tabellen = T.gruppen ? Object.keys(T.gruppenTeams).map(g => `<div class="karte"><h3>${t('tn_gruppe')} ${g}</h3><table class="tab"><tr><th>#</th><th>Team</th><th class="z">${t('tn_sp')}</th><th class="z">${t('tn_s')}</th><th class="z">${t('tn_u')}</th><th class="z">${t('tn_n')}</th><th class="z">${t('tn_tore')}</th><th class="z">${t('tn_punkte')}</th></tr>
       ${Turnier.tabelle(g).map((z, i) => `<tr style="${z.id === T.spieler ? 'color:var(--akzent)' : ''}"><td>${i + 1}</td><td>${esc(kz(z.id))} ${esc(name(z.id))}</td><td class="z">${z.sp}</td><td class="z">${z.s}</td><td class="z">${z.u}</td><td class="z">${z.n}</td><td class="z">${z.tp}:${z.tg}</td><td class="z"><b>${z.pkt}</b></td></tr>`).join('')}</table></div>`).join('') : `<div class="karte hinweisText">K.-o.-System</div>`;
     const st = Object.values(T.stats), b = Turnier.beste();
     const schuetzen = st.filter(x => x.typ === 's').sort((a, c) => c.tore - a.tore).slice(0, 10), tws = st.filter(x => x.typ === 't').sort((a, c) => c.paraden / c.schuesse - a.paraden / a.schuesse).slice(0, 8);
     const gesT = st.filter(x => x.typ === 's').reduce((s, x) => s + x.tore, 0), gesS = st.filter(x => x.typ === 's').reduce((s, x) => s + x.schuesse, 0);
-    const statistik = `<div class="karte"><h3>${t('tn_bester_schuetze')}: ${b.sch ? esc(b.sch.name) + ' (' + b.sch.tore + ')' : '–'} · ${t('tn_bester_tw')}: ${b.tw ? esc(b.tw.name) + ' (' + Math.round(b.tw.paraden / b.tw.schuesse * 100) + ' %)' : '–'}</h3>
+    const sc = Turnier.scorer().slice(0, 15);
+    const statistik = s5 ? `<div class="karte"><h3>${t('s5_scorer')}</h3><table class="tab"><tr><th>#</th><th>${t('st_spieler')}</th><th>Team</th><th class="z">${t('tn_tore')}</th><th class="z">${t('s5_vl')}</th><th class="z">${t('tn_punkte')}</th></tr>${sc.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.name)}</td><td>${esc(kz(x.team))}</td><td class="z">${x.tore}</td><td class="z">${x.vorlagen}</td><td class="z"><b>${x.punkte}</b></td></tr>`).join('')}</table>${sc.length ? '' : `<p class="hinweisText">${t('s5_keine_tore')}</p>`}</div>` : `<div class="karte"><h3>${t('tn_bester_schuetze')}: ${b.sch ? esc(b.sch.name) + ' (' + b.sch.tore + ')' : '–'} · ${t('tn_bester_tw')}: ${b.tw ? esc(b.tw.name) + ' (' + Math.round(b.tw.paraden / b.tw.schuesse * 100) + ' %)' : '–'}</h3>
       <p class="hinweisText">${t('tn_tore')}: ${gesT} · ${t('tn_trefferquote')}: ${gesS ? Math.round(gesT / gesS * 100) : 0} %</p>
       <table class="tab"><tr><th>${t('schuetze')}</th><th>Team</th><th class="z">${t('tn_tore')}</th><th class="z">${t('tn_trefferquote')}</th></tr>${schuetzen.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(kz(x.team))}</td><td class="z">${x.tore}/${x.schuesse}</td><td class="z">${Math.round(x.tore / x.schuesse * 100)} %</td></tr>`).join('')}</table>
       <table class="tab" style="margin-top:.8rem"><tr><th>${t('torhueter')}</th><th>Team</th><th class="z">${t('t_paraden')}</th><th class="z">${t('tn_paradenquote')}</th></tr>${tws.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(kz(x.team))}</td><td class="z">${x.paraden}/${x.schuesse}</td><td class="z">${Math.round(x.paraden / x.schuesse * 100)} %</td></tr>`).join('')}</table></div>`;
     const naechst = n ? `<div class="karte" style="width:min(72rem,100%);display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between">
         <div><div class="hinweisText">${t('tn_naechstes')} · ${Turnier.phaseName(n.phase)}${n.gruppe ? ' ' + n.gruppe : ''}</div><div style="font-size:1.4rem;font-weight:900">${esc(name(n.heim))} – ${esc(name(n.gast))}</div></div>
-        <div class="chips">${meins ? `<button class="grossKnopf primaer" data-spielen style="min-height:3.4rem">${t('tn_spielen')}</button>` : `<button class="knopf" data-ansehen>👀 ${t('tn_ansehen')}</button><button class="knopf primaer" data-sim>⏩ ${t('tn_simulieren')}</button><button class="knopf" data-allesim>${t('tn_alle_sim')}</button>`}</div></div>` : '';
-    const d = this.html(`<div class="kopfzeile"><button class="knopf" data-menue>${t('menue')}</button><h2>${t('turnier')} · ${Turnier.phaseName(T.phase)}</h2><button class="knopf gefahr klein" data-ende>${t('tn_verwerfen')}</button></div>
+        <div class="chips">${offen ? `<span class="hinweisText" style="font-weight:800">${offen.th}:${offen.tg} · ${t('sa_so_offen')}</span><button class="knopf primaer" data-so-spielen>${t('sa_so_spielen')}</button><button class="knopf" data-so-sim>⏩ ${t('sa_so_sim')}</button>` : meins ? `<button class="grossKnopf primaer" data-spielen style="min-height:3.4rem">${t('tn_spielen')}</button>` : `<button class="knopf" data-ansehen>👀 ${t('tn_ansehen')}</button><button class="knopf primaer" data-sim>⏩ ${t('tn_simulieren')}</button><button class="knopf" data-allesim>${t('tn_alle_sim')}</button>`}</div></div>` : '';
+    const d = this.html(`<div class="kopfzeile"><button class="knopf" data-menue>${t('menue')}</button><h2>${t('turnier')} · ${s5 ? t('tn_art_spiel5') : t('tn_art_penalty')} · ${Turnier.phaseName(T.phase)}</h2><button class="knopf gefahr klein" data-ende>${t('tn_verwerfen')}</button></div>
       ${aus ? `<p class="karte hinweisText" style="width:min(72rem,100%)">${t('tn_ausgeschieden')}</p>` : ''}${naechst}
       <div class="leiste"><div class="chips">${['plan', 'tabelle', 'statistik'].map(x => `<button class="chip ${tab === x ? 'an' : ''}" data-tab="${x}">${t(x === 'plan' ? 'tn_spielplan' : x === 'tabelle' ? 'tn_tabelle' : 'tn_statistik')}</button>`).join('')}</div>${this.schwierigkeitChips()}</div>
       <div class="spalten">${tab === 'plan' ? `<div class="karte">${T.spiele.map(spielZeile).join('')}</div>` : tab === 'tabelle' ? tabellen : statistik}</div>`);
@@ -6092,12 +6124,16 @@ const UI = {
     this.klick(d, '[data-menue]', () => this.hauptmenue());
     this.klick(d, '[data-tab]', (el) => this.turnierHub(el.dataset.tab));
     this.klick(d, '[data-ende]', () => { this.bestaetigen(t('tn_verwerfen') + '?').then(ok => { if (ok) { Turnier.verwerfen(); this.hauptmenue(); } }); });
-    const spielStarten = (mensch) => { const heimIstSpieler = n.heim === T.spieler; const A = TeamDB.hole(n.heim), B = TeamDB.hole(n.gast); Spiel.starteMatch(A, B, mensch ? (heimIstSpieler ? 'A' : 'B') : null, n); };
+    const spielStarten = (mensch) => { const heimIstSpieler = n.heim === T.spieler; const A = TeamDB.hole(n.heim), B = TeamDB.hole(n.gast), m = mensch ? (heimIstSpieler ? 'A' : 'B') : null; if (s5) Spiel.starteSpiel5(A, B, m, null, n); else Spiel.starteMatch(A, B, m, n); };
     this.klick(d, '[data-spielen]', () => spielStarten(true));
     this.klick(d, '[data-ansehen]', () => spielStarten(false));
-    this.klick(d, '[data-sim]', () => { Turnier.eintragen(n.id, Turnier.simuliere(n.heim, n.gast, n.phase !== 'gruppe')); this.turnierHub(tab); });
-    this.klick(d, '[data-allesim]', () => { let s; while ((s = Turnier.naechstesSpiel()) && !Turnier.istMeins(s)) Turnier.eintragen(s.id, Turnier.simuliere(s.heim, s.gast, s.phase !== 'gruppe')); this.turnierHub(tab); });
+    this.klick(d, '[data-sim]', () => { Turnier.eintragen(n.id, simErg(n)); this.turnierHub(tab); });
+    this.klick(d, '[data-allesim]', () => { let s; while ((s = Turnier.naechstesSpiel()) && !Turnier.istMeins(s) && !(Turnier.d.offen && Turnier.d.offen.id === s.id)) Turnier.eintragen(s.id, simErg(s)); this.turnierHub(tab); });
+    this.klick(d, '[data-so-spielen]', () => this.turnierSOspielen());
+    this.klick(d, '[data-so-sim]', () => { this.turnierSOsimulieren(); this.turnierHub(tab); });
   },
+  turnierSOspielen() { const o = Turnier.d && Turnier.d.offen; if (!o) return this.turnierHub(); const sp = Turnier.d.spiele.find(x => x.id === o.id); Spiel.starteMatch(TeamDB.hole(sp.heim), TeamDB.hole(sp.gast), o.mensch, null, null, o); },
+  turnierSOsimulieren() { const o = Turnier.d && Turnier.d.offen; if (!o) return; const sp = Turnier.d.spiele.find(x => x.id === o.id); Turnier.offenAbschliessen(Turnier.simuliere(sp.heim, sp.gast, true).sieger === 'G' ? 'gast' : 'heim'); },
   /* ---------- Spielstatistik: Team, Spieler, Torhüter, Reihen, Trainer ---------- */
   spielStatistik(D, tab = 'team', zurueck, live) {
     const A = D.teams.A, B = D.teams.B, kz = (tm) => esc(D.teams[tm].kuerzel), pz = (a, b) => b ? Math.round(a / b * 100) + ' %' : '–', zeit = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
@@ -6225,7 +6261,7 @@ const UI = {
     Spiel.siegerehrung(team);
     const d = this.html(`<div style="margin-top:auto;width:min(40rem,100%)" class="karte"><div class="hinweisText">${t('tn_champion')}</div>
       <div style="font-size:clamp(1.8rem,5vw,3rem);font-weight:900;color:var(--akzent)">🏆 ${esc(team.name)}</div>
-      <p class="hinweisText">${t('tn_bester_schuetze')}: ${b.sch ? esc(b.sch.name) + ' (' + b.sch.tore + ')' : '–'} · ${t('tn_bester_tw')}: ${b.tw ? esc(b.tw.name) + ' (' + Math.round(b.tw.paraden / b.tw.schuesse * 100) + ' %)' : '–'}</p>
+      <p class="hinweisText">${T.art === 'spiel5' ? `${t('tn_bester_scorer')}: ${b.scorer ? esc(b.scorer.name) + ' (' + b.scorer.tore + ' + ' + b.scorer.vorlagen + ')' : '–'}` : `${t('tn_bester_schuetze')}: ${b.sch ? esc(b.sch.name) + ' (' + b.sch.tore + ')' : '–'} · ${t('tn_bester_tw')}: ${b.tw ? esc(b.tw.name) + ' (' + Math.round(b.tw.paraden / b.tw.schuesse * 100) + ' %)' : '–'}`}</p>
       <div class="chips"><button class="knopf primaer" data-neu>${t('tn_neu')}</button><button class="knopf" data-menue>${t('menue')}</button></div></div>`);
     d.style.background = 'linear-gradient(180deg,transparent 50%,rgba(5,9,18,.85))';
     this.klick(d, '[data-neu]', () => { Turnier.verwerfen(); Spiel.leerlauf(); this.turnierSetup(); });
@@ -6242,9 +6278,9 @@ const UI = {
       <h2 style="margin:.2rem 0 .8rem">${sieger ? `${esc(sieger.name)} ${t('banner_sieg')}` : t('remis')}</h2>
       ${S.mensch ? `<p style="font-size:1.2rem;font-weight:800;color:${duGew ? 'var(--gut)' : 'var(--schlecht)'}">${duGew ? t('du_gewinnst') : sieger ? t('du_verlierst') : ''}</p>` : ''}
       ${reihe(A, S.so.A)}${reihe(B, S.so.B)}
-      ${S.turnierSpiel || S.saisonSO ? `<button class="knopf primaer" data-weiter>${t('weiter')}</button>` : `<button class="knopf primaer" data-revanche>${t('revanche')}</button>`}
+      ${S.turnierSpiel || S.saisonSO || S.turnierSO ? `<button class="knopf primaer" data-weiter>${t('weiter')}</button>` : `<button class="knopf primaer" data-revanche>${t('revanche')}</button>`}
       <button class="knopf" data-menue>${t('menue')}</button></div></div>`, 'dunkel');
-    this.klick(d, '[data-weiter]', () => { const saison = !!S.saisonSO; S.saisonSO = null; Spiel.leerlauf(); if (saison) this.saisonHub(); else this.turnierHub(); });
+    this.klick(d, '[data-weiter]', () => { const saison = !!S.saisonSO; S.saisonSO = null; S.turnierSO = null; Spiel.leerlauf(); if (saison) this.saisonHub(); else this.turnierHub(); });
     this.klick(d, '[data-revanche]', () => Spiel.starteMatch(A, B, S.mensch));
     this.klick(d, '[data-menue]', () => { Spiel.leerlauf(); this.hauptmenue(); });
   },
@@ -6262,10 +6298,14 @@ const UI = {
       <div class="hinweisText" style="text-align:left;margin-top:.4rem">${t('s5_tore')}</div>${tore}${statTab}
       ${r.statistik ? `<button class="knopf" data-statistik>📊 ${t('st_titel')}</button>` : ''}
       ${r.strafen && r.strafen.length ? `<div class="hinweisText" style="text-align:left;margin-top:.4rem">${t('s5_strafen')}</div>${r.strafen.map(x => `<div class="pZeile"><span>${x.drittel}. ${t('s5_drittel')} · ${esc((x.team === 'A' ? A : B).kuerzel)}</span><b>${esc(x.name)} · ${t(x.art === 'stoss' ? 's5_art_stoss' : 's5_art_stock')}</b></div>`).join('')}` : ''}
-      ${r.saison ? (r.saison.offen ? `<p class="hinweisText" style="font-weight:800">${t('sa_so_offen')}</p><button class="knopf primaer" data-so-spielen>${t('sa_so_spielen')}</button><button class="knopf" data-so-sim>⏩ ${t('sa_so_sim')}</button>` : `<button class="knopf primaer" data-saison>${t('sa_weiter')}</button>`) + `<button class="knopf" data-menue>${t('menue')}</button>`
+      ${r.turnier ? (r.turnier.offen ? `<p class="hinweisText" style="font-weight:800">${t('sa_so_offen')}</p><button class="knopf primaer" data-tso-spielen>${t('sa_so_spielen')}</button><button class="knopf" data-tso-sim>⏩ ${t('sa_so_sim')}</button>` : `<button class="knopf primaer" data-turnier>${t('tn_weiter')}</button>`) + `<button class="knopf" data-menue>${t('menue')}</button>`
+        : r.saison ? (r.saison.offen ? `<p class="hinweisText" style="font-weight:800">${t('sa_so_offen')}</p><button class="knopf primaer" data-so-spielen>${t('sa_so_spielen')}</button><button class="knopf" data-so-sim>⏩ ${t('sa_so_sim')}</button>` : `<button class="knopf primaer" data-saison>${t('sa_weiter')}</button>`) + `<button class="knopf" data-menue>${t('menue')}</button>`
         : `${sieger ? '' : `<button class="knopf primaer" data-penalty>${t('s5_penalty')}</button>`}
       <button class="knopf ${sieger ? 'primaer' : ''}" data-revanche>${t('revanche')}</button><button class="knopf" data-menue>${t('menue')}</button>`}</div></div>`, 'dunkel');
     this.klick(d, '[data-saison]', () => { Spiel.leerlauf(); this.saisonHub(); });
+    this.klick(d, '[data-turnier]', () => { Spiel.leerlauf(); this.turnierHub(); });
+    this.klick(d, '[data-tso-spielen]', () => this.turnierSOspielen());
+    this.klick(d, '[data-tso-sim]', () => { this.turnierSOsimulieren(); Spiel.leerlauf(); this.turnierHub(); });
     this.klick(d, '[data-statistik]', () => this.spielStatistik(r.statistik, 'team', () => this.spielErgebnis(r)));
     this.klick(d, '[data-so-spielen]', () => this.saisonSOspielen());
     this.klick(d, '[data-so-sim]', () => { this.saisonSOsimulieren(); Spiel.leerlauf(); this.saisonHub(); });
@@ -6302,7 +6342,7 @@ const UI = {
       if (p === 'auszeit') { Match.auszeitWunsch = 'A'; this.pauseAuf(); return; }
       if (p === 'weiter') this.pauseZu(); else if (p === 'neu') Spiel.neustart(); else if (p === 'tuning') { TuningPanel.oeffnen(); }
       else if (p === 'einst') this.einstellungen(true);
-      else { const tn = Spiel.turnierSpiel; Spiel.abbrechen(); tn ? this.turnierHub() : this.hauptmenue(); }
+      else { const tn = Spiel.turnierSpiel || Spiel.turnierSpiel5 || Spiel.turnierSO, sa = Spiel.saisonSpiel || Spiel.saisonSO; Spiel.turnierSpiel5 = Spiel.saisonSpiel = Spiel.turnierSO = null; Spiel.abbrechen(); tn ? this.turnierHub() : sa && Saison.d ? this.saisonHub() : this.hauptmenue(); }
     });
   },
   pauseZu(still) { if (this.pauseEl) { this.pauseEl.remove(); this.pauseEl = null; } if (!still) Spiel.pausiert = false; },

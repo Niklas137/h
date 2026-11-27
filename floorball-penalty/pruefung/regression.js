@@ -620,6 +620,35 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     const u = sq.ui; pruef('Trainer und Auszeit (fest je Team, einmal, Energie), Statistikansicht mit 5 Reitern aus der Pause', u.gleicherTrainer && u.knopfStat && u.knopfAus && u.angefragt && u.genommen && u.energie && u.einmal && u.knopfWeg && u.tabs === 'team,spieler,tw,reihen,trainer' && u.live && u.ansichten === 5 && u.zurueck, JSON.stringify(u));
   });
 
+  // 5r) Turnier 5 gegen 5 und Seitentausch: Gast steuert das eigene Team, Ergebnis richtig herum, K.-o.-Unentschieden per Penaltyschießen, alter Spielstand
+  await abschnitt('5r) Turnier 5 gegen 5', async () => {
+    const tr = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, T = F.Turnier, U = F.UI, o = {};
+      S.starteSpiel5(L[0], L[1], 'B'); o.gast = M.teams[M.steuer.team].id === L[1].id && M.gks.find(g => g.ki.istGegnerMensch).team === 'B'; S.leerlauf();
+      // Turnier über die Oberfläche anlegen, eigenes Spiel als Gast bis zum Ende spielen lassen
+      U.turnierSetup(); document.querySelector('[data-g="4"]').click(); document.querySelector('[data-art="spiel5"]').click(); document.querySelector('[data-start]').click();
+      o.art = T.d.art === 'spiel5' && /Spiel 5 gegen 5/.test(document.querySelector('.kopfzeile h2').innerText);
+      // Eigenes erstes Spiel als Gastspiel ansetzen (im 4er-Gruppenplan ist Position 0 nie Gast)
+      { const m = T.d.spiele.find(q => !q.erg && T.istMeins(q)); if (m.heim === T.d.spieler) { m.heim = m.gast; m.gast = T.d.spieler; } T.speichern(); }
+      let s; while ((s = T.naechstesSpiel()) && !(T.istMeins(s) && s.gast === T.d.spieler)) { if (T.istMeins(s)) T.eintragen(s.id, T.simuliere5(s.heim, s.gast, false)); else { U.turnierHub(); document.querySelector('[data-sim]').click(); } }
+      o.gastSpiel = !!s;
+      if (s) {
+        U.turnierHub(); document.querySelector('[data-spielen]').click(); const mein = M.teams[M.steuer.team].id === T.d.spieler;
+        S.pausiert = true; let i = 0; while (S.zustand === 'match' && i < 120 * 600) { S.schritt(1 / 120); i++; }
+        const x = T.d.spiele.find(q => q.id === s.id); o.eintrag = { mein, erg: x.erg, stand: { ...M.stand }, ok: mein && !!x.erg && x.erg.th === M.stand.B && x.erg.tg === M.stand.A, weiter: !!document.querySelector('[data-turnier]') };
+        document.querySelector('[data-turnier]').click();
+      }
+      let k = 0; while ((s = T.naechstesSpiel()) && k++ < 20) { if (T.d.offen) U.turnierSOsimulieren(); else T.eintragen(s.id, T.simuliere5(s.heim, s.gast, s.phase !== 'gruppe')); }
+      const sc = T.scorer(); o.ende = { sieger: !!T.d.sieger, punkteOk: sc.every(x => x.punkte === x.tore + x.vorlagen), tore: sc.reduce((a, x) => a + x.tore, 0) === T.d.spiele.reduce((a, x) => a + x.erg.th + x.erg.tg, 0), koSieger: T.d.spiele.filter(x => x.phase !== 'gruppe').every(x => x.erg.sieger) };
+      T.neu(L.slice(0, 4).map(x => x.id), L[0].id, false, 'spiel5'); const hf = T.naechstesSpiel(); T.offenSetzen(hf, { th: 2, tg: 2, torschuetzen: [] }, null); U.turnierHub();
+      o.offenHub = !!document.querySelector('[data-so-sim]'); U.turnierSOsimulieren(); const h2 = T.d.spiele.find(x => x.id === hf.id); o.koDraw = !!h2.erg && h2.erg.th === 2 && h2.erg.tg === 2 && !!h2.erg.sieger && !!h2.erg.so && !T.d.offen;
+      delete T.d.art; T.speichern(); T.laden(); U.turnierHub(); o.alt = /Penaltyschießen/.test(document.querySelector('.kopfzeile h2').innerText);
+      T.verwerfen(); S.leerlauf(); U.hauptmenue(); return o;
+    });
+    pruef('Seitentausch: als Gast steuerst du dein Team, Ergebnis wird richtig herum eingetragen', tr.gast && tr.gastSpiel && tr.eintrag && tr.eintrag.ok && tr.eintrag.weiter, JSON.stringify({ gast: tr.gast, gastSpiel: tr.gastSpiel, eintrag: tr.eintrag }));
+    pruef('Turnier 5 gegen 5: Spielart, Scorer = Ergebnisse, K.-o. mit Sieger, Unentschieden per Penaltyschießen, alter Spielstand', tr.art && tr.ende.sieger && tr.ende.punkteOk && tr.ende.tore && tr.ende.koSieger && tr.offenHub && tr.koDraw && tr.alt, JSON.stringify({ art: tr.art, ende: tr.ende, offenHub: tr.offenHub, koDraw: tr.koDraw, alt: tr.alt }));
+  });
+
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
   await abschnitt('6) Turnier', async () => {
   const tn = await p.evaluate(() => { const F = window.__fps, T = F.Turnier, L = F.TeamDB.liste.map(x => x.id); T.neu(L.slice(0, 8), L[0], true); let n = 0; let s; while ((s = T.naechstesSpiel()) && n < 200) { T.eintragen(s.id, T.simuliere(s.heim, s.gast, s.phase !== 'gruppe')); n++; } F.UI.turnierHub(); return { spiele: n, sieger: T.d.sieger, zustand: F.Spiel.zustand, beste: T.beste() }; });
