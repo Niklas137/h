@@ -110,4 +110,4 @@ node pruefung/touch.js
 - Mit zwölf Figuren steigt die Zahl der Zeichenaufrufe deutlich; auf schwachen Geräten die Grafikstufe „Niedrig“ wählen.
 - Die schmale Großschrift im Parcours nutzt Systemschriften (z. B. Avenir Next Condensed auf Apple-Geräten). Fehlen sie, erscheint eine fette Standardschrift.
 - Geprüft nur in Chromium ohne echte Grafikkarte (Software-Rendering, Desktop und emuliertes Pixel 7). Firefox, Safari, Edge, echte Smartphones und die Bildrate auf realer Hardware sind nicht gemessen.
-- In eingebetteten Vorschauen (z. B. Artefakt-Ansicht) können Datei-Downloads gesperrt sein. Dann wirken die Export-Knöpfe nicht.
+- Export (Teams, einzelnes Team, Tuning): lokal als normaler Browser-Download. In der claude.ai-Artefakt-Ansicht läuft er über die Download-Schnittstelle der Plattform; du bestätigst das Speichern dort, Abbruch oder Fehler meldet ein kurzer Hinweis. In anderen eingebetteten Vorschauen können Downloads weiterhin gesperrt sein.

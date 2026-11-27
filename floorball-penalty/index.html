@@ -291,7 +291,7 @@ const TEXTE = {
     titel: 'FLOORBALL PENALTY SHOWDOWN', untertitel: 'Unihockey · Spiel · Penalty · Parcours',
     m_schnell: 'Penaltyschießen', m_schnell_u: 'Shootout gegen die KI',
     m_spiel5: 'Spiel 5 gegen 5', m_spiel5_u: 'Echtes Floorball: passen, dribbeln, Tore schießen – drei Drittel',
-    s5_untertitel: 'Spiel 5 gegen 5', s5_foul_stock: 'Stockschlag – {n}', s5_foul_stoss: 'Stoßen – {n}', s5_freischlag: 'Freischlag {t}', s5_strafe: '2 Minuten: {n} ({t})', s5_strafen: 'Strafen', s5_linie: 'Linienwechsel – Reihe {n}', s5_auszeit: 'Auszeit {t} ({n})',
+    s5_untertitel: 'Spiel 5 gegen 5', s5_foul_stock: 'Stockschlag – {n}', s5_foul_stoss: 'Stoßen – {n}', s5_freischlag: 'Freischlag {t}', s5_strafe: '2 Minuten: {n} ({t})', s5_strafen: 'Strafen', s5_linie: 'Linienwechsel – Reihe {n}', dl_ok: '{n} gespeichert', dl_abgelehnt: 'Download abgebrochen', dl_warten: 'Bitte kurz warten und erneut versuchen', dl_fehler: 'Download hier nicht möglich', s5_auszeit: 'Auszeit {t} ({n})',
     st_titel: 'Statistik', st_live: 'live, {d}. Drittel', st_team: 'Team', st_spieler: 'Spieler', st_reihen: 'Reihen', st_trainer: 'Trainer', st_schuesse: 'Schüsse', st_aufs_tor: 'Schüsse aufs Tor', st_chancenverwertung: 'Chancenverwertung',
     st_besitz: 'Ballbesitz', st_paesse: 'Pässe (angekommen/gespielt)', st_passquote: 'Passquote', st_ballgewinne: 'Ballgewinne', st_fouls: 'Fouls', st_strafmin: 'Strafminuten', st_pp_tore: 'Überzahltore', st_freischlaege: 'Freischläge', st_penalties: 'Penaltys (Tore/Versuche)',
     st_s: 'S', st_at: 'aT', st_pa: 'Pässe', st_bg: 'BG', st_bv: 'BV', st_f: 'F', st_sm: 'SM', st_eis: 'Eiszeit', st_aufs_tor_gegen: 'Schüsse aufs Tor', st_gegentore: 'Gegentore', st_fangquote: 'Fangquote', st_gefangen: 'Gefangen', st_abwuerfe: 'Abwürfe',
@@ -431,12 +431,33 @@ function helligkeit(h) { const [r, g, b] = hexZuRgb(h); return (0.299 * r + 0.58
 function textFarbe(h) { return helligkeit(h) > 0.6 ? '#111' : '#fff'; }
 const istTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 const istMobil = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (istTouch && Math.min(screen.width, screen.height) < 820);
+/** Download-Schnittstelle der Artefakt-Ansicht (claude.ai): dort sind normale Download-Links gesperrt. Lokal bleibt sie null. */
+let artefaktDownloads = null, artefaktDownloadsGeprueft = false;
+function artefaktDownloadsHolen() {
+  if (artefaktDownloadsGeprueft) return; artefaktDownloadsGeprueft = true;
+  try { const c = window.claude; if (c && typeof c.use === 'function') c.use('downloads').then(n => { artefaktDownloads = n || null; }, () => {}); } catch (e) { /* keine Artefakt-Ansicht */ }
+}
+artefaktDownloadsHolen(); setTimeout(() => { artefaktDownloadsGeprueft = false; artefaktDownloadsHolen(); }, 1500);   // window.claude kann nach dem ersten Skriptlauf kommen
+/** Kurze Rückmeldung über allen Menüs (z. B. Download abgelehnt). */
+function kurzHinweis(text, schlecht) {
+  let el = document.getElementById('kurzHinweis');
+  if (!el) { el = document.createElement('div'); el.id = 'kurzHinweis'; el.setAttribute('role', 'status'); el.style.cssText = 'position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;background:rgba(4,8,16,.92);border:1px solid rgba(255,255,255,.15);border-radius:.6rem;padding:.55rem .9rem;font:600 .95rem system-ui,sans-serif;max-width:calc(100vw - 2rem);text-align:center;pointer-events:none'; document.body.appendChild(el); }
+  el.textContent = text; el.style.color = schlecht ? '#ff5a6a' : '#7cf7d4'; el.style.opacity = '1'; clearTimeout(kurzHinweis.t); kurzHinweis.t = setTimeout(() => { el.style.opacity = '0'; }, 2600);
+}
 function datenDownload(name, objekt) {
+  let text; try { text = JSON.stringify(objekt, null, 2); } catch (e) { kurzHinweis(t('dl_fehler'), true); return; }
+  if (artefaktDownloads) {
+    // Artefakt-Ansicht: Datei über die Plattform anbieten (der Betrachter bestätigt)
+    artefaktDownloads.save({ filename: name, data: text }).then(() => kurzHinweis(t('dl_ok', { n: name })), (e) => {
+      const c = e && e.code; if (c === 'declined') kurzHinweis(t('dl_abgelehnt'), true); else if (c === 'rate_limited') kurzHinweis(t('dl_warten'), true); else kurzHinweis(t('dl_fehler'), true);
+    });
+    return;
+  }
   try {
-    const blob = new Blob([JSON.stringify(objekt, null, 2)], { type: 'application/json' });
+    const blob = new Blob([text], { type: 'application/json' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
     document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
-  } catch (e) { /* Download nicht möglich – still ignorieren */ }
+  } catch (e) { kurzHinweis(t('dl_fehler'), true); }
 }
 /** Datei-Dialog öffnen und JSON zurückgeben (oder null). */
 function jsonWaehlen() {
