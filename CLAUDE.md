@@ -37,7 +37,7 @@ Prüfbefunde in `kader-manager/UMSETZUNG_Pruefbericht_2026-10-08.md`. Lokal star
 
 ## Floorball Penalty Showdown (Spiel)
 
-Eigenständiges 3D-Spiel in einer Datei: `floorball-penalty/index.html` (Three.js per CDN, sonst alles prozedural).
+Eigenständiges 3D-Spiel in einer Datei: `floorball-penalty/index.html` (Three.js per CDN, sonst alles prozedural); `offline.html` mit eingebettetem Three.js wird per `floorball-penalty/werkzeuge/offline_bauen.py` erzeugt. Regeln nach IFF Rules of the Game 2026.
 Anleitung und bekannte Grenzen in `floorball-penalty/README.md`. Regeltests im Tuning-Panel (Taste T) oder per `window.__fps.Regeltests.ausfuehren()`.
 Modi: Spiel 5 gegen 5 (Modul `Match`, mit Regeln/Strafen, Linienwechsel, Trainern mit Auszeit und Spielstatistik für Team, Spieler, Torhüter, Reihen und Trainer), Team B im um 180° gedrehten Koordinatensystem), Parcours (Vorbild war ein Werbe-Video), Penaltyschießen, Saison (Modul `Saison`) und Karriere (Modul `Karriere`, Transfers auf Kader-Kopien), Turnier (Penaltyschießen oder Spiel 5 gegen 5), Training (auch freies Training ohne Regeln).
-Prüfskripte (Playwright, Chromium) unter `floorball-penalty/pruefung/`: `node floorball-penalty/pruefung/regression.js` (61 Prüfungen) und `touch.js`.
+Prüfskripte (Playwright, Chromium) unter `floorball-penalty/pruefung/`: `node floorball-penalty/pruefung/regression.js` (68 Prüfungen) und `touch.js`.

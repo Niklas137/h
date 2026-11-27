@@ -14,13 +14,17 @@
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
 </script>
 <style>
+/* Schmale Großschrift: Oswald Bold (Latin-Teilmenge), Copyright 2016 The Oswald Project Authors,
+   SIL Open Font License 1.1 (https://openfontlicense.org) – eingebettet, damit sie überall und offline gleich aussieht. */
+@font-face{ font-family:"FPS Schmal"; font-weight:700 900; font-style:normal; font-display:swap; unicode-range:U+0000-00FF,U+2013-2014,U+2018-201E,U+20AC;
+  src:url(data:font/woff2;base64,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) format("woff2"); }
 :root{
   --skala:1;
   --bg:#0b1220; --panel:rgba(10,18,34,.94); --panel2:rgba(22,34,58,.96);
   --text:#f4f7fb; --mute:#a9b8cf; --rand:rgba(255,255,255,.16);
   --akzent:#ffd23f; --akzent2:#38c6ff; --gut:#2fd27a; --schlecht:#ff5a5f;
   --tor:#2fd27a; --fehl:#ff5a5f; --neon:#c4f23a;
-  --schmal:"Avenir Next Condensed","DIN Condensed","Roboto Condensed","Arial Narrow",Impact,system-ui,sans-serif;
+  --schmal:"FPS Schmal","Avenir Next Condensed","DIN Condensed","Roboto Condensed","Arial Narrow",Impact,system-ui,sans-serif;
 }
 html.farbenblind{ --gut:#0072b2; --schlecht:#e69f00; --tor:#56b4e9; --fehl:#e69f00; --akzent2:#56b4e9; }
 html{ font-size:calc(16px * var(--skala)); }
@@ -241,6 +245,10 @@ table.tab td.z{ text-align:right; font-variant-numeric:tabular-nums; }
   <h1>FLOORBALL PENALTY SHOWDOWN</h1>
   <p id="ladeText">Lade 3D-Engine …</p>
 </div>
+<script>
+/* Ohne Internet lädt Three.js nicht vom CDN: nach 20 s Hinweis auf die Offline-Fassung (verschwindet mit dem Ladebildschirm, falls es doch noch klappt) */
+setTimeout(function () { var t = document.getElementById('ladeText'); if (t && document.getElementById('laden') && !window.__fps) t.textContent = '3D-Engine (Three.js) konnte nicht geladen werden. Bitte Internetverbindung prüfen oder die Offline-Fassung offline.html verwenden.'; }, 20000);
+</script>
 <div id="hud" class="versteckt">
   <div id="anzeige">
     <div class="hudTeam" id="hudA"><span class="kz"></span><span class="punkte"></span></div>
@@ -292,8 +300,10 @@ const TEXTE = {
     titel: 'FLOORBALL PENALTY SHOWDOWN', untertitel: 'Unihockey · Spiel · Penalty · Parcours',
     m_schnell: 'Penaltyschießen', m_schnell_u: 'Shootout gegen die KI',
     m_spiel5: 'Spiel 5 gegen 5', m_spiel5_u: 'Echtes Floorball: passen, dribbeln, Tore schießen – drei Drittel',
-    s5_untertitel: 'Spiel 5 gegen 5', s5_foul_stock: 'Stockschlag – {n}', s5_foul_stoss: 'Stoßen – {n}', s5_freischlag: 'Freischlag {t}', s5_strafe: '2 Minuten: {n} ({t})', s5_strafen: 'Strafen', s5_linie: 'Linienwechsel – Reihe {n}', dl_ok: '{n} gespeichert', dl_abgelehnt: 'Download abgebrochen', dl_warten: 'Bitte kurz warten und erneut versuchen', dl_fehler: 'Download hier nicht möglich', s5_auszeit: 'Auszeit {t} ({n})',
-    st_titel: 'Statistik', st_live: 'live, {d}. Drittel', st_team: 'Team', st_spieler: 'Spieler', st_reihen: 'Reihen', st_trainer: 'Trainer', st_schuesse: 'Schüsse', st_aufs_tor: 'Schüsse aufs Tor', st_chancenverwertung: 'Chancenverwertung',
+    s5_untertitel: 'Spiel 5 gegen 5', s5_foul_stock: 'Stockschlag – {n}', s5_twraum: 'Im Torhüterraum – {n}', s5_foul_stoss: 'Stoßen – {n}', s5_freischlag: 'Freischlag {t}', s5_strafe: '2 Minuten: {n} ({t})', s5_strafen: 'Strafen', s5_linie: 'Linienwechsel – Reihe {n}', dl_ok: '{n} gespeichert', dl_abgelehnt: 'Download abgebrochen', dl_warten: 'Bitte kurz warten und erneut versuchen', dl_fehler: 'Download hier nicht möglich', s5_auszeit: 'Auszeit {t} ({n})', s5_verl: 'Verlängerung', s5_golden_goal: 'das nächste Tor entscheidet', s5_nv: 'n. V.',
+    st_titel: 'Statistik', lg_leer: 'Noch keine Spiele mit Statistik.', lg_gaa: 'GT/Sp', lg_zunull: 'zu null', lg_schuesse: 'Schüsse aufs Tor', lg_aufs_fuer: 'für', lg_aufs_gegen: 'gegen', lg_je_spiel: 'je Spiel',
+    lg_dein_team: 'Dein Team · {n} gespielte Spiele', lg_kein_eigen: 'Team- und Reihenwerte deines Teams erscheinen, sobald du ein Spiel selbst gespielt oder angesehen hast.',
+    lg_hinweis: 'Torhüter und Schüsse aufs Tor zählen aus allen Spielen; bei simulierten Spielen werden die Schüsse aus Torerwartung und Torhüterstärke ausgewürfelt. Team- und Reihenwerte stammen aus den gespielten Spielen deines Teams. GT/Sp = Gegentore je Spiel.', st_live: 'live, {d}. Drittel', st_team: 'Team', st_spieler: 'Spieler', st_reihen: 'Reihen', st_trainer: 'Trainer', st_schuesse: 'Schüsse', st_aufs_tor: 'Schüsse aufs Tor', st_chancenverwertung: 'Chancenverwertung',
     st_besitz: 'Ballbesitz', st_paesse: 'Pässe (angekommen/gespielt)', st_passquote: 'Passquote', st_ballgewinne: 'Ballgewinne', st_fouls: 'Fouls', st_strafmin: 'Strafminuten', st_pp_tore: 'Überzahltore', st_freischlaege: 'Freischläge', st_penalties: 'Penaltys (Tore/Versuche)',
     st_s: 'S', st_at: 'aT', st_pa: 'Pässe', st_bg: 'BG', st_bv: 'BV', st_f: 'F', st_sm: 'SM', st_eis: 'Eiszeit', st_aufs_tor_gegen: 'Schüsse aufs Tor', st_gegentore: 'Gegentore', st_fangquote: 'Fangquote', st_gefangen: 'Gefangen', st_abwuerfe: 'Abwürfe',
     st_tw_hinweis: 'Paraden = Schüsse aufs Tor − Gegentore. Aufs Tor zählt ein Schuss, dessen Zielpunkt im Torrahmen liegt; jedes Tor zählt als Schuss aufs Tor.',
@@ -304,7 +314,7 @@ const TEXTE = {
     ka_hinweis: 'Ein Transfer ist ein Tausch: Du wählst einen Spieler zum Abgeben und holst dafür einen anderen. Kosten = Wert des Neuen − 60 % des Abgegebenen (mindestens 10 T€). In Klammern die Wertentwicklung der letzten Saison.',
     ka_waehlen: 'Wähle links einen Spieler zum Abgeben.', ka_tausch_fuer: 'Tausch für {n} – wähle rechts den neuen Spieler.', ka_naechste: 'Saison {n} starten ▶', sa_pm_hinweis: 'Punkte = Tore + Vorlagen. Plus-Minus nur aus selbst gespielten Spielen (Tore in Überzahl zählen nicht).', s5_vorteil: 'Vorteil', s5_penalty_pfiff: 'Penalty!', s5_penalty_titel: 'PENALTY', s5_penalty_vorbei: 'Penalty vergeben', m_saison: 'Saison', m_saison_weiter: 'Saison fortsetzen', m_saison_u: 'Liga, Tabelle, Torjäger',
     sa_neu: 'Neue Saison', sa_titel: 'Saison', sa_dein_team: 'Dein Team', sa_modus: 'Spielplan', sa_einfach: 'Einfach ({n} Spiele)', sa_doppelt: 'Hin- und Rückrunde ({n} Spiele)', sa_starten: 'Saison starten',
-    sa_np: 'n. P.', sa_sn: 'S n. P.', sa_nn: 'N n. P.', sa_tore: 'Tore', sa_wertung: 'Sieg 3 Punkte, Sieg im Penaltyschießen 2, Niederlage im Penaltyschießen 1.', sa_runde: '{n}. Runde',
+    sa_np: 'n. P.', sa_sn: 'S n. V./P.', sa_nn: 'N n. V./P.', sa_tore: 'Tore', sa_wertung: 'Sieg 3 Punkte, Sieg nach Verlängerung oder Penaltyschießen 2, Niederlage nach Verlängerung oder Penaltyschießen 1. Bei Gleichstand nach 60 Minuten folgen 10 Minuten Verlängerung (das erste Tor entscheidet), danach das Penaltyschießen.', sa_runde: '{n}. Runde',
     sa_torjaeger: 'Torjäger', sa_bis_meins: 'Bis zu meinem Spiel', sa_verwerfen: 'Saison beenden', sa_meister: 'Meister', sa_dein_platz: 'Dein Team: Platz {n}', sa_so_sieger: 'Penaltyschießen: {t} gewinnt', sa_weiter: 'Weiter zur Saison', sa_so_offen: 'Unentschieden – das Penaltyschießen entscheidet', sa_so_spielen: 'Penaltyschießen spielen', sa_so_sim: 'Penaltyschießen simulieren', s5_art_stoss: 'Stoßen', s5_art_stock: 'Stockschlag', s5_drittel: 'Drittel', s5_dauer: 'Drittellänge', s5_min: '{n} Min', s5_pause: '{n}. DRITTEL', s5_einschlag: 'Einschlag {t}',
     s5_gewinnt: 'gewinnt', s5_pass: 'Pass', s5_wechsel: 'Wechsel', s5_penalty: 'Penaltyschießen ▶', s5_tore: 'Tore', s5_keine_tore: 'Keine Tore', s5_endstand: 'Endstand',
     h_pass: 'Pass / Ball erobern / beim Ausholen Schusstäuschung', h_wechsel: 'Spieler wechseln', h_schuss_ball: 'Schuss (mit Ball oder direkt aus dem Pass)', a_wechsel: 'Spieler wechseln', pen_untertitel: 'Penaltyschießen',
@@ -340,6 +350,7 @@ const TEXTE = {
     r_nachschuss: 'Nachschuss nach Torhüterkontakt – kein Tor.',
     r_zeit: 'Zeitlimit überschritten – Fehlversuch.',
     r_torraum: 'Schütze im Torhüterraum – Fehlversuch.',
+    r_zorro: 'Zorro mit mehrfachem Richtungswechsel in der Luft – Fehlversuch (IFF 2026).',
     r_linie: 'Ball liegt auf der Linie, nicht vollständig drüber – kein Tor.',
     r_ballgestoppt: 'Ball gestoppt – kein Tor.',
     r_training: 'Training',
@@ -363,7 +374,7 @@ const TEXTE = {
     f_gehalten: 'Gehalten', f_pariert: 'Pariert', f_vorbei: 'Vorbei', f_drueber: 'Drüber', f_pfosten: 'Pfosten!', f_aus: 'Aus', f_linie: 'Auf der Linie', f_nachschuss: 'Nachschuss zählt nicht',
     t_treffer: 'Treffer', t_scheiben: 'Zielscheiben', t_paraden: 'Paraden',
     // Turnier
-    turnier: 'Turnier', tn_art: 'Spielart', tn_art_penalty: 'Penaltyschießen', tn_art_spiel5: 'Spiel 5 gegen 5', tn_np: 'n. P.', tn_weiter: 'Weiter zum Turnier', tn_bester_scorer: 'Bester Scorer', tn_groesse: 'Teilnehmer', tn_gruppen: 'Gruppenphase', tn_dein_team: 'Dein Team wählen',
+    turnier: 'Turnier', tn_art: 'Spielart', tn_art_penalty: 'Penaltyschießen', tn_art_spiel5: 'Spiel 5 gegen 5', tn_np: 'n. P.', tn_weiter: 'Weiter zum Turnier', tn_bester_scorer: 'Bester Scorer', tn_ende: 'abgeschlossen', tn_groesse: 'Teilnehmer', tn_gruppen: 'Gruppenphase', tn_dein_team: 'Dein Team wählen',
     tn_start: 'Turnier starten', tn_spielplan: 'Spielplan', tn_tabelle: 'Tabelle', tn_statistik: 'Statistik',
     tn_naechstes: 'Nächstes Spiel', tn_spielen: 'Spielen ▶', tn_ansehen: 'Ansehen', tn_simulieren: 'Sofort simulieren',
     tn_alle_sim: 'Alle KI-Spiele simulieren', tn_gruppe: 'Gruppe', tn_vf: 'Viertelfinale', tn_hf: 'Halbfinale', tn_f: 'Finale',
@@ -495,7 +506,7 @@ const STANDARD = {
   schuetze: { dribbleTempo: 5.0, zielgenauigkeit: 0.7, powerKurve: 1.4, nervendruck: 0.5 },
   animation: { tempo: 1.0, uebergang: 0.18, zeitlupe: 0.35, ik: true },
   kamera: { fov: 55, hoehe: 1.0, abstand: 1.0, wackeln: 0.5 },
-  regeln: { schuetzen: 5, zeitlimit: 12, suddenDeath: true, strengeVorwaerts: true, torraum: true },
+  regeln: { schuetzen: 5, zeitlimit: 12, suddenDeath: true, strengeVorwaerts: true, torraum: true, penaltyPunkt: 5, zorroRegel: true },   // IFF 2026: Penalty 5 m vor der Mittellinie, Zorro mit mehr als einem Richtungswechsel verboten
   grafik: { qualitaet: istMobil ? 'mittel' : 'hoch', schatten: true, spiegelung: true, boden: 'parkett', zuschauer: istMobil ? 0.55 : 0.85, fps: false },
   debug: { ballvektor: false, hitboxen: false, reichweite: false, heatmap: false, physikwerte: false }
 };
@@ -519,7 +530,7 @@ const TUNING_SCHEMA = [
     ['fov', 'Sichtfeld', 30, 90, 1, '°'], ['hoehe', 'Höhe', 0.4, 2.5, 0.05, '×'], ['abstand', 'Abstand', 0.5, 2.5, 0.05, '×'], ['wackeln', 'Kamerawackeln', 0, 2, 0.05, '']] },
   { g: 'regeln', titel: 'Regeln', f: [
     ['schuetzen', 'Anzahl Schützen', 1, 10, 1, ''], ['zeitlimit', 'Zeitlimit', 5, 30, 1, ' s'],
-    ['suddenDeath', 'Sudden Death'], ['strengeVorwaerts', 'Strenge Vorwärtsregel'], ['torraum', 'Torhüterraum-Regel (Schütze)']] },
+    ['suddenDeath', 'Sudden Death'], ['strengeVorwaerts', 'Strenge Vorwärtsregel'], ['torraum', 'Torhüterraum-Regel (Schütze)'], ['penaltyPunkt', 'Penaltypunkt vor der Mittellinie', 0, 8, 0.5, ' m'], ['zorroRegel', 'Zorro-Verbot beim Penalty (IFF 2026)']] },
   { g: 'grafik', titel: 'Grafik', f: [
     ['qualitaet', 'Qualitätsstufe', ['niedrig', 'mittel', 'hoch']], ['boden', 'Hallenboden', ['parkett', 'kunststoff']], ['schatten', 'Schatten'], ['spiegelung', 'Bodenspiegelung (Stufe Hoch)'],
     ['zuschauer', 'Zuschauerdichte', 0, 1, 0.05, ''], ['fps', 'FPS-Anzeige']] }
@@ -820,6 +831,7 @@ const FELD = { hx: 20, hz: 10, eckR: 1.0, bandeH: 0.5 };                 // 40 �
 const TOR = { x: 16.5, hb: 0.8, h: 1.15, tiefe: 0.65, tiefeOben: 0.35, rr: 0.028, linie: 0.04 }; // 160 × 115 cm, 65 cm tief
 const TORRAUM = { vorne: TOR.x - 3.35, hinten: TOR.x + 0.65, hz: 2.5 };  // 4 × 5 m
 const TWRAUM = { vorne: TOR.x - 1.0, hz: 1.25 };                        // 1 × 2,5 m
+const BULLY_PUNKT = { x: TOR.x, z: 8.5 };                               // Bullypunkte auf der verlängerten Torlinie, 1,5 m von der Bande
 const BALLD = { r: 0.036, m: 0.023 };                                   // 72 mm, 23 g
 BALLD.A = Math.PI * BALLD.r * BALLD.r; BALLD.I = 2 / 3 * BALLD.m * BALLD.r * BALLD.r;
 const RHO = 1.2;
@@ -3429,6 +3441,13 @@ class Versuch {
   constructor(o = {}) { this.t = 0; this.gkBeruehrt = false; this.geschossen = false; this.stopT = 0; this.ergebnis = null; this.pfostenT = -9; this.nachschuss = false; this.gefangen = false; this.weg = 0; this.ruhe = 0; this.training = !!o.training; this.zeitlimit = Config.regeln.zeitlimit; }
 }
 const Regelwerk = {
+  /** Zählt seitliche Richtungswechsel des Balls in der Luft, solange der Schütze ihn per Zorro auf der Schaufel trägt. */
+  zorroVerstoss(v, s, b) {
+    if (!Config.regeln.zorroRegel || v.ohneRegeln || v.frei || v.geschossen || !s) return false;
+    const z = s.zorro || (s.trick && s.trick.name === 'zorro'); if (!z || b.p.y < BALLD.r + 0.04) return false;
+    const sg = b.v.z > 0.5 ? 1 : b.v.z < -0.5 ? -1 : 0; if (sg && v.zSeite && sg !== v.zSeite) v.zWechsel = (v.zWechsel || 0) + 1; if (sg) v.zSeite = sg;
+    return (v.zWechsel || 0) > 1;
+  },
   /** Prüft einen Zeitschritt; liefert {code, tor} sobald entschieden. s: {pos, vel}, b: Ball */
   pruefe(v, dt, s, b) {
     if (v.ergebnis) return v.ergebnis;
@@ -3441,6 +3460,8 @@ const Regelwerk = {
     if (b.aus) return fertig('aus');
     if (!b.imTor && b.p.x > TOR.x + r) return fertig(v.gkBeruehrt ? 'pariert' : (v.t - v.pfostenT < 0.6 ? 'pfosten' : b.p.y > TOR.h ? 'drueber' : 'vorbei'));
     if (Config.regeln.torraum && !v.ohneRegeln && !v.geschossen && s.zustand !== 'schuss' && s.pos.x > TWRAUM.vorne && s.pos.x < TOR.x + 0.3 && Math.abs(s.pos.z) < TWRAUM.hz) return fertig('torraum');
+    // IFF 2026 (508 Abs. 4): Zorro, bei dem der Ball auf der Schaufel mehr als einmal in der Luft die Richtung wechselt, ist ein Fehlversuch
+    if (Regelwerk.zorroVerstoss(v, s, b)) return fertig('zorro');
     const bs = b.v.length();
     // Ball liegt auf der Linie (Mittelpunkt drüber, aber nicht vollständig)
     if (bs < 0.15 && b.p.x > TOR.x - r && b.p.x - r <= TOR.x + TOR.linie / 2 && Math.abs(b.p.z) < TOR.hb) { v.ruhe += dt; if (v.ruhe > 0.6) return fertig('linie'); }
@@ -3601,6 +3622,26 @@ const TeamDB = {
 /* =====================================================================
    MODUL: TURNIER – Gruppenphase optional, K.-o. bis zum Finale, Statistik, Speicherung
    ===================================================================== */
+/** Zusammengeführte Statistik über Saison bzw. Turnier (Spiel 5 gegen 5):
+ *  - Torhüter und Schüsse aufs Tor aus allen Spielen (simuliert oder gespielt, Feld erg.aufs = {h, g}),
+ *  - Team- und Reihenwerte deines Teams aus den selbst gespielten Spielen (Feld erg.eigen). */
+const Ligastat = {
+  leer() { return { tw: {}, team: {}, eigen: null }; },
+  eintragen(agg, heimId, gastId, erg, teamVon) {
+    if (!agg || !erg.aufs) return;
+    const tw = (id, sog, ga) => { const T = teamVon(id), k = id; const x = agg.tw[k] ||= { team: id, name: T.torwart.name, nummer: T.torwart.nummer, sp: 0, aufsGegen: 0, gegentore: 0, zuNull: 0 }; x.name = T.torwart.name; x.sp++; x.aufsGegen += sog; x.gegentore += ga; if (!ga) x.zuNull++; };
+    const tm = (id, f, g) => { const x = agg.team[id] ||= { team: id, sp: 0, aufs: 0, aufsGegen: 0 }; x.sp++; x.aufs += f; x.aufsGegen += g; };
+    tw(heimId, erg.aufs.g, erg.tg); tw(gastId, erg.aufs.h, erg.th); tm(heimId, erg.aufs.h, erg.aufs.g); tm(gastId, erg.aufs.g, erg.aufs.h);
+    const e = erg.eigen; if (!e) return;
+    const E = agg.eigen ||= { sp: 0, tore: 0, gegentore: 0, schuesse: 0, aufsTor: 0, paesse: 0, paesseAn: 0, besitzSumme: 0, ballgewinne: 0, fouls: 0, strafMin: 0, ppTore: 0, freischlaege: 0, auszeiten: 0, reihen: { 1: { eis: 0, tf: 0, tg: 0, sf: 0, sg: 0 }, 2: { eis: 0, tf: 0, tg: 0, sf: 0, sg: 0 } } };
+    E.sp++; for (const k of ['tore', 'gegentore', 'schuesse', 'aufsTor', 'paesse', 'paesseAn', 'ballgewinne', 'fouls', 'strafMin', 'ppTore', 'freischlaege', 'auszeiten']) E[k] += e[k] || 0;
+    E.besitzSumme += e.besitz || 0; for (const nr of [1, 2]) for (const k of ['eis', 'tf', 'tg', 'sf', 'sg']) E.reihen[nr][k] += (e.reihen && e.reihen[nr] && e.reihen[nr][k]) || 0;
+  },
+  /** Torhüter-Rangliste: Fangquote, Gegentore je Spiel. */
+  torhueter(agg) { return Object.values(agg ? agg.tw : {}).filter(x => x.aufsGegen > 0).map(x => ({ ...x, paraden: x.aufsGegen - x.gegentore, quote: (x.aufsGegen - x.gegentore) / x.aufsGegen * 100, gaa: x.gegentore / x.sp })).sort((a, b) => b.quote - a.quote || a.gaa - b.gaa); },
+  /** Auszug der Spielstatistik für dein Team (tm = 'A' oder 'B' im Match). */
+  eigenAus(D, tm) { const T = D.ts[tm], g = tm === 'A' ? 'B' : 'A'; return { tore: D.stand[tm], gegentore: D.stand[g], schuesse: T.schuesse, aufsTor: T.aufsTor, paesse: T.paesse, paesseAn: T.paesseAn, besitz: T.besitz, ballgewinne: T.ballgewinne, fouls: T.fouls, strafMin: T.strafMin, ppTore: T.ppTore, freischlaege: T.freischlaege, auszeiten: D.trainer[tm].auszeit ? 1 : 0, reihen: { 1: { ...D.rs[tm][1] }, 2: { ...D.rs[tm][2] } } }; }
+};
 const Turnier = {
   d: null,
   laden() { this.d = Speicher.lesen('fps_turnier_v1', null); if (this.d && (!this.d.spiele || !this.d.teams)) this.d = null; return this.d; },
@@ -3613,7 +3654,7 @@ const Turnier = {
     if (gruppen) {
       const gr = ids.length === 8 ? { A: ids.slice(0, 4), B: ids.slice(4) } : { A: ids.slice() };
       this.d.gruppenTeams = gr;
-      for (const [g, t] of Object.entries(gr)) for (const [i, j] of [[0, 1], [2, 3], [0, 2], [1, 3], [0, 3], [1, 2]]) this.spielAnlegen('gruppe', t[i], t[j], g);
+      for (const [g, t] of Object.entries(gr)) for (const [i, j] of [[0, 1], [2, 3], [2, 0], [3, 1], [0, 3], [1, 2]]) this.spielAnlegen('gruppe', t[i], t[j], g);   // jedes Team spielt mindestens einmal auswärts (Heimspiele 2/1/2/1)
     } else for (let i = 0; i < ids.length; i += 2) this.spielAnlegen(ids.length === 8 ? 'vf' : 'hf', ids[i], ids[i + 1]);
     this.speichern();
   },
@@ -3631,7 +3672,8 @@ const Turnier = {
   /** Ergebnis eintragen und ggf. die nächste Runde erzeugen. erg: {th, tg, sieger:'H'|'G'|null, versuche:[]} */
   eintragen(spielId, erg) {
     const s = this.d.spiele.find(x => x.id === spielId); if (!s || s.erg) return;
-    s.erg = { th: erg.th, tg: erg.tg, sieger: erg.sieger }; if (erg.so) s.erg.so = erg.so;
+    s.erg = { th: erg.th, tg: erg.tg, sieger: erg.sieger }; if (erg.so) s.erg.so = erg.so; if (erg.verl) s.erg.verl = true;
+    if (erg.aufs) { s.erg.aufs = erg.aufs; Ligastat.eintragen(this.d.agg ||= Ligastat.leer(), s.heim, s.gast, erg, (id) => TeamDB.hole(id)); }
     // Spiel 5 gegen 5: Scorer (Tore, Vorlagen) aus den Torschützen
     for (const x of erg.torschuetzen || []) {
       const a = this.d.stats[x.team + '#' + x.name] ||= { name: x.name, team: x.team, typ: 'p', tore: 0, vorlagen: 0 }; a.tore++;
@@ -3682,13 +3724,13 @@ const Turnier = {
   },
   /** Spiel 5 gegen 5 simulieren (Torerwartung wie in der Saison). K.-o.: Unentschieden entscheidet ein simuliertes Penaltyschießen. */
   simuliere5(heimId, gastId, ko) {
-    const H = TeamDB.hole(heimId), G = TeamDB.hole(gastId), e = Saison.simuliere(heimId, gastId, H, G, ko);
+    const H = TeamDB.hole(heimId), G = TeamDB.hole(gastId), e = Saison.simuliere(heimId, gastId, H, G, true, !!ko);   // Turnier: neutraler Ort, kein Heimvorteil
     const sieger = e.th > e.tg ? 'H' : e.tg > e.th ? 'G' : ko ? (e.so === 'gast' ? 'G' : 'H') : null;
-    return { th: e.th, tg: e.tg, sieger, so: e.th === e.tg && ko ? e.so : null, torschuetzen: e.torschuetzen };
+    return { th: e.th, tg: e.tg, sieger, so: e.th === e.tg && ko ? e.so : null, torschuetzen: e.torschuetzen, aufs: e.aufs, verl: !!e.verl };
   },
   /** Gespieltes K.-o.-Spiel endet unentschieden: Ergebnis merken, das Penaltyschießen entscheidet. */
-  offenSetzen(spiel, erg, mensch) { this.d.offen = { id: spiel.id, th: erg.th, tg: erg.tg, torschuetzen: erg.torschuetzen, mensch }; this.speichern(); },
-  offenAbschliessen(so) { const o = this.d && this.d.offen; if (!o) return; this.d.offen = null; this.eintragen(o.id, { th: o.th, tg: o.tg, sieger: so === 'gast' ? 'G' : 'H', so, torschuetzen: o.torschuetzen }); },
+  offenSetzen(spiel, erg, mensch) { this.d.offen = { id: spiel.id, th: erg.th, tg: erg.tg, torschuetzen: erg.torschuetzen, aufs: erg.aufs || null, eigen: erg.eigen || null, verl: !!erg.verl, mensch }; this.speichern(); },
+  offenAbschliessen(so) { const o = this.d && this.d.offen; if (!o) return; this.d.offen = null; this.eintragen(o.id, { th: o.th, tg: o.tg, sieger: so === 'gast' ? 'G' : 'H', so, torschuetzen: o.torschuetzen, aufs: o.aufs || undefined, eigen: o.eigen || undefined, verl: o.verl }); },
   /** Scorerliste (Spiel 5 gegen 5): Punkte = Tore + Vorlagen. */
   scorer() { return Object.values(this.d ? this.d.stats : {}).filter(x => x.typ === 'p').map(x => ({ ...x, punkte: x.tore + x.vorlagen })).sort((a, b) => b.punkte - a.punkte || b.tore - a.tore || a.name.localeCompare(b.name)); },
   beste() {
@@ -3697,7 +3739,7 @@ const Turnier = {
     const tw = st.filter(x => x.typ === 't' && x.schuesse > 0).sort((a, b) => b.paraden / b.schuesse - a.paraden / a.schuesse || b.paraden - a.paraden)[0] || null;
     return { sch, tw, scorer: this.scorer()[0] || null };
   },
-  phaseName(ph) { return { gruppe: t('tn_gruppe'), vf: t('tn_vf'), hf: t('tn_hf'), f: t('tn_f') }[ph] || ph; }
+  phaseName(ph) { return { gruppe: t('tn_gruppe'), vf: t('tn_vf'), hf: t('tn_hf'), f: t('tn_f'), ende: t('tn_ende') }[ph] || ph; }
 };
 
 /* =====================================================================
@@ -3732,27 +3774,33 @@ const Saison = {
   istMeins(s) { return !!s && (s.heim === this.d.spieler || s.gast === this.d.spieler); },
   aktuelleRunde() { const s = this.naechstesSpiel(); return s ? s.runde : this.d.runden; },
   /** Spiel 5 gegen 5 simulieren: Torerwartung aus Angriff gegen Torhüter (Poisson), Unentschieden per Penaltyschießen. */
-  simuliere(heimId, gastId, H = this.team(heimId), G = this.team(gastId)) {
+  simuliere(heimId, gastId, H = this.team(heimId), G = this.team(gastId), neutral = false, entscheidung = true) {
     const sH = TeamDB.staerke(H), sG = TeamDB.staerke(G);
-    const lam = (a, t, heim) => klemme(2.6 * Math.pow(a / t, 2.2) * (heim ? 1.08 : 1) * (Einst.drittelMin || 2) / 2, 0.4, 9);
+    const lam = (a, t, heim) => klemme(2.6 * Math.pow(a / t, 2.2) * (heim && !neutral ? 1.08 : 1) * (Einst.drittelMin || 2) / 2, 0.4, 9);
     const poisson = (l) => { let k = 0, p = Math.exp(-l), s = p; const u = Math.random(); while (u > s && k < 25) { k++; p *= l / k; s += p; } return k; };
-    const th = poisson(lam(sH.angriff, sG.torwart, true)), tg = poisson(lam(sG.angriff, sH.torwart, false));
+    const lH = lam(sH.angriff, sG.torwart, true), lG = lam(sG.angriff, sH.torwart, false), th = poisson(lH), tg = poisson(lG);
+    // Schüsse aufs Tor: Tore + Paraden; Paraden nach Torhüterstärke (Fangquote etwa 35–70 %, wie im gespielten Spiel)
+    const q = (tw) => klemme(0.5 + (tw - 70) * 0.01, 0.35, 0.7), aufs = { h: th + poisson(lH * q(sG.torwart) / (1 - q(sG.torwart))), g: tg + poisson(lG * q(sH.torwart) / (1 - q(sH.torwart))) };
     const schuetze = (T) => { const alle = [...T.schuetzen.map(x => ({ ...x, w: 1 })), ...zweiteReihe(T).map(x => ({ ...x, w: 0.7 }))], ges = alle.reduce((s, x) => s + x.schuss * x.w, 0); let z = Math.random() * ges; for (const x of alle) { z -= x.schuss * x.w; if (z <= 0) return x.name; } return alle[0].name; };
     // Vorlage (etwa 3 von 4 Toren): Mitspieler nach Technik gewichtet
     const vorlage = (T, tor) => { if (Math.random() > 0.75) return null; const alle = [...T.schuetzen, ...zweiteReihe(T)].filter(x => x.name !== tor), ges = alle.reduce((s, x) => s + x.technik, 0); let z = Math.random() * ges; for (const x of alle) { z -= x.technik; if (z <= 0) return x.name; } return null; };
     const tor = (T, id) => { const n = schuetze(T); return { team: id, name: n, vorlage: vorlage(T, n) }; };
     const torschuetzen = [...[...Array(th)].map(() => tor(H, heimId)), ...[...Array(tg)].map(() => tor(G, gastId))];
-    let so = null; if (th === tg) so = Turnier.simuliere(heimId, gastId, true, H, G).sieger === 'G' ? 'gast' : 'heim';
-    return { th, tg, so, torschuetzen };
+    // Verlängerung (IFF 203): 10 von 60 Minuten, das erste Tor entscheidet; danach Penaltyschießen
+    let so = null, verl = false;
+    if (th === tg && entscheidung) { verl = true; const lv = (lH + lG) / 6; if (Math.random() < 1 - Math.exp(-lv)) { const heimTor = Math.random() < lH / (lH + lG); torschuetzen.push(heimTor ? tor(H, heimId) : tor(G, gastId)); if (heimTor) { aufs.h++; return { th: th + 1, tg, so, torschuetzen, aufs, verl }; } aufs.g++; return { th, tg: tg + 1, so, torschuetzen, aufs, verl }; } }
+    if (th === tg) so = Turnier.simuliere(heimId, gastId, true, H, G).sieger === 'G' ? 'gast' : 'heim';
+    return { th, tg, so, torschuetzen, aufs, verl };
   },
   /** Ergebnis eintragen: {th, tg, so: 'heim'|'gast'|null, torschuetzen:[{team, name}]} */
   eintragen(spielId, erg) {
     const s = this.d.spiele.find(x => x.id === spielId); if (!s || s.erg) return;
-    s.erg = { th: erg.th, tg: erg.tg, so: erg.th === erg.tg ? (erg.so || 'heim') : null };
+    s.erg = { th: erg.th, tg: erg.tg, so: erg.th === erg.tg ? (erg.so || 'heim') : null }; if (erg.verl) s.erg.verl = true;
     const zeile = (team, name) => { const k = team + '|' + name; return this.d.tore[k] || (this.d.tore[k] = { team, name, tore: 0, vorlagen: 0, pm: 0, pmSp: 0 }); };
     for (const x of erg.torschuetzen || []) { zeile(x.team, x.name).tore++; if (x.vorlage) { const v = zeile(x.team, x.vorlage); v.vorlagen = (v.vorlagen || 0) + 1; } }
     // Plus-Minus nur aus selbst gespielten Spielen
     for (const x of erg.plusminus || []) { const z = zeile(x.team, x.name); z.pm = (z.pm || 0) + x.pm; z.pmSp = (z.pmSp || 0) + 1; }
+    if (erg.aufs) { s.erg.aufs = erg.aufs; Ligastat.eintragen(this.d.agg ||= Ligastat.leer(), s.heim, s.gast, erg, (id) => this.team(id)); }
     if (!this.naechstesSpiel()) this.d.meister = this.tabelle()[0].id;
     this.speichern();
   },
@@ -3760,15 +3808,16 @@ const Saison = {
     const z = {}; for (const id of this.d.teams) z[id] = { id, sp: 0, s: 0, ss: 0, ns: 0, n: 0, tp: 0, tg: 0, pkt: 0 };
     for (const s of this.d.spiele) if (s.erg) {
       const h = z[s.heim], g = z[s.gast]; h.sp++; g.sp++; h.tp += s.erg.th; h.tg += s.erg.tg; g.tp += s.erg.tg; g.tg += s.erg.th;
-      if (s.erg.th > s.erg.tg) { h.s++; g.n++; h.pkt += 3; } else if (s.erg.tg > s.erg.th) { g.s++; h.n++; g.pkt += 3; }
+      if (s.erg.th > s.erg.tg && !s.erg.verl) { h.s++; g.n++; h.pkt += 3; } else if (s.erg.tg > s.erg.th && !s.erg.verl) { g.s++; h.n++; g.pkt += 3; }
+      else if (s.erg.th > s.erg.tg) { h.ss++; g.ns++; h.pkt += 2; g.pkt += 1; } else if (s.erg.tg > s.erg.th) { g.ss++; h.ns++; g.pkt += 2; h.pkt += 1; }
       else if (s.erg.so === 'gast') { g.ss++; h.ns++; g.pkt += 2; h.pkt += 1; } else { h.ss++; g.ns++; h.pkt += 2; g.pkt += 1; }
     }
     return Object.values(z).sort((x, y) => y.pkt - x.pkt || (y.tp - y.tg) - (x.tp - x.tg) || y.tp - x.tp || x.id.localeCompare(y.id));
   },
   soSimulieren(heimId, gastId) { return Turnier.simuliere(heimId, gastId, true, this.team(heimId), this.team(gastId)).sieger === 'G' ? 'gast' : 'heim'; },
   /** Unentschiedenes eigenes Spiel: erst nach dem Penaltyschießen eintragen. */
-  offenSetzen(spiel, erg, mensch) { this.d.offen = { id: spiel.id, th: erg.th, tg: erg.tg, torschuetzen: erg.torschuetzen, plusminus: erg.plusminus, mensch }; this.speichern(); },
-  offenAbschliessen(so) { const o = this.d.offen; if (!o) return; this.d.offen = null; this.eintragen(o.id, { th: o.th, tg: o.tg, so, torschuetzen: o.torschuetzen, plusminus: o.plusminus }); },
+  offenSetzen(spiel, erg, mensch) { this.d.offen = { id: spiel.id, th: erg.th, tg: erg.tg, torschuetzen: erg.torschuetzen, plusminus: erg.plusminus, aufs: erg.aufs || null, eigen: erg.eigen || null, verl: !!erg.verl, mensch }; this.speichern(); },
+  offenAbschliessen(so) { const o = this.d.offen; if (!o) return; this.d.offen = null; this.eintragen(o.id, { th: o.th, tg: o.tg, so, torschuetzen: o.torschuetzen, plusminus: o.plusminus, aufs: o.aufs || undefined, eigen: o.eigen || undefined, verl: o.verl }); },
   /** Scorerliste: Punkte = Tore + Vorlagen. */
   scorer() { return Object.values(this.d.tore).map(x => ({ ...x, vorlagen: x.vorlagen || 0, punkte: x.tore + (x.vorlagen || 0) })).sort((a, b) => b.punkte - a.punkte || b.tore - a.tore || a.name.localeCompare(b.name)); },
   torjaeger() { return Object.values(this.d.tore).sort((a, b) => b.tore - a.tore || a.name.localeCompare(b.name)); }
@@ -4192,17 +4241,18 @@ const Spiel = {
     if (this.ehrung) this.ehrung.gruppe.visible = false; halle.scheiben.visible = false;
     this.figL.objekt.visible = this.figR.objekt.visible = this.figT.objekt.visible = false;
     halle.zuschauer.faerbe(teamA, teamB); document.body.classList.add('match');
-    this.zustand = 'match'; Match.start(teamA, teamB, mensch);
+    this.zustand = 'match'; Match.start(teamA, teamB, mensch, !!this.saisonSpiel || !!(this.turnierSpiel5 && this.turnierSpiel5.phase !== 'gruppe'));   // Saison- und K.-o.-Spiele müssen entschieden werden (Verlängerung)
     Ton.init(); Ton.stimmung(0.5); Ton.pfiff(true); Ton.applaus(0.6, 2.4);
   },
   spiel5Ende() {
     this.zustand = 'ergebnis'; HUD.zeigen(false); HUD.banner(null);
-    const r = { A: Match.teams.A, B: Match.teams.B, stand: { ...Match.stand }, tore: Match.tore.slice(), strafen: (Match.strafenListe || []).slice(), stat: Match.statistikListe(), statistik: Match.statistikDaten(), mensch: Match.mensch };
+    const r = { verl: Match.verl, A: Match.teams.A, B: Match.teams.B, stand: { ...Match.stand }, tore: Match.tore.slice(), strafen: (Match.strafenListe || []).slice(), stat: Match.statistikListe(), statistik: Match.statistikDaten(), mensch: Match.mensch };
     // Saisonspiel: Ergebnis eintragen (Team A = Heim), Unentschieden per simuliertem Penaltyschießen
     const heimTm = this.spiel5Getauscht ? 'B' : 'A', gastTm = heimTm === 'A' ? 'B' : 'A';
     if (this.saisonSpiel && Saison.d) {
       const sp = this.saisonSpiel, id = (tm) => tm === heimTm ? sp.heim : sp.gast;
-      const erg = { th: r.stand[heimTm], tg: r.stand[gastTm], torschuetzen: r.tore.map(x => ({ team: id(x.team), name: x.name, vorlage: x.vorlage || null })), plusminus: Match.statistikListe().map(x => ({ team: id(x.team), name: x.name, pm: x.pm })) };
+      const meinTm = id('A') === Saison.d.spieler ? 'A' : id('B') === Saison.d.spieler ? 'B' : null;
+      const erg = { verl: r.verl, aufs: { h: r.statistik.ts[heimTm].aufsTor, g: r.statistik.ts[gastTm].aufsTor }, eigen: meinTm ? Ligastat.eigenAus(r.statistik, meinTm) : undefined, th: r.stand[heimTm], tg: r.stand[gastTm], torschuetzen: r.tore.map(x => ({ team: id(x.team), name: x.name, vorlage: x.vorlage || null })), plusminus: Match.statistikListe().map(x => ({ team: id(x.team), name: x.name, pm: x.pm })) };
       // Unentschieden: Penaltyschießen spielen oder simulieren, erst danach wird eingetragen
       if (erg.th === erg.tg) { Saison.offenSetzen(sp, erg, Match.mensch ? (this.spiel5Getauscht ? 'B' : 'A') : null); r.saison = { offen: true }; }   // Karriere: Teams kommen aus dem Kader (Saison.team)
       else { Saison.eintragen(sp.id, { ...erg, so: null }); r.saison = { offen: false }; }
@@ -4211,7 +4261,8 @@ const Spiel = {
     // Turnierspiel 5 gegen 5: Gruppenspiel darf unentschieden enden, im K.-o. entscheidet das Penaltyschießen
     if (this.turnierSpiel5 && Turnier.d) {
       const sp = this.turnierSpiel5, id = (tm) => tm === heimTm ? sp.heim : sp.gast, ko = sp.phase !== 'gruppe';
-      const erg = { th: r.stand[heimTm], tg: r.stand[gastTm], torschuetzen: r.tore.map(x => ({ team: id(x.team), name: x.name, vorlage: x.vorlage || null })) };
+      const meinTm = id('A') === Turnier.d.spieler ? 'A' : id('B') === Turnier.d.spieler ? 'B' : null;
+      const erg = { verl: r.verl, aufs: { h: r.statistik.ts[heimTm].aufsTor, g: r.statistik.ts[gastTm].aufsTor }, eigen: meinTm ? Ligastat.eigenAus(r.statistik, meinTm) : undefined, th: r.stand[heimTm], tg: r.stand[gastTm], torschuetzen: r.tore.map(x => ({ team: id(x.team), name: x.name, vorlage: x.vorlage || null })) };
       if (erg.th === erg.tg && ko) { Turnier.offenSetzen(sp, erg, Match.mensch ? (this.spiel5Getauscht ? 'B' : 'A') : null); r.turnier = { offen: true }; }
       else { Turnier.eintragen(sp.id, { ...erg, sieger: erg.th > erg.tg ? 'H' : erg.tg > erg.th ? 'G' : null }); r.turnier = { offen: false }; }
       this.turnierSpiel5 = null;
@@ -4268,8 +4319,9 @@ const Spiel = {
     this.welt.menschPraezise = this.menschSchiesst; this.welt.schussGesperrt = this.modus === 'parcours';
     this.manuellGelaufen = false; this.trickWunsch = null; this.trickWunschBis = 0; this.rausWunsch = false; this.rausZiel = null; Eingabe.joy = null;
     HUD.trickLeiste(this.menschSchiesst ? 'schuetze' : this.menschHaelt ? 'torwart' : null);
-    ent.reset(0, 0); this.torwart.reset(); if (trainingOhneTW) this.torwart.pos.set(TOR.x + 3, 0, 4);
-    ball.reset(0, 0); halle.netz.zuruecksetzen();
+    const px = Config.regeln.penaltyPunkt || 0;   // IFF 2026 (508 Abs. 2): 5 m vor der Mittellinie Richtung Tor
+    ent.reset(px, 0); this.torwart.reset(); if (trainingOhneTW) this.torwart.pos.set(TOR.x + 3, 0, 4);
+    ball.reset(px, 0); halle.netz.zuruecksetzen();
     this.versuch = new Versuch({ training: this.modus === 'training' }); this.aufnahme.leeren(); this.simZeit = 0;
     this.kollAlle = { kapseln: [...this.torwart.fig.kapseln, ...ent.fig.kapseln] }; this.kollTW = { kapseln: this.torwart.fig.kapseln };
     this.wischHochFlag = false; this.paradeWunsch = null; this.zielCursor = { z: 0, y: 0.3 }; this.zeitlupeBis = -1; this.stickSperre = 0;
@@ -4902,10 +4954,10 @@ const Match = {
   },
   figuren() { return [...(this.alle || this.ents).map(e => e.s.fig), ...this.gks.map(g => g.fig)]; },
   /** Neues Spiel. mensch = 'A' (du spielst Team A) oder null (KI gegen KI). */
-  start(teamA, teamB, mensch) {
+  start(teamA, teamB, mensch, entscheidung) {
     this.init();
     this.teams = { A: teamA, B: teamB }; this.alt = TeamDB.ausweich(teamA, teamB); this.mensch = mensch;
-    this.stand = { A: 0, B: 0 }; this.tore = []; this.drittel = 1; this.dauer = (Einst.drittelMin || 2) * 60; this.uhr = this.dauer;
+    this.stand = { A: 0, B: 0 }; this.tore = []; this.drittel = 1; this.dauer = (Einst.drittelMin || 2) * 60; this.uhr = this.dauer; this.entscheidung = !!entscheidung; this.verl = false; this.goldenGoal = false;
     this.letzteMannschaft = 'A'; this.letzterSchuetze = null; this.letzterBesitz = { A: '', B: '' }; this.trickWunsch = null; this.eingabeT = 0; this._hud = '';
     for (const f of [...this.poolL, ...this.poolR]) f.objekt.visible = false;
     let iL = 0, iR = 0; this.ents = [];
@@ -4978,7 +5030,7 @@ const Match = {
     else if (this.phase === 'freischlag') this.freischlagSchritt(dt);
     else if (this.phase === 'penalty') this.penaltySchritt(dt);
     if (this.phase === 'spiel' && this.vorteil) this.vorteilSchritt(dt);
-    else if (this.phase === 'tor' || this.phase === 'pause') { if (this.phaseT > (this.phase === 'tor' ? 2.8 : 2.6)) this.bullyStart(); }
+    else if (this.phase === 'tor' || this.phase === 'pause') { if (this.phaseT > (this.phase === 'tor' ? 2.8 : 2.6)) { if (this.phase === 'tor' && this.goldenGoal) { this.phase = 'ende'; Spiel.spiel5Ende(); return; } this.bullyStart(); } }
     if (this.phase === 'ende') return;
     const aktiv = this.phase === 'spiel' || this.phase === 'freischlag' || this.phase === 'penalty';
     // nächste Spieler zum Ball je Team (für die KI)
@@ -5017,6 +5069,7 @@ const Match = {
     if (!this.besitzer && !gefangen && ball.kinematisch) ball.kinematisch = false;
     ball.schritt(dt, this.koll);
     if (this.phase === 'spiel') { this.torPruefen(); this.ausPruefen(); this.torwartBall(dt); }
+    if (this.phase === 'spiel') this.torhueterraumPruefen();
     else if (this.phase === 'penalty') { this.abfangen(); this.torPruefen(); if (this.phase === 'penalty') this.penaltyAus(); }
   },
   stehen(e) { const A = e.A, S = e.s; A.richtung.set(Math.sin(S.yaw), 0, Math.cos(S.yaw)); A.tempo = this.phase === 'tor' ? 0.15 : 0; A.laden = false; A.trick = null; A.finte = false; return A; },
@@ -5441,11 +5494,12 @@ const Match = {
     if (this.pen) { const P = this.pen; this.pen = null; for (const g of this.gks) g.ki.penaltyModus = false; this.penalties.push({ team: P.team, name: P.e.s.daten.name, tor: true }); this.ts[P.team].penaltyTore++; }
     // Tor des gefoulten Teams während Vorteil/verzögerter Strafe: die angezeigte Strafe entfällt
     if (this.vorteil && this.vorteil.team === team) { this.vorteil = null; HUD.schiri(null); }
-    this.verzoegert = (this.verzoegert || []).filter(x => x.gegen !== team); this.verzoegerteStrafen();
-    const gegen = team === 'A' ? 'B' : 'A', st = this.strafen.filter(x => x.team === gegen).sort((a, b) => a.rest - b.rest)[0]; if (st) this.strafeEnde(st);   // Gegentor beendet eine Strafe
-    this.stand[team]++; this.phase = 'tor'; this.phaseT = 0; this.besitzer = null; this.passEmpfaenger = null;
+    // Gegentor beendet die kürzeste laufende Strafe – vor dem Aussprechen verzögerter Strafen, die erst jetzt beginnen
+    const gegen = team === 'A' ? 'B' : 'A', st = this.strafen.filter(x => x.team === gegen).sort((a, b) => a.rest - b.rest)[0]; if (st) this.strafeEnde(st);
+    { const v = this.verzoegert || [], k = v.map(x => x.gegen === team).lastIndexOf(true); if (k >= 0) v.splice(k, 1); this.verzoegert = v; } this.verzoegerteStrafen();   // IFF 602: nur die zuletzt angezeigte Strafe entfällt
+    this.stand[team]++; this.phase = 'tor'; this.phaseT = 0; if (this.verl) this.goldenGoal = true; this.besitzer = null; this.passEmpfaenger = null;
     const ls = this.letzterSchuetze, name = ls && ls.team === team ? ls.name : (this.letzterBesitz[team] || '');
-    const min = Math.floor((this.drittel - 1) * this.dauer + (this.dauer - this.uhr)), zeit = `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`;
+    const min = this.spielzeit(), zeit = `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`;
     // Vorlage und Plus-Minus (kein Plus-Minus bei Toren in Überzahl)
     const sch = this.letzterSchuetzeEnt && this.letzterSchuetzeEnt.team === team && this.letzterSchuetzeEnt.s.daten.name === name ? this.letzterSchuetzeEnt : this.alle.find(x => x.team === team && x.s.daten.name === name);
     const vl = sch && sch.vorlage && sch.vorlage.team === team ? sch.vorlage.s.daten.name : null;
@@ -5520,6 +5574,8 @@ const Match = {
       if (this.phase === 'spiel') { const ta = va.x * nx + va.z * nz, tb = -(vb.x * nx + vb.z * nz), taeter = ta > tb ? A : B, opfer = taeter === A ? B : A;
         if (opfer === e && Math.random() < (opfer === this.besitzer ? 0.7 : 0.35)) { this.foul(taeter, opfer, 'stoss', _m5[4].set((A.w.x + B.w.x) / 2, 0, (A.w.z + B.w.z) / 2)); break; } } }
   },
+  /** Gespielte Zeit in Sekunden seit Spielbeginn (Verlängerung: halbe Drittellänge). */
+  spielzeit() { const lang = this.drittel > SPIEL5.drittel ? this.dauer / 2 : this.dauer; return Math.floor(Math.min(this.drittel - 1, SPIEL5.drittel) * this.dauer + (lang - this.uhr)); },
   /** Reihe, die auf dem Feld die Mehrheit stellt (bei Gleichstand die zuletzt eingewechselte). */
   mehrheitsReihe(team) { const auf = this.ents.filter(e => e.team === team), r1 = auf.filter(e => e.reihe === 1).length, r2 = auf.length - r1; return r1 > r2 ? 1 : r2 > r1 ? 2 : (this.linie && this.linie[team] ? this.linie[team].nr : 1); },
   /** Auszeit (eine je Team und Spiel): KI-Trainer bei knappem Rückstand im letzten Drittel, Mensch über das Pausenmenü; wirkt bei der nächsten Unterbrechung. */
@@ -5529,7 +5585,7 @@ const Match = {
       const geg = team === 'A' ? 'B' : 'A', rueck = this.stand[geg] - this.stand[team], mensch = this.mensch && team === 'A';
       const ki = !mensch && this.drittel >= 3 && this.uhr < this.dauer * 0.5 && rueck >= 1 && rueck <= 2;
       if ((mensch && this.auszeitWunsch === team) || ki) {
-        tr.auszeit = { drittel: this.drittel, zeit: Math.floor((this.drittel - 1) * this.dauer + (this.dauer - this.uhr)), stand: `${this.stand.A}:${this.stand.B}` }; this.auszeitWunsch = null;
+        tr.auszeit = { drittel: this.drittel, zeit: this.spielzeit(), stand: `${this.stand.A}:${this.stand.B}` }; this.auszeitWunsch = null;
         for (const e of this.alle) if (e.team === team) e.s.energie = Math.min(1, e.s.energie + 0.3);
         HUD.meldung(t('s5_auszeit', { t: this.teams[team].kuerzel, n: tr.name }), 'gut'); this.phaseT = Math.min(this.phaseT, -1.5);
       }
@@ -5618,12 +5674,22 @@ const Match = {
     const schwer = schwerVorgabe ?? Math.random() < (art === 'stoss' ? 0.45 : 0.25);
     const text = t(art === 'stoss' ? 's5_foul_stoss' : 's5_foul_stock', { n: taeter.s.daten.name });
     // Penalty: Foul am Ballführer bei klarer Torchance (nah am Tor, kein weiterer Verteidiger dazwischen)
-    if (opfer === this.besitzer && this.torchance(opfer, taeter)) { HUD.schiri(text + ' · ' + t('s5_penalty_pfiff')); if (schwer) this.strafe(taeter, art); this.penaltyStart(opfer); return; }
+    if (opfer === this.besitzer && this.torchance(opfer, taeter)) { HUD.schiri(text + ' · ' + t('s5_penalty_pfiff')); this.penaltyStart(opfer); return; }   // IFF 603 Abs. 8: der Penalty ersetzt die kleine Bankstrafe
     // Vorteil: das gefoulte Team hat den Ball – weiterspielen, Strafe wird verzögert ausgesprochen
     if (this.besitzer && this.besitzer.team === opfer.team) { this.vorteil = { team: opfer.team, ort: new V3(ort.x, 0, ort.z), t: 0, taeter: schwer ? taeter : null, art }; HUD.schiri(text + ' · ' + t('s5_vorteil')); this.statistik.vorteile = (this.statistik.vorteile || 0) + 1; return; }
     HUD.schiri(text);
     if (schwer) this.strafe(taeter, art);
     this.freischlag(opfer.team, ort);
+  },
+  /** IFF 507 Abs. 8: Feldspieler im Torhüterraum (1 × 2,5 m, Linien gehören dazu) – Freischlag für den Gegner. Die KI meidet den Raum; die Prüfung greift vor allem beim Menschen. */
+  torhueterraumPruefen() {
+    for (const e of this.ents) {
+      const q = e.s.pos, ax = Math.abs(q.x); if (ax < TWRAUM.vorne || ax > TOR.x || Math.abs(q.z) > TWRAUM.hz) continue;
+      const geg = e.team === 'A' ? 'B' : 'A', w = this.welt(e, _m5[5]);
+      this.fouls[e.team]++; this.ts[e.team].fouls++; { const x = this.stat[e.team + '|' + e.s.daten.name]; if (x) x.fouls++; }
+      HUD.schiri(t('s5_twraum', { n: e.s.daten.name })); this.statistik.twraum = (this.statistik.twraum || 0) + 1;
+      this.freischlag(geg, new V3(w.x, 0, w.z)); return;
+    }
   },
   /** Klare Torchance des Ballführers e (eigenes System, Tor bei +x): nah am Tor und frei – außer dem Täter steht kein Feldspieler zwischen ihm und dem Tor. */
   torchance(e, taeter) {
@@ -5641,13 +5707,14 @@ const Match = {
   },
   /** Verzögerte Strafen bei der nächsten Unterbrechung aussprechen. */
   verzoegerteStrafen() { const l = this.verzoegert || []; this.verzoegert = []; for (const x of l) if (this.ents.includes(x.e)) this.strafe(x.e, x.art); },
-  /** Penalty im Spiel: Schütze startet mit Ball an der Mittellinie, nur er und der Torhüter spielen; kein Nachschuss. */
+  /** Penalty im Spiel: Schütze startet mit Ball 5 m vor der Mittellinie (IFF 2026), nur er und der Torhüter spielen; kein Nachschuss, kein Zorro mit mehrfachem Richtungswechsel. */
   penaltyStart(e) {
     this.phase = 'penalty'; this.phaseT = 0; this.besitzer = null; this.passEmpfaenger = null; this.vorteil = null;
     this.pen = { e, team: e.team, geschossen: false, nachT: 0 }; this.statistik.penalties = (this.statistik.penalties || 0) + 1;
-    ball.reset(0, 0); halle.netz.zuruecksetzen(); halle.netz2.zuruecksetzen();
+    const px = Config.regeln.penaltyPunkt || 0;   // IFF 2026: 5 m vor der Mittellinie Richtung angegriffenes Tor
+    ball.reset(e.dreh ? -px : px, 0); halle.netz.zuruecksetzen(); halle.netz2.zuruecksetzen(); this.pen.v = {};
     for (const o of this.ents) { if (o === e) continue; this.setze(o, -7 - o.i * 1.1, o.team === e.team ? -8.6 : 8.6); }   // alle anderen warten an der Bande der eigenen Hälfte
-    this.setze(e, -0.6, 0); this.neustartBesitz = true; this.gibBall(e); e.plan = null; this.ts[e.team].penalties++;
+    this.setze(e, px - 0.6, 0); this.neustartBesitz = true; this.gibBall(e); e.plan = null; this.ts[e.team].penalties++;
     for (const g of this.gks) { g.T.reset(); g.T.gefangen = false; g.ki.reset(); g.bedroht = false; g.halteT = 0; g.wurfT = 0; g.ki.penaltyModus = g.team !== e.team; }
     if (this.mensch && e.team === 'A') this.steuer = e;
     Ton.pfiff(true); HUD.banner(`${t('s5_penalty_titel')}<small>${esc(e.s.daten.name)}</small>`, 'neon');
@@ -5656,6 +5723,7 @@ const Match = {
     const P = this.pen; if (!P) return;
     if (this.phaseT > 1.2) HUD.banner(null);
     if (P.geschossen) { P.nachT += dt; P.e.s.ballSperre = 1; }   // kein Nachschuss
+    else if (P.v && Regelwerk.zorroVerstoss(P.v, P.e.s, ball)) { HUD.schiri(t('r_zorro')); this.penaltyEnde(false); return; }   // im gedrehten System ist die Seite nur gespiegelt – die Zahl der Wechsel bleibt gleich
     const gef = this.gks.some(g => g.T.gefangen), ruhig = ball.v.length() < 0.6 && !ball.kinematisch;
     if ((P.geschossen && (gef || (ruhig && P.nachT > 0.4) || P.nachT > 2.6)) || (!P.geschossen && !P.e.s.kontrolle && this.phaseT > 1) || this.phaseT > 12) this.penaltyEnde(false);
   },
@@ -5670,8 +5738,15 @@ const Match = {
     let x = klemme(ort.x, -18, 18), z = klemme(ort.z, -8.4, 8.4);
     // im Torraumbereich (3,5 m vor dem Tor) nicht erlaubt: auf den nächsten erlaubten Punkt schieben
     // TWRAUM/TORRAUM.vorne sind Positionen (x der Vorderkante), keine Tiefen: 3,5 m Abstand zum Torraum (4 × 5 m), sonst gerade herausschieben
-    const grenze = TORRAUM.vorne - 3.5; if (Math.abs(x) > grenze && Math.abs(z) < TORRAUM.hz + 3.5) x = Math.sign(x) * grenze;
-    z = klemme(z, -8.4, 8.4);
+    // IFF 506 Abs. 2: nie hinter der verlängerten Torlinie (dann nächster Bullypunkt), nie näher als 3,5 m am Torhüterraum –
+    // sonst entlang der Linie von der Torlinienmitte durch den Tatort auf 3,5 m vom Torhüterraum hinausschieben; mindestens 1,5 m von der Bande
+    const sx = Math.sign(x) || 1;
+    if (Math.abs(x) > TOR.x) { x = sx * BULLY_PUNKT.x; z = Math.sign(z || 1) * BULLY_PUNKT.z; }
+    const abstTW = (px, pz) => Math.hypot(Math.max(0, Math.abs(pz) - TWRAUM.hz), Math.max(0, TWRAUM.vorne - Math.abs(px), Math.abs(px) - TOR.x));
+    if (abstTW(x, z) < 3.5) { const dx = x - sx * TOR.x, dz = z; let lo = 0, hi = 14; const l = Math.hypot(dx, dz) || 1, ux = dx / l || -sx, uz = dz / l;
+      for (let k = 0; k < 30; k++) { const m = (lo + hi) / 2; if (abstTW(sx * TOR.x + ux * m, uz * m) < 3.5) lo = m; else hi = m; }
+      x = sx * TOR.x + ux * hi; z = uz * hi; }
+    x = klemme(x, -18.5, 18.5); z = klemme(z, -8.5, 8.5);
     this.phase = 'freischlag'; this.phaseT = 0; this.besitzer = null; this.passEmpfaenger = null; this.statPass = null; this.besitzStat = null;
     this.ts[team].freischlaege++; this.auszeitPruefen();
     this.verzoegerteStrafen(); this.linieBeiUnterbrechung();
@@ -5730,6 +5805,8 @@ const Match = {
     this.vorteil = null; this.verzoegerteStrafen();   // angezeigte Strafen zum Drittelende aussprechen
     for (const e of this.ents) e.s.kontrolle = false; this.besitzer = null; Ton.pfiff(true);
     if (this.drittel < SPIEL5.drittel) { this.drittel++; this.uhr = this.dauer; this.phase = 'pause'; this.phaseT = 0; HUD.banner(`${t('s5_pause', { n: this.drittel })}<small>${this.stand.A} : ${this.stand.B}</small>`, 'neon'); }
+    // Verlängerung (IFF 203): Unentschieden in einem Spiel, das entschieden werden muss – halbe Drittellänge (10 von 20 Minuten), das erste Tor entscheidet
+    else if (this.entscheidung && !this.verl && this.stand.A === this.stand.B) { this.verl = true; this.drittel++; this.uhr = this.dauer / 2; this.phase = 'pause'; this.phaseT = 0; HUD.banner(`${t('s5_verl')}<small>${this.stand.A} : ${this.stand.B} · ${t('s5_golden_goal')}</small>`, 'neon'); }
     else { this.phase = 'ende'; Spiel.spiel5Ende(); }
   },
   /* ---------- Darstellung ---------- */
@@ -5757,8 +5834,8 @@ const Match = {
     const u = Math.max(0, Math.ceil(this.uhr)), st = (this.strafen || []).map(x => `${x.team}${Math.ceil(x.rest)}`).join(',') + 'v' + (this.verzoegert || []).length, s = `${this.stand.A}|${this.stand.B}|${this.drittel}|${u}|${st}`; if (!zwingen && s === this._hud) return; this._hud = s;
     const uhr = `${Math.floor(u / 60)}:${String(u % 60).padStart(2, '0')}`;
     const strafText = (this.verzoegert || []).map(x => ` · ⚑ ${esc(this.teams[x.e.team].kuerzel)}`).join('') + (this.strafen || []).map(x => { const r = Math.ceil(x.rest); return ` · ⏱ ${esc(this.teams[x.team].kuerzel)} ${Math.floor(r / 60)}:${String(r % 60).padStart(2, '0')}`; }).join('');
-    HUD.matchStand(this.teams.A, this.teams.B, this.alt, this.stand, this.drittel, uhr + strafText);
-    halle.tafel(this.teams.A.kuerzel, this.teams.B.kuerzel, this.stand.A, this.stand.B, `${this.drittel}. ${t('s5_drittel').toUpperCase()} · ${uhr}`);
+    HUD.matchStand(this.teams.A, this.teams.B, this.alt, this.stand, this.verl ? 'V' : this.drittel, uhr + strafText);
+    halle.tafel(this.teams.A.kuerzel, this.teams.B.kuerzel, this.stand.A, this.stand.B, `${this.verl ? t('s5_verl').toUpperCase() : this.drittel + '. ' + t('s5_drittel').toUpperCase()} · ${uhr}`);
   },
   /** Kamera: dem gesteuerten Spieler von schräg hinten folgen, sonst seitliche Fernsehansicht. */
   kamera(wp, wz) {
@@ -5829,7 +5906,7 @@ const HUD = {
     const e = this.el; e.anzeige.classList.remove('versteckt');
     const kz = (el, T, a) => { const k = el.querySelector('.kz'); k.textContent = T.kuerzel; const p = a ? T.sekundaer : T.primaer; k.style.background = p; k.style.color = textFarbe(p); k.style.outline = '2px solid ' + (a ? T.primaer : T.sekundaer); el.querySelector('.punkte').innerHTML = ''; };
     kz(e.a, A, false); kz(e.b, B, alt); e.stand.textContent = `${stand.A} : ${stand.B}`;
-    e.info.innerHTML = `${drittel}. ${t('s5_drittel')} · <b>${uhr}</b>`;
+    e.info.innerHTML = `${drittel === 'V' ? t('s5_verl') : drittel + '. ' + t('s5_drittel')} · <b>${uhr}</b>`;
   },
   steuerHinweis() {
     const S = Spiel, N = (k) => Eingabe.tastenName(Einst.tasten[k]), touch = Eingabe.geraet === 'touch', lauf = `${N('hoch')} ${N('links')} ${N('runter')} ${N('rechts')}`;
@@ -6098,21 +6175,21 @@ const UI = {
       Turnier.neu([du, ...rest], du, gruppen, art); this.turnierHub();
     });
   },
-  turnierHub(tab = 'plan') {
+  turnierHub(tab = 'plan', nachEnde) {
     if (Spiel.zustand !== 'menue') Spiel.leerlauf();
     const T = Turnier.d; if (!T) return this.turnierSetup();
-    if (T.sieger) return this.siegerehrungZeigen();
+    if (T.sieger && !nachEnde) return this.siegerehrungZeigen();
     const n = Turnier.naechstesSpiel(), name = id => TeamDB.hole(id).name, kz = id => TeamDB.hole(id).kuerzel;
     const meins = n && Turnier.istMeins(n), aus = Turnier.ausgeschieden(), s5 = T.art === 'spiel5', offen = T.offen && n && T.offen.id === n.id ? T.offen : null;
     const simErg = (x) => s5 ? Turnier.simuliere5(x.heim, x.gast, x.phase !== 'gruppe') : Turnier.simuliere(x.heim, x.gast, x.phase !== 'gruppe');
-    const spielZeile = (s) => `<div class="spiel ${Turnier.istMeins(s) ? 'meins' : ''}"><span class="hinweisText" style="width:6.5rem">${Turnier.phaseName(s.phase)}${s.gruppe ? ' ' + s.gruppe : ''}</span><span class="wer">${esc(name(s.heim))} – ${esc(name(s.gast))}</span><span class="erg">${s.erg ? `${s.erg.th}:${s.erg.tg}${s.erg.so ? ' ' + t('tn_np') : ''}` : '–'}</span></div>`;
+    const spielZeile = (s) => `<div class="spiel ${Turnier.istMeins(s) ? 'meins' : ''}"><span class="hinweisText" style="width:6.5rem">${Turnier.phaseName(s.phase)}${s.gruppe ? ' ' + s.gruppe : ''}</span><span class="wer">${esc(name(s.heim))} – ${esc(name(s.gast))}</span><span class="erg">${s.erg ? `${s.erg.th}:${s.erg.tg}${s.erg.so ? ' ' + t('tn_np') : s.erg.verl ? ' ' + t('s5_nv') : ''}` : '–'}</span></div>`;
     const tabellen = T.gruppen ? Object.keys(T.gruppenTeams).map(g => `<div class="karte"><h3>${t('tn_gruppe')} ${g}</h3><table class="tab"><tr><th>#</th><th>Team</th><th class="z">${t('tn_sp')}</th><th class="z">${t('tn_s')}</th><th class="z">${t('tn_u')}</th><th class="z">${t('tn_n')}</th><th class="z">${t('tn_tore')}</th><th class="z">${t('tn_punkte')}</th></tr>
       ${Turnier.tabelle(g).map((z, i) => `<tr style="${z.id === T.spieler ? 'color:var(--akzent)' : ''}"><td>${i + 1}</td><td>${esc(kz(z.id))} ${esc(name(z.id))}</td><td class="z">${z.sp}</td><td class="z">${z.s}</td><td class="z">${z.u}</td><td class="z">${z.n}</td><td class="z">${z.tp}:${z.tg}</td><td class="z"><b>${z.pkt}</b></td></tr>`).join('')}</table></div>`).join('') : `<div class="karte hinweisText">K.-o.-System</div>`;
     const st = Object.values(T.stats), b = Turnier.beste();
     const schuetzen = st.filter(x => x.typ === 's').sort((a, c) => c.tore - a.tore).slice(0, 10), tws = st.filter(x => x.typ === 't').sort((a, c) => c.paraden / c.schuesse - a.paraden / a.schuesse).slice(0, 8);
     const gesT = st.filter(x => x.typ === 's').reduce((s, x) => s + x.tore, 0), gesS = st.filter(x => x.typ === 's').reduce((s, x) => s + x.schuesse, 0);
     const sc = Turnier.scorer().slice(0, 15);
-    const statistik = s5 ? `<div class="karte"><h3>${t('s5_scorer')}</h3><table class="tab"><tr><th>#</th><th>${t('st_spieler')}</th><th>Team</th><th class="z">${t('tn_tore')}</th><th class="z">${t('s5_vl')}</th><th class="z">${t('tn_punkte')}</th></tr>${sc.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.name)}</td><td>${esc(kz(x.team))}</td><td class="z">${x.tore}</td><td class="z">${x.vorlagen}</td><td class="z"><b>${x.punkte}</b></td></tr>`).join('')}</table>${sc.length ? '' : `<p class="hinweisText">${t('s5_keine_tore')}</p>`}</div>` : `<div class="karte"><h3>${t('tn_bester_schuetze')}: ${b.sch ? esc(b.sch.name) + ' (' + b.sch.tore + ')' : '–'} · ${t('tn_bester_tw')}: ${b.tw ? esc(b.tw.name) + ' (' + Math.round(b.tw.paraden / b.tw.schuesse * 100) + ' %)' : '–'}</h3>
+    const statistik = s5 ? `<div class="karte"><h3>${t('s5_scorer')}</h3><table class="tab"><tr><th>#</th><th>${t('st_spieler')}</th><th>Team</th><th class="z">${t('tn_tore')}</th><th class="z">${t('s5_vl')}</th><th class="z">${t('tn_punkte')}</th></tr>${sc.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.name)}</td><td>${esc(kz(x.team))}</td><td class="z">${x.tore}</td><td class="z">${x.vorlagen}</td><td class="z"><b>${x.punkte}</b></td></tr>`).join('')}</table>${sc.length ? '' : `<p class="hinweisText">${t('s5_keine_tore')}</p>`}</div>${this.ligaStatistik(T.agg, (id) => TeamDB.hole(id), T.spieler)}` : `<div class="karte"><h3>${t('tn_bester_schuetze')}: ${b.sch ? esc(b.sch.name) + ' (' + b.sch.tore + ')' : '–'} · ${t('tn_bester_tw')}: ${b.tw ? esc(b.tw.name) + ' (' + Math.round(b.tw.paraden / b.tw.schuesse * 100) + ' %)' : '–'}</h3>
       <p class="hinweisText">${t('tn_tore')}: ${gesT} · ${t('tn_trefferquote')}: ${gesS ? Math.round(gesT / gesS * 100) : 0} %</p>
       <table class="tab"><tr><th>${t('schuetze')}</th><th>Team</th><th class="z">${t('tn_tore')}</th><th class="z">${t('tn_trefferquote')}</th></tr>${schuetzen.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(kz(x.team))}</td><td class="z">${x.tore}/${x.schuesse}</td><td class="z">${Math.round(x.tore / x.schuesse * 100)} %</td></tr>`).join('')}</table>
       <table class="tab" style="margin-top:.8rem"><tr><th>${t('torhueter')}</th><th>Team</th><th class="z">${t('t_paraden')}</th><th class="z">${t('tn_paradenquote')}</th></tr>${tws.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(kz(x.team))}</td><td class="z">${x.paraden}/${x.schuesse}</td><td class="z">${Math.round(x.paraden / x.schuesse * 100)} %</td></tr>`).join('')}</table></div>`;
@@ -6125,7 +6202,7 @@ const UI = {
       <div class="spalten">${tab === 'plan' ? `<div class="karte">${T.spiele.map(spielZeile).join('')}</div>` : tab === 'tabelle' ? tabellen : statistik}</div>`);
     this.chipsBinden(d);
     this.klick(d, '[data-menue]', () => this.hauptmenue());
-    this.klick(d, '[data-tab]', (el) => this.turnierHub(el.dataset.tab));
+    this.klick(d, '[data-tab]', (el) => this.turnierHub(el.dataset.tab, nachEnde));
     this.klick(d, '[data-ende]', () => { this.bestaetigen(t('tn_verwerfen') + '?').then(ok => { if (ok) { Turnier.verwerfen(); this.hauptmenue(); } }); });
     const spielStarten = (mensch) => { const heimIstSpieler = n.heim === T.spieler; const A = TeamDB.hole(n.heim), B = TeamDB.hole(n.gast), m = mensch ? (heimIstSpieler ? 'A' : 'B') : null; if (s5) Spiel.starteSpiel5(A, B, m, null, n); else Spiel.starteMatch(A, B, m, n); };
     this.klick(d, '[data-spielen]', () => spielStarten(true));
@@ -6137,6 +6214,24 @@ const UI = {
   },
   turnierSOspielen() { const o = Turnier.d && Turnier.d.offen; if (!o) return this.turnierHub(); const sp = Turnier.d.spiele.find(x => x.id === o.id); Spiel.starteMatch(TeamDB.hole(sp.heim), TeamDB.hole(sp.gast), o.mensch, null, null, o); },
   turnierSOsimulieren() { const o = Turnier.d && Turnier.d.offen; if (!o) return; const sp = Turnier.d.spiele.find(x => x.id === o.id); Turnier.offenAbschliessen(Turnier.simuliere(sp.heim, sp.gast, true).sieger === 'G' ? 'gast' : 'heim'); },
+  /** Zusammengeführte Statistik (Saison, Turnier 5 gegen 5): Torhüter-Rangliste, Schüsse je Team, dein Team aus den gespielten Spielen. */
+  ligaStatistik(agg, teamVon, meinId) {
+    const kz = (id) => esc(teamVon(id).kuerzel), pz = (a, b) => b ? Math.round(a / b * 100) + ' %' : '–', k1 = (v) => String(Math.round(v * 10) / 10).replace('.', ','), zeit = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+    const tws = Ligastat.torhueter(agg);
+    if (!tws.length) return `<div class="karte hinweisText">${t('lg_leer')}</div>`;
+    const twTab = `<div class="karte"><h3>${t('torhueter')}</h3><table class="tab"><tr><th>#</th><th>${t('torhueter')}</th><th>Team</th><th class="z">${t('tn_sp')}</th><th class="z">${t('st_aufs_tor_gegen')}</th><th class="z">${t('st_gegentore')}</th><th class="z">${t('t_paraden')}</th><th class="z">${t('st_fangquote')}</th><th class="z">${t('lg_gaa')}</th><th class="z">${t('lg_zunull')}</th></tr>
+      ${tws.map((x, i) => `<tr style="${x.team === meinId ? 'color:var(--akzent);font-weight:800' : ''}"><td>${i + 1}</td><td>#${x.nummer} ${esc(x.name)}</td><td>${kz(x.team)}</td><td class="z">${x.sp}</td><td class="z">${x.aufsGegen}</td><td class="z">${x.gegentore}</td><td class="z">${x.paraden}</td><td class="z"><b>${k1(x.quote)} %</b></td><td class="z">${k1(x.gaa)}</td><td class="z">${x.zuNull}</td></tr>`).join('')}</table></div>`;
+    const tm = Object.values(agg.team).sort((a, b) => (b.aufs / b.sp - b.aufsGegen / b.sp) - (a.aufs / a.sp - a.aufsGegen / a.sp));
+    const tmTab = `<div class="karte"><h3>${t('lg_schuesse')}</h3><table class="tab"><tr><th>Team</th><th class="z">${t('tn_sp')}</th><th class="z">${t('lg_aufs_fuer')}</th><th class="z">${t('lg_aufs_gegen')}</th><th class="z">${t('lg_je_spiel')}</th></tr>
+      ${tm.map(x => `<tr style="${x.team === meinId ? 'color:var(--akzent);font-weight:800' : ''}"><td>${kz(x.team)} ${esc(teamVon(x.team).name)}</td><td class="z">${x.sp}</td><td class="z">${x.aufs}</td><td class="z">${x.aufsGegen}</td><td class="z">${k1(x.aufs / x.sp)} : ${k1(x.aufsGegen / x.sp)}</td></tr>`).join('')}</table></div>`;
+    const E = agg.eigen, z = (l, v) => `<div class="pZeile"><span>${l}</span><b>${v}</b></div>`;
+    const eigen = E ? `<div class="karte"><h3>${t('lg_dein_team', { n: E.sp })}</h3>
+      ${z(t('sa_tore'), `${E.tore} : ${E.gegentore}`)}${z(t('st_schuesse'), `${E.schuesse} (${t('st_aufs_tor')}: ${E.aufsTor})`)}${z(t('st_chancenverwertung'), pz(E.tore, E.aufsTor))}${z(t('st_besitz'), k1(E.besitzSumme / E.sp) + ' %')}
+      ${z(t('st_paesse'), `${E.paesseAn}/${E.paesse} (${pz(E.paesseAn, E.paesse)})`)}${z(t('st_ballgewinne'), E.ballgewinne)}${z(t('st_fouls'), E.fouls)}${z(t('st_strafmin'), E.strafMin)}${z(t('st_pp_tore'), E.ppTore)}${z(t('st_freischlaege'), E.freischlaege)}${z(t('st_auszeit'), E.auszeiten)}
+      <table class="tab" style="margin-top:.6rem"><tr><th>${t('st_reihe')}</th><th class="z">${t('st_eis')}</th><th class="z">${t('st_tf')}</th><th class="z">${t('st_tg')}</th><th class="z">+/−</th><th class="z">${t('st_sf')}</th><th class="z">${t('st_sg')}</th></tr>
+      ${[1, 2].map(nr => { const x = E.reihen[nr], pm = x.tf - x.tg; return `<tr><td>${nr}</td><td class="z">${zeit(x.eis)}</td><td class="z">${x.tf}</td><td class="z">${x.tg}</td><td class="z">${pm > 0 ? '+' : ''}${pm}</td><td class="z">${x.sf}</td><td class="z">${x.sg}</td></tr>`; }).join('')}</table></div>` : `<div class="karte hinweisText">${t('lg_kein_eigen')}</div>`;
+    return twTab + tmTab + eigen + `<p class="hinweisText" style="width:min(72rem,100%)">${t('lg_hinweis')}</p>`;
+  },
   /* ---------- Spielstatistik: Team, Spieler, Torhüter, Reihen, Trainer ---------- */
   spielStatistik(D, tab = 'team', zurueck, live) {
     const A = D.teams.A, B = D.teams.B, kz = (tm) => esc(D.teams[tm].kuerzel), pz = (a, b) => b ? Math.round(a / b * 100) + ' %' : '–', zeit = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
@@ -6157,7 +6252,7 @@ const UI = {
     const trainer = `<div class="karte"><table class="tab"><tr><th>Team</th><th>${t('st_trainer')}</th><th>${t('st_stil')}</th><th class="z">${t('st_linienwechsel')}</th><th>${t('st_auszeit')}</th></tr>
       ${['A', 'B'].map(tm => { const x = D.trainer[tm]; return `<tr><td>${kz(tm)}</td><td>${esc(x.name)}</td><td>${t('st_stil_' + x.stil)}</td><td class="z">${x.linienwechsel}</td><td>${x.auszeit ? t('st_auszeit_am', { d: x.auszeit.drittel, z: zeit(x.auszeit.zeit), s: x.auszeit.stand }) : '–'}</td></tr>`; }).join('')}</table><p class="hinweisText">${t('st_trainer_hinweis')}</p></div>`;
     const inhalt = tab === 'team' ? team : tab === 'spieler' ? spTab('A') + spTab('B') : tab === 'tw' ? tw : tab === 'reihen' ? reihen : trainer;
-    const d = this.html(`<div class="kopfzeile"><button class="knopf" data-zurueck>${t('zurueck')}</button><h2>${t('st_titel')} · ${esc(A.kuerzel)} ${D.stand.A} : ${D.stand.B} ${esc(B.kuerzel)}${live ? ' · ' + t('st_live', { d: D.drittel }) : ''}</h2><span></span></div>
+    const d = this.html(`<div class="kopfzeile"><button class="knopf" data-zurueck>${t('zurueck')}</button><h2>${t('st_titel')} · ${esc(A.kuerzel)} ${D.stand.A} : ${D.stand.B} ${esc(B.kuerzel)}${live ? ' · ' + (D.drittel > 3 ? t('s5_verl') : t('st_live', { d: D.drittel })) : ''}</h2><span></span></div>
       <div class="leiste"><div class="chips">${[['team', 'st_team'], ['spieler', 'st_spieler'], ['tw', 'torhueter'], ['reihen', 'st_reihen'], ['trainer', 'st_trainer']].map(([k, l]) => `<button class="chip ${tab === k ? 'an' : ''}" data-st="${k}">${t(l)}</button>`).join('')}</div></div>
       <div class="${tab === 'spieler' ? '' : 'spalten'}" style="${tab === 'spieler' ? 'display:flex;flex-direction:column;gap:1rem;width:min(72rem,100%)' : ''}">${inhalt}</div>`, 'dunkel');
     this.klick(d, '[data-zurueck]', () => zurueck ? zurueck() : this.hauptmenue());
@@ -6188,7 +6283,7 @@ const UI = {
     const S = Saison.d; if (!S) return this.saisonSetup();
     if (S.meister && !S.gefeiert) { S.gefeiert = true; Saison.speichern(); return this.meisterZeigen(); }
     const n = Saison.naechstesSpiel(), name = id => Saison.team(id).name, kz = id => Saison.team(id).kuerzel, meins = n && Saison.istMeins(n), KR = S.karriere;
-    const erg = (s) => s.erg ? `${s.erg.th} : ${s.erg.tg}${s.erg.so ? ' ' + t('sa_np') : ''}` : '–';
+    const erg = (s) => s.erg ? `${s.erg.th} : ${s.erg.tg}${s.erg.so ? ' ' + t('sa_np') : s.erg.verl ? ' ' + t('s5_nv') : ''}` : '–';
     const tabelle = `<div class="karte"><table class="tab"><tr><th>#</th><th>Team</th><th class="z">${t('tn_sp')}</th><th class="z">${t('tn_s')}</th><th class="z">${t('sa_sn')}</th><th class="z">${t('sa_nn')}</th><th class="z">${t('tn_n')}</th><th class="z">${t('sa_tore')}</th><th class="z">${t('tn_punkte')}</th></tr>
       ${Saison.tabelle().map((z, i) => `<tr style="${z.id === S.spieler ? 'color:var(--akzent);font-weight:800' : ''}"><td>${i + 1}</td><td>${esc(kz(z.id))} ${esc(name(z.id))}</td><td class="z">${z.sp}</td><td class="z">${z.s}</td><td class="z">${z.ss}</td><td class="z">${z.ns}</td><td class="z">${z.n}</td><td class="z">${z.tp}:${z.tg}</td><td class="z"><b>${z.pkt}</b></td></tr>`).join('')}</table>
       <p class="hinweisText">${t('sa_wertung')}</p></div>`;
@@ -6206,8 +6301,8 @@ const UI = {
       ${KR.kiLog && KR.kiLog.length && !S.spiele.some(x => x.erg) ? `<div class="karte" style="width:min(72rem,100%)"><div class="hinweisText">${t('ka_ki_wechsel')}</div>${KR.kiLog.filter((_, k) => k % 2 === 0).map(x => `<div class="pZeile"><span>${esc(Saison.team(x.von).kuerzel)} → ${esc(Saison.team(x.nach).kuerzel)}</span><b>${esc(x.name)}</b></div>`).join('')}</div>` : ''}` : '';
     const d = this.html(`<div class="kopfzeile"><button class="knopf" data-menue>${t('menue')}</button><h2>${kopf}</h2><button class="knopf gefahr klein" data-ende>${KR ? t('ka_beenden') : t('sa_verwerfen')}</button></div>
       ${kInfo}${naechst}
-      <div class="leiste"><div class="chips">${['tabelle', 'plan', 'torjaeger'].map(x => `<button class="chip ${tab === x ? 'an' : ''}" data-tab="${x}">${t(x === 'tabelle' ? 'tn_tabelle' : x === 'plan' ? 'tn_spielplan' : 'sa_scorer')}</button>`).join('')}</div></div>
-      <div class="spalten">${tab === 'tabelle' ? tabelle : tab === 'plan' ? plan : torjaeger}</div>`);
+      <div class="leiste"><div class="chips">${['tabelle', 'plan', 'torjaeger', 'statistik'].map(x => `<button class="chip ${tab === x ? 'an' : ''}" data-tab="${x}">${t(x === 'tabelle' ? 'tn_tabelle' : x === 'plan' ? 'tn_spielplan' : x === 'torjaeger' ? 'sa_scorer' : 'tn_statistik')}</button>`).join('')}</div></div>
+      <div class="spalten">${tab === 'tabelle' ? tabelle : tab === 'plan' ? plan : tab === 'torjaeger' ? torjaeger : this.ligaStatistik(S.agg, (id) => Saison.team(id), S.spieler)}</div>`);
     this.klick(d, '[data-menue]', () => this.hauptmenue());
     this.klick(d, '[data-tab]', (el) => this.saisonHub(el.dataset.tab));
     this.klick(d, '[data-ende]', () => { this.bestaetigen(t('sa_verwerfen') + '?').then(ok => { if (ok) { Saison.verwerfen(); this.hauptmenue(); } }); });
@@ -6265,7 +6360,8 @@ const UI = {
     const d = this.html(`<div style="margin-top:auto;width:min(40rem,100%)" class="karte"><div class="hinweisText">${t('tn_champion')}</div>
       <div style="font-size:clamp(1.8rem,5vw,3rem);font-weight:900;color:var(--akzent)">🏆 ${esc(team.name)}</div>
       <p class="hinweisText">${T.art === 'spiel5' ? `${t('tn_bester_scorer')}: ${b.scorer ? esc(b.scorer.name) + ' (' + b.scorer.tore + ' + ' + b.scorer.vorlagen + ')' : '–'}` : `${t('tn_bester_schuetze')}: ${b.sch ? esc(b.sch.name) + ' (' + b.sch.tore + ')' : '–'} · ${t('tn_bester_tw')}: ${b.tw ? esc(b.tw.name) + ' (' + Math.round(b.tw.paraden / b.tw.schuesse * 100) + ' %)' : '–'}`}</p>
-      <div class="chips"><button class="knopf primaer" data-neu>${t('tn_neu')}</button><button class="knopf" data-menue>${t('menue')}</button></div></div>`);
+      <div class="chips"><button class="knopf primaer" data-neu>${t('tn_neu')}</button><button class="knopf" data-stat>📊 ${t('tn_statistik')}</button><button class="knopf" data-menue>${t('menue')}</button></div></div>`);
+    this.klick(d, '[data-stat]', () => { Spiel.leerlauf(); this.turnierHub('statistik', true); });
     d.style.background = 'linear-gradient(180deg,transparent 50%,rgba(5,9,18,.85))';
     this.klick(d, '[data-neu]', () => { Turnier.verwerfen(); Spiel.leerlauf(); this.turnierSetup(); });
     this.klick(d, '[data-menue]', () => { Turnier.verwerfen(); Spiel.leerlauf(); this.hauptmenue(); });
@@ -6295,7 +6391,7 @@ const UI = {
     const statTab = top.length ? `<div class="hinweisText" style="text-align:left;margin-top:.4rem">${t('s5_scorer')}</div><table class="tab"><tr><th>${t('schuetze')}</th><th class="z">${t('tn_tore')}</th><th class="z">${t('s5_vl')}</th><th class="z">+/−</th><th class="z">${t('s5_schuesse')}</th></tr>${top.map(x => `<tr><td>${esc(x.name)} <span class="hinweisText">${esc((x.team === 'A' ? A : B).kuerzel)}</span></td><td class="z">${x.tore}</td><td class="z">${x.vorlagen}</td><td class="z">${x.pm > 0 ? '+' : ''}${x.pm}</td><td class="z">${x.schuesse}</td></tr>`).join('')}</table>` : '';
     const d = this.html(`<div class="mitte"><div class="karte dialog parcoursErg">
       <div class="hinweisText">${t('s5_endstand')}</div>
-      <div class="ergebnisGross">${stand.A} : ${stand.B}</div>
+      <div class="ergebnisGross">${stand.A} : ${stand.B}${r.verl && stand.A !== stand.B ? ` <small style="font-size:.4em">${t('s5_nv')}</small>` : ''}</div>
       <h2 style="margin:.2rem 0 .6rem">${sieger ? `${esc(sieger.name)} ${t('s5_gewinnt')}` : t('remis')}</h2>
       ${r.mensch && sieger ? `<p style="font-size:1.2rem;font-weight:800;color:${duGew ? 'var(--gut)' : 'var(--schlecht)'}">${duGew ? t('du_gewinnst') : t('du_verlierst')}</p>` : ''}
       <div class="hinweisText" style="text-align:left;margin-top:.4rem">${t('s5_tore')}</div>${tore}${statTab}
@@ -6576,7 +6672,7 @@ function start() {
   UI.hauptmenue();
   document.addEventListener('visibilitychange', () => { if (document.hidden && ['anlauf', 'aufstellung', 'match'].includes(Spiel.zustand) && !Spiel.pausiert) UI.pauseAuf(); });
   window.__PARCOURS = PARCOURS; window.__Parcours = Parcours;
-  window.__fps = { Match, Saison, Karriere, zweiteReihe, Parcours, PARCOURS, loeseSchuss, simuliereBisX, V3, THREE, renderer, szene, kamera, halle, Bild, Spiel, Config, Regeltests, Turnier, TeamDB, ball, UI, Eingabe, Kam, HUD, Ton, presetAnwenden, PRESETS, cfgSet, TuningPanel, Einst, Shootout };
+  window.__fps = { Regelwerk, Ligastat, Match, Saison, Karriere, zweiteReihe, Parcours, PARCOURS, loeseSchuss, simuliereBisX, V3, THREE, renderer, szene, kamera, halle, Bild, Spiel, Config, Regeltests, Turnier, TeamDB, ball, UI, Eingabe, Kam, HUD, Ton, presetAnwenden, PRESETS, cfgSet, TuningPanel, Einst, Shootout };
   requestAnimationFrame((t0) => { letzteZeit = t0; frame(t0); });
 }
 try { start(); }

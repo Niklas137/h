@@ -431,7 +431,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       erg.danach = M.phase; erg.besitzer = M.besitzer && M.besitzer.team; erg.minAbstand = +minAbst.toFixed(2);
       // Freischlag am Torraum: Ort wird 3,5 m herausgeschoben
       for (const e of M.ents) e.s.kontrolle = false; M.besitzer = null; F.ball.kinematisch = false;
-      M.foul(B, A, 'stock', new V(15.5, 0, 0.5), false); erg.ortX = M.fs && +M.fs.ort.x.toFixed(2); for (let k = 0; k < 900 && M.phase === 'freischlag'; k++) S.schritt(1 / 120);
+      M.foul(B, A, 'stock', new V(15.5, 0, 0.5), false); erg.ortX = M.fs && +M.fs.ort.x.toFixed(2); erg.ortZ = M.fs && +M.fs.ort.z.toFixed(2); for (let k = 0; k < 900 && M.phase === 'freischlag'; k++) S.schritt(1 / 120);
       // Strafe: Unterzahl und Anzeige
       const vorher = M.ents.filter(e => e.team === 'B').length; M.strafe(B, 'stoss'); M.hudStand(true);
       erg.unterzahl = [vorher, M.ents.filter(e => e.team === 'B').length]; erg.anzeige = /⏱/.test(document.getElementById('hudInfo') ? document.getElementById('hudInfo').innerHTML : document.body.innerHTML);
@@ -444,7 +444,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       const vorTor = M.ents.filter(e => e.team === 'B').length; M.tor('A'); erg.nachTor = { zurueck: M.ents.includes(C), feldVorher: vorTor, feld: M.ents.filter(e => e.team === 'B').length };
       S.pausiert = false; S.parcoursAufraeumen(); S.leerlauf(); F.UI.hauptmenue(); return erg;
     });
-    pruef('Regeln: Foul führt zum Freischlag, Gegner 3 m entfernt, gefoultes Team spielt', rg.phase === 'freischlag' && rg.team === 'A' && rg.danach === 'spiel' && rg.besitzer === 'A' && rg.minAbstand >= 2.99 && rg.ortX <= 13.15 - 3.5 + 0.01, JSON.stringify(rg));
+    pruef('Regeln: Foul führt zum Freischlag, Gegner 3 m entfernt, gefoultes Team spielt', rg.phase === 'freischlag' && rg.team === 'A' && rg.danach === 'spiel' && rg.besitzer === 'A' && rg.minAbstand >= 2.99 && Math.abs(Math.hypot(Math.max(0, Math.abs(rg.ortZ) - 1.25), Math.max(0, 15.5 - rg.ortX)) - 3.5) < 0.05,   /* IFF 506: 3,5 m vom Torhüterraum */ JSON.stringify(rg));
     pruef('Regeln: 2-Minuten-Strafe mit Unterzahl, endet nach Zeit und durch Gegentor', rg.unterzahl[0] === 5 && rg.unterzahl[1] === 4 && rg.anzeige && rg.nachZeit.strafeVorbei && rg.nachZeit.zurueck && rg.nachZeit.sichtbar && rg.nachTor.zurueck && rg.nachTor.feld === rg.nachTor.feldVorher + 1, JSON.stringify({ unterzahl: rg.unterzahl, anzeige: rg.anzeige, nachZeit: rg.nachZeit, nachTor: rg.nachTor }));
   });
 
@@ -647,6 +647,85 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     });
     pruef('Seitentausch: als Gast steuerst du dein Team, Ergebnis wird richtig herum eingetragen', tr.gast && tr.gastSpiel && tr.eintrag && tr.eintrag.ok && tr.eintrag.weiter, JSON.stringify({ gast: tr.gast, gastSpiel: tr.gastSpiel, eintrag: tr.eintrag }));
     pruef('Turnier 5 gegen 5: Spielart, Scorer = Ergebnisse, K.-o. mit Sieger, Unentschieden per Penaltyschießen, alter Spielstand', tr.art && tr.ende.sieger && tr.ende.punkteOk && tr.ende.tore && tr.ende.koSieger && tr.offenHub && tr.koDraw && tr.alt, JSON.stringify({ art: tr.art, ende: tr.ende, offenHub: tr.offenHub, koDraw: tr.koDraw, alt: tr.alt }));
+  });
+
+  // 5s) Offline-Fassung: offline.html entspricht index.html (nur Three.js eingebettet) und läuft ohne jeden Netzzugriff
+  await abschnitt('5s) Offline-Fassung', async () => {
+    const fs = require('fs'), pfad = require('path'), ordner = pfad.resolve(__dirname, '..');
+    const idx = fs.readFileSync(pfad.join(ordner, 'index.html'), 'utf8'), off = fs.existsSync(pfad.join(ordner, 'offline.html')) ? fs.readFileSync(pfad.join(ordner, 'offline.html'), 'utf8') : '';
+    const ohneKopf = off.replace(/^<!doctype html>\n<!-- Offline-Fassung:[\s\S]*?-->\n/, '<!doctype html>').replace(/data:text\/javascript;base64,[A-Za-z0-9+/=]+/, 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
+    pruef('Offline-Fassung ist aktuell (gleich index.html bis auf eingebettetes Three.js)', off.length > 0 && ohneKopf === idx, `offline ${off.length} Zeichen, gleich: ${ohneKopf === idx}`);
+    const ctx = await p.context().browser().newContext({ viewport: { width: 1024, height: 640 } }); const netz = [];
+    await ctx.route(/^https?:\/\//, (r) => { netz.push(r.request().url().slice(0, 50)); r.abort(); });
+    const q = await ctx.newPage(); await q.addInitScript(() => { localStorage.setItem('fps_config_v1', JSON.stringify({ grafik: { qualitaet: 'niedrig', zuschauer: 0 } })); localStorage.setItem('fps_einst_v1', JSON.stringify({ tutorial: true })); });
+    await q.goto('file://' + pfad.join(ordner, 'offline.html'), { waitUntil: 'domcontentloaded', timeout: 180000 });
+    const da = await q.waitForFunction(() => window.__fps, null, { timeout: 120000 }).then(() => true, () => false);
+    const r = da ? await q.evaluate(() => { const t = window.__fps.Regeltests.ausfuehren(); return { ok: t.every(x => x.ok), n: t.length, rev: window.__fps.THREE.REVISION }; }) : null;
+    await ctx.close();
+    pruef('Offline-Fassung läuft ohne Netz (Regeltests, Three.js r160)', da && r && r.ok && r.rev === '160' && netz.length === 0, JSON.stringify({ da, r, netz }));
+  });
+
+  // 5t) Regelwerk IFF 2026: Verlängerung (Golden Goal, 2/1 Punkte), Freischlag-Ort, Penalty ohne Bankstrafe, verzögerte Strafe, Penaltypunkt 5 m, Zorro-Verbot, Torhüterraum
+  await abschnitt('5t) Regelwerk IFF 2026', async () => {
+    const rg = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, Sa = F.Saison, U = F.UI, ball = F.ball, o = {};
+      const lauf = (n) => { for (let i = 0; i < n && S.zustand === 'match'; i++) S.schritt(1 / 120); };
+      const start5 = (sp) => { S.starteSpiel5(sp ? Sa.team(sp.heim) : L[0], sp ? Sa.team(sp.gast) : L[1], null, sp); S.pausiert = true; lauf(300); };
+      // Verlängerung mit Golden Goal im Saisonspiel
+      Sa.neu(L.slice(0, 2).map(x => x.id), L[0].id, false); let n = Sa.naechstesSpiel(); start5(n);
+      M.stand.A = 2; M.stand.B = 2; M.drittel = 3; M.uhr = 0.02; lauf(5); const verl = { drittel: M.drittel, uhr: M.uhr, halbe: M.dauer / 2, verl: M.verl };
+      lauf(600); M.tor('B'); lauf(400); const e1 = Sa.d.spiele.find(x => x.id === n.id), pk = Sa.tabelle().map(z => z.pkt).sort().join('/');
+      o.golden = { verl, zustand: S.zustand, erg: e1.erg, pk }; Sa.verwerfen(); S.leerlauf();
+      // Verlängerung ohne Tor → Penaltyschießen; schnelles Spiel ohne Entscheidungspflicht → keine Verlängerung
+      Sa.neu(L.slice(0, 2).map(x => x.id), L[0].id, false); n = Sa.naechstesSpiel(); start5(n); M.stand.A = 1; M.stand.B = 1; M.drittel = 3; M.uhr = 0.02; lauf(5); M.uhr = 0.02; lauf(700);
+      o.ohneTor = { offen: !!Sa.d.offen && Sa.d.offen.verl }; if (Sa.d.offen) U.saisonSOsimulieren(); o.ohneTor.pk = Sa.tabelle().map(z => z.pkt).sort().join('/'); Sa.verwerfen(); S.leerlauf();
+      start5(null); M.stand.A = 1; M.stand.B = 1; M.drittel = 3; M.uhr = 0.02; lauf(5); o.schnell = { verl: M.verl, zustand: S.zustand }; S.leerlauf();
+      // Freischlag-Ort, Penalty-Foul, verzögerte Strafe, Torhüterraum
+      start5(null); const abst = (x, z) => Math.hypot(Math.max(0, Math.abs(z) - 1.25), Math.max(0, 15.5 - Math.abs(x), Math.abs(x) - 16.5));
+      o.fs = [[15, 0.5], [14, 3], [-15.8, -1], [17.5, 3]].map(([x, z]) => { M.phase = 'spiel'; M.freischlag('A', { x, z }); const q = M.fs.ort; return { a: +abst(q.x, q.z).toFixed(2), linie: Math.abs(x) > 16.5 ? (Math.abs(q.x) === 16.5 && Math.abs(q.z) === 8.5) : Math.abs((q.x - Math.sign(x) * 16.5) * z - (x - Math.sign(x) * 16.5) * q.z) < 0.05 }; });
+      M.phase = 'spiel'; const A = M.ents.find(x => x.team === 'A'), B = M.ents.find(x => x.team === 'B'); M.gibBall(A); const oT = M.torchance; M.torchance = () => true; const s0 = M.strafen.length; M.foul(B, A, 'stock', ball.p.clone(), true); M.torchance = oT;
+      o.penaltyFoul = { phase: M.phase, strafen: M.strafen.length - s0 }; const pw = M.welt(A, new F.V3()); o.penaltyPunkt = { ball: +ball.p.x.toFixed(2), schuetze: +pw.x.toFixed(2) }; M.penaltyEnde(false); S.leerlauf();
+      start5(null); M.phase = 'spiel'; const b1 = M.ents.filter(x => x.team === 'B'); M.verzoegert = [{ e: b1[0], art: 'stock', gegen: 'A' }, { e: b1[1], art: 'stoss', gegen: 'A' }]; M.tor('A');
+      o.verzoegert = M.strafen.length === 1 && M.strafen[0].e === b1[0]; S.leerlauf();
+      start5(null); M.phase = 'spiel'; const tw = M.ents.find(q => q.team === 'A' && q !== M.besitzer); tw.s.pos.set(16, 0, 0.3); const f0 = M.fouls.A; M.torhueterraumPruefen();   // direkt prüfen: im nächsten Schritt schiebt die Kollision mit dem Torhüter den Spieler heraus
+      o.twraum = { phase: M.phase, team: M.fs && M.fs.team, foul: M.fouls.A - f0 }; S.leerlauf();
+      // Penaltypunkt im Penaltyschießen, Zorro als Einheit
+      S.starteMatch(L[0], L[1], null); S.pausiert = true; o.shootoutPunkt = { s: +S.schuetze.pos.x.toFixed(2), b: +ball.p.x.toFixed(2) }; S.leerlauf();
+      const R = F.Regelwerk, folge = (y, z) => { const v = {}, s = { zorro: z }; return [1, -1, 1].map(vz => R.zorroVerstoss(v, s, { p: { y }, v: { z: vz } })); };
+      o.zorro = { luft: folge(0.3, true), boden: folge(0.0365, true), ohne: folge(0.3, false) };
+      U.hauptmenue(); return o;
+    });
+    pruef('Verlängerung: halbe Drittellänge, Golden Goal beendet, Sieg n. V. 2/1 Punkte; ohne Tor Penaltyschießen; schnelles Spiel ohne Verlängerung', rg.golden.verl.drittel === 4 && rg.golden.verl.verl && rg.golden.verl.uhr === rg.golden.verl.halbe && rg.golden.zustand === 'ergebnis' && rg.golden.erg.verl && rg.golden.erg.tg === 3 && rg.golden.pk === '1/2' && rg.ohneTor.offen && rg.ohneTor.pk === '1/2' && !rg.schnell.verl && rg.schnell.zustand === 'ergebnis', JSON.stringify({ golden: rg.golden, ohneTor: rg.ohneTor, schnell: rg.schnell }));
+    pruef('Freischlag 3,5 m vor dem Torhüterraum auf der Linie, hinter der Torlinie zum Bullypunkt; Penalty ohne Bankstrafe; verzögerte Strafe; Torhüterraum', rg.fs.every(x => x.a >= 3.49 && x.linie) && rg.penaltyFoul.phase === 'penalty' && rg.penaltyFoul.strafen === 0 && rg.verzoegert && rg.twraum.phase === 'freischlag' && rg.twraum.team === 'B' && rg.twraum.foul === 1, JSON.stringify({ fs: rg.fs, penaltyFoul: rg.penaltyFoul, verzoegert: rg.verzoegert, twraum: rg.twraum }));
+    pruef('Penaltypunkt 5 m vor der Mittellinie (Spiel und Penaltyschießen), Zorro mit zwei Richtungswechseln in der Luft verboten', rg.penaltyPunkt.ball === 5 && Math.abs(rg.penaltyPunkt.schuetze - 4.4) < 0.05 && rg.shootoutPunkt.b === 5 && rg.zorro.luft.join() === 'false,false,true' && !rg.zorro.boden.some(Boolean) && !rg.zorro.ohne.some(Boolean), JSON.stringify({ penaltyPunkt: rg.penaltyPunkt, shootoutPunkt: rg.shootoutPunkt, zorro: rg.zorro }));
+  });
+
+  // 5u) Saison-/Turnierstatistik: Torhüter und Schüsse aus allen Spielen, eigenes Team aus gespielten Spielen; Heimrecht im Gruppenplan, neutrales Turnier
+  await abschnitt('5u) Saison- und Turnierstatistik', async () => {
+    const ag = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, Sa = F.Saison, T = F.Turnier, U = F.UI, o = {};
+      const pruefe = (agg, spiele) => { const f = [], tws = Object.values(agg.tw), gt = spiele.filter(x => x.erg).reduce((a, x) => a + x.erg.th + x.erg.tg, 0), sp = {};
+        if (tws.reduce((a, x) => a + x.gegentore, 0) !== gt) f.push('Gegentore ' + gt);
+        for (const x of spiele) if (x.erg) { sp[x.heim] = (sp[x.heim] || 0) + 1; sp[x.gast] = (sp[x.gast] || 0) + 1; if (!x.erg.aufs || x.erg.aufs.h < x.erg.th || x.erg.aufs.g < x.erg.tg) f.push('aufs ' + x.id); }
+        for (const x of tws) if (x.sp !== sp[x.team]) f.push('sp ' + x.team);
+        if (Object.values(agg.team).reduce((a, x) => a + x.aufs, 0) !== tws.reduce((a, x) => a + x.aufsGegen, 0)) f.push('Summe aufs'); return f; };
+      // Saison: ein eigenes Gastspiel kurz gespielt (Seitentausch), Rest simuliert
+      Sa.neu(L.slice(0, 6).map(x => x.id), L[1].id, false); let n, eigen = null;
+      while ((n = Sa.naechstesSpiel())) { if (!eigen && n.gast === L[1].id) { S.starteSpiel5(Sa.team(n.heim), Sa.team(n.gast), 'B', n); S.pausiert = true; for (let i = 0; i < 300; i++) S.schritt(1 / 120);
+          for (const tm of ['A', 'A', 'B', 'A']) { M.phase = 'spiel'; M.tor(tm); for (let j = 0; j < 700 && M.phase !== 'spiel'; j++) S.schritt(1 / 120); } M.drittel = 3; M.uhr = 0.02; /* Tore über den normalen Ablauf, damit die Statistik mitzählt */ let i = 0; while (S.zustand === 'match' && i < 2000) { S.schritt(1 / 120); i++; } eigen = { stand: { ...M.stand } }; S.leerlauf(); } else Sa.eintragen(n.id, Sa.simuliere(n.heim, n.gast)); }
+      const E = Sa.d.agg.eigen; o.saison = { f: pruefe(Sa.d.agg, Sa.d.spiele), eigen: E && { sp: E.sp, tore: E.tore, gegentore: E.gegentore }, soll: eigen && eigen.stand };
+      Sa.d.gefeiert = true; U.saisonHub('statistik'); o.saison.ansicht = !/undefined|NaN/.test(document.body.innerText) && /gespielte Spiele/.test(document.body.innerText) && /Fangquote/.test(document.body.innerText); Sa.verwerfen();
+      // Turnier 5 gegen 5 mit 8 Teams komplett simuliert, Statistik nach dem Finale erreichbar
+      T.neu(L.slice(0, 8).map(x => x.id), L[0].id, true, 'spiel5'); let s, k = 0; while ((s = T.naechstesSpiel()) && k++ < 40) { if (T.d.offen) U.turnierSOsimulieren(); else T.eintragen(s.id, T.simuliere5(s.heim, s.gast, s.phase !== 'gruppe')); }
+      const heim = {}; for (const x of T.d.spiele.filter(x => x.phase === 'gruppe')) heim[x.heim] = (heim[x.heim] || 0) + 1;
+      o.turnier = { f: pruefe(T.d.agg, T.d.spiele), sieger: !!T.d.sieger, heim: Object.values(heim).sort().join(''), heimTeams: Object.keys(heim).length, gruppeVerl: T.d.spiele.filter(x => x.phase === 'gruppe' && x.erg.verl).length };
+      U.turnierHub(); const knopf = document.querySelector('[data-stat]'); if (knopf) knopf.click(); o.turnier.ansicht = !!knopf && /abgeschlossen/.test(document.querySelector('.kopfzeile h2').innerText) && /Fangquote/.test(document.body.innerText);
+      // Heimvorteil: Saison 8 %, Turnier neutral (4000 Simulationen je Fall)
+      Sa.neu(L.slice(0, 2).map(x => x.id), L[0].id, false); let h1 = 0, g1 = 0, h2 = 0, g2 = 0; for (let i = 0; i < 4000; i++) { const a = Sa.simuliere(L[0].id, L[0].id, undefined, undefined, false, false); h1 += a.th; g1 += a.tg; const c = Sa.simuliere(L[0].id, L[0].id, undefined, undefined, true, false); h2 += c.th; g2 += c.tg; }
+      o.heimvorteil = { saison: +(h1 / g1).toFixed(3), neutral: +(h2 / g2).toFixed(3) }; Sa.verwerfen(); T.verwerfen(); U.hauptmenue(); return o;
+    });
+    pruef('Saisonstatistik: Gegentore = Tore, Schüsse aufs Tor ≥ Tore, Spiele je Torhüter, eigenes Gastspiel richtig übernommen, Ansicht', ag.saison.f.length === 0 && ag.saison.eigen && ag.saison.eigen.sp === 1 && ag.saison.eigen.tore === ag.saison.soll.A && ag.saison.eigen.gegentore === ag.saison.soll.B && ag.saison.ansicht, JSON.stringify(ag.saison));
+    pruef('Turnierstatistik nach dem Finale, Heimspiele je Team 1–2, keine Verlängerung in der Gruppe, Heimvorteil nur in der Saison', ag.turnier.f.length === 0 && ag.turnier.sieger && ag.turnier.heim === '11112222' && ag.turnier.heimTeams === 8 && ag.turnier.gruppeVerl === 0 && ag.turnier.ansicht && ag.heimvorteil.saison > 1.04 && Math.abs(ag.heimvorteil.neutral - 1) < 0.04, JSON.stringify({ turnier: ag.turnier, heimvorteil: ag.heimvorteil }));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
