@@ -188,6 +188,8 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       sperre(); const ich = M.steuer; M.gibBall(ich); for (let k = 0; k < 20; k++) S.schritt(1 / 120);
       erg.vorPass = { steuerIch: M.steuer === ich, kontrolle: ich.s.kontrolle, phase: M.phase, zustand: ich.s.zustand };
       // In den 20 Schritten kann ein Gegner den Ball erobert oder der Auto-Wechsel die Steuerung verlegt haben
+      // Ein Pfiff (Foul irgendwo auf dem Feld) unterbricht: erst den Freischlag ausführen lassen, dann passen
+      { let w = 0; while (M.phase !== 'spiel' && w < 1200) { S.schritt(1 / 120); w++; } sperre(); }
       M.steuer = ich; if (!ich.s.kontrolle) M.gibBall(ich);
       S.ereignis({ typ: 'finte' }); erg.passBewegung = M.besitzer && M.besitzer.s.zustand; const passZiel = M.passEmpfaenger; for (let k = 0; k < 40; k++) S.schritt(1 / 120); erg.pass = { besitzerNachPass: M.besitzer ? M.besitzer.team : null, empfaenger: !!passZiel && (M.passEmpfaenger === passZiel || M.besitzer === passZiel), steuerGewechselt: M.steuer !== ich };   // Ball unterwegs oder schon beim Empfänger
       // Schuss: Ball geben, Enter halten und loslassen
@@ -537,7 +539,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       let schussEreignisse = 0; const ob = M.beiSchuss; M.beiSchuss = function (s, i, t) { schussEreignisse++; return ob.call(this, s, i, t); };
       S.starteSpiel5(L[2], L[7], null); S.pausiert = true; let i = 0; while (S.zustand === 'match' && i < 120 * 500) { S.schritt(1 / 120); i++; } M.beiSchuss = ob;
       const l = M.statistikListe();
-      erg.spiel = { zustand: S.zustand, tore: M.stand.A + M.stand.B, toreSpieler: l.reduce((a, x) => a + x.tore, 0), vorlagen: l.reduce((a, x) => a + x.vorlagen, 0), mitVorlage: M.tore.filter(x => x.vorlage).length, pmSumme: l.reduce((a, x) => a + x.pm, 0), schuesse: l.reduce((a, x) => a + x.schuesse, 0), schussEreignisse, eis: l.every(x => x.eis >= 0), tabelle: /Vorl\./.test(document.body.innerText) };
+      erg.spiel = { zustand: S.zustand, tore: M.stand.A + M.stand.B, toreSpieler: l.reduce((a, x) => a + x.tore, 0), vorlagen: l.reduce((a, x) => a + x.vorlagen, 0), mitVorlage: M.tore.filter(x => x.vorlage).length, pmSumme: l.reduce((a, x) => a + x.pm, 0), pmSoll: M.tore.filter(x => !x.ueberzahl).reduce((a, x) => a + x.auf[x.team] - x.auf[x.team === 'A' ? 'B' : 'A'], 0), schuesse: l.reduce((a, x) => a + x.schuesse, 0), schussEreignisse, eis: l.every(x => x.eis >= 0), tabelle: /Vorl\./.test(document.body.innerText) };
       // Saison: simulierte Spiele mit Vorlagen, Scorerliste, alter Spielstand ohne Vorlagenfeld
       Sa.neu(L.slice(0, 6).map(x => x.id), L[0].id, false); let s; while ((s = Sa.naechstesSpiel())) Sa.eintragen(s.id, Sa.simuliere(s.heim, s.gast));
       const sc = Sa.scorer(); erg.saison = { scorer: sc.length, vorlagen: sc.reduce((a, x) => a + x.vorlagen, 0), punkteOk: sc.every(x => x.punkte === x.tore + x.vorlagen), sortiert: sc.every((x, k) => k === 0 || sc[k - 1].punkte >= x.punkte) };
@@ -545,7 +547,7 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
       let altOk = true; try { const z = Sa.scorer(); altOk = z.every(x => Number.isFinite(x.punkte)); F.UI.saisonHub('torjaeger'); altOk = altOk && /Scorer/.test(document.body.innerText); } catch (e) { altOk = false; }
       erg.alt = altOk; Sa.verwerfen(); S.leerlauf(); F.UI.hauptmenue(); return erg;
     });
-    pruef('Spielerstatistik: Tore = Endstand, Plus-Minus-Summe 0, Schüsse vollständig, Vorlagen', st.spiel.zustand === 'ergebnis' && st.spiel.toreSpieler === st.spiel.tore && st.spiel.vorlagen === st.spiel.mitVorlage && st.spiel.pmSumme === 0 && st.spiel.schuesse === st.spiel.schussEreignisse && st.spiel.eis && (st.spiel.tabelle || st.spiel.tore === 0),   /* 0:0 → keine Scorertabelle */ JSON.stringify(st.spiel));
+    pruef('Spielerstatistik: Tore = Endstand, Plus-Minus-Summe = Feldbesetzung je Tor (0 bei gleicher Zahl), Schüsse vollständig, Vorlagen', st.spiel.zustand === 'ergebnis' && st.spiel.toreSpieler === st.spiel.tore && st.spiel.vorlagen === st.spiel.mitVorlage && st.spiel.pmSumme === st.spiel.pmSoll && st.spiel.schuesse === st.spiel.schussEreignisse && st.spiel.eis && (st.spiel.tabelle || st.spiel.tore === 0),   /* 0:0 → keine Scorertabelle */ JSON.stringify(st.spiel));
     pruef('Spielerstatistik: Scorerliste der Saison, alter Spielstand lädt', st.saison.scorer > 10 && st.saison.vorlagen > 0 && st.saison.punkteOk && st.saison.sortiert && st.alt, JSON.stringify({ saison: st.saison, alt: st.alt }));
   });
 
@@ -572,6 +574,50 @@ const pruef = (name, ok, info = '') => { erg.push({ name, ok: !!ok, info }); con
     });
     pruef('Karriere: Saisonabschluss mit Preisgeld (einmal) und Entwicklung, Transfer als Tausch', ka.abschluss.eintraege === 1 && ka.abschluss.geldOk && ka.abschluss.entwicklung === 5 && ka.transfer.ok && ka.transfer.budget && ka.transfer.rein && ka.transfer.raus && ka.transfer.standardUnveraendert && ka.transfer.nummern && ka.zuTeuer, JSON.stringify({ abschluss: ka.abschluss, transfer: ka.transfer, zuTeuer: ka.zuTeuer }));
     pruef('Karriere: nächste Saison mit Kader, KI-Wechseln, Speichern und Ansicht', ka.saison2.nr === 2 && ka.saison2.historie === 1 && ka.saison2.behalten && ka.saison2.offen && ka.saison2.kiLog > 0 && ka.geladen && ka.ansicht, JSON.stringify({ saison2: ka.saison2, geladen: ka.geladen, ansicht: ka.ansicht }));
+  });
+
+  // 5q) Spielstatistik: Team, Spieler, Torhüter, Reihen (je 5 Feldspieler), Trainer – exakte Summenprüfungen, Auszeit, Ansicht
+  await abschnitt('5q) Spielstatistik', async () => {
+    const sq = await p.evaluate(() => {
+      const F = window.__fps, S = F.Spiel, M = F.Match, L = F.TeamDB.liste, f = [], sum = (a, k) => a.reduce((s, q) => s + q[k], 0);
+      let ev = 0; const ob = M.beiSchuss; M.beiSchuss = function (s, i, t) { ev++; return ob.call(this, s, i, t); };
+      S.starteSpiel5(L[2], L[7], null); S.pausiert = true; let i = 0; while (S.zustand === 'match' && i < 120 * 600) { S.schritt(1 / 120); i++; } M.beiSchuss = ob;
+      const D = M.statistikDaten(), sp = D.spieler;
+      for (const tm of ['A', 'B']) {
+        const g = tm === 'A' ? 'B' : 'A', T = D.ts[tm], P = sp.filter(q => q.team === tm), R = D.rs[tm], G = D.gs[g];
+        const chk = (n, ok, v) => { if (!ok) f.push(tm + ':' + n + ' ' + JSON.stringify(v)); };
+        chk('tore', T.tore === D.stand[tm] && sum(P, 'tore') === T.tore, [T.tore, D.stand[tm]]);
+        chk('schuesse', T.schuesse === sum(P, 'schuesse') && T.aufsTor === sum(P, 'aufsTor') && T.tore <= T.aufsTor && T.aufsTor <= T.schuesse, [T.schuesse, T.aufsTor, T.tore]);
+        chk('paesse', T.paesse === sum(P, 'paesse') && T.paesseAn === sum(P, 'paesseAn') && T.paesseAn <= T.paesse && T.paesse > 0, [T.paesse, T.paesseAn]);
+        chk('ballgewinne', T.ballgewinne >= sum(P, 'ballgewinne'), [T.ballgewinne, sum(P, 'ballgewinne')]);
+        chk('fouls', T.fouls === sum(P, 'fouls') && T.fouls === M.fouls[tm] && T.strafMin === sum(P, 'strafMin'), [T.fouls, M.fouls[tm], T.strafMin]);
+        chk('ppTore', T.ppTore === M.tore.filter(q => q.team === tm && q.ueberzahl).length, T.ppTore);
+        chk('torhueter', G.gegentore === D.stand[tm] && G.aufsTorGegen === T.aufsTor && G.paraden === G.aufsTorGegen - G.gegentore && G.paraden >= 0, G);
+        chk('reihenTore', R[1].tf + R[2].tf === T.tore && R[1].tg + R[2].tg === D.stand[g] && R[1].pm === R[1].tf - R[1].tg, R);
+        chk('reihenSchuesse', R[1].sf + R[2].sf === T.schuesse && R[1].sg + R[2].sg === D.ts[g].schuesse, R);
+        for (const nr of [1, 2]) chk('reihe' + nr, R[nr].spieler.length === 5 && Math.abs(R[nr].eis - sum(P.filter(q => q.reihe === nr), 'eis') / 5) <= 1 && R[nr].eis > 0, R[nr]);
+        chk('trainer', D.trainer[tm].linienwechsel === M.linie[tm].anzahl && ['offensiv', 'ausgewogen', 'defensiv'].includes(D.trainer[tm].stil) && D.trainer[tm].name.length > 3, D.trainer[tm]);
+      }
+      const bes = D.ts.A.besitz + D.ts.B.besitz; if (Math.abs(bes - 100) > 0.11) f.push('besitz ' + bes);
+      if (D.ts.A.schuesse + D.ts.B.schuesse < ev) f.push('schussereignisse ' + ev);
+      // Trainer fest je Team; menschliche Auszeit wirkt erst bei der nächsten Unterbrechung, höchstens einmal
+      const tr1 = JSON.stringify([D.trainer.A.name, D.trainer.A.stil]);
+      S.starteSpiel5(L[2], L[7], 'A'); S.pausiert = true; for (let k = 0; k < 120 * 3; k++) S.schritt(1 / 120);
+      const tr2 = JSON.stringify([M.trainer.A.name, M.trainer.A.stil]);
+      F.UI.pauseAuf(); const knopfStat = !!document.querySelector('[data-p="statistik"]'), knopfAus = !!document.querySelector('[data-p="auszeit"]');
+      document.querySelector('[data-p="auszeit"]').click(); const angefragt = M.auszeitWunsch === 'A' && !M.trainer.A.auszeit;
+      for (const e of M.alle) if (e.team === 'A') e.s.energie = 0.3;
+      M.auszeitPruefen(); const genommen = !!M.trainer.A.auszeit && M.auszeitWunsch === null, energie = M.alle.filter(e => e.team === 'A').every(e => Math.abs(e.s.energie - 0.6) < 1e-9);
+      const a1 = JSON.stringify(M.trainer.A.auszeit); M.auszeitWunsch = 'A'; M.auszeitPruefen(); const einmal = JSON.stringify(M.trainer.A.auszeit) === a1;
+      F.UI.pauseAuf(); const knopfWeg = !document.querySelector('[data-p="auszeit"]');
+      document.querySelector('[data-p="statistik"]').click(); const tabs = [...document.querySelectorAll('[data-st]')].map(x => x.dataset.st).join(','), live = /live/.test(document.querySelector('.kopfzeile h2').innerText);
+      let ansichten = 0; for (const tb of ['team', 'spieler', 'tw', 'reihen', 'trainer']) { document.querySelector(`[data-st="${tb}"]`).click(); if (document.querySelector('.karte table') && !/undefined|NaN/.test(document.body.innerText)) ansichten++; }
+      document.querySelector('[data-zurueck]').click(); const zurueck = !!document.querySelector('[data-p="weiter"]') && S.pausiert;
+      F.UI.pauseZu(); S.leerlauf(); F.UI.hauptmenue();
+      return { f, D: { stand: D.stand, ts: D.ts, gs: D.gs }, ui: { gleicherTrainer: tr1 === tr2, knopfStat, knopfAus, angefragt, genommen, energie, einmal, knopfWeg, tabs, live, ansichten, zurueck } };
+    });
+    pruef('Spielstatistik: Summen exakt (Team = Spieler, Tore ≤ aufs Tor ≤ Schüsse, Paraden, Reihen, Besitz 100 %)', sq.f.length === 0, JSON.stringify(sq.f.length ? sq.f : sq.D).slice(0, 900));
+    const u = sq.ui; pruef('Trainer und Auszeit (fest je Team, einmal, Energie), Statistikansicht mit 5 Reitern aus der Pause', u.gleicherTrainer && u.knopfStat && u.knopfAus && u.angefragt && u.genommen && u.energie && u.einmal && u.knopfWeg && u.tabs === 'team,spieler,tw,reihen,trainer' && u.live && u.ansichten === 5 && u.zurueck, JSON.stringify(u));
   });
 
   // 6) Turnier: 8 Teams mit Gruppen, eigene Spiele als KI simuliert, bis zur Siegerehrung
